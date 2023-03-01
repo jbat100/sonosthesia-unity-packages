@@ -1,0 +1,17 @@
+{
+  "author": "Jonathan Thorpe",
+  "dependencies": {
+    "jp.keijiro.rtmidi": "1.0.4",
+    "com.neuecc.unirx": "7.1.0",
+    "com.sonosthesia.midi": "1.0.1"
+  },
+  "description": "Sonosthesia unity Rt midi",
+  "displayName": "Sonosthesia RtMIDI",
+  "keywords": [ "unity" ],
+  "license": "Unlicense",
+  "name": "com.sonosthesia.rtmidi",
+  "repository": "github:jbat100/sonosthesia-unity-rtmidi",
+  "unity": "2021.3",
+  "unityRelease": "28f1",
+  "version": "1.0.0"
+}

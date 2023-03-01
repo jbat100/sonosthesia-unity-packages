@@ -1,0 +1,17 @@
+{
+  "author": "Jonathan Thorpe",
+  "dependencies": {
+    "com.cysharp.unitask": "2.3.3",
+    "com.neuecc.unirx": "7.1.0",
+    "com.sonosthesia.utils": "1.0.0"
+  },
+  "description": "Sonosthesia unity flow",
+  "displayName": "Sonosthesia Flow",
+  "keywords": [ "unity" ],
+  "license": "Unlicense",
+  "name": "com.sonosthesia.flow",
+  "repository": "github:jbat100/sonosthesia-unity-flow",
+  "unity": "2021.3",
+  "unityRelease": "28f1",
+  "version": "1.0.0"
+}

@@ -1,0 +1,17 @@
+{
+  "author": "Jonathan Thorpe",
+  "dependencies": {
+    "com.sonosthesia.midi": "1.0.0", 
+    "com.sonosthesia.spawn": "1.0.0",
+    "com.sonosthesia.touch": "1.0.0"
+  },
+  "description": "Sonosthesia unity link",
+  "displayName": "Sonosthesia Link",
+  "keywords": [ "unity" ],
+  "license": "Unlicense",
+  "name": "com.sonosthesia.link",
+  "repository": "github:jbat100/sonosthesia-unity-link",
+  "unity": "2021.3",
+  "unityRelease": "28f1",
+  "version": "1.0.0"
+}
