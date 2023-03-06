@@ -1,0 +1,15 @@
+{
+  "author": "Jonathan Thorpe",
+  "dependencies": {
+    "com.neuecc.unirx": "7.1.0"
+  },
+  "description": "Sonosthesia utils",
+  "displayName": "Sonosthesia Utils",
+  "keywords": [ "unity" ],
+  "license": "Unlicense",
+  "name": "com.sonosthesia.utils",
+  "repository": "github:jbat100/sonosthesia-unity-utils",
+  "unity": "2021.3",
+  "unityRelease": "28f1",
+  "version": "1.0.0"
+}
