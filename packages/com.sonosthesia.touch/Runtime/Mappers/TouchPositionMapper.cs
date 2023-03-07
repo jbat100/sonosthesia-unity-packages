@@ -7,7 +7,7 @@ namespace Sonosthesia.Touch
     {
         [SerializeField] private Vector3 _offset;
 
-        [SerializeField] private float _scale;
+        [SerializeField] private float _scale = 1f;
         
         public override Vector3 Map(TouchPayload source, TouchPayload reference, float timeOffset)
         {

@@ -12,22 +12,28 @@ namespace Sonosthesia.Flow
 
         [SerializeField] private Channel<TTarget> _target;
 
-        private IDisposable _subscription;
-
-        protected T Map<T>(Mapper<TSource, T> mapper, ValueProvider<T> provider, T fallback, TSource source, TSource reference, float timeOffset) where T :struct
+        [Serializable]
+        public class Mapping<T> where T : struct
         {
-            if (mapper)
+            [SerializeField] private Mapper<TSource, T> _mapper;
+            [SerializeField] private ValueProvider<T> _provider;
+            [SerializeField] private T _fallback;
+            
+            public T Map(TSource source, TSource reference, float timeOffset) 
             {
-                return mapper.Map(source, reference, timeOffset);
+                if (_mapper)
+                {
+                    return _mapper.Map(source, reference, timeOffset);
+                }
+                if (_provider)
+                {
+                    return _provider.Value;
+                }
+                return _fallback;
             }
-
-            if (provider)
-            {
-                return provider.Value;
-            }
-
-            return fallback;
         }
+        
+        private IDisposable _subscription;
 
         protected void OnEnable()
         {

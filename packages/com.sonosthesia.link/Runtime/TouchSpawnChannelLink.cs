@@ -8,38 +8,25 @@ namespace Sonosthesia.Link
 {
     public class TouchSpawnChannelLink : ChannelLink<TouchPayload, SpawnPayload>
     {
-        [Header("Mappers")]
+        [Header("Mappings")]
         
-        [SerializeField] private Mapper<TouchPayload, Color> _colorMapper;
+        [SerializeField] private Mapping<Color> _colorMapping;
+        
+        [SerializeField] private Mapping<Vector3> _positionMapping;
 
-        [SerializeField] private Mapper<TouchPayload, Vector3> _positionMapper;
+        [SerializeField] private Mapping<Quaternion> _rotationMapping;
         
-        [SerializeField] private Mapper<TouchPayload, Quaternion> _rotationMapper;
+        [SerializeField] private Mapping<float> _sizeMapping;
+        
+        [SerializeField] private Mapping<float> _lifetimeMapping;
 
-        [SerializeField] private Mapper<TouchPayload, float> _sizeMapper;
-        
-        [SerializeField] private Mapper<TouchPayload, float> _lifetimeMapper;
-        
-        [Header("Providers")]
-        
-        [SerializeField] private ValueProvider<Color> _colorProvider;
-
-        [SerializeField] private ValueProvider<Vector3> _positionProvider;
-        
-        [SerializeField] private ValueProvider<Quaternion> _rotationProvider;
-
-        [SerializeField] private ValueProvider<float> _sizeProvider;
-        
-        [SerializeField] private ValueProvider<float> _lifetimeProvider;
-        
         protected override SpawnPayload Map(TouchPayload payload, TouchPayload reference, float timeOffset)
         {
-             
-            Vector3 position = Map(_positionMapper, _positionProvider, Vector3.zero, payload, reference, timeOffset);
-            Quaternion rotation = _rotationMapper ? _rotationMapper.Map(payload, reference, timeOffset) : Quaternion.identity;
-            float size = _sizeMapper ? _sizeMapper.Map(payload, reference, timeOffset) : 1f;
-            float lifetime = _lifetimeMapper ? _lifetimeMapper.Map(payload, reference, timeOffset) : 1f;
-            Color color = _colorMapper ? _colorMapper.Map(payload, reference, timeOffset) : Color.white;
+            Vector3 position = _positionMapping.Map(payload, reference, timeOffset);
+            Quaternion rotation = _rotationMapping.Map(payload, reference, timeOffset);
+            float size = _sizeMapping.Map(payload, reference, timeOffset);
+            float lifetime = _lifetimeMapping.Map(payload, reference, timeOffset);;
+            Color color = _colorMapping.Map(payload, reference, timeOffset);;
             
             return new SpawnPayload(
                 new RigidTransform(Quaternion.identity, position),

@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-
     public abstract class TouchFaderMapper<T> : FaderMapper<TouchPayload, T> where T : struct
     {
         private enum Driver
