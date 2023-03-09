@@ -13,6 +13,16 @@ namespace Sonosthesia.Flow
 
     public static class TargetBlendExtensions
     {
+        public static float Blend(this TargetBlend targetBlend, float first, float second)
+        {
+            return targetBlend switch
+            {
+                TargetBlend.Override => second,
+                TargetBlend.Add => first + second,
+                _ => 0f
+            };
+        }
+        
         public static Vector3 Blend(this TargetBlend targetBlend, Vector3 first, Vector3 second)
         {
             return targetBlend switch

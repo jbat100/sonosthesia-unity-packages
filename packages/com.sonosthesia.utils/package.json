@@ -1,7 +1,8 @@
 {
   "author": "Jonathan Thorpe",
   "dependencies": {
-    "com.neuecc.unirx": "7.1.0"
+    "com.neuecc.unirx": "7.1.0",
+    "com.unity.mathematics": "1.2.6"
   },
   "description": "Sonosthesia utils",
   "displayName": "Sonosthesia Utils",

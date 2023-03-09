@@ -222,8 +222,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 18327076}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 4, z: 0}
+  m_LocalScale: {x: 3, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -444,7 +444,7 @@ MonoBehaviour:
   _driveType: 2
   _offset: 0
   _scale: 1
-  _driver: 1
+  _driver: 3
 --- !u!114 &365639801
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -652,6 +652,7 @@ Transform:
   m_Children:
   - {fileID: 365639799}
   - {fileID: 2086100334}
+  - {fileID: 915940851}
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -683,13 +684,77 @@ MonoBehaviour:
     _provider: {fileID: 0}
     _fallback: {x: 0, y: 0, z: 0, w: 0}
   _sizeMapping:
-    _mapper: {fileID: 0}
+    _mapper: {fileID: 915940853}
     _provider: {fileID: 0}
     _fallback: 0
   _lifetimeMapping:
     _mapper: {fileID: 0}
     _provider: {fileID: 0}
     _fallback: 0
+--- !u!1 &915940850
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 915940851}
+  - component: {fileID: 915940853}
+  - component: {fileID: 915940852}
+  m_Layer: 0
+  m_Name: Size
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &915940851
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 915940850}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 714393715}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &915940852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 915940850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf0313503fca8433f83ae37d3c2698c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _start: 0
+  _end: 1
+--- !u!114 &915940853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 915940850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b771853a873d141be9fe248b7527a346, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _fader: {fileID: 915940852}
+  _driveType: 1
+  _offset: 0
+  _scale: 1
+  _driver: 2
 --- !u!1 &1044891394
 GameObject:
   m_ObjectHideFlags: 0
@@ -781,7 +846,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _source: {fileID: 1044891396}
-  _prefab: {fileID: 0}
+  _prefab: {fileID: 8047862696940112728, guid: be7058816c89147f59098c386f5dbaba, type: 3}
   _poolCollectionChecks: 1
   _maxPoolSize: 10
 --- !u!1 &1684918525
