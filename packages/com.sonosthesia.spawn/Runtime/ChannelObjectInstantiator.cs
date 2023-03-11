@@ -8,9 +8,9 @@ using UnityEngine.Pool;
 
 namespace Sonosthesia.Spawn
 {
-    public class SpawnChannelObjectInstance : MonoBehaviour
+    public class ChannelObjectInstantiator<T> : MonoBehaviour where T : struct
     {
-        [SerializeField] private SpawnChannel _source;
+        [SerializeField] private Channel<T> _source;
         
         [SerializeField] private GameObject _prefab;
 
@@ -32,7 +32,7 @@ namespace Sonosthesia.Spawn
         }
 
         private IDisposable _subscription;
-        private readonly Dictionary<GameObject, IChannelStreamHandler<SpawnPayload>[]> _alive = new();
+        private readonly Dictionary<GameObject, IChannelStreamHandler<T>[]> _alive = new();
 
         protected void OnEnable()
         {
@@ -49,16 +49,17 @@ namespace Sonosthesia.Spawn
             _subscription = null;
         }
 
-        protected virtual void Spawn(IObservable<SpawnPayload> stream)
+        protected virtual void Spawn(IObservable<T> stream)
         {
             GameObject spawn = _pool.Get();
-            if (!_alive.TryGetValue(spawn, out IChannelStreamHandler<SpawnPayload>[] handlers))
+            if (!_alive.TryGetValue(spawn, out IChannelStreamHandler<T>[] handlers))
             {
-                handlers = spawn.GetComponentsInChildren<IChannelStreamHandler<SpawnPayload>>();
+                handlers = spawn.GetComponentsInChildren<IChannelStreamHandler<T>>();
                 _alive[spawn] = handlers;
             }
             IEnumerable<IObservable<Unit>> completions = handlers.Select(handler => handler.HandleStream(stream));
             completions.Merge().Subscribe(_ => { }, () => _pool.Release(spawn));
         }
     }
+
 }
