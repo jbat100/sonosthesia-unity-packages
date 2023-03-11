@@ -15,7 +15,7 @@ namespace Sonosthesia.Flow
         protected void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = _source.SignalObservable.Subscribe(value => _relay.Push(value));
+            _subscription = _source.SignalObservable.Subscribe(value => _relay.Broadcast(value));
         }
 
         protected void OnDisable()

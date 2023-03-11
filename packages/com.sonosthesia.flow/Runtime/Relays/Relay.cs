@@ -9,6 +9,6 @@ namespace Sonosthesia.Flow
         private readonly BehaviorSubject<T> _subject = new BehaviorSubject<T>(default);
         public IObservable<T> Observable => _subject.AsObservable();
 
-        public void Push(T value) => _subject.OnNext(value);
+        public void Broadcast(T value) => _subject.OnNext(value);
     }
 }
