@@ -9,7 +9,7 @@ namespace Sonosthesia.Flow
     {
         [SerializeField] private Selector<T> _selector;
         
-        [SerializeField] private DrivenFloatSignal _destination;
+        [SerializeField] private Signal<float> _destination;
         
         [SerializeField] private AnimationCurve _fadeIn;
         
@@ -27,7 +27,7 @@ namespace Sonosthesia.Flow
                 float fadeTime = Time.time - _completionTime.Value;
                 if (fadeTime < fadeDuration)
                 {
-                    _destination.Drive(_currentValue * _fadeOut.Evaluate(fadeTime));
+                    _destination.Broadcast(_currentValue * _fadeOut.Evaluate(fadeTime));
                 }
                 else
                 {
@@ -40,11 +40,11 @@ namespace Sonosthesia.Flow
                 float fadeTime = Time.time - _firstTime.Value;
                 if (fadeTime < fadeDuration)
                 {
-                    _destination.Drive(_currentValue * _fadeIn.Evaluate(fadeTime)); 
+                    _destination.Broadcast(_currentValue * _fadeIn.Evaluate(fadeTime)); 
                 }
                 else
                 {
-                    _destination.Drive(_currentValue);    
+                    _destination.Broadcast(_currentValue);    
                 }
             }
         }

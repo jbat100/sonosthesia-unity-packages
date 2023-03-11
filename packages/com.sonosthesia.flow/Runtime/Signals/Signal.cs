@@ -13,7 +13,7 @@ namespace Sonosthesia.Flow
          
         [SerializeField] private bool _log;
         
-        protected void Broadcast(T value)
+        public void Broadcast(T value)
         {
             if (_log)
             {

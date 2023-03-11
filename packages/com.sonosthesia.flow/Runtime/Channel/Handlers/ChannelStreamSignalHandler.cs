@@ -7,24 +7,19 @@ namespace Sonosthesia.Flow
     public abstract class ChannelStreamSignalHandler<T> : ChannelStreamHandler<T> where T : struct
     {
         // then use target with signals 
-        [SerializeField] private DrivenFloatSignal _signal;
+        [SerializeField] private Signal<float> _signal;
 
-        private T firstValue;
+        private T? firstValue;
 
         protected abstract float Evaluate(T first, T last);
         
         protected override IDisposable InternalHandleStream(IObservable<T> stream)
         {
-            IDisposable startSubscription = stream.First().Subscribe(value =>
+            return stream.Subscribe(value =>
             {
-                firstValue = value;
-                _signal.Drive(Evaluate(firstValue, firstValue));
+                firstValue ??= value;
+                _signal.Broadcast(Evaluate(firstValue.Value, value));
             });
-            IDisposable mainSubscription = stream.Subscribe(value =>
-            {
-                _signal.Drive(Evaluate(firstValue, value));
-            });
-            return new CompositeDisposable {startSubscription, mainSubscription};
         }
 
         protected override void Complete()
