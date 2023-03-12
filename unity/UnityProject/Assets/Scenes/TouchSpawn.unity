@@ -242,6 +242,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _channel: {fileID: 450589044}
+--- !u!1 &173359956
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 173359958}
+  - component: {fileID: 173359957}
+  m_Layer: 0
+  m_Name: ArpegiatedSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &173359957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 173359956}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdb4c9a63c1f24662b5cf1d83dc66245, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _log: 0
+  _source: {fileID: 0}
+  _scheduler: {fileID: 0}
+  _modulator: {fileID: 0}
+  _follower: {fileID: 0}
+  _terminator: {fileID: 0}
+--- !u!4 &173359958
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 173359956}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.50380135, y: 0.54671365, z: -0.009130895}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &177217492
 GameObject:
   m_ObjectHideFlags: 0
@@ -724,7 +774,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 714393714}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -732,8 +782,8 @@ Transform:
   - {fileID: 365639799}
   - {fileID: 2086100334}
   - {fileID: 915940851}
-  m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_Father: {fileID: 1044891395}
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &714393716
 MonoBehaviour:
@@ -1023,7 +1073,7 @@ GameObject:
   - component: {fileID: 1044891395}
   - component: {fileID: 1044891396}
   m_Layer: 0
-  m_Name: Spawn
+  m_Name: MainSpawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1041,6 +1091,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 714393715}
   - {fileID: 1165497583}
   m_Father: {fileID: 0}
   m_RootOrder: 5

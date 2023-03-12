@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Flow
 {
-    public abstract class ChannelAftertoucher<T> : Channel<T> where T : struct
+    public abstract class Aftertoucher<T> : Channel<T> where T : struct
     {
         [SerializeField] private Channel<T> _source;
 

@@ -4,7 +4,7 @@ using UniRx;
 
 namespace Sonosthesia.Flow
 {
-    public abstract class ScheduledChannelArpegiator<T> : ChannelArpegiator<T> where T : struct
+    public abstract class ScheduledArpegiator<T> : Arpegiator<T> where T : struct
     {
         [SerializeField] private Scheduler _scheduler;
         
