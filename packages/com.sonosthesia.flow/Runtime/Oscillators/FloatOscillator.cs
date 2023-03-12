@@ -4,6 +4,8 @@ namespace Sonosthesia.Flow
 {
     public abstract class FloatOscillator : Oscillator<float>
     {
+        // TODO : consider moving up to generic Oscillator and have T EvaluateIteration(float time);
+        
         [SerializeField] private float _timeScale = 1f;
         
         [SerializeField] private float _pause = 0f;

@@ -4,10 +4,8 @@ using UnityEngine;
 
 namespace Sonosthesia.Flow
 {
-    public class RelayReceiver<T> : MonoBehaviour where T : struct
+    public class RelayReceiver<T> : Signal<T> where T : struct
     {
-        [SerializeField] private Signal<T> _target;
-
         [SerializeField] private Relay<T> _relay;
 
         private IDisposable _subscription;
@@ -15,7 +13,7 @@ namespace Sonosthesia.Flow
         protected void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = _relay.Observable.Subscribe(value => _target.Broadcast(value));
+            _subscription = _relay.Observable.Subscribe(Broadcast);
         }
 
         protected void OnDisable()
