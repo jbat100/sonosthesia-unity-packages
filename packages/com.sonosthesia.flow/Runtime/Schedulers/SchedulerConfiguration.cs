@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Flow
 {
-    public abstract class SchedulerConfiguration : MonoBehaviour
+    public abstract class SchedulerConfiguration : ScriptableObject
     {
         public abstract float Duration { get; }
 
