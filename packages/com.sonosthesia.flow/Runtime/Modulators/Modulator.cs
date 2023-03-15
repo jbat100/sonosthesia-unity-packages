@@ -70,6 +70,14 @@ namespace Sonosthesia.Flow
             return new Vector3(x, y, z) + randomization;
         }
     }
+
+    public static class ModulatorExtensions
+    {
+        public static U Modulate<T, U>(this Modulator<U> modulator, T original, Func<T, U> selector, float offset) where U : struct where T : struct
+        {
+            return modulator ? modulator.Modulate(selector(original), offset) : selector(original);
+        }
+    }
     
     public abstract class Modulator<T> : MonoBehaviour where T : struct
     {

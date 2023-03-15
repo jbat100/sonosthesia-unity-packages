@@ -15,12 +15,14 @@ namespace Sonosthesia.Spawn
         
         public override SpawnPayload Modulate(SpawnPayload original, float offset)
         {
-            RigidTransform trans = _trans ? _trans.Modulate(original.Trans, offset) : original.Trans;
-            float size = _size ? _size.Modulate(original.Size, offset) : original.Size;
-            float lifetime = _lifetime ? _lifetime.Modulate(original.Lifetime, offset) : original.Lifetime;
-            Color color = _color ? _color.Modulate(original.Color, offset) : original.Color;
-            Vector3 velocity = _velocity ? _velocity.Modulate(original.Velocity, offset) : original.Velocity;
-            Vector3 angularVelocity = _angularVelocity ? _angularVelocity.Modulate(original.AngularVelocity, offset) : original.AngularVelocity;
+            RigidTransform rigidTransform = _trans.Modulate(original, p => p.Trans, offset);
+
+            RigidTransform trans = _trans.Modulate(original, p => p.Trans, offset);
+            float size = _size.Modulate(original, p => p.Size, offset);
+            float lifetime = _lifetime.Modulate(original, p => p.Lifetime, offset);
+            Color color = _color.Modulate(original, p => p.Color, offset);
+            Vector3 velocity = _velocity.Modulate(original, p => p.Velocity, offset);;
+            Vector3 angularVelocity = _angularVelocity.Modulate(original, p => p.AngularVelocity, offset);;
             return new SpawnPayload(trans, size, lifetime, color, velocity, angularVelocity);
         }
     }
