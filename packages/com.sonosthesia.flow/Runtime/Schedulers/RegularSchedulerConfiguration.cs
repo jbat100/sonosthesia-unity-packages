@@ -12,6 +12,8 @@ namespace Sonosthesia.Flow
         [SerializeField] private int _count;
 
         private List<float> _offsets;
+
+        private bool _initialized;
         
         public override float Duration
         {
@@ -21,7 +23,6 @@ namespace Sonosthesia.Flow
                 {
                     return 0;
                 }
-
                 return _leading + (_count - 1) * _period + _trailing;
             }
         }
@@ -30,8 +31,9 @@ namespace Sonosthesia.Flow
         {
             get
             {
-                if (_offsets == null)
+                if (!_initialized)
                 {
+                    _initialized = true;
                     _offsets = new List<float>();
                     if (_count > 0)
                     {
@@ -44,7 +46,6 @@ namespace Sonosthesia.Flow
                         }       
                     }
                 }
-
                 return _offsets.ToArray();
             }
         }

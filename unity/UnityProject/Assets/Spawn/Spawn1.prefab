@@ -140,7 +140,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _targetBlend: 2
-  _source: {fileID: 3316915434771883165}
+  _source: {fileID: 2735978274778314374}
 --- !u!114 &3229434446685983951
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164,7 +164,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 804652348370814240}
-  - component: {fileID: 3316915434771883165}
+  - component: {fileID: 2735978274778314374}
   m_Layer: 0
   m_Name: SizeReceiver
   m_TagString: Untagged
@@ -187,7 +187,7 @@ Transform:
   m_Father: {fileID: 3023441445189298443}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3316915434771883165
+--- !u!114 &2735978274778314374
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -196,11 +196,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 4074667092917278856}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a2d7a8f7e96e4bcd89b253c9415da92, type: 3}
+  m_Script: {fileID: 11500000, guid: a92af4467e91146538cdff556b28e497, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _log: 0
-  _relay: {fileID: 11400000, guid: 233c90d4fd3d74e9f92981aee899512f, type: 2}
+  signalRelay: {fileID: 11400000, guid: 233c90d4fd3d74e9f92981aee899512f, type: 2}
 --- !u!1 &4694103829222933381
 GameObject:
   m_ObjectHideFlags: 0
