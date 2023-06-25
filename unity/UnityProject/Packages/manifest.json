@@ -1,7 +1,14 @@
 {
   "dependencies": {
+    "com.sonosthesia.adaptivemidi": "file:../../../packages/com.sonosthesia.adaptivemidi",
+    "com.sonosthesia.flow": "file:../../../packages/com.sonosthesia.flow",
     "com.sonosthesia.link": "file:../../../packages/com.sonosthesia.link",
+    "com.sonosthesia.midi": "file:../../../packages/com.sonosthesia.midi",
+    "com.sonosthesia.pack": "file:../../../packages/com.sonosthesia.pack",
     "com.sonosthesia.rtmidi": "file:../../../packages/com.sonosthesia.rtmidi",
+    "com.sonosthesia.spawn": "file:../../../packages/com.sonosthesia.spawn",
+    "com.sonosthesia.touch": "file:../../../packages/com.sonosthesia.touch",
+    "com.sonosthesia.utils": "file:../../../packages/com.sonosthesia.utils",
     "com.unity.cinemachine": "2.9.5",
     "com.unity.collab-proxy": "2.0.0",
     "com.unity.ide.rider": "3.0.18",
@@ -45,13 +52,7 @@
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
-    "com.unity.modules.xr": "1.0.0",
-    "com.sonosthesia.midi": "file:../../../packages/com.sonosthesia.midi",
-    "com.sonosthesia.adaptivemidi": "file:../../../packages/com.sonosthesia.adaptivemidi",
-    "com.sonosthesia.flow": "file:../../../packages/com.sonosthesia.flow",
-    "com.sonosthesia.utils": "file:../../../packages/com.sonosthesia.utils",
-    "com.sonosthesia.spawn": "file:../../../packages/com.sonosthesia.spawn",
-    "com.sonosthesia.touch": "file:../../../packages/com.sonosthesia.touch"
+    "com.unity.modules.xr": "1.0.0"
   },
   "scopedRegistries": [
     {

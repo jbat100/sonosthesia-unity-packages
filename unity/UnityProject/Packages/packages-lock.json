@@ -52,6 +52,15 @@
         "com.sonosthesia.flow": "1.0.0"
       }
     },
+    "com.sonosthesia.pack": {
+      "version": "file:../../../packages/com.sonosthesia.pack",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.neuecc.unirx": "7.1.0",
+        "com.sonosthesia.flow": "1.0.1"
+      }
+    },
     "com.sonosthesia.rtmidi": {
       "version": "file:../../../packages/com.sonosthesia.rtmidi",
       "depth": 0,
