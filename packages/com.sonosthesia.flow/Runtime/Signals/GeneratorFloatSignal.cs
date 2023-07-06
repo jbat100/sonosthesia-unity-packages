@@ -6,18 +6,16 @@ namespace Sonosthesia.Flow
     {
         [SerializeField] private Generator<float> _generator;
 
-        private float? _startTime;
+        [SerializeField] private float _timeFator = 1f;
         
-        protected void OnEnable() => _startTime ??= Time.time;
+        private float _time;
         
-        protected void OnDisable() => _startTime = null;
-
+        protected void OnEnable() => _time = 0;
+        
         protected void Update()
         {
-            if (_startTime.HasValue)
-            {
-                Broadcast(_generator.Evaluate(Time.time - _startTime.Value));
-            }
+            _time += _timeFator * Time.deltaTime;
+            Broadcast(_generator.Evaluate(_time));
         }
     }
 }

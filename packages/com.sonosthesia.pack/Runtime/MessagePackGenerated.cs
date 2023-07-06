@@ -47,11 +47,12 @@ namespace MessagePack.Resolvers
 
         static GeneratedResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(3)
+            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(4)
             {
                 { typeof(global::Sonosthesia.Pack.Counting), 0 },
                 { typeof(global::Sonosthesia.Pack.Envelope), 1 },
-                { typeof(global::Sonosthesia.Pack.Pose), 2 },
+                { typeof(global::Sonosthesia.Pack.MediapipePose), 2 },
+                { typeof(global::Sonosthesia.Pack.Point), 3 },
             };
         }
 
@@ -67,7 +68,8 @@ namespace MessagePack.Resolvers
             {
                 case 0: return new MessagePack.Formatters.Sonosthesia.Pack.CountingFormatter();
                 case 1: return new MessagePack.Formatters.Sonosthesia.Pack.EnvelopeFormatter();
-                case 2: return new MessagePack.Formatters.Sonosthesia.Pack.PoseFormatter();
+                case 2: return new MessagePack.Formatters.Sonosthesia.Pack.MediapipePoseFormatter();
+                case 3: return new MessagePack.Formatters.Sonosthesia.Pack.PointFormatter();
                 default: return null;
             }
         }
@@ -181,10 +183,9 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
                 return;
             }
 
-            var formatterResolver = options.Resolver;
             writer.WriteMapHeader(2);
             writer.WriteRaw(GetSpan_Type());
-            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Serialize(ref writer, value.Type, options);
+            writer.Write(value.Type);
             writer.WriteRaw(GetSpan_Content());
             writer.Write(value.Content);
         }
@@ -197,7 +198,6 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
             }
 
             options.Security.DepthStep(ref reader);
-            var formatterResolver = options.Resolver;
             var length = reader.ReadMapHeader();
             var ____result = new global::Sonosthesia.Pack.Envelope();
 
@@ -213,7 +213,7 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
                     case 4:
                         if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 1701869940UL) { goto FAIL; }
 
-                        ____result.Type = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Deserialize(ref reader, options);
+                        ____result.Type = reader.ReadInt32();
                         continue;
                     case 7:
                         if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 32772479322582883UL) { goto FAIL; }
@@ -229,7 +229,386 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
         }
     }
 
-    public sealed class PoseFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Sonosthesia.Pack.Pose>
+    public sealed class MediapipePoseFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Sonosthesia.Pack.MediapipePose>
+    {
+        // nose
+        private static global::System.ReadOnlySpan<byte> GetSpan_Nose() => new byte[1 + 4] { 164, 110, 111, 115, 101 };
+        // leftEyeInner
+        private static global::System.ReadOnlySpan<byte> GetSpan_LeftEyeInner() => new byte[1 + 12] { 172, 108, 101, 102, 116, 69, 121, 101, 73, 110, 110, 101, 114 };
+        // leftEye
+        private static global::System.ReadOnlySpan<byte> GetSpan_LeftEye() => new byte[1 + 7] { 167, 108, 101, 102, 116, 69, 121, 101 };
+        // leftEyeOuter
+        private static global::System.ReadOnlySpan<byte> GetSpan_LeftEyeOuter() => new byte[1 + 12] { 172, 108, 101, 102, 116, 69, 121, 101, 79, 117, 116, 101, 114 };
+        // rightEyeInner
+        private static global::System.ReadOnlySpan<byte> GetSpan_RightEyeInner() => new byte[1 + 13] { 173, 114, 105, 103, 104, 116, 69, 121, 101, 73, 110, 110, 101, 114 };
+        // rightEye
+        private static global::System.ReadOnlySpan<byte> GetSpan_RightEye() => new byte[1 + 8] { 168, 114, 105, 103, 104, 116, 69, 121, 101 };
+        // rightEyeOuter
+        private static global::System.ReadOnlySpan<byte> GetSpan_RightEyeOuter() => new byte[1 + 13] { 173, 114, 105, 103, 104, 116, 69, 121, 101, 79, 117, 116, 101, 114 };
+        // leftEar
+        private static global::System.ReadOnlySpan<byte> GetSpan_LeftEar() => new byte[1 + 7] { 167, 108, 101, 102, 116, 69, 97, 114 };
+        // rightEar
+        private static global::System.ReadOnlySpan<byte> GetSpan_RightEar() => new byte[1 + 8] { 168, 114, 105, 103, 104, 116, 69, 97, 114 };
+        // mouthLeft
+        private static global::System.ReadOnlySpan<byte> GetSpan_MouthLeft() => new byte[1 + 9] { 169, 109, 111, 117, 116, 104, 76, 101, 102, 116 };
+        // mouthRight
+        private static global::System.ReadOnlySpan<byte> GetSpan_MouthRight() => new byte[1 + 10] { 170, 109, 111, 117, 116, 104, 82, 105, 103, 104, 116 };
+        // leftShoulder
+        private static global::System.ReadOnlySpan<byte> GetSpan_LeftShoulder() => new byte[1 + 12] { 172, 108, 101, 102, 116, 83, 104, 111, 117, 108, 100, 101, 114 };
+        // rightShoulder
+        private static global::System.ReadOnlySpan<byte> GetSpan_RightShoulder() => new byte[1 + 13] { 173, 114, 105, 103, 104, 116, 83, 104, 111, 117, 108, 100, 101, 114 };
+        // leftElbow
+        private static global::System.ReadOnlySpan<byte> GetSpan_LeftElbow() => new byte[1 + 9] { 169, 108, 101, 102, 116, 69, 108, 98, 111, 119 };
+        // rightElbow
+        private static global::System.ReadOnlySpan<byte> GetSpan_RightElbow() => new byte[1 + 10] { 170, 114, 105, 103, 104, 116, 69, 108, 98, 111, 119 };
+        // leftWrist
+        private static global::System.ReadOnlySpan<byte> GetSpan_LeftWrist() => new byte[1 + 9] { 169, 108, 101, 102, 116, 87, 114, 105, 115, 116 };
+        // rightWrist
+        private static global::System.ReadOnlySpan<byte> GetSpan_RightWrist() => new byte[1 + 10] { 170, 114, 105, 103, 104, 116, 87, 114, 105, 115, 116 };
+        // leftPinky
+        private static global::System.ReadOnlySpan<byte> GetSpan_LeftPinky() => new byte[1 + 9] { 169, 108, 101, 102, 116, 80, 105, 110, 107, 121 };
+        // rightPinky
+        private static global::System.ReadOnlySpan<byte> GetSpan_RightPinky() => new byte[1 + 10] { 170, 114, 105, 103, 104, 116, 80, 105, 110, 107, 121 };
+        // leftIndex
+        private static global::System.ReadOnlySpan<byte> GetSpan_LeftIndex() => new byte[1 + 9] { 169, 108, 101, 102, 116, 73, 110, 100, 101, 120 };
+        // rightIndex
+        private static global::System.ReadOnlySpan<byte> GetSpan_RightIndex() => new byte[1 + 10] { 170, 114, 105, 103, 104, 116, 73, 110, 100, 101, 120 };
+        // leftThumb
+        private static global::System.ReadOnlySpan<byte> GetSpan_LeftThumb() => new byte[1 + 9] { 169, 108, 101, 102, 116, 84, 104, 117, 109, 98 };
+        // rightThumb
+        private static global::System.ReadOnlySpan<byte> GetSpan_RightThumb() => new byte[1 + 10] { 170, 114, 105, 103, 104, 116, 84, 104, 117, 109, 98 };
+        // leftHip
+        private static global::System.ReadOnlySpan<byte> GetSpan_LeftHip() => new byte[1 + 7] { 167, 108, 101, 102, 116, 72, 105, 112 };
+        // rightHip
+        private static global::System.ReadOnlySpan<byte> GetSpan_RightHip() => new byte[1 + 8] { 168, 114, 105, 103, 104, 116, 72, 105, 112 };
+        // leftKnee
+        private static global::System.ReadOnlySpan<byte> GetSpan_LeftKnee() => new byte[1 + 8] { 168, 108, 101, 102, 116, 75, 110, 101, 101 };
+        // rightKnee
+        private static global::System.ReadOnlySpan<byte> GetSpan_RightKnee() => new byte[1 + 9] { 169, 114, 105, 103, 104, 116, 75, 110, 101, 101 };
+        // leftAnkle
+        private static global::System.ReadOnlySpan<byte> GetSpan_LeftAnkle() => new byte[1 + 9] { 169, 108, 101, 102, 116, 65, 110, 107, 108, 101 };
+        // rightAnkle
+        private static global::System.ReadOnlySpan<byte> GetSpan_RightAnkle() => new byte[1 + 10] { 170, 114, 105, 103, 104, 116, 65, 110, 107, 108, 101 };
+        // leftHeel
+        private static global::System.ReadOnlySpan<byte> GetSpan_LeftHeel() => new byte[1 + 8] { 168, 108, 101, 102, 116, 72, 101, 101, 108 };
+        // rightHeel
+        private static global::System.ReadOnlySpan<byte> GetSpan_RightHeel() => new byte[1 + 9] { 169, 114, 105, 103, 104, 116, 72, 101, 101, 108 };
+        // leftFootIndex
+        private static global::System.ReadOnlySpan<byte> GetSpan_LeftFootIndex() => new byte[1 + 13] { 173, 108, 101, 102, 116, 70, 111, 111, 116, 73, 110, 100, 101, 120 };
+        // rightFootIndex
+        private static global::System.ReadOnlySpan<byte> GetSpan_RightFootIndex() => new byte[1 + 14] { 174, 114, 105, 103, 104, 116, 70, 111, 111, 116, 73, 110, 100, 101, 120 };
+
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Sonosthesia.Pack.MediapipePose value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value is null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            var formatterResolver = options.Resolver;
+            writer.WriteMapHeader(33);
+            writer.WriteRaw(GetSpan_Nose());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.Nose, options);
+            writer.WriteRaw(GetSpan_LeftEyeInner());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.LeftEyeInner, options);
+            writer.WriteRaw(GetSpan_LeftEye());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.LeftEye, options);
+            writer.WriteRaw(GetSpan_LeftEyeOuter());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.LeftEyeOuter, options);
+            writer.WriteRaw(GetSpan_RightEyeInner());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.RightEyeInner, options);
+            writer.WriteRaw(GetSpan_RightEye());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.RightEye, options);
+            writer.WriteRaw(GetSpan_RightEyeOuter());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.RightEyeOuter, options);
+            writer.WriteRaw(GetSpan_LeftEar());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.LeftEar, options);
+            writer.WriteRaw(GetSpan_RightEar());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.RightEar, options);
+            writer.WriteRaw(GetSpan_MouthLeft());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.MouthLeft, options);
+            writer.WriteRaw(GetSpan_MouthRight());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.MouthRight, options);
+            writer.WriteRaw(GetSpan_LeftShoulder());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.LeftShoulder, options);
+            writer.WriteRaw(GetSpan_RightShoulder());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.RightShoulder, options);
+            writer.WriteRaw(GetSpan_LeftElbow());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.LeftElbow, options);
+            writer.WriteRaw(GetSpan_RightElbow());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.RightElbow, options);
+            writer.WriteRaw(GetSpan_LeftWrist());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.LeftWrist, options);
+            writer.WriteRaw(GetSpan_RightWrist());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.RightWrist, options);
+            writer.WriteRaw(GetSpan_LeftPinky());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.LeftPinky, options);
+            writer.WriteRaw(GetSpan_RightPinky());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.RightPinky, options);
+            writer.WriteRaw(GetSpan_LeftIndex());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.LeftIndex, options);
+            writer.WriteRaw(GetSpan_RightIndex());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.RightIndex, options);
+            writer.WriteRaw(GetSpan_LeftThumb());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.LeftThumb, options);
+            writer.WriteRaw(GetSpan_RightThumb());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.RightThumb, options);
+            writer.WriteRaw(GetSpan_LeftHip());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.LeftHip, options);
+            writer.WriteRaw(GetSpan_RightHip());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.RightHip, options);
+            writer.WriteRaw(GetSpan_LeftKnee());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.LeftKnee, options);
+            writer.WriteRaw(GetSpan_RightKnee());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.RightKnee, options);
+            writer.WriteRaw(GetSpan_LeftAnkle());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.LeftAnkle, options);
+            writer.WriteRaw(GetSpan_RightAnkle());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.RightAnkle, options);
+            writer.WriteRaw(GetSpan_LeftHeel());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.LeftHeel, options);
+            writer.WriteRaw(GetSpan_RightHeel());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.RightHeel, options);
+            writer.WriteRaw(GetSpan_LeftFootIndex());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.LeftFootIndex, options);
+            writer.WriteRaw(GetSpan_RightFootIndex());
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Serialize(ref writer, value.RightFootIndex, options);
+        }
+
+        public global::Sonosthesia.Pack.MediapipePose Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            var formatterResolver = options.Resolver;
+            var length = reader.ReadMapHeader();
+            var ____result = new global::Sonosthesia.Pack.MediapipePose();
+
+            for (int i = 0; i < length; i++)
+            {
+                var stringKey = global::MessagePack.Internal.CodeGenHelpers.ReadStringSpan(ref reader);
+                switch (stringKey.Length)
+                {
+                    default:
+                    FAIL:
+                      reader.Skip();
+                      continue;
+                    case 4:
+                        if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 1702063982UL) { goto FAIL; }
+
+                        ____result.Nose = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                        continue;
+                    case 12:
+                        switch (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey))
+                        {
+                            default: goto FAIL;
+                            case 5288766676629087596UL:
+                                if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 1919250030UL) { goto FAIL; }
+
+                                ____result.LeftEyeInner = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                            case 5721112240856655212UL:
+                                if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 1919251573UL) { goto FAIL; }
+
+                                ____result.LeftEyeOuter = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                            case 8462096932496893292UL:
+                                if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 1919247468UL) { goto FAIL; }
+
+                                ____result.LeftShoulder = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                        }
+                    case 7:
+                        switch (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey))
+                        {
+                            default: goto FAIL;
+                            case 28562311860348268UL:
+                                ____result.LeftEye = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+                            case 32195098278520172UL:
+                                ____result.LeftEar = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+                            case 31640957303022956UL:
+                                ____result.LeftHip = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+                        }
+                    case 13:
+                        switch (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey))
+                        {
+                            default: goto FAIL;
+                            case 7311951836282841458UL:
+                                switch (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey))
+                                {
+                                    default: goto FAIL;
+                                    case 491328007753UL:
+                                        ____result.RightEyeInner = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                        continue;
+                                    case 491328402767UL:
+                                        ____result.RightEyeOuter = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                        continue;
+                                }
+
+                            case 8027758095220828530UL:
+                                if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 491327351925UL) { goto FAIL; }
+
+                                ____result.RightShoulder = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                            case 8390046979205784940UL:
+                                if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 517097156169UL) { goto FAIL; }
+
+                                ____result.LeftFootIndex = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                        }
+                    case 8:
+                        switch (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey))
+                        {
+                            default: goto FAIL;
+                            case 7311951836282841458UL:
+                                ____result.RightEye = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+                            case 8241945159334848882UL:
+                                ____result.RightEar = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+                            case 8100085069607561586UL:
+                                ____result.RightHip = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+                            case 7306367240832968044UL:
+                                ____result.LeftKnee = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+                            case 7810760490608911724UL:
+                                ____result.LeftHeel = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+                        }
+                    case 9:
+                        switch (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey))
+                        {
+                            default: goto FAIL;
+                            case 7378387576030588781UL:
+                                if (stringKey[0] != 116) { goto FAIL; }
+
+                                ____result.MouthLeft = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                            case 8026096531489056108UL:
+                                if (stringKey[0] != 119) { goto FAIL; }
+
+                                ____result.LeftElbow = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                            case 8316303906856920428UL:
+                                if (stringKey[0] != 116) { goto FAIL; }
+
+                                ____result.LeftWrist = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                            case 7741240603767629164UL:
+                                if (stringKey[0] != 121) { goto FAIL; }
+
+                                ____result.LeftPinky = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                            case 7306085757266322796UL:
+                                if (stringKey[0] != 120) { goto FAIL; }
+
+                                ____result.LeftIndex = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                            case 7887325034348701036UL:
+                                if (stringKey[0] != 98) { goto FAIL; }
+
+                                ____result.LeftThumb = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                            case 7308862208608790898UL:
+                                if (stringKey[0] != 101) { goto FAIL; }
+
+                                ____result.RightKnee = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                            case 7812459206009054572UL:
+                                if (stringKey[0] != 101) { goto FAIL; }
+
+                                ____result.LeftAnkle = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                            case 7306325635283511666UL:
+                                if (stringKey[0] != 108) { goto FAIL; }
+
+                                ____result.RightHeel = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                        }
+                    case 10:
+                        switch (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey))
+                        {
+                            default: goto FAIL;
+                            case 7451577667045125997UL:
+                                if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 29800UL) { goto FAIL; }
+
+                                ____result.MouthRight = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                            case 7092119879471819122UL:
+                                if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 30575UL) { goto FAIL; }
+
+                                ____result.RightElbow = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                            case 7598231678806878578UL:
+                                if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 29811UL) { goto FAIL; }
+
+                                ____result.RightWrist = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                            case 7955978677624727922UL:
+                                if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 31083UL) { goto FAIL; }
+
+                                ____result.RightPinky = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                            case 7236802415547607410UL:
+                                if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 30821UL) { goto FAIL; }
+
+                                ____result.RightIndex = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                            case 8460104758960023922UL:
+                                if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 25197UL) { goto FAIL; }
+
+                                ____result.RightThumb = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                            case 7741196777720080754UL:
+                                if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 25964UL) { goto FAIL; }
+
+                                ____result.RightAnkle = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                                continue;
+
+                        }
+                    case 14:
+                        if (!global::System.MemoryExtensions.SequenceEqual(stringKey, GetSpan_RightFootIndex().Slice(1))) { goto FAIL; }
+
+                        ____result.RightFootIndex = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.Point>(formatterResolver).Deserialize(ref reader, options);
+                        continue;
+
+                }
+            }
+
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class PointFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Sonosthesia.Pack.Point>
     {
         // x
         private static global::System.ReadOnlySpan<byte> GetSpan_X() => new byte[1 + 1] { 161, 120 };
@@ -240,7 +619,7 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
         // visibility
         private static global::System.ReadOnlySpan<byte> GetSpan_Visibility() => new byte[1 + 10] { 170, 118, 105, 115, 105, 98, 105, 108, 105, 116, 121 };
 
-        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Sonosthesia.Pack.Pose value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Sonosthesia.Pack.Point value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value is null)
             {
@@ -259,7 +638,7 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
             writer.Write(value.Visibility);
         }
 
-        public global::Sonosthesia.Pack.Pose Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::Sonosthesia.Pack.Point Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -268,7 +647,7 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
 
             options.Security.DepthStep(ref reader);
             var length = reader.ReadMapHeader();
-            var ____result = new global::Sonosthesia.Pack.Pose();
+            var ____result = new global::Sonosthesia.Pack.Point();
 
             for (int i = 0; i < length; i++)
             {
