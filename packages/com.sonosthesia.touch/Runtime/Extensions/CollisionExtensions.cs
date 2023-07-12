@@ -7,7 +7,7 @@ namespace Sonosthesia.Touch
     {
         public static string ToDetailedString(this Collision collision)
         {
-            StringBuilder builder = new StringBuilder($"Collision {collision.GetHashCode()} with {collision.contactCount} contact points :");
+            StringBuilder builder = new StringBuilder($"Collision with {collision.contactCount} contact points :");
             foreach (ContactPoint point in collision.contacts)
             {
                 builder.Append($"(point : {point.point}, separation : {point.separation}, normal : {point.normal})");

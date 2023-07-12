@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Sonosthesia.Flow;
 using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
@@ -6,12 +7,14 @@ using UnityEngine;
 namespace Sonosthesia.Touch
 {
     [RequireComponent(typeof(RigidTransformVelocity))]
-    public class ColliderTouchDriver : MonoBehaviour
+    public abstract class CollisionChannelDriver<TPayload> : MonoBehaviour where TPayload : struct
     {
-        [SerializeField] private TouchChannel _channel;
+         [SerializeField] private Channel<TPayload> _channel;
 
         private RigidTransformVelocity _velocity;
-        private readonly Dictionary<Transform, Subject<TouchPayload>> _subjects = new();
+        private readonly Dictionary<Transform, Subject<TPayload>> _subjects = new();
+
+        protected RigidTransformVelocity Velocity => _velocity;
 
         protected virtual void Awake()
         {
@@ -21,10 +24,10 @@ namespace Sonosthesia.Touch
         protected virtual void OnCollisionEnter(Collision collision)
         {
             Debug.Log($"{this} {nameof(OnCollisionEnter)} {collision.ToDetailedString()}");
-            Subject<TouchPayload> subject = new Subject<TouchPayload>();
+            Subject<TPayload> subject = new Subject<TPayload>();
             _subjects[collision.transform] = subject;
             _channel.Pipe(subject);
-            if (MakePayload(collision, out TouchPayload payload))
+            if (MakePayload(collision, out TPayload payload))
             {
                 subject.OnNext(payload);
             }
@@ -33,9 +36,9 @@ namespace Sonosthesia.Touch
         protected virtual void OnCollisionStay(Collision collision)
         {
             Debug.Log($"{this} {nameof(OnCollisionStay)} {collision.ToDetailedString()}");
-            if (_subjects.TryGetValue(collision.transform, out Subject<TouchPayload> subject))
+            if (_subjects.TryGetValue(collision.transform, out Subject<TPayload> subject))
             {
-                if (MakePayload(collision, out TouchPayload payload))
+                if (MakePayload(collision, out TPayload payload))
                 {
                     subject.OnNext(payload);
                 }
@@ -45,23 +48,13 @@ namespace Sonosthesia.Touch
         protected virtual void OnCollisionExit(Collision collision)
         {
             Debug.Log($"{this} {nameof(OnCollisionExit)} {collision.ToDetailedString()}");
-            if (_subjects.TryGetValue(collision.transform, out Subject<TouchPayload> subject))
+            if (_subjects.TryGetValue(collision.transform, out Subject<TPayload> subject))
             {
                 subject.OnCompleted();
                 subject.Dispose();
             }
         }
 
-        private bool MakePayload(Collision collision, out TouchPayload payload)
-        {
-            if (_velocity && collision.contacts.Length > 0)
-            {
-                Transform t = transform;
-                payload = new TouchPayload(collision.contacts[0], t.ToRigidTransform(), _velocity.Velocity);
-                return true;
-            }
-            payload = default;
-            return false;
-        }
+        protected abstract bool MakePayload(Collision collision, out TPayload payload);
     }
 }
