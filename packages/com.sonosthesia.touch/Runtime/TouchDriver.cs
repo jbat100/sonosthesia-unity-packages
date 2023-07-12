@@ -15,7 +15,7 @@ namespace Sonosthesia.Touch
         {
             float3 position = data.pointerCurrentRaycast.worldPosition;
             float3 contact = data.pointerPressRaycast.worldPosition;
-            return new TouchPayload(contact, position);
+            return new TouchPayload(contact, new RigidTransform(quaternion.identity, position), new RigidTransform());
         }
 
         protected virtual bool ShouldMove(PointerEventData eventData)

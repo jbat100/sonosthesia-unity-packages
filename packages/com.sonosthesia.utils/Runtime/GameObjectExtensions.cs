@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Sonosthesia.Utils
@@ -12,6 +13,11 @@ namespace Sonosthesia.Utils
                 result = monoBehaviour.gameObject.AddComponent<T>();
             }
             return result;
+        }
+
+        public static RigidTransform ToRigidTransform(this Transform transform)
+        {
+            return new RigidTransform(transform.rotation, transform.position);
         }
     }    
 }

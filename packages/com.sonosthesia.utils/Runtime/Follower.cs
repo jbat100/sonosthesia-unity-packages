@@ -1,13 +1,18 @@
 using UnityEngine;
 
-public class Follower : MonoBehaviour
+namespace Sonosthesia.Utils
 {
-    [SerializeField] private Transform _target; 
-    
-    // Update is called once per frame
-    void Update()
+    public class Follower : MonoBehaviour
     {
-        this.transform.position = _target.position;
-        this.transform.rotation = _target.rotation;
+        [SerializeField] private Transform _target; 
+    
+        // Update is called once per frame
+        void Update()
+        {
+            this.transform.position = _target.position;
+            this.transform.rotation = _target.rotation;
+        }
     }
 }
+
+
