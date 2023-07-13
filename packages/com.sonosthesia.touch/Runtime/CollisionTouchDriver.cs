@@ -3,13 +3,17 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    [RequireComponent(typeof(RigidTransformVelocity))]
     public class CollisionTouchDriver : ContactChannelDriver<TouchPayload>
     {
-        protected override bool MakePayload(ContactPoint point, out TouchPayload payload)
+        private readonly TouchPayloadBuilder _builder = new();
+        
+        protected override bool MakePayload(Collision collision, ContactPoint point, TransformDynamics dynamics, out TouchPayload payload)
         {
-            Transform t = transform;
-            payload = new TouchPayload(point, t.ToRigidTransform(), Velocity.Velocity);
+            _builder.Apply(point);
+            _builder.Dynamics = dynamics;
+            _builder.Target = transform.ToRigidTransform();
+            _builder.Source = collision.transform.ToRigidTransform();
+            payload = _builder.ToTouchPayload();
             return true;
         }
     }

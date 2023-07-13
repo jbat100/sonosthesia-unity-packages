@@ -20,7 +20,7 @@ namespace Sonosthesia.Flow
         
         [SerializeField] private float _scale = 1f;
 
-        protected abstract float Drive(TSource element);
+        protected abstract float Drive(TSource payload);
 
         public override TTarget Map(TSource source, TSource reference, float timeOffset)
         {

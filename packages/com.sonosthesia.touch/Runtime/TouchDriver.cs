@@ -11,11 +11,15 @@ namespace Sonosthesia.Touch
 
         private BehaviorSubject<TouchPayload> _current;
 
+        private readonly TouchPayloadBuilder _builder = new TouchPayloadBuilder();
+
         protected virtual TouchPayload MakePayload(PointerEventData data)
         {
             float3 position = data.pointerCurrentRaycast.worldPosition;
-            float3 contact = data.pointerPressRaycast.worldPosition;
-            return new TouchPayload(contact, new RigidTransform(quaternion.identity, position), new RigidTransform());
+            _builder.Contact = position;
+            _builder.Source = new RigidTransform(quaternion.identity, position);
+            _builder.Target = new RigidTransform(quaternion.identity, position);
+            return _builder.ToTouchPayload();
         }
 
         protected virtual bool ShouldMove(PointerEventData eventData)

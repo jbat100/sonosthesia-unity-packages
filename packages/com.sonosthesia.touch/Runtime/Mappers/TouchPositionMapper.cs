@@ -11,7 +11,7 @@ namespace Sonosthesia.Touch
         
         public override Vector3 Map(TouchPayload source, TouchPayload reference, float timeOffset)
         {
-            return _offset + (Vector3)((source.Position - reference.Position) * _scale);
+            return _offset + (Vector3)((source.Source.pos - reference.Source.pos) * _scale);
         }
     }
 }

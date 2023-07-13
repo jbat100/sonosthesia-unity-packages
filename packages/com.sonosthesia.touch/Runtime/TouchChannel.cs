@@ -1,63 +1,85 @@
 using Sonosthesia.Flow;
+using Sonosthesia.Utils;
 using Unity.Mathematics;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
+    public class TouchPayloadBuilder
+    {
+        public float3 Contact;
+        public float3 Normal;
+        public float2 UV;
+        public float4 Color;
+        public RigidTransform Source;
+        public RigidTransform Target;
+        public TransformDynamics Dynamics;
+        public float Seperation;
+
+        public TouchPayloadBuilder()
+        {
+            
+        }
+
+        public TouchPayloadBuilder(TouchPayload payload)
+        {
+            Contact = payload.Contact;
+            Normal = payload.Normal;
+            UV = payload.UV;
+            Color = payload.Color;
+            Source = payload.Source;
+            Target = payload.Target;
+            Dynamics = payload.Dynamics;
+            Seperation = payload.Separation;
+        }
+        
+        public void Apply(ContactPoint contactPoint)
+        {
+            Contact = contactPoint.point;
+            Normal = contactPoint.normal;
+            Seperation = contactPoint.separation;
+        }
+
+        public TouchPayload ToTouchPayload()
+        {
+            return new TouchPayload(Contact, Normal, UV, Color, Source, Target, Dynamics, Seperation);
+        }
+    }
+    
     public readonly struct TouchPayload
     {
         public readonly float3 Contact;
         public readonly float3 Normal;
         public readonly float2 UV;
         public readonly float4 Color;
-        public readonly RigidTransform Transform;
-        public readonly RigidTransform Velocity;
-        public readonly float Seperation;
+        public readonly RigidTransform Source;
+        public readonly RigidTransform Target;
+        public readonly TransformDynamics Dynamics;
+        public readonly float Separation;
 
-        public TouchPayload(ContactPoint contactPoint, RigidTransform transform, RigidTransform velocity)
-        {
-            Contact = contactPoint.point;
-            Normal = contactPoint.normal;
-            Seperation = contactPoint.separation;
-            Transform = default;
-            Velocity = default;
-            Normal = default;
-            UV = default;
-            Color = default;
-        }
-
-        public TouchPayload(float3 contact, RigidTransform transform, RigidTransform velocity)
+        public TouchPayload(
+            float3 contact, 
+            float3 normal, 
+            float2 uv, 
+            float4 color, 
+            RigidTransform source, 
+            RigidTransform target,
+            TransformDynamics dynamics,
+            float separation)
         {
             Contact = contact;
-            Transform = transform;
-            Velocity = velocity;
-            Normal = float3.zero;
-            UV = default;
-            Color = default;
-            Seperation = 0f;
-        }
-        
-        public TouchPayload(float3 contact, RigidTransform transform, RigidTransform velocity, float2 uv, float4 color)
-        {
-            Contact = contact;
-            Transform = transform;
-            Velocity = velocity;
-            Normal = float3.zero;
+            Normal = normal;
             UV = uv;
+            Source = source;
+            Target = target;
+            Dynamics = dynamics;
             Color = color;
-            Seperation = 0f;
+            Separation = separation;
         }
-
-        public TouchPayload Updated(RigidTransform transform, RigidTransform velocity)
-        {
-            return new TouchPayload(Contact, transform, velocity, UV, Color);
-        }
-
-        public float3 Position => Transform.pos;
         
         public override string ToString()
         {
-            return $"{base.ToString()} {nameof(Contact)} {Contact} {nameof(Transform)} {Transform} {nameof(Velocity)} {Velocity} {nameof(UV)} {UV} {nameof(Color)} {Color}";
+            return $"{base.ToString()} {nameof(Contact)} {Contact} {nameof(Dynamics)} {Dynamics} {nameof(UV)} {UV} {nameof(Color)} {Color}";
         }
     }
     

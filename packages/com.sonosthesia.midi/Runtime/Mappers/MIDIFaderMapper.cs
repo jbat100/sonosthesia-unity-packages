@@ -17,13 +17,13 @@ namespace Sonosthesia.MIDI
         
         [SerializeField] private Driver _driver;
         
-        protected override float Drive(MIDINote midiNote)
+        protected override float Drive(MIDINote payload)
         {
             return _driver switch
             {
-                Driver.Channel => midiNote.Channel / 15f,
-                Driver.Note => midiNote.Note / 127f,
-                Driver.Velocity => midiNote.Velocity,
+                Driver.Channel => payload.Channel / 15f,
+                Driver.Note => payload.Note / 127f,
+                Driver.Velocity => payload.Velocity,
                 Driver.Random => Random.value,
                 _ => 0f
             };
