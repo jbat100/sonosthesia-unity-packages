@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "com.sonosthesia.adaptivemidi": "file:../../../packages/com.sonosthesia.adaptivemidi",
+    "com.sonosthesia.builder": "file:../../../packages/com.sonosthesia.builder",
     "com.sonosthesia.flow": "file:../../../packages/com.sonosthesia.flow",
     "com.sonosthesia.link": "file:../../../packages/com.sonosthesia.link",
     "com.sonosthesia.midi": "file:../../../packages/com.sonosthesia.midi",

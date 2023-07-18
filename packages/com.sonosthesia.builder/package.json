@@ -1,0 +1,15 @@
+{
+  "author": "Jonathan Thorpe",
+  "dependencies": {
+    "com.sonosthesia.utils": "1.0.0"
+  },
+  "description": "Sonosthesia unity builder",
+  "displayName": "Sonosthesia Builder",
+  "keywords": [ "unity" ],
+  "license": "Unlicense",
+  "name": "com.sonosthesia.builder",
+  "repository": "github:jbat100/sonosthesia-unity-packages",
+  "unity": "2021.3",
+  "unityRelease": "28f1",
+  "version": "1.0.0"
+}
