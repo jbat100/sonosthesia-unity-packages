@@ -21,9 +21,7 @@ namespace Sonosthesia.Builder
         {
             MeshJob<G, S> job = new MeshJob<G, S>();
             job._generator.Resolution = resolution;
-            job._streams.Setup(
-                meshData, mesh.bounds = job._generator.Bounds, job._generator.VertexCount, job._generator.IndexCount
-            );
+            job._streams.Setup(meshData, mesh.bounds = job._generator.Bounds, job._generator.VertexCount, job._generator.IndexCount);
             return job.ScheduleParallel(job._generator.JobLength, 1, dependency);
         }
     }

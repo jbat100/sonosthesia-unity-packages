@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: JobProcedural
+  m_Name: LatLonMap
   m_Shader: {fileID: -6465566751694194690, guid: 8685dd9ef62c24189985f5a5136638ae,
     type: 3}
   m_Parent: {fileID: 0}
@@ -29,7 +29,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Base_Map:
-        m_Texture: {fileID: 2800000, guid: 8f136193adab640af856950453aeef5c, type: 3}
+        m_Texture: {fileID: 2800000, guid: 92e552c0ecf7b4ffab134bab96f9f497, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
@@ -61,7 +61,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Normal_Map:
-        m_Texture: {fileID: 2800000, guid: da12147ccc1fa47ed8205188cc8e1d53, type: 3}
+        m_Texture: {fileID: 2800000, guid: c696473129369436ca5985f0b39f840c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:

@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: JobProcedural
+  m_Name: Flat
   m_Shader: {fileID: -6465566751694194690, guid: 8685dd9ef62c24189985f5a5136638ae,
     type: 3}
   m_Parent: {fileID: 0}
