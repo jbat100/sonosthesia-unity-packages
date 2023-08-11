@@ -1,11 +1,21 @@
+using System;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Sonosthesia.Builder
 {
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public class JobProceduralMesh : MonoBehaviour
     {
+        [System.Flags]
+        public enum MeshOptimizationMode 
+        {
+            ReorderIndices = 1 << 0, 
+            ReorderVertices = 1 << 1
+        }
 
+        [SerializeField] private MeshOptimizationMode _meshOptimization;
+        
         public enum MaterialMode
         {
             Flat, 
@@ -23,7 +33,8 @@ namespace Sonosthesia.Builder
         {
             Vertices = 1 << 1, 
             Normals = 1 << 2, 
-            Tangents = 1 << 3
+            Tangents = 1 << 3,
+            Triangles = 1 << 4
         }
         
         static readonly MeshJobScheduleDelegate[] _jobs = 
@@ -33,6 +44,12 @@ namespace Sonosthesia.Builder
             MeshJob<SharedTriangleGrid, SingleStreams>.ScheduleParallel,
             MeshJob<PointyHexagonGrid, SingleStreams>.ScheduleParallel,
             MeshJob<FlatHexagonGrid, SingleStreams>.ScheduleParallel,
+            MeshJob<CubeSphere, SingleStreams>.ScheduleParallel,
+            MeshJob<SharedCubeSphere, PositionStreams>.ScheduleParallel,
+            MeshJob<IcoSphere, PositionStreams>.ScheduleParallel,
+            MeshJob<GeoIcoSphere, PositionStreams>.ScheduleParallel,
+            MeshJob<OctaSphere, SingleStreams>.ScheduleParallel,
+            MeshJob<GeoOctaSphere, SingleStreams>.ScheduleParallel,
             MeshJob<UVSphere, SingleStreams>.ScheduleParallel
         };
 
@@ -43,6 +60,12 @@ namespace Sonosthesia.Builder
             SharedTriangleGrid, 
             PointyHexagonGrid, 
             FlatHexagonGrid, 
+            CubeSphere,
+            SharedCubeSphere,
+            Icosphere,
+            GeoIcoSphere,
+            OctaSphere,
+            GeoOctaSphere,
             UVSphere
         };
 
@@ -54,8 +77,9 @@ namespace Sonosthesia.Builder
 
         private Mesh _mesh;
 
-        private Vector3[] _vertices, _normals;
-        private Vector4[] _tangents;
+        [NonSerialized] private Vector3[] _vertices, _normals;
+        [NonSerialized] private Vector4[] _tangents;
+        [NonSerialized] private int[] _triangles;
 
         protected void Awake () 
         {
@@ -72,6 +96,7 @@ namespace Sonosthesia.Builder
             _vertices = null;
             _normals = null;
             _tangents = null;
+            _triangles = null;
             enabled = false;
         }
         
@@ -84,8 +109,9 @@ namespace Sonosthesia.Builder
             Transform t = transform;
             
             bool drawVertices = (_gizmoMode & GizmoMode.Vertices) != 0;
-            bool drawNormals = (_gizmoMode & GizmoMode.Normals) != 0;
-            bool drawTangents = (_gizmoMode & GizmoMode.Tangents) != 0;
+            bool drawNormals = (_gizmoMode & GizmoMode.Normals) != 0 && _mesh.HasVertexAttribute(VertexAttribute.Normal);
+            bool drawTangents = (_gizmoMode & GizmoMode.Tangents) != 0 && _mesh.HasVertexAttribute(VertexAttribute.Tangent);
+            bool drawTriangles = (_gizmoMode & GizmoMode.Triangles) != 0;
             
             _vertices ??= _mesh.vertices;
             if (drawNormals && _normals == null) 
@@ -95,6 +121,10 @@ namespace Sonosthesia.Builder
             if (drawTangents && _tangents == null) 
             {
                 _tangents = _mesh.tangents;
+            }
+            if (drawTriangles && _triangles == null) 
+            {
+                _triangles = _mesh.triangles;
             }
             
             for (int i = 0; i < _vertices.Length; i++) 
@@ -116,6 +146,24 @@ namespace Sonosthesia.Builder
                     Gizmos.DrawRay(position, t.TransformDirection(_tangents[i] * 0.2f));   
                 }
             }
+            
+            if (drawTriangles) 
+            {
+                float colorStep = 1f / (_triangles.Length - 3);
+                for (int i = 0; i < _triangles.Length; i += 3) 
+                {
+                    float c = i * colorStep;
+                    Gizmos.color = new Color(c, 0f, c);
+                    Gizmos.DrawSphere(
+                        t.TransformPoint((
+                            _vertices[_triangles[i]] +
+                            _vertices[_triangles[i + 1]] +
+                            _vertices[_triangles[i + 2]]
+                        ) * (1f / 3f)),
+                        0.02f
+                    );
+                }
+            }
         }
 
         private void GenerateMesh()
@@ -125,6 +173,23 @@ namespace Sonosthesia.Builder
             Mesh.MeshData meshData = meshDataArray[0];
             _jobs[(int)_meshType](_mesh, meshData, _resolution, default).Complete();
             Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, _mesh);
+            switch (_meshOptimization)
+            {
+                case MeshOptimizationMode.ReorderIndices:
+                    _mesh.OptimizeIndexBuffers();
+                    break;
+                case MeshOptimizationMode.ReorderVertices:
+                    _mesh.OptimizeReorderVertexBuffer();
+                    break;
+                default:
+                {
+                    if (_meshOptimization != 0) 
+                    {
+                        _mesh.Optimize();
+                    }
+                    break;
+                }
+            }
         }
     }
 }

@@ -712,7 +712,7 @@ GameObject:
   - component: {fileID: 1963242875}
   - component: {fileID: 1963242878}
   - component: {fileID: 1963242877}
-  - component: {fileID: 1963242876}
+  - component: {fileID: 1963242879}
   m_Layer: 0
   m_Name: JobProcedural
   m_TagString: Untagged
@@ -735,27 +735,6 @@ Transform:
   m_Father: {fileID: 403116813}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1963242876
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1963242874}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e32fba833192748378a45e3b639bdbc2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _materialMode: 2
-  _materials:
-  - {fileID: 2100000, guid: 5da55023d265e42258296a2676d268c5, type: 2}
-  - {fileID: 2100000, guid: 9b537cce921f542808c036df351c17c8, type: 2}
-  - {fileID: 2100000, guid: d0120a1408c6c451e887b20a7e618505, type: 2}
-  - {fileID: 2100000, guid: 9bf117766fc544847830b8ce476bc632, type: 2}
-  _meshType: 5
-  _resolution: 20
-  _gizmoMode: -1
 --- !u!23 &1963242877
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -805,3 +784,25 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1963242874}
   m_Mesh: {fileID: 0}
+--- !u!114 &1963242879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1963242874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83d19e48e88f843ac926d2ab95c52932, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _meshOptimization: 0
+  _materialMode: 3
+  _materials:
+  - {fileID: 2100000, guid: 5da55023d265e42258296a2676d268c5, type: 2}
+  - {fileID: 2100000, guid: 9b537cce921f542808c036df351c17c8, type: 2}
+  - {fileID: 2100000, guid: d0120a1408c6c451e887b20a7e618505, type: 2}
+  - {fileID: 2100000, guid: 9bf117766fc544847830b8ce476bc632, type: 2}
+  _meshType: 7
+  _resolution: 20
+  _gizmoMode: 2

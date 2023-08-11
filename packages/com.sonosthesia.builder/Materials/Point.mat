@@ -15,7 +15,7 @@ Material:
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 2
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -41,6 +41,7 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     - _Scale: 0.96
+    - _Smoothness: 0.5
     m_Colors:
     - _Offset: {r: -1.54, g: -0.09, b: 0, a: 0}
   m_BuildTextureStacks: []
