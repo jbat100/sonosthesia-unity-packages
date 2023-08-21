@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 
 using static Unity.Mathematics.math;
@@ -69,18 +70,19 @@ namespace Sonosthesia.Builder
 
         public struct Lattice1D<G, L> : INoise where G : IGradient where L : ILattice
         {
-            public float4 GetNoise4(float4x3 positions, SmallXXHash4 hash, int frequency) 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public Sample4 GetNoise4(float4x3 positions, SmallXXHash4 hash, int frequency) 
             {
                 LatticeSpan4 x = default(L).GetLatticeSpan4(positions.c0, frequency);
                 G g = default;
                 float4 raw =  lerp(g.Evaluate(hash.Eat(x.p0), x.g0), g.Evaluate(hash.Eat(x.p1), x.g1), x.t) * 2f - 1f;
-                return g.EvaluateAfterInterpolation(raw);
+                return g.EvaluateCombined(raw);
             }
         }
         
         public struct Lattice2D<G, L> : INoise where G : IGradient where L : ILattice
         {
-            public float4 GetNoise4(float4x3 positions, SmallXXHash4 hash, int frequency) 
+            public Sample4 GetNoise4(float4x3 positions, SmallXXHash4 hash, int frequency) 
             {
                 LatticeSpan4 
                     x = default(L).GetLatticeSpan4(positions.c0, frequency), 
@@ -100,13 +102,13 @@ namespace Sonosthesia.Builder
                     ),
                     x.t
                 );
-                return g.EvaluateAfterInterpolation(raw);
+                return g.EvaluateCombined(raw);
             }
         }
         
         public struct Lattice3D<G, L> : INoise where G : struct, IGradient where L : ILattice {
 
-            public float4 GetNoise4 (float4x3 positions, SmallXXHash4 hash, int frequency) {
+            public Sample4 GetNoise4 (float4x3 positions, SmallXXHash4 hash, int frequency) {
                 LatticeSpan4
                     x = default(L).GetLatticeSpan4(positions.c0, frequency),
                     y = default(L).GetLatticeSpan4(positions.c1, frequency),
@@ -148,7 +150,7 @@ namespace Sonosthesia.Builder
                     ),
                     x.t
                 );
-                return g.EvaluateAfterInterpolation(raw);
+                return g.EvaluateCombined(raw);
             }
         }
     }

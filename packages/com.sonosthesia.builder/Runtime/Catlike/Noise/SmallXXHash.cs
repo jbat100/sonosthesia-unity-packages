@@ -88,6 +88,9 @@ namespace Sonosthesia.Builder
         public float4 GetBitsAsFloats01 (int count, int shift) =>
             (float4)GetBits(count, shift) * (1f / ((1 << count) - 1));
         
+        public static SmallXXHash4 Select (SmallXXHash4 a, SmallXXHash4 b, bool4 c) =>
+            math.select(a.accumulator, b.accumulator, c);
+        
         public static implicit operator SmallXXHash4 (SmallXXHash hash) =>
             new SmallXXHash4(hash.accumulator);
         

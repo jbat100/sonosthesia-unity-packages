@@ -16,17 +16,42 @@ namespace Sonosthesia.Builder
         private S _streams;
 
         public void Execute (int i) => _generator.Execute(i, _streams);
+
+        public static JobHandle ScheduleParallel(Mesh mesh, Mesh.MeshData meshData, int resolution, JobHandle dependency)
+            => ScheduleParallel(mesh, meshData, resolution, dependency, Vector3.zero, false);
         
-        public static JobHandle ScheduleParallel(Mesh mesh, Mesh.MeshData meshData, int resolution, JobHandle dependency) 
+        public static JobHandle ScheduleParallel(
+            Mesh mesh, Mesh.MeshData meshData, int resolution, JobHandle dependency,
+            Vector3 extraBoundsExtents, bool supportVectorization) 
         {
             MeshJob<G, S> job = new MeshJob<G, S>();
             job._generator.Resolution = resolution;
-            job._streams.Setup(meshData, mesh.bounds = job._generator.Bounds, job._generator.VertexCount, job._generator.IndexCount);
+            
+            int vertexCount = job._generator.VertexCount;
+            
+            if (supportVectorization && (vertexCount & 0b11) != 0) 
+            {
+                vertexCount += 4 - (vertexCount & 0b11);
+            }
+            
+            Bounds bounds = job._generator.Bounds;
+            bounds.extents += extraBoundsExtents;
+            
+            job._streams.Setup(
+                meshData, 
+                mesh.bounds = bounds, 
+                vertexCount, 
+                job._generator.IndexCount);
             return job.ScheduleParallel(job._generator.JobLength, 1, dependency);
         }
     }
     
     public delegate JobHandle MeshJobScheduleDelegate (
         Mesh mesh, Mesh.MeshData meshData, int resolution, JobHandle dependency
+    );
+    
+    public delegate JobHandle AdvancedMeshJobScheduleDelegate (
+        Mesh mesh, Mesh.MeshData meshData, int resolution, JobHandle dependency,
+        Vector3 extraBoundsExtents, bool supportVectorization
     );
 }

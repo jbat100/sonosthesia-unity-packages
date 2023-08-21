@@ -570,15 +570,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb9ea44a6634644cab4b49f02c37ade3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _shape: 0
+  _shape: 2
   _instanceMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   _material: {fileID: 2100000, guid: 5193133dddec643fe9b7d98517f55930, type: 2}
   _resolution: 200
   _displacement: 0.1
   _instanceScale: 1
   _tiling: 1
-  _type: 4
-  _dimensions: 2
+  _type: 5
+  _dimensions: 3
   _settings:
     seed: 0
     frequency: 4

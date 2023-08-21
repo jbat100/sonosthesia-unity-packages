@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
@@ -31,13 +32,32 @@ namespace Sonosthesia.Builder
         
         public interface INoise 
         {
-            float4 GetNoise4 (float4x3 positions, SmallXXHash4 hash, int frequency);
+            Sample4 GetNoise4 (float4x3 positions, SmallXXHash4 hash, int frequency);
         }
         
         public delegate JobHandle ScheduleDelegate (
             NativeArray<float3x4> positions, NativeArray<float4> noise,
             Settings settings, SpaceTRS domainTRS, int resolution, JobHandle dependency
         );
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Sample4 GetFractalNoise<N>(float4x3 position, Settings settings) where N : struct, INoise
+        {
+            SmallXXHash4 hash = SmallXXHash4.Seed(settings.seed);
+            int frequency = settings.frequency;
+            float amplitude = 1f, amplitudeSum = 0f;
+            Sample4 sum = default;
+
+            for (int o = 0; o < settings.octaves; o++) 
+            {
+                sum += amplitude * default(N).GetNoise4(position, hash + o, frequency);
+                amplitudeSum += amplitude;
+                frequency *= settings.lacunarity;
+                amplitude *= settings.persistence;
+            }
+            
+            return sum / amplitudeSum;
+        }
 
         [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
         public struct Job<N> : IJobFor where N : struct, INoise
@@ -50,21 +70,9 @@ namespace Sonosthesia.Builder
 
             public float3x4 domainTRS;
 
-            public void Execute (int i) 
-            {
-                float4x3 position = domainTRS.TransformVectors(transpose(positions[i]));
-                SmallXXHash4 hash = SmallXXHash4.Seed(settings.seed);
-                int frequency = settings.frequency;
-                float amplitude = 1f;
-                float4 sum = 0f;
-                for (int o = 0; o < settings.octaves; o++) 
-                {
-                    sum += amplitude * default(N).GetNoise4(position, hash + o, frequency);
-                    frequency *= settings.lacunarity;
-                    amplitude *= settings.persistence;
-                }
-                noise[i] = sum;
-            }
+            public void Execute (int i) => noise[i] = GetFractalNoise<N>(
+                domainTRS.TransformVectors(transpose(positions[i])), settings
+            ).v;
             
             public static JobHandle ScheduleParallel (
                 NativeArray<float3x4> positions, NativeArray<float4> noise,

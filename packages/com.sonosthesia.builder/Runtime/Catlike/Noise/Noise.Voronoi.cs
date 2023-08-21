@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 
 using static Unity.Mathematics.math;
@@ -93,7 +94,8 @@ namespace Sonosthesia.Builder
             where D : struct, IVoronoiDistance
             where F : struct, IVoronoiFunction
         {
-            public float4 GetNoise4 (float4x3 positions, SmallXXHash4 hash, int frequency) 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public Sample4 GetNoise4 (float4x3 positions, SmallXXHash4 hash, int frequency) 
             {
                 L l = default;
                 D d = default;
@@ -113,7 +115,8 @@ namespace Sonosthesia.Builder
             where D : struct, IVoronoiDistance
             where F : struct, IVoronoiFunction
         {
-            public float4 GetNoise4 (float4x3 positions, SmallXXHash4 hash, int frequency) 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public Sample4 GetNoise4 (float4x3 positions, SmallXXHash4 hash, int frequency) 
             {
                 L l = default;
                 D d = default;
@@ -147,7 +150,8 @@ namespace Sonosthesia.Builder
             where D : struct, IVoronoiDistance
             where F : struct, IVoronoiFunction
         {
-            public float4 GetNoise4 (float4x3 positions, SmallXXHash4 hash, int frequency) 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public Sample4 GetNoise4 (float4x3 positions, SmallXXHash4 hash, int frequency) 
             {
                 L l = default;
                 D d = default;

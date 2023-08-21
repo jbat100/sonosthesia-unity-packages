@@ -41,6 +41,22 @@ namespace Sonosthesia.Builder
                 Noise.Job<Noise.Lattice3D<Noise.Turbulence<Noise.Value>, Noise.LatticeTiling>>.ScheduleParallel
             },
             {
+                Noise.Job<Noise.Simplex1D<Noise.Simplex>>.ScheduleParallel,
+                Noise.Job<Noise.Simplex1D<Noise.Simplex>>.ScheduleParallel,
+                Noise.Job<Noise.Simplex2D<Noise.Simplex>>.ScheduleParallel,
+                Noise.Job<Noise.Simplex2D<Noise.Simplex>>.ScheduleParallel,
+                Noise.Job<Noise.Simplex3D<Noise.Simplex>>.ScheduleParallel,
+                Noise.Job<Noise.Simplex3D<Noise.Simplex>>.ScheduleParallel
+            },
+            {
+                Noise.Job<Noise.Simplex1D<Noise.Turbulence<Noise.Simplex>>>.ScheduleParallel,
+                Noise.Job<Noise.Simplex1D<Noise.Turbulence<Noise.Simplex>>>.ScheduleParallel,
+                Noise.Job<Noise.Simplex2D<Noise.Turbulence<Noise.Simplex>>>.ScheduleParallel,
+                Noise.Job<Noise.Simplex2D<Noise.Turbulence<Noise.Simplex>>>.ScheduleParallel,
+                Noise.Job<Noise.Simplex3D<Noise.Turbulence<Noise.Simplex>>>.ScheduleParallel,
+                Noise.Job<Noise.Simplex3D<Noise.Turbulence<Noise.Simplex>>>.ScheduleParallel
+            },
+            {
                 Noise.Job<Noise.Simplex1D<Noise.Value>>.ScheduleParallel,
                 Noise.Job<Noise.Simplex1D<Noise.Value>>.ScheduleParallel,
                 Noise.Job<Noise.Simplex2D<Noise.Value>>.ScheduleParallel,
@@ -114,6 +130,8 @@ namespace Sonosthesia.Builder
             PerlinTurbulence,
             Value,
             ValueTurbulence,
+            Simplex, 
+            SimplexTurbulence, 
             SimplexValue, 
             SimplexValueTurbulence,
             VoronoiWorleyF1,

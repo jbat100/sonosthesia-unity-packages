@@ -12,7 +12,7 @@ namespace Sonosthesia.Builder
     {
         // we use an internal type to force sequential layout while not forcing this for the outer Vertex type 
         [StructLayout(LayoutKind.Sequential)]
-        private struct Stream0 
+        public struct Stream0 
         {
             public float3 position, normal;
             public float4 tangent;
