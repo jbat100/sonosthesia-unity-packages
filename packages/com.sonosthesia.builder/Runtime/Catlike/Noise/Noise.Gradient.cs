@@ -27,30 +27,45 @@ namespace Sonosthesia.Builder
                 };
             }
 
-            public static float4 Square (SmallXXHash4 hash, float4 x, float4 y) 
+            public static Sample4 Square (SmallXXHash4 hash, float4 x, float4 y) 
             {
                 float4x2 v = SquareVectors(hash);
-                return v.c0 * x + v.c1 * y;
+                return new Sample4 {
+                    v = v.c0 * x + v.c1 * y,
+                    dx = v.c0,
+                    dz = v.c1
+                };
             }
 	
-            public static float4 Circle (SmallXXHash4 hash, float4 x, float4 y) 
-            {
+            public static Sample4 Circle (SmallXXHash4 hash, float4 x, float4 y) {
                 float4x2 v = SquareVectors(hash);
-                return (v.c0 * x + v.c1 * y) * rsqrt(v.c0 * v.c0 + v.c1 * v.c1);
+                return new Sample4 {
+                    v = v.c0 * x + v.c1 * y,
+                    dx = v.c0,
+                    dz = v.c1
+                } * rsqrt(v.c0 * v.c0 + v.c1 * v.c1);
             }
 	
-            public static float4 Octahedron (SmallXXHash4 hash, float4 x, float4 y, float4 z) 
+            public static Sample4 Octahedron (SmallXXHash4 hash, float4 x, float4 y, float4 z) 
             {
                 float4x3 v = OctahedronVectors(hash);
-                return v.c0 * x + v.c1 * y + v.c2 * z;
+                return new Sample4 {
+                    v = v.c0 * x + v.c1 * y + v.c2 * z,
+                    dx = v.c0,
+                    dy = v.c1,
+                    dz = v.c2
+                };
             }
 
-            public static float4 Sphere (SmallXXHash4 hash, float4 x, float4 y, float4 z) 
+            public static Sample4 Sphere (SmallXXHash4 hash, float4 x, float4 y, float4 z) 
             {
                 float4x3 v = OctahedronVectors(hash);
-                return
-                    (v.c0 * x + v.c1 * y + v.c2 * z) *
-                    rsqrt(v.c0 * v.c0 + v.c1 * v.c1 + v.c2 * v.c2);
+                return new Sample4 {
+                    v = v.c0 * x + v.c1 * y + v.c2 * z,
+                    dx = v.c0,
+                    dy = v.c1,
+                    dz = v.c2
+                } * rsqrt(v.c0 * v.c0 + v.c1 * v.c1 + v.c2 * v.c2);
             }
             
             static float4x2 SquareVectors (SmallXXHash4 hash) 
@@ -125,7 +140,30 @@ namespace Sonosthesia.Builder
             public Sample4 Evaluate (SmallXXHash4 hash, float4 x, float4 y, float4 z) =>
                 default(G).Evaluate(hash, x, y, z);
 
-            public Sample4 EvaluateCombined (Sample4 value) => default(G).EvaluateCombined(value);
+            public Sample4 EvaluateCombined(Sample4 value)
+            {
+                Sample4 s = default(G).EvaluateCombined(value);
+                s.dx = select(-s.dx, s.dx, s.v >= 0f);
+                s.dy = select(-s.dy, s.dy, s.v >= 0f);
+                s.dz = select(-s.dz, s.dz, s.v >= 0f);
+                s.v = abs(s.v);
+                return s;
+            }
+        }
+        
+        public struct Smoothstep<G> : IGradient where G : struct, IGradient {
+
+            public Sample4 Evaluate (SmallXXHash4 hash, float4 x) =>
+                default(G).Evaluate(hash, x);
+
+            public Sample4 Evaluate (SmallXXHash4 hash, float4 x, float4 y) =>
+                default(G).Evaluate(hash, x, y);
+
+            public Sample4 Evaluate (SmallXXHash4 hash, float4 x, float4 y, float4 z) =>
+                default(G).Evaluate(hash, x, y, z);
+
+            public Sample4 EvaluateCombined (Sample4 value)  =>
+                default(G).EvaluateCombined(value).Smoothstep;
         }
     }
 }

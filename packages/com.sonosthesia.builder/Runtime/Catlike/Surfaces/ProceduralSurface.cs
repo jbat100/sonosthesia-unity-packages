@@ -7,6 +7,8 @@ namespace Sonosthesia.Builder
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public class ProceduralSurface : MonoBehaviour
     {
+        private static int materialIsPlaneId = Shader.PropertyToID("_IsPlane");
+        
         [System.Flags]
         public enum MeshOptimizationMode 
         {
@@ -79,20 +81,89 @@ namespace Sonosthesia.Builder
         
         static SurfaceJobScheduleDelegate[,] _surfaceJobs = {
             {
+                SurfaceJob<Noise.Lattice1D<Noise.Perlin, Noise.LatticeNormal>>.ScheduleParallel,
+                SurfaceJob<Noise.Lattice2D<Noise.Perlin, Noise.LatticeNormal>>.ScheduleParallel,
+                SurfaceJob<Noise.Lattice3D<Noise.Perlin, Noise.LatticeNormal>>.ScheduleParallel
+            },
+            {
+                SurfaceJob<Noise.Lattice1D<Noise.Smoothstep<Noise.Turbulence<Noise.Perlin>>, Noise.LatticeNormal>>.ScheduleParallel,
+                SurfaceJob<Noise.Lattice2D<Noise.Smoothstep<Noise.Turbulence<Noise.Perlin>>, Noise.LatticeNormal>>.ScheduleParallel,
+                SurfaceJob<Noise.Lattice3D<Noise.Smoothstep<Noise.Turbulence<Noise.Perlin>>, Noise.LatticeNormal>>.ScheduleParallel
+            },
+            {
+                SurfaceJob<Noise.Lattice1D<Noise.Value, Noise.LatticeNormal>>.ScheduleParallel,
+                SurfaceJob<Noise.Lattice2D<Noise.Value, Noise.LatticeNormal>>.ScheduleParallel,
+                SurfaceJob<Noise.Lattice3D<Noise.Value, Noise.LatticeNormal>>.ScheduleParallel
+            },
+            {
                 SurfaceJob<Noise.Simplex1D<Noise.Simplex>>.ScheduleParallel,
                 SurfaceJob<Noise.Simplex2D<Noise.Simplex>>.ScheduleParallel,
                 SurfaceJob<Noise.Simplex3D<Noise.Simplex>>.ScheduleParallel
             },
             {
+                SurfaceJob<Noise.Simplex1D<Noise.Turbulence<Noise.Simplex>>>.ScheduleParallel,
+                SurfaceJob<Noise.Simplex2D<Noise.Turbulence<Noise.Simplex>>>.ScheduleParallel,
+                SurfaceJob<Noise.Simplex3D<Noise.Turbulence<Noise.Simplex>>>.ScheduleParallel
+            },
+            {
+                SurfaceJob<Noise.Simplex1D<Noise.Smoothstep<Noise.Turbulence<Noise.Simplex>>>>.ScheduleParallel,
+                SurfaceJob<Noise.Simplex2D<Noise.Smoothstep<Noise.Turbulence<Noise.Simplex>>>>.ScheduleParallel,
+                SurfaceJob<Noise.Simplex3D<Noise.Smoothstep<Noise.Turbulence<Noise.Simplex>>>>.ScheduleParallel
+            },
+            {
                 SurfaceJob<Noise.Simplex1D<Noise.Value>>.ScheduleParallel,
                 SurfaceJob<Noise.Simplex2D<Noise.Value>>.ScheduleParallel,
                 SurfaceJob<Noise.Simplex3D<Noise.Value>>.ScheduleParallel
+            },
+            {
+                SurfaceJob<Noise.Voronoi1D<Noise.LatticeNormal, Noise.Worley, Noise.F1>>.ScheduleParallel,
+                SurfaceJob<Noise.Voronoi2D<Noise.LatticeNormal, Noise.Worley, Noise.F1>>.ScheduleParallel,
+                SurfaceJob<Noise.Voronoi3D<Noise.LatticeNormal, Noise.Worley, Noise.F1>>.ScheduleParallel
+            },
+            {
+                SurfaceJob<Noise.Voronoi1D<Noise.LatticeNormal, Noise.Worley, Noise.F2>>.ScheduleParallel,
+                SurfaceJob<Noise.Voronoi2D<Noise.LatticeNormal, Noise.Worley, Noise.F2>>.ScheduleParallel,
+                SurfaceJob<Noise.Voronoi3D<Noise.LatticeNormal, Noise.Worley, Noise.F2>>.ScheduleParallel
+            },
+            {
+                SurfaceJob<Noise.Voronoi1D<Noise.LatticeNormal, Noise.Worley, Noise.F2MinusF1>>.ScheduleParallel,
+                SurfaceJob<Noise.Voronoi2D<Noise.LatticeNormal, Noise.Worley, Noise.F2MinusF1>>.ScheduleParallel,
+                SurfaceJob<Noise.Voronoi3D<Noise.LatticeNormal, Noise.Worley, Noise.F2MinusF1>>.ScheduleParallel
+            },
+            {
+                SurfaceJob<Noise.Voronoi1D<Noise.LatticeNormal, Noise.SmoothWorley, Noise.F1>>.ScheduleParallel,
+                SurfaceJob<Noise.Voronoi2D<Noise.LatticeNormal, Noise.SmoothWorley, Noise.F1>>.ScheduleParallel,
+                SurfaceJob<Noise.Voronoi3D<Noise.LatticeNormal, Noise.SmoothWorley, Noise.F1>>.ScheduleParallel
+            },
+            {
+                SurfaceJob<Noise.Voronoi1D<Noise.LatticeNormal, Noise.SmoothWorley, Noise.F2>>.ScheduleParallel,
+                SurfaceJob<Noise.Voronoi2D<Noise.LatticeNormal, Noise.SmoothWorley, Noise.F2>>.ScheduleParallel,
+                SurfaceJob<Noise.Voronoi3D<Noise.LatticeNormal, Noise.SmoothWorley, Noise.F2>>.ScheduleParallel
+            },
+            {
+                SurfaceJob<Noise.Voronoi1D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F1>>.ScheduleParallel,
+                SurfaceJob<Noise.Voronoi2D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F1>>.ScheduleParallel,
+                SurfaceJob<Noise.Voronoi3D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F1>>.ScheduleParallel
+            },
+            {
+                SurfaceJob<Noise.Voronoi1D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F2>>.ScheduleParallel,
+                SurfaceJob<Noise.Voronoi2D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F2>>.ScheduleParallel,
+                SurfaceJob<Noise.Voronoi3D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F2>>.ScheduleParallel
+            },
+            {
+                SurfaceJob<Noise.Voronoi1D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F2MinusF1>>.ScheduleParallel,
+                SurfaceJob<Noise.Voronoi2D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F2MinusF1>>.ScheduleParallel,
+                SurfaceJob<Noise.Voronoi3D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F2MinusF1>>.ScheduleParallel
             }
         };
 
         public enum NoiseType 
         {
-            Simplex, SimplexValue
+            Perlin, PerlinSmoothTurbulence, PerlinValue, 
+            Simplex, SimplexTurbulence, SimplexSmoothTurbulence, SimplexValue,
+            VoronoiWorleyF1, VoronoiWorleyF2, VoronoiWorleyF2MinusF1, 
+            VoronoiWorleySmoothLSE, VoronoiWorleySmoothPoly,
+            VoronoiChebyshevF1, VoronoiChebyshevF2, VoronoiChebyshevF2MinusF1
         }
 
         [SerializeField] NoiseType _noiseType;
@@ -115,6 +186,7 @@ namespace Sonosthesia.Builder
 
         protected void Awake () 
         {
+            _materials[(int)MaterialMode.Displacement] = new Material(_materials[(int)MaterialMode.Displacement]);
             _mesh = new Mesh { name = "Procedural Mesh" };
             GetComponent<MeshFilter>().mesh = _mesh;
         }
@@ -123,13 +195,21 @@ namespace Sonosthesia.Builder
 
         protected void Update () 
         {
-            GetComponent<MeshRenderer>().material = _materials[(int)_materialMode];
             GenerateMesh();
             _vertices = null;
             _normals = null;
             _tangents = null;
             _triangles = null;
             enabled = false;
+            
+            if (_materialMode == MaterialMode.Displacement) 
+            {
+                _materials[(int)MaterialMode.Displacement].SetFloat(
+                    materialIsPlaneId, _meshType < MeshType.CubeSphere ? 1f : 0f
+                );
+            }
+            
+            GetComponent<MeshRenderer>().material = _materials[(int)_materialMode];
         }
         
         protected void OnDrawGizmos () 
@@ -203,14 +283,17 @@ namespace Sonosthesia.Builder
             Debug.Log($"{this} {nameof(GenerateMesh)} with {nameof(_resolution)} {_resolution}");
             Mesh.MeshDataArray meshDataArray = Mesh.AllocateWritableMeshData(1);
             Mesh.MeshData meshData = meshDataArray[0];
+            
             _surfaceJobs[(int)_noiseType, _dimensions - 1](
                 meshData, 
                 _resolution, 
                 _noiseSettings, 
                 _domain,
                 _displacement,
-                _meshJobs[(int)_meshType](_mesh, meshData, _resolution, default, new Vector3(0f, Mathf.Abs(_displacement)), true))
+                _meshType < MeshType.CubeSphere,
+                _meshJobs[(int)_meshType](_mesh, meshData, _resolution, default, Vector3.one * Mathf.Abs(_displacement), true))
                 .Complete();
+            
             Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, _mesh);
 
             if (_recalculateNormals)

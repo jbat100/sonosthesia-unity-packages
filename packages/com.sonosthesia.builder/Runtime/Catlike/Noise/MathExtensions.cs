@@ -19,5 +19,11 @@ namespace Sonosthesia.Builder
         );
         
         public static float3x4 Get3x4 (this float4x4 m) => float3x4(m.c0.xyz, m.c1.xyz, m.c2.xyz, m.c3.xyz);
+        
+        public static float4x3 NormalizeRows (this float4x3 m) 
+        {
+            float4 normalizer = rsqrt(m.c0 * m.c0 + m.c1 * m.c1 + m.c2 * m.c2);
+            return float4x3(m.c0 * normalizer, m.c1 * normalizer, m.c2 * normalizer);
+        }
     }
 }
