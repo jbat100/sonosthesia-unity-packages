@@ -9,6 +9,8 @@ namespace Sonosthesia.Builder
     {
         private static int materialIsPlaneId = Shader.PropertyToID("_IsPlane");
         
+        bool IsPlane => _meshType < MeshType.CubeSphere;
+        
         [System.Flags]
         public enum MeshOptimizationMode 
         {
@@ -165,6 +167,84 @@ namespace Sonosthesia.Builder
             VoronoiWorleySmoothLSE, VoronoiWorleySmoothPoly,
             VoronoiChebyshevF1, VoronoiChebyshevF2, VoronoiChebyshevF2MinusF1
         }
+        
+        static FlowJobScheduleDelegate[,] _flowJobs = {
+            {
+                FlowJob<Noise.Lattice1D<Noise.Perlin, Noise.LatticeNormal>>.ScheduleParallel,
+                FlowJob<Noise.Lattice2D<Noise.Perlin, Noise.LatticeNormal>>.ScheduleParallel,
+                FlowJob<Noise.Lattice3D<Noise.Perlin, Noise.LatticeNormal>>.ScheduleParallel
+            },
+            {
+                FlowJob<Noise.Lattice1D<Noise.Smoothstep<Noise.Turbulence<Noise.Perlin>>, Noise.LatticeNormal>>.ScheduleParallel,
+                FlowJob<Noise.Lattice2D<Noise.Smoothstep<Noise.Turbulence<Noise.Perlin>>, Noise.LatticeNormal>>.ScheduleParallel,
+                FlowJob<Noise.Lattice3D<Noise.Smoothstep<Noise.Turbulence<Noise.Perlin>>, Noise.LatticeNormal>>.ScheduleParallel
+            },
+            {
+                FlowJob<Noise.Lattice1D<Noise.Value, Noise.LatticeNormal>>.ScheduleParallel,
+                FlowJob<Noise.Lattice2D<Noise.Value, Noise.LatticeNormal>>.ScheduleParallel,
+                FlowJob<Noise.Lattice3D<Noise.Value, Noise.LatticeNormal>>.ScheduleParallel
+            },
+            {
+                FlowJob<Noise.Simplex1D<Noise.Simplex>>.ScheduleParallel,
+                FlowJob<Noise.Simplex2D<Noise.Simplex>>.ScheduleParallel,
+                FlowJob<Noise.Simplex3D<Noise.Simplex>>.ScheduleParallel
+            },
+            {
+                FlowJob<Noise.Simplex1D<Noise.Turbulence<Noise.Simplex>>>.ScheduleParallel,
+                FlowJob<Noise.Simplex2D<Noise.Turbulence<Noise.Simplex>>>.ScheduleParallel,
+                FlowJob<Noise.Simplex3D<Noise.Turbulence<Noise.Simplex>>>.ScheduleParallel
+            },
+            {
+                FlowJob<Noise.Simplex1D<Noise.Smoothstep<Noise.Turbulence<Noise.Simplex>>>>.ScheduleParallel,
+                FlowJob<Noise.Simplex2D<Noise.Smoothstep<Noise.Turbulence<Noise.Simplex>>>>.ScheduleParallel,
+                FlowJob<Noise.Simplex3D<Noise.Smoothstep<Noise.Turbulence<Noise.Simplex>>>>.ScheduleParallel
+            },
+            {
+                FlowJob<Noise.Simplex1D<Noise.Value>>.ScheduleParallel,
+                FlowJob<Noise.Simplex2D<Noise.Value>>.ScheduleParallel,
+                FlowJob<Noise.Simplex3D<Noise.Value>>.ScheduleParallel
+            },
+            {
+                FlowJob<Noise.Voronoi1D<Noise.LatticeNormal, Noise.Worley, Noise.F1>>.ScheduleParallel,
+                FlowJob<Noise.Voronoi2D<Noise.LatticeNormal, Noise.Worley, Noise.F1>>.ScheduleParallel,
+                FlowJob<Noise.Voronoi3D<Noise.LatticeNormal, Noise.Worley, Noise.F1>>.ScheduleParallel
+            },
+            {
+                FlowJob<Noise.Voronoi1D<Noise.LatticeNormal, Noise.Worley, Noise.F2>>.ScheduleParallel,
+                FlowJob<Noise.Voronoi2D<Noise.LatticeNormal, Noise.Worley, Noise.F2>>.ScheduleParallel,
+                FlowJob<Noise.Voronoi3D<Noise.LatticeNormal, Noise.Worley, Noise.F2>>.ScheduleParallel
+            },
+            {
+                FlowJob<Noise.Voronoi1D<Noise.LatticeNormal, Noise.Worley, Noise.F2MinusF1>>.ScheduleParallel,
+                FlowJob<Noise.Voronoi2D<Noise.LatticeNormal, Noise.Worley, Noise.F2MinusF1>>.ScheduleParallel,
+                FlowJob<Noise.Voronoi3D<Noise.LatticeNormal, Noise.Worley, Noise.F2MinusF1>>.ScheduleParallel
+            },
+            {
+                FlowJob<Noise.Voronoi1D<Noise.LatticeNormal, Noise.SmoothWorley, Noise.F1>>.ScheduleParallel,
+                FlowJob<Noise.Voronoi2D<Noise.LatticeNormal, Noise.SmoothWorley, Noise.F1>>.ScheduleParallel,
+                FlowJob<Noise.Voronoi3D<Noise.LatticeNormal, Noise.SmoothWorley, Noise.F1>>.ScheduleParallel
+            },
+            {
+                FlowJob<Noise.Voronoi1D<Noise.LatticeNormal, Noise.SmoothWorley, Noise.F2>>.ScheduleParallel,
+                FlowJob<Noise.Voronoi2D<Noise.LatticeNormal, Noise.SmoothWorley, Noise.F2>>.ScheduleParallel,
+                FlowJob<Noise.Voronoi3D<Noise.LatticeNormal, Noise.SmoothWorley, Noise.F2>>.ScheduleParallel
+            },
+            {
+                FlowJob<Noise.Voronoi1D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F1>>.ScheduleParallel,
+                FlowJob<Noise.Voronoi2D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F1>>.ScheduleParallel,
+                FlowJob<Noise.Voronoi3D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F1>>.ScheduleParallel
+            },
+            {
+                FlowJob<Noise.Voronoi1D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F2>>.ScheduleParallel,
+                FlowJob<Noise.Voronoi2D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F2>>.ScheduleParallel,
+                FlowJob<Noise.Voronoi3D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F2>>.ScheduleParallel
+            },
+            {
+                FlowJob<Noise.Voronoi1D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F2MinusF1>>.ScheduleParallel,
+                FlowJob<Noise.Voronoi2D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F2MinusF1>>.ScheduleParallel,
+                FlowJob<Noise.Voronoi3D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F2MinusF1>>.ScheduleParallel
+            }
+        };
 
         [SerializeField] NoiseType _noiseType;
 
@@ -177,7 +257,8 @@ namespace Sonosthesia.Builder
         [SerializeField, Range(-1f, 1f)] float _displacement = 0.5f;
         
         [SerializeField] bool _recalculateNormals, _recalculateTangents;
-
+        
+        private ParticleSystem _flowSystem;
         private Mesh _mesh;
 
         [NonSerialized] private Vector3[] _vertices, _normals;
@@ -188,6 +269,7 @@ namespace Sonosthesia.Builder
         {
             _materials[(int)MaterialMode.Displacement] = new Material(_materials[(int)MaterialMode.Displacement]);
             _mesh = new Mesh { name = "Procedural Mesh" };
+            _flowSystem = GetComponent<ParticleSystem>();
             GetComponent<MeshFilter>().mesh = _mesh;
         }
         
@@ -205,9 +287,12 @@ namespace Sonosthesia.Builder
             if (_materialMode == MaterialMode.Displacement) 
             {
                 _materials[(int)MaterialMode.Displacement].SetFloat(
-                    materialIsPlaneId, _meshType < MeshType.CubeSphere ? 1f : 0f
+                    materialIsPlaneId, IsPlane ? 1f : 0f
                 );
             }
+            
+            ParticleSystem.ShapeModule shapeModule = _flowSystem.shape;
+            shapeModule.shapeType = IsPlane ? ParticleSystemShapeType.Rectangle : ParticleSystemShapeType.Sphere;
             
             GetComponent<MeshRenderer>().material = _materials[(int)_materialMode];
         }
@@ -277,6 +362,13 @@ namespace Sonosthesia.Builder
                 }
             }
         }
+        
+        protected void OnParticleUpdateJobScheduled () 
+        {
+            _flowJobs[(int)_noiseType, _dimensions - 1](
+                _flowSystem, _noiseSettings, _domain, _displacement, IsPlane
+            );
+        }
 
         private void GenerateMesh()
         {
@@ -290,7 +382,7 @@ namespace Sonosthesia.Builder
                 _noiseSettings, 
                 _domain,
                 _displacement,
-                _meshType < MeshType.CubeSphere,
+                IsPlane,
                 _meshJobs[(int)_meshType](_mesh, meshData, _resolution, default, Vector3.one * Mathf.Abs(_displacement), true))
                 .Complete();
             
