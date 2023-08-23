@@ -31,7 +31,7 @@ namespace Sonosthesia.Builder
         public void Execute(int i)
         {
             Vertex4 v = vertices[i];
-            Noise.Sample4 noise = Noise.GetFractalNoise<N>(
+            Sample4 noise = Noise.GetFractalNoise<N>(
                 domainTRS.TransformVectors(transpose(float3x4(
                     v.v0.position, v.v1.position, v.v2.position, v.v3.position
                 ))),
@@ -50,7 +50,7 @@ namespace Sonosthesia.Builder
             }
         }
         
-        private Vertex4 SetPlaneVertices (Vertex4 v, Noise.Sample4 noise) 
+        private Vertex4 SetPlaneVertices (Vertex4 v, Sample4 noise) 
         {
             v.v0.position.y = noise.v.x;
             v.v1.position.y = noise.v.y;
@@ -75,7 +75,7 @@ namespace Sonosthesia.Builder
             return v;
         }
         
-        private Vertex4 SetSphereVertices (Vertex4 v, Noise.Sample4 noise) 
+        private Vertex4 SetSphereVertices (Vertex4 v, Sample4 noise) 
         {
             noise.v += 1f;
             noise.dx /= noise.v;

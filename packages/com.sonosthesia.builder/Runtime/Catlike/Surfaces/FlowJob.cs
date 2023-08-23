@@ -57,7 +57,7 @@ namespace Sonosthesia.Builder
                 p = p.NormalizeRows();
             }
             
-            Noise.Sample4 noise = Noise.GetFractalNoise<N>(
+            Sample4 noise = Noise.GetFractalNoise<N>(
                 domainTRS.TransformVectors(p), settings
             ) * displacement;
 
