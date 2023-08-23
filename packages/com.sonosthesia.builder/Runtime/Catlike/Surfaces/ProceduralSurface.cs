@@ -246,17 +246,26 @@ namespace Sonosthesia.Builder
             }
         };
 
-        [SerializeField] NoiseType _noiseType;
+        [SerializeField] private NoiseType _noiseType;
 
-        [SerializeField, Range(1, 3)] int _dimensions = 1;
+        [SerializeField, Range(1, 3)] private int _dimensions = 1;
 
-        [SerializeField] Noise.Settings _noiseSettings = Noise.Settings.Default;
+        [SerializeField] private Noise.Settings _noiseSettings = Noise.Settings.Default;
 
-        [SerializeField] SpaceTRS _domain = new SpaceTRS { scale = 1f };
+        [SerializeField] private SpaceTRS _domain = new SpaceTRS { scale = 1f };
         
-        [SerializeField, Range(-1f, 1f)] float _displacement = 0.5f;
+        [SerializeField, Range(-1f, 1f)] private float _displacement = 0.5f;
         
-        [SerializeField] bool _recalculateNormals, _recalculateTangents;
+        [SerializeField] private bool _recalculateNormals, _recalculateTangents;
+
+        public enum FlowMode
+        {
+            Off, 
+            Curl, 
+            Downhill
+        }
+
+        [SerializeField] private FlowMode _flowMode;
         
         private ParticleSystem _flowSystem;
         private Mesh _mesh;
@@ -291,8 +300,16 @@ namespace Sonosthesia.Builder
                 );
             }
             
-            ParticleSystem.ShapeModule shapeModule = _flowSystem.shape;
-            shapeModule.shapeType = IsPlane ? ParticleSystemShapeType.Rectangle : ParticleSystemShapeType.Sphere;
+            if (_flowMode == FlowMode.Off) 
+            {
+                _flowSystem.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            }
+            else
+            {
+                _flowSystem.Play();
+                ParticleSystem.ShapeModule shapeModule = _flowSystem.shape;
+                shapeModule.shapeType = IsPlane ? ParticleSystemShapeType.Rectangle : ParticleSystemShapeType.Sphere;
+            }
             
             GetComponent<MeshRenderer>().material = _materials[(int)_materialMode];
         }
@@ -365,9 +382,12 @@ namespace Sonosthesia.Builder
         
         protected void OnParticleUpdateJobScheduled () 
         {
-            _flowJobs[(int)_noiseType, _dimensions - 1](
-                _flowSystem, _noiseSettings, _domain, _displacement, IsPlane
-            );
+            if (_flowMode != FlowMode.Off)
+            {
+                _flowJobs[(int)_noiseType, _dimensions - 1](
+                    _flowSystem, _noiseSettings, _domain, _displacement, IsPlane, _flowMode == FlowMode.Curl
+                );
+            }
         }
 
         private void GenerateMesh()
