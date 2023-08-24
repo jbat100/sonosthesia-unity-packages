@@ -4,7 +4,7 @@ using static Unity.Mathematics.math;
 
 namespace Sonosthesia.Builder
 {
-    public struct Sample4
+    public struct Sample4 : ISummable<Sample4>
     {
         public float4 v, dx, dy, dz;
         
@@ -73,5 +73,10 @@ namespace Sonosthesia.Builder
             dy = a.dy / b,
             dz = a.dz / b
         };
+
+        public Sample4 Sum(Sample4 term)
+        {
+            return this + term;
+        }
     }
 }

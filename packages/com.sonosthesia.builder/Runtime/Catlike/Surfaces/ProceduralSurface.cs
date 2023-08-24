@@ -252,6 +252,8 @@ namespace Sonosthesia.Builder
 
         [SerializeField] private Noise.Settings _noiseSettings = Noise.Settings.Default;
 
+        [SerializeField] private int _seed;
+
         [SerializeField] private SpaceTRS _domain = new SpaceTRS { scale = 1f };
         
         [SerializeField, Range(-1f, 1f)] private float _displacement = 0.5f;
@@ -385,7 +387,7 @@ namespace Sonosthesia.Builder
             if (_flowMode != FlowMode.Off)
             {
                 _flowJobs[(int)_noiseType, _dimensions - 1](
-                    _flowSystem, _noiseSettings, _domain, _displacement, IsPlane, _flowMode == FlowMode.Curl
+                    _flowSystem, _noiseSettings, _seed, _domain, _displacement, IsPlane, _flowMode == FlowMode.Curl
                 );
             }
         }
@@ -400,6 +402,7 @@ namespace Sonosthesia.Builder
                 meshData, 
                 _resolution, 
                 _noiseSettings, 
+                _seed,
                 _domain,
                 _displacement,
                 IsPlane,

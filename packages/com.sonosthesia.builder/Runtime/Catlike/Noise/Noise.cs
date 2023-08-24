@@ -13,10 +13,8 @@ namespace Sonosthesia.Builder
     public static partial class Noise
     {
         [Serializable]
-        public struct Settings {
-
-            public int seed;
-            
+        public struct Settings 
+        {
             [Min(1)] public int frequency;
             [Range(1, 6)] public int octaves;
             [Range(2, 4)] public int lacunarity;
@@ -38,13 +36,24 @@ namespace Sonosthesia.Builder
         
         public delegate JobHandle ScheduleDelegate (
             NativeArray<float3x4> positions, NativeArray<float4> noise,
-            Settings settings, SpaceTRS domainTRS, int resolution, JobHandle dependency
+            Settings settings, int seed, SpaceTRS domainTRS, int resolution, JobHandle dependency
         );
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Sample4 GetFractalNoise<N>(Vertex4 v, float3x4 domainTRS, Settings settings, int seed) where N : struct, INoise
+        {
+            return GetFractalNoise<N>(
+                domainTRS.TransformVectors(transpose(float3x4(
+                    v.v0.position, v.v1.position, v.v2.position, v.v3.position
+                ))),
+                settings, seed
+            );
+        }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Sample4 GetFractalNoise<N>(float4x3 position, Settings settings) where N : struct, INoise
+        public static Sample4 GetFractalNoise<N>(float4x3 position, Settings settings, int seed) where N : struct, INoise
         {
-            SmallXXHash4 hash = SmallXXHash4.Seed(settings.seed);
+            SmallXXHash4 hash = SmallXXHash4.Seed(seed);
             int frequency = settings.frequency;
             float amplitude = 1f, amplitudeSum = 0f;
             Sample4 sum = default;
@@ -69,21 +78,24 @@ namespace Sonosthesia.Builder
 
             public Settings settings;
 
+            public int seed;
+            
             public float3x4 domainTRS;
 
             public void Execute (int i) => noise[i] = GetFractalNoise<N>(
-                domainTRS.TransformVectors(transpose(positions[i])), settings
+                domainTRS.TransformVectors(transpose(positions[i])), settings, seed
             ).v;
             
             public static JobHandle ScheduleParallel (
                 NativeArray<float3x4> positions, NativeArray<float4> noise,
-                Settings settings, SpaceTRS domainTRS, int resolution, JobHandle dependency
+                Settings settings, int seed, SpaceTRS domainTRS, int innerLoopBatchCount, JobHandle dependency
             ) => new Job<N> {
                 positions = positions,
                 noise = noise,
                 settings = settings,
+                seed = seed,
                 domainTRS = domainTRS.Matrix,
-            }.ScheduleParallel(positions.Length, resolution, dependency);
+            }.ScheduleParallel(positions.Length, innerLoopBatchCount, dependency);
         }
     }
 }

@@ -12,8 +12,7 @@ namespace Sonosthesia.Builder
     {
         private G _generator;
         
-        [WriteOnly]
-        private S _streams;
+        [WriteOnly] private S _streams;
 
         public void Execute (int i) => _generator.Execute(i, _streams);
 

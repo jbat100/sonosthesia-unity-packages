@@ -150,6 +150,8 @@ namespace Sonosthesia.Builder
         
         [SerializeField] private Noise.Settings _settings = Noise.Settings.Default;
 
+        [SerializeField] private int _seed;
+
         [SerializeField] private SpaceTRS domain = new SpaceTRS { scale = 8f };
 
         private NativeArray<float4> _noise;
@@ -165,7 +167,7 @@ namespace Sonosthesia.Builder
 
         protected override void UpdateVisualization(NativeArray<float3x4> positions, int resolution, JobHandle handle)
         {
-            _noiseJobs[(int)_type, 2 * _dimensions - (_tiling ? 1 : 2)](positions, _noise, _settings, domain, resolution, handle).Complete();
+            _noiseJobs[(int)_type, 2 * _dimensions - (_tiling ? 1 : 2)](positions, _noise, _settings, _seed, domain, resolution, handle).Complete();
             _noiseBuffer.SetData(_noise.Reinterpret<float>(4 * 4));
         }
 

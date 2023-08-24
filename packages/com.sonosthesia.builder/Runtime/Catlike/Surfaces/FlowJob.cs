@@ -12,6 +12,8 @@ namespace Sonosthesia.Builder
     [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
     public struct FlowJob<N> : IJobParticleSystemParallelForBatch where N : struct, Noise.INoise
     {
+        int seed;
+        
         Noise.Settings settings;
 
         float3x4 domainTRS;
@@ -58,7 +60,7 @@ namespace Sonosthesia.Builder
             }
             
             Sample4 noise = Noise.GetFractalNoise<N>(
-                domainTRS.TransformVectors(p), settings
+                domainTRS.TransformVectors(p), settings, seed
             ) * displacement;
 
             noise.Derivatives = derivativeMatrix.TransformVectors(noise.Derivatives);
@@ -112,9 +114,10 @@ namespace Sonosthesia.Builder
         
         public static JobHandle ScheduleParallel (
             ParticleSystem system,
-            Noise.Settings settings, SpaceTRS domain, float displacement, bool isPlane, bool isCurl
+            Noise.Settings settings, int seed, SpaceTRS domain, float displacement, bool isPlane, bool isCurl
         ) => new FlowJob<N>() {
             settings = settings,
+            seed = seed,
             domainTRS = domain.Matrix,
             derivativeMatrix = domain.DerivativeMatrix,
             displacement = displacement,
@@ -125,6 +128,6 @@ namespace Sonosthesia.Builder
     
     public delegate JobHandle FlowJobScheduleDelegate (
         ParticleSystem system,
-        Noise.Settings settings, SpaceTRS domain, float displacement, bool isPlane, bool isCurl
+        Noise.Settings settings, int seed, SpaceTRS domain, float displacement, bool isPlane, bool isCurl
     );
 }
