@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Builder
 {
-    public class TriMeshNoiseController : CatlikeMeshNoiseController
+    public class TriFractalMeshNoiseController : CatlikeMeshNoiseController
     {
         protected override bool IsDynamic => true;
 
@@ -185,33 +185,9 @@ namespace Sonosthesia.Builder
         }
 
         private const float ONE_THIRD = 1f / 3f;
-        private const float TWO_THIRD = 2f / 3f;
-        private const float FOUR_THIRD = 4f / 3f;
 
-        private Config Config1(int seed, float displacement)
+        protected override JobHandle PerturbMesh(Mesh.MeshData meshData, int resolution, float displacement, NoiseType noiseType, int dimensions, Noise.Settings settings, int seed, SpaceTRS domain, JobHandle dependency)
         {
-            // note : expects ping pong animation curve
-
-            float time = _localTime;
-            int flooredTime = Mathf.FloorToInt(time);
-            seed += flooredTime * 3;
-            float fade = (time - flooredTime) * 2;
-            
-            float displacement1 = _lerpCurve.Evaluate(fade) * displacement;
-            float displacement2 = _lerpCurve.Evaluate(fade + ONE_THIRD) * displacement;
-            float displacement3 = _lerpCurve.Evaluate(fade + TWO_THIRD) * displacement;
-            
-            return new Config(
-                new NoiseComponent(seed, displacement1), 
-                new NoiseComponent(seed + 1, displacement2), 
-                new NoiseComponent(seed + 2, displacement3)
-            );
-        }
-        
-        private Config Config2(int seed, float displacement)
-        {
-            // note : expects ping pong animation curve
-
             NoiseComponent GetNoiseComponent(int index)
             {
                 float time = _localTime + index * ONE_THIRD;
@@ -219,13 +195,8 @@ namespace Sonosthesia.Builder
                 return new NoiseComponent(seed + flooredTime + index, _lerpCurve.Evaluate((time - flooredTime) * 2) * displacement);
             }
 
-            return new Config(GetNoiseComponent(0), GetNoiseComponent(1), GetNoiseComponent(2));
-        }
-        
-        protected override JobHandle PerturbMesh(Mesh.MeshData meshData, int resolution, float displacement, NoiseType noiseType, int dimensions, Noise.Settings settings, int seed, SpaceTRS domain, JobHandle dependency)
-        {
-            Config config = Config2(seed, displacement);
-            
+            Config config = new Config(GetNoiseComponent(0), GetNoiseComponent(1), GetNoiseComponent(2));
+
             Debug.Log($"Scheduling {nameof(Config)} {config}");
             
             return _jobs[(int) noiseType, dimensions - 1](
