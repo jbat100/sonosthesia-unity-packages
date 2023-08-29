@@ -17,22 +17,19 @@ namespace Sonosthesia.Builder
         [SerializeField] private NoiseType _noiseType;
 
         [SerializeField, Range(1, 3)] private int _dimensions = 1;
-
-        [SerializeField] private Noise.Settings _noiseSettings = Noise.Settings.Default;
-
+        
         [SerializeField] private int _seed;
 
         [SerializeField] private SpaceTRS _domain = new SpaceTRS { scale = 1f };
-
+        
         protected sealed override JobHandle PerturbMesh(Mesh.MeshData meshData, int resolution, float displacement, JobHandle dependency)
         {
-            return PerturbMesh(meshData, resolution, displacement, _noiseType, _dimensions, _noiseSettings, _seed, _domain, dependency);
+            return PerturbMesh(meshData, resolution, displacement, _noiseType, _dimensions, _seed, _domain, dependency);
         }
-
+        
         protected abstract JobHandle PerturbMesh(
             Mesh.MeshData meshData, int resolution, float displacement,
-            NoiseType noiseType, int dimensions, Noise.Settings settings, int seed, SpaceTRS domain,
+            NoiseType noiseType, int dimensions, int seed, SpaceTRS domain,
             JobHandle dependency);
-
     }
 }

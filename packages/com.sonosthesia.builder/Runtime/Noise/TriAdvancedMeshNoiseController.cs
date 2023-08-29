@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
@@ -8,15 +10,18 @@ using static Unity.Mathematics.math;
 
 namespace Sonosthesia.Builder
 {
-    public class TriFractalMeshNoiseController : FractalMeshNoiseController
+    public class TriAdvancedMeshNoiseController : CatlikeMeshNoiseController
     {
-        protected override bool IsDynamic => true;
-
-        [SerializeField] private float _velocity = 1f;
-
-        [SerializeField] private AnimationCurve _lerpCurve;
-
-        private readonly struct NoiseComponent
+        [Serializable]
+        protected struct AdvancedSettings
+        {
+            public int Frequency;
+            public float Displacement;
+            public float Velocity;
+            public AnimationCurve LerpCurve;
+        }
+        
+        protected readonly struct NoiseComponent
         {
             public readonly int Seed;
             public readonly float Displacement;
@@ -33,14 +38,16 @@ namespace Sonosthesia.Builder
             }
         }
         
-        private readonly struct Config
+        protected readonly struct NoiseConfig
         {
+            public readonly int Frequency;
             public readonly NoiseComponent C1;
             public readonly NoiseComponent C2;
             public readonly NoiseComponent C3;
 
-            public Config(NoiseComponent c1, NoiseComponent c2, NoiseComponent c3)
+            public NoiseConfig(int frequency, NoiseComponent c1, NoiseComponent c2, NoiseComponent c3)
             {
+                Frequency = frequency;
                 C1 = c1;
                 C2 = c2;
                 C3 = c3;
@@ -48,57 +55,68 @@ namespace Sonosthesia.Builder
 
             public override string ToString()
             {
-                return $"({nameof(C1)} : {C1}, {nameof(C2)} : {C2}, {nameof(C3)} : {C3})";
+                return $"({nameof(Frequency)} : {Frequency}, {nameof(C1)} : {C1}, {nameof(C2)} : {C2}, {nameof(C3)} : {C3})";
             }
         }
         
         private delegate JobHandle JobScheduleDelegate (
-            Mesh.MeshData meshData, int resolution, Noise.Settings settings, SpaceTRS domain,
-            Config config, bool isPlane, JobHandle dependency
+            Mesh.MeshData meshData, int resolution, NativeArray<NoiseConfig> configs, SpaceTRS domain,
+            bool isPlane, JobHandle dependency
         );
         
         [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
         private struct Job<N> : IJobFor where N : struct, Noise.INoise
         {
-            private Noise.Settings settings;
+            [ReadOnly] private NativeArray<NoiseConfig> configs;
+            
             private float3x4 domainTRS;
             private float3x3 derivativeMatrix;
-            private Config config;
             private bool isPlane;
             private NativeArray<Vertex4> vertices;
 
+            private Sample4 GetNoise(float4x3 position, NoiseComponent component, int frequency)
+            {
+                SmallXXHash4 hash = SmallXXHash4.Seed(component.Seed);
+                return default(N).GetNoise4(position, hash, frequency) * component.Displacement;
+            }
+            
             public void Execute(int i)
             {
                 Vertex4 v = vertices[i];
-                
+
                 float4x3 position = domainTRS.TransformVectors(transpose(float3x4(
                     v.v0.position, v.v1.position, v.v2.position, v.v3.position
                 )));
                 
-                Sample4 noise1 = Noise.GetFractalNoise<N>(position, settings, config.C1.Seed) * config.C1.Displacement;
-                noise1.Derivatives = derivativeMatrix.TransformVectors(noise1.Derivatives);
+                Sample4 noise = default;
                 
-                Sample4 noise2 = Noise.GetFractalNoise<N>(position, settings, config.C2.Seed) * config.C2.Displacement;
-                noise2.Derivatives = derivativeMatrix.TransformVectors(noise2.Derivatives);
+                foreach (NoiseConfig config in configs)
+                {
+                    Sample4 noise1 = GetNoise(position, config.C1, config.Frequency);
+                    noise1.Derivatives = derivativeMatrix.TransformVectors(noise1.Derivatives);
                 
-                Sample4 noise3 = Noise.GetFractalNoise<N>(position, settings, config.C3.Seed) * config.C3.Displacement;
-                noise3.Derivatives = derivativeMatrix.TransformVectors(noise3.Derivatives);
+                    Sample4 noise2 = GetNoise(position, config.C2, config.Frequency);
+                    noise2.Derivatives = derivativeMatrix.TransformVectors(noise2.Derivatives);
                 
-                vertices[i] = SurfaceUtils.SetVertices(v, noise1 + noise2 + noise3, isPlane);
+                    Sample4 noise3 = GetNoise(position, config.C3, config.Frequency);
+                    noise3.Derivatives = derivativeMatrix.TransformVectors(noise3.Derivatives);
+
+                    noise += noise1 + noise2 + noise3;
+                }
+                
+                vertices[i] = SurfaceUtils.SetVertices(v, noise, isPlane);
             }
         
             public static JobHandle ScheduleParallel (Mesh.MeshData meshData, int resolution, 
-                Noise.Settings settings, SpaceTRS domain, Config config, bool isPlane,
-                JobHandle dependency
+                NativeArray<NoiseConfig> configs, SpaceTRS domain, bool isPlane, JobHandle dependency
             )
             {
                 return new Job<N>
                 {
                     vertices = meshData.GetVertexData<SingleStreams.Stream0>().Reinterpret<Vertex4>(12 * 4),
-                    settings = settings,
                     domainTRS = domain.Matrix,
                     derivativeMatrix = domain.DerivativeMatrix,
-                    config = config,
+                    configs = configs,
                     isPlane = isPlane
                 }.ScheduleParallel(meshData.vertexCount / 4, resolution, dependency);
             }
@@ -181,36 +199,76 @@ namespace Sonosthesia.Builder
                 Job<Noise.Voronoi3D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F2MinusF1>>.ScheduleParallel
             }
         };
+
+        [SerializeField] private List<AdvancedSettings> _settings;
         
-        private float _localTime;
-        
+        private NativeArray<NoiseConfig> _noiseConfigs;
+        private float[] _localTimes;
+
+        protected override bool IsDynamic => true;
+
         protected override void Update()
         {
-            _localTime += Time.deltaTime * _velocity;
+            for (int i = 0; i < _settings.Count; i++)
+            {
+                _localTimes[i] += Time.deltaTime * _settings[i].Velocity;
+            }
+            Debug.Log($"Local times is {string.Join(", ", _localTimes)}");
             base.Update();
         }
+        
+        protected override void OnValidate()
+        {
+            if (_noiseConfigs.Length != _settings.Count)
+            {
+                _noiseConfigs.Dispose();
+                _noiseConfigs = new NativeArray<NoiseConfig>(_settings.Count, Allocator.Persistent);
+            }
 
+            if (_localTimes == null || _localTimes.Length != _settings.Count)
+            {
+                _localTimes = new float[_settings.Count];
+                Debug.Log("Init _localTimes");
+            }
+            
+            base.OnValidate();
+        }
+        
         private const float ONE_THIRD = 1f / 3f;
-
-        protected override JobHandle PerturbMesh(Mesh.MeshData meshData, int resolution, float displacement, NoiseType noiseType, int dimensions, Noise.Settings settings, int seed, SpaceTRS domain, JobHandle dependency)
+        
+        protected virtual NoiseConfig GetNoiseConfig(AdvancedSettings settings, int seed, float displacement, float localTime)
         {
             NoiseComponent GetNoiseComponent(int index)
             {
-                float time = _localTime + index * ONE_THIRD;
+                float time = localTime + index * ONE_THIRD;
                 int flooredTime = Mathf.FloorToInt(time);
-                return new NoiseComponent(seed + flooredTime + index, _lerpCurve.Evaluate((time - flooredTime) * 2) * displacement);
+                return new NoiseComponent(
+                    seed + flooredTime + index, 
+                    settings.LerpCurve.Evaluate((time - flooredTime) * 2) * displacement * settings.Displacement);
             }
 
-            Config config = new Config(GetNoiseComponent(0), GetNoiseComponent(1), GetNoiseComponent(2));
-
-            Debug.Log($"Scheduling {nameof(Config)} {config}");
+            return new NoiseConfig(
+                settings.Frequency,
+                GetNoiseComponent(0),
+                GetNoiseComponent(1),
+                GetNoiseComponent(2)
+            );
+        }
+        
+        protected override JobHandle PerturbMesh(Mesh.MeshData meshData, int resolution, float displacement, NoiseType noiseType, int dimensions, int seed, SpaceTRS domain, JobHandle dependency)
+        {
+            for (int i = 0; i < _settings.Count; i++)
+            {
+                _noiseConfigs[i] = GetNoiseConfig(_settings[i], seed, displacement, _localTimes[i]);
+            }
+            
+            //Debug.Log($"Scheduling with configs {string.Join(",", _noiseConfigs)}");
             
             return _jobs[(int) noiseType, dimensions - 1](
                 meshData,
                 resolution,
-                settings,
+                _noiseConfigs,
                 domain,
-                config,
                 IsPlane,
                 dependency);
         }

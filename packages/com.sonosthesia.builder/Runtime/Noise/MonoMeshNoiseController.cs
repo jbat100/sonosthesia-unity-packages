@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Builder
 {
-    public class MonoMeshNoiseController : CatlikeMeshNoiseController
+    public class MonoMeshNoiseController : FractalMeshNoiseController
     {
         private static SurfaceJobScheduleDelegate[,] _jobs = {
             {

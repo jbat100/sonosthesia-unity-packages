@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Builder
 {
-    public class BiMeshNoiseController : CatlikeMeshNoiseController
+    public class BiFractalMeshNoiseController : FractalMeshNoiseController
     {
         protected override bool IsDynamic => true;
 

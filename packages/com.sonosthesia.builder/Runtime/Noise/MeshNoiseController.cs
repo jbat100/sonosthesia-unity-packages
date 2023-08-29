@@ -102,7 +102,7 @@ namespace Sonosthesia.Builder
             GetComponent<MeshFilter>().mesh = _mesh;
         }
         
-        protected void OnValidate () => enabled = true;
+        protected virtual void OnValidate () => enabled = true;
 
         protected virtual void Update () 
         {
