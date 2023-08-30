@@ -16,9 +16,48 @@ namespace Sonosthesia.Builder
             
             Sample4 EvaluateCombined (Sample4 value);
         }
+
+        public interface ISimpleGradient
+        {
+            float4 EvaluateValue (SmallXXHash4 hash, float4 x);
+            
+            float4 EvaluateValue (SmallXXHash4 hash, float4 x, float4 y);
+
+            float4 EvaluateValue (SmallXXHash4 hash, float4 x, float4 y, float4 z);
+            
+            float4 EvaluateCombinedValue (float4 value);
+        }
         
         public static class BaseGradients 
         {
+            public static float4 LineValue (SmallXXHash4 hash, float4 x) {
+                float4 l = (1f + hash.Floats01A) * select(-1f, 1f, ((uint4)hash & 1 << 8) == 0);
+                return l * x;
+            }
+
+            public static float4 SquareValue (SmallXXHash4 hash, float4 x, float4 y) 
+            {
+                float4x2 v = SquareVectors(hash);
+                return v.c0 * x + v.c1 * y;
+            }
+	
+            public static float4 CircleValue (SmallXXHash4 hash, float4 x, float4 y) {
+                float4x2 v = SquareVectors(hash);
+                return (v.c0 * x + v.c1 * y) * rsqrt(v.c0 * v.c0 + v.c1 * v.c1);
+            }
+	
+            public static float4 OctahedronValue (SmallXXHash4 hash, float4 x, float4 y, float4 z) 
+            {
+                float4x3 v = OctahedronVectors(hash);
+                return v.c0 * x + v.c1 * y + v.c2 * z;
+            }
+
+            public static float4 SphereValue (SmallXXHash4 hash, float4 x, float4 y, float4 z) 
+            {
+                float4x3 v = OctahedronVectors(hash);
+                return (v.c0 * x + v.c1 * y + v.c2 * z) * rsqrt(v.c0 * v.c0 + v.c1 * v.c1 + v.c2 * v.c2);
+            }
+            
             public static Sample4 Line (SmallXXHash4 hash, float4 x) {
                 float4 l = (1f + hash.Floats01A) * select(-1f, 1f, ((uint4)hash & 1 << 8) == 0);
                 return new Sample4 {
@@ -90,19 +129,38 @@ namespace Sonosthesia.Builder
             }
         }
         
-        public struct Value : IGradient 
+        public struct Value : IGradient, ISimpleGradient
         {
-            public Sample4 Evaluate (SmallXXHash4 hash, float4 x) => hash.Floats01A * 2f - 1f;
+            public float4 EvaluateValue (SmallXXHash4 hash, float4 x) => hash.Floats01A * 2f - 1f;
             
-            public Sample4 Evaluate (SmallXXHash4 hash, float4 x, float4 y) => hash.Floats01A * 2f - 1f;
+            public float4 EvaluateValue (SmallXXHash4 hash, float4 x, float4 y) => hash.Floats01A * 2f - 1f;
 
-            public Sample4 Evaluate (SmallXXHash4 hash, float4 x, float4 y, float4 z) => hash.Floats01A * 2f - 1f;
+            public float4 EvaluateValue (SmallXXHash4 hash, float4 x, float4 y, float4 z) => hash.Floats01A * 2f - 1f;
+
+            public float4 EvaluateCombinedValue (float4 value) => value;
+            
+            public Sample4 Evaluate (SmallXXHash4 hash, float4 x) => EvaluateValue(hash, x);
+            
+            public Sample4 Evaluate (SmallXXHash4 hash, float4 x, float4 y) => EvaluateValue(hash, x, y);
+
+            public Sample4 Evaluate (SmallXXHash4 hash, float4 x, float4 y, float4 z) => EvaluateValue(hash, x, y, z);
 
             public Sample4 EvaluateCombined(Sample4 value) => value;
         }
         
-        public struct Perlin : IGradient 
+        public struct Perlin : IGradient, ISimpleGradient
         {
+            public float4 EvaluateValue (SmallXXHash4 hash, float4 x) 
+                => BaseGradients.LineValue(hash, x);
+            
+            public float4 EvaluateValue (SmallXXHash4 hash, float4 x, float4 y) 
+                => BaseGradients.SquareValue(hash, x, y) * (2f / 0.53528f);
+
+            public float4 EvaluateValue(SmallXXHash4 hash, float4 x, float4 y, float4 z)
+                => BaseGradients.OctahedronValue(hash, x, y, z) * (1f / 0.56290f);
+
+            public float4 EvaluateCombinedValue (float4 value) => value;
+            
             public Sample4 Evaluate (SmallXXHash4 hash, float4 x) 
                 => BaseGradients.Line(hash, x);
 
@@ -115,8 +173,19 @@ namespace Sonosthesia.Builder
             public Sample4 EvaluateCombined(Sample4 value) => value;
         }
         
-        public struct Simplex : IGradient {
+        public struct Simplex : IGradient, ISimpleGradient {
 
+            public float4 EvaluateValue (SmallXXHash4 hash, float4 x) 
+                => BaseGradients.LineValue(hash, x) * (32f / 27f);
+            
+            public float4 EvaluateValue (SmallXXHash4 hash, float4 x, float4 y) 
+                => BaseGradients.CircleValue(hash, x, y) * (5.832f / sqrt(2f));
+
+            public float4 EvaluateValue(SmallXXHash4 hash, float4 x, float4 y, float4 z)
+                => BaseGradients.SphereValue(hash, x, y, z) * (1024f / (125f * sqrt(3f)));
+
+            public float4 EvaluateCombinedValue (float4 value) => value;
+            
             public Sample4 Evaluate (SmallXXHash4 hash, float4 x) =>
                 BaseGradients.Line(hash, x) * (32f / 27f);
 
@@ -129,8 +198,20 @@ namespace Sonosthesia.Builder
             public Sample4 EvaluateCombined (Sample4 value) => value;
         }
         
-        public struct Turbulence<G> : IGradient where G : struct, IGradient 
+        public struct Turbulence<G> : IGradient, ISimpleGradient where G : struct, IGradient, ISimpleGradient
         {
+            public float4 EvaluateValue (SmallXXHash4 hash, float4 x) 
+                => default(G).EvaluateValue(hash, x);
+            
+            public float4 EvaluateValue (SmallXXHash4 hash, float4 x, float4 y) 
+                => default(G).EvaluateValue(hash, x, y);
+
+            public float4 EvaluateValue(SmallXXHash4 hash, float4 x, float4 y, float4 z)
+                => default(G).EvaluateValue(hash, x, y, z);
+
+            public float4 EvaluateCombinedValue (float4 value) 
+                => abs(default(G).EvaluateCombined(value));
+            
             public Sample4 Evaluate (SmallXXHash4 hash, float4 x) =>
                 default(G).Evaluate(hash, x);
 
@@ -151,8 +232,20 @@ namespace Sonosthesia.Builder
             }
         }
         
-        public struct Smoothstep<G> : IGradient where G : struct, IGradient {
+        public struct Smoothstep<G> : IGradient, ISimpleGradient where G : struct, IGradient, ISimpleGradient 
+        {
+            public float4 EvaluateValue (SmallXXHash4 hash, float4 x) 
+                => default(G).EvaluateValue(hash, x);
+            
+            public float4 EvaluateValue (SmallXXHash4 hash, float4 x, float4 y) 
+                => default(G).EvaluateValue(hash, x, y);
 
+            public float4 EvaluateValue(SmallXXHash4 hash, float4 x, float4 y, float4 z)
+                => default(G).EvaluateValue(hash, x, y, z);
+
+            public float4 EvaluateCombinedValue (float4 value) 
+                => value.Smoothstep();
+            
             public Sample4 Evaluate (SmallXXHash4 hash, float4 x) =>
                 default(G).Evaluate(hash, x);
 

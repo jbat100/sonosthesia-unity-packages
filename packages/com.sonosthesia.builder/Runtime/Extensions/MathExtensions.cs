@@ -25,5 +25,10 @@ namespace Sonosthesia.Builder
             float4 normalizer = rsqrt(m.c0 * m.c0 + m.c1 * m.c1 + m.c2 * m.c2);
             return float4x3(m.c0 * normalizer, m.c1 * normalizer, m.c2 * normalizer);
         }
+
+        public static float4 Smoothstep(this float4 value)
+        {
+            return value * value * (3f - 2f * value);
+        }
     }
 }

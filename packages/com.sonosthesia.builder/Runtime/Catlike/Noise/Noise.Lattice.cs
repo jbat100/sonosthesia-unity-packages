@@ -72,7 +72,7 @@ namespace Sonosthesia.Builder
             }
         }
 
-        public struct Lattice1D<G, L> : INoise where G : IGradient where L : ILattice
+        public struct Lattice1D<G, L> : INoise, ISimpleNoise where G : IGradient, ISimpleGradient where L : ILattice
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public Sample4 GetNoise4(float4x3 positions, SmallXXHash4 hash, int frequency) 
@@ -85,10 +85,20 @@ namespace Sonosthesia.Builder
                     dx = frequency * (lerp(a.dx, b.dx, x.t) + (b.v - a.v) * x.dt)
                 });
             }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public float4 GetNoiseValue4(float4x3 positions, SmallXXHash4 hash, int frequency)
+            {
+                LatticeSpan4 x = default(L).GetLatticeSpan4(positions.c0, frequency);
+                G g = default;
+                float4 a = g.EvaluateValue(hash.Eat(x.p0), x.g0), b = g.EvaluateValue(hash.Eat(x.p1), x.g1);
+                return g.EvaluateCombinedValue(lerp(a, b, x.t));
+            }
         }
         
-        public struct Lattice2D<G, L> : INoise where G : IGradient where L : ILattice
+        public struct Lattice2D<G, L> : INoise, ISimpleNoise where G : IGradient, ISimpleGradient where L : ILattice
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public Sample4 GetNoise4(float4x3 positions, SmallXXHash4 hash, int frequency) 
             {
                 LatticeSpan4 
@@ -115,10 +125,28 @@ namespace Sonosthesia.Builder
                     )
                 });
             }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public float4 GetNoiseValue4(float4x3 positions, SmallXXHash4 hash, int frequency)
+            {
+                LatticeSpan4 
+                    x = default(L).GetLatticeSpan4(positions.c0, frequency), 
+                    z = default(L).GetLatticeSpan4(positions.c2, frequency);
+                SmallXXHash4 h0 = hash.Eat(x.p0), h1 = hash.Eat(x.p1);
+                G g = default;
+                float4
+                    a = g.EvaluateValue(h0.Eat(z.p0), x.g0, z.g0),
+                    b = g.EvaluateValue(h0.Eat(z.p1), x.g0, z.g1),
+                    c = g.EvaluateValue(h1.Eat(z.p0), x.g1, z.g0),
+                    d = g.EvaluateValue(h1.Eat(z.p1), x.g1, z.g1);
+                return g.EvaluateCombinedValue(lerp(lerp(a, b, z.t), lerp(c, d, z.t), x.t));
+            }
         }
         
-        public struct Lattice3D<G, L> : INoise where G : struct, IGradient where L : ILattice {
+        public struct Lattice3D<G, L> : INoise, ISimpleNoise where G : struct, IGradient, ISimpleGradient where L : ILattice 
+        {
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public Sample4 GetNoise4 (float4x3 positions, SmallXXHash4 hash, int frequency) {
                 LatticeSpan4
                     x = default(L).GetLatticeSpan4(positions.c0, frequency),
@@ -178,6 +206,36 @@ namespace Sonosthesia.Builder
                         x.t
                     )
                 });
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public float4 GetNoiseValue4(float4x3 positions, SmallXXHash4 hash, int frequency)
+            {
+                LatticeSpan4
+                    x = default(L).GetLatticeSpan4(positions.c0, frequency),
+                    y = default(L).GetLatticeSpan4(positions.c1, frequency),
+                    z = default(L).GetLatticeSpan4(positions.c2, frequency);
+
+                SmallXXHash4
+                    h0 = hash.Eat(x.p0), h1 = hash.Eat(x.p1),
+                    h00 = h0.Eat(y.p0), h01 = h0.Eat(y.p1),
+                    h10 = h1.Eat(y.p0), h11 = h1.Eat(y.p1);
+
+                G gradient = default;
+                float4
+                    a = gradient.EvaluateValue(h00.Eat(z.p0), x.g0, y.g0, z.g0),
+                    b = gradient.EvaluateValue(h00.Eat(z.p1), x.g0, y.g0, z.g1),
+                    c = gradient.EvaluateValue(h01.Eat(z.p0), x.g0, y.g1, z.g0),
+                    d = gradient.EvaluateValue(h01.Eat(z.p1), x.g0, y.g1, z.g1),
+                    e = gradient.EvaluateValue(h10.Eat(z.p0), x.g1, y.g0, z.g0),
+                    f = gradient.EvaluateValue(h10.Eat(z.p1), x.g1, y.g0, z.g1),
+                    g = gradient.EvaluateValue(h11.Eat(z.p0), x.g1, y.g1, z.g0),
+                    h = gradient.EvaluateValue(h11.Eat(z.p1), x.g1, y.g1, z.g1);
+                return gradient.EvaluateCombinedValue(lerp(
+                    lerp(lerp(a, b, z.t), lerp(c, d, z.t), y.t),
+                    lerp(lerp(e, f, z.t), lerp(g, h, z.t), y.t),
+                    x.t
+                ));
             }
         }
     }

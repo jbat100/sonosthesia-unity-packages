@@ -33,6 +33,12 @@ namespace Sonosthesia.Builder
         {
             Sample4 GetNoise4 (float4x3 positions, SmallXXHash4 hash, int frequency);
         }
+
+        public interface ISimpleNoise
+        {
+            // simplified version of INoise which doesn't bother computing derivatives
+            float4 GetNoiseValue4 (float4x3 positions, SmallXXHash4 hash, int frequency);
+        }
         
         public delegate JobHandle ScheduleDelegate (
             NativeArray<float3x4> positions, NativeArray<float4> noise,
