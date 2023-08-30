@@ -46,7 +46,8 @@ namespace Sonosthesia.Builder
         );
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Sample4 GetFractalNoise<N>(Vertex4 v, float3x4 domainTRS, Settings settings, int seed) where N : struct, INoise
+        public static Sample4 GetFractalNoise<N>(Vertex4 v, float3x4 domainTRS, Settings settings, int seed) 
+            where N : struct, INoise
         {
             return GetFractalNoise<N>(
                 domainTRS.TransformVectors(transpose(float3x4(
@@ -55,7 +56,7 @@ namespace Sonosthesia.Builder
                 settings, seed
             );
         }
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Sample4 GetFractalNoise<N>(float4x3 position, Settings settings, int seed) where N : struct, INoise
         {
@@ -67,6 +68,37 @@ namespace Sonosthesia.Builder
             for (int o = 0; o < settings.octaves; o++) 
             {
                 sum += amplitude * default(N).GetNoise4(position, hash + o, frequency);
+                amplitudeSum += amplitude;
+                frequency *= settings.lacunarity;
+                amplitude *= settings.persistence;
+            }
+            
+            return sum / amplitudeSum;
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float4 GetSimpleFractalNoise<N>(Vertex4 v, float3x4 domainTRS, Settings settings, int seed) 
+            where N : struct, ISimpleNoise
+        {
+            return GetSimpleFractalNoise<N>(
+                domainTRS.TransformVectors(transpose(float3x4(
+                    v.v0.position, v.v1.position, v.v2.position, v.v3.position
+                ))),
+                settings, seed
+            );
+        }
+        
+        public static float4 GetSimpleFractalNoise<N>(float4x3 position, Settings settings, int seed) 
+            where N : struct, ISimpleNoise
+        {
+            SmallXXHash4 hash = SmallXXHash4.Seed(seed);
+            int frequency = settings.frequency;
+            float amplitude = 1f, amplitudeSum = 0f;
+            float4 sum = default;
+
+            for (int o = 0; o < settings.octaves; o++) 
+            {
+                sum += amplitude * default(N).GetNoiseValue4(position, hash + o, frequency);
                 amplitudeSum += amplitude;
                 frequency *= settings.lacunarity;
                 amplitude *= settings.persistence;

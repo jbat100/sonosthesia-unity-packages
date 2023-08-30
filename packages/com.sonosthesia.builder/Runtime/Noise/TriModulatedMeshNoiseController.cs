@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
@@ -9,39 +10,83 @@ using static Unity.Mathematics.math;
 
 namespace Sonosthesia.Builder
 {
-    public class TriAdvancedMeshNoiseController : CatlikeMeshNoiseController
+    public class TriModulatedMeshNoiseController : CatlikeMeshNoiseController
     {
+        [Serializable]
+        private struct ModulationStrategy
+        {
+            public bool AbsoluteValue;
+            public float Threshold;
+
+            private float4 Process(float4 m)
+            {
+                if (AbsoluteValue)
+                {
+                    m = abs(m);
+                }
+                if (Threshold > 0)
+                {
+                    m = select(m - Threshold, 0, m > Threshold);
+                }
+                return m;
+            }
+            
+            public Sample4 Modulate(Sample4 s, float4 m)
+            {
+                s.v *= Process(m) ;
+                return s;
+            }
+            
+            public float4 Modulate(float4 v, float4 m)
+            {
+                return v * Process(m);
+            }
+        }
+        
         private delegate JobHandle JobScheduleDelegate (
-            Mesh.MeshData meshData, int resolution, NativeArray<TriNoise.NoiseComponent> configs, SpaceTRS domain,
-            bool isPlane, JobHandle dependency
+            Mesh.MeshData meshData, int resolution, 
+            NativeArray<TriNoise.NoiseComponent> target, NativeArray<TriNoise.NoiseComponent> modulator,
+            SpaceTRS domain, bool isPlane, ModulationStrategy modulationStrategy, JobHandle dependency
         );
         
         [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
-        private struct Job<N> : IJobFor where N : struct, Noise.INoise
+        private struct Job<N> : IJobFor where N : struct, Noise.INoise, Noise.ISimpleNoise
         {
-            [ReadOnly] private NativeArray<TriNoise.NoiseComponent> configs;
+            [ReadOnly] private NativeArray<TriNoise.NoiseComponent> target;
+            [ReadOnly] private NativeArray<TriNoise.NoiseComponent> modulator;
             
             private float3x4 domainTRS;
             private float3x3 derivativeMatrix;
             private bool isPlane;
+            private ModulationStrategy modulationStrategy;
             private NativeArray<Vertex4> vertices;
-
+            
             public void Execute(int i)
             {
                 Vertex4 v = vertices[i];
+
                 float4x3 position = domainTRS.TransformVectors(transpose(float3x4(
                     v.v0.position, v.v1.position, v.v2.position, v.v3.position
                 )));
-                Sample4 noise = default;
-                for (int c = 0; c < configs.Length; c++)
+                
+                Sample4 source = default;
+                for (int c = 0; c < target.Length; c++)
                 {
-                    noise += position.GetNoise<N>(configs[c], derivativeMatrix);
+                    source += position.GetNoise<N>(target[c], derivativeMatrix);
                 }
-                vertices[i] = SurfaceUtils.SetVertices(v, noise, isPlane);
+
+                float4 mod = default;
+                for (int c = 0; c < modulator.Length; c++)
+                {
+                    mod += position.GetSimpleNoise<N>(modulator[c]);
+                }
+                
+                vertices[i] = SurfaceUtils.SetVertices(v, modulationStrategy.Modulate(source, mod), isPlane);
             }
         
             public static JobHandle ScheduleParallel (Mesh.MeshData meshData, int resolution, 
-                NativeArray<TriNoise.NoiseComponent> configs, SpaceTRS domain, bool isPlane, JobHandle dependency
+                NativeArray<TriNoise.NoiseComponent> target, NativeArray<TriNoise.NoiseComponent> modulator,
+                SpaceTRS domain, bool isPlane, ModulationStrategy modulationStrategy, JobHandle dependency
             )
             {
                 return new Job<N>
@@ -49,8 +94,10 @@ namespace Sonosthesia.Builder
                     vertices = meshData.GetVertexData<SingleStreams.Stream0>().Reinterpret<Vertex4>(12 * 4),
                     domainTRS = domain.Matrix,
                     derivativeMatrix = domain.DerivativeMatrix,
-                    configs = configs,
-                    isPlane = isPlane
+                    target = target,
+                    modulator = modulator,
+                    isPlane = isPlane,
+                    modulationStrategy = modulationStrategy
                 }.ScheduleParallel(meshData.vertexCount / 4, resolution, dependency);
             }
         }   
@@ -135,34 +182,53 @@ namespace Sonosthesia.Builder
 
         [SerializeField] private SpaceTRS _domain = new SpaceTRS { scale = 1f };
         
-        [SerializeField] private List<TriNoise.DynamicSettings> _settings;
-        private NativeArray<TriNoise.NoiseComponent> _noiseConfigs;
-        private float[] _localTimes;
+        [SerializeField] private List<TriNoise.DynamicSettings> _targetSettings;
+        private NativeArray<TriNoise.NoiseComponent> _targetConfigs;
+        private float[] _targetTimes;
+        
+        [SerializeField] private List<TriNoise.DynamicSettings> _modulatorSettings;
+        private NativeArray<TriNoise.NoiseComponent> _modulatorConfigs;
+        private float[] _modulatorTimes;
+
+        [SerializeField] private ModulationStrategy _modulationStrategy;
 
         protected override bool IsDynamic => true;
 
         protected override void Update()
         {
-            for (int i = 0; i < _settings.Count; i++)
+            for (int i = 0; i < _targetSettings.Count; i++)
             {
-                _localTimes[i] += Time.deltaTime * _settings[i].Velocity;
+                _targetTimes[i] += Time.deltaTime * _targetSettings[i].Velocity;
             }
-            Debug.Log($"Local times is {string.Join(", ", _localTimes)}");
+            for (int i = 0; i < _modulatorSettings.Count; i++)
+            {
+                _modulatorTimes[i] += Time.deltaTime * _modulatorSettings[i].Velocity;
+            }
             base.Update();
         }
         
         protected override void OnValidate()
         {
-            if (_noiseConfigs.Length != _settings.Count)
+            if (_targetConfigs.Length != _targetSettings.Count)
             {
-                _noiseConfigs.Dispose();
-                _noiseConfigs = new NativeArray<TriNoise.NoiseComponent>(_settings.Count, Allocator.Persistent);
+                _targetConfigs.Dispose();
+                _targetConfigs = new NativeArray<TriNoise.NoiseComponent>(_targetSettings.Count, Allocator.Persistent);
             }
 
-            if (_localTimes == null || _localTimes.Length != _settings.Count)
+            if (_targetTimes == null || _targetTimes.Length != _targetSettings.Count)
             {
-                _localTimes = new float[_settings.Count];
-                Debug.Log("Init _localTimes");
+                _targetTimes = new float[_targetSettings.Count];
+            }
+            
+            if (_modulatorConfigs.Length != _modulatorSettings.Count)
+            {
+                _modulatorConfigs.Dispose();
+                _modulatorConfigs = new NativeArray<TriNoise.NoiseComponent>(_modulatorSettings.Count, Allocator.Persistent);
+            }
+
+            if (_modulatorTimes == null || _modulatorTimes.Length != _modulatorSettings.Count)
+            {
+                _modulatorTimes = new float[_modulatorSettings.Count];
             }
             
             base.OnValidate();
@@ -170,9 +236,14 @@ namespace Sonosthesia.Builder
 
         protected override JobHandle PerturbMesh(Mesh.MeshData meshData, int resolution, float displacement, NoiseType noiseType, int dimensions, int seed, JobHandle dependency)
         {
-            for (int i = 0; i < _settings.Count; i++)
+            for (int i = 0; i < _targetSettings.Count; i++)
             {
-                _noiseConfigs[i] = TriNoise.GetNoiseComponent(_settings[i], seed, displacement, _localTimes[i]);
+                _targetConfigs[i] = TriNoise.GetNoiseComponent(_targetSettings[i], seed, displacement, _targetTimes[i]);
+            }
+            
+            for (int i = 0; i < _modulatorSettings.Count; i++)
+            {
+                _modulatorConfigs[i] = TriNoise.GetNoiseComponent(_modulatorSettings[i], seed, displacement, _modulatorTimes[i]);
             }
             
             //Debug.Log($"Scheduling with configs {string.Join(",", _noiseConfigs)}");
@@ -180,9 +251,11 @@ namespace Sonosthesia.Builder
             return _jobs[(int) noiseType, dimensions - 1](
                 meshData,
                 resolution,
-                _noiseConfigs,
+                _targetConfigs,
+                _modulatorConfigs,
                 _domain,
                 IsPlane,
+                _modulationStrategy,
                 dependency);
         }
     }
