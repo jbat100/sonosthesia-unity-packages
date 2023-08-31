@@ -5,6 +5,7 @@
     "com.sonosthesia.flow": "file:../../../packages/com.sonosthesia.flow",
     "com.sonosthesia.link": "file:../../../packages/com.sonosthesia.link",
     "com.sonosthesia.midi": "file:../../../packages/com.sonosthesia.midi",
+    "com.sonosthesia.audio": "file:../../../packages/com.sonosthesia.audio",
     "com.sonosthesia.pack": "file:../../../packages/com.sonosthesia.pack",
     "com.sonosthesia.rtmidi": "file:../../../packages/com.sonosthesia.rtmidi",
     "com.sonosthesia.spawn": "file:../../../packages/com.sonosthesia.spawn",

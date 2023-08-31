@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
@@ -12,6 +13,7 @@ namespace Sonosthesia.Builder
 {
     public class TriDomainMeshNoiseController : CatlikeMeshNoiseController
     {
+        [StructLayout(LayoutKind.Sequential)]
         private readonly struct DomainNoiseComponent
         {
             public readonly TriNoise.NoiseComponent Component;
@@ -195,7 +197,6 @@ namespace Sonosthesia.Builder
                     settings.Domain.Matrix,
                     settings.Domain.DerivativeMatrix
                     );
-                    
             }
             
             Debug.Log($"Scheduling with configs {string.Join(",", _noiseConfigs)}");

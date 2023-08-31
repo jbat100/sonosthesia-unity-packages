@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 namespace Sonosthesia.Builder
@@ -15,7 +16,7 @@ namespace Sonosthesia.Builder
         }
         
         
-        
+        [StructLayout(LayoutKind.Sequential)]
         public readonly struct NoisePhase
         {
             public readonly int Seed;
@@ -33,6 +34,7 @@ namespace Sonosthesia.Builder
             }
         }
         
+        [StructLayout(LayoutKind.Sequential)]
         public readonly struct TriPhase
         {
             public readonly NoisePhase C1;
@@ -52,6 +54,7 @@ namespace Sonosthesia.Builder
             }
         }
         
+        [StructLayout(LayoutKind.Sequential)]
         public readonly struct NoiseComponent
         {
             public readonly int Frequency;

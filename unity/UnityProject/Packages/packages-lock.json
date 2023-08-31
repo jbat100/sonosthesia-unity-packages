@@ -22,6 +22,15 @@
         "com.neuecc.unirx": "7.1.0"
       }
     },
+    "com.sonosthesia.audio": {
+      "version": "file:../../../packages/com.sonosthesia.audio",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.neuecc.unirx": "7.1.0",
+        "com.sonosthesia.flow": "1.0.0"
+      }
+    },
     "com.sonosthesia.builder": {
       "version": "file:../../../packages/com.sonosthesia.builder",
       "depth": 0,

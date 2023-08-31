@@ -1,0 +1,16 @@
+{
+  "author": "Jonathan Thorpe",
+  "dependencies": {
+    "com.neuecc.unirx": "7.1.0",
+    "com.sonosthesia.flow": "1.0.0"
+  },
+  "description": "Sonosthesia unity audio",
+  "displayName": "Sonosthesia Audio",
+  "keywords": [ "unity" ],
+  "license": "Unlicense",
+  "name": "com.sonosthesia.audio",
+  "repository": "github:jbat100/sonosthesia-unity-packages",
+  "unity": "2021.3",
+  "unityRelease": "28f1",
+  "version": "1.0.1"
+}

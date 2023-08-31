@@ -12,7 +12,7 @@ namespace Sonosthesia.Flow
         public T Value => _signalSubject.Value;
          
         [SerializeField] private bool _log;
-        
+
         public void Broadcast(T value)
         {
             if (_log)
