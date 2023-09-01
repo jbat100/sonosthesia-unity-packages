@@ -133,9 +133,17 @@ namespace Sonosthesia.Builder
             }
         };
 
-        [SerializeField] private SpaceTRS _domain = new SpaceTRS { scale = 1f };
+        [SerializeField] private SpaceTRS _domain = new () { scale = 1f };
         
-        [SerializeField] private List<TriNoise.DynamicSettings> _settings;
+        public DynamicSettings GetSettings(int index) => _settings[index];
+
+        public SpaceTRS Domain
+        {
+            get => _domain;
+            set => _domain = value;
+        }
+
+        [SerializeField] private List<DynamicSettings> _settings;
         private NativeArray<TriNoise.NoiseComponent> _noiseConfigs;
         private float[] _localTimes;
 

@@ -6,15 +6,9 @@ namespace Sonosthesia.Builder
 {
     public static class TriNoise
     {
-        [Serializable]
-        public struct DynamicSettings
-        {
-            public int Frequency;
-            public float Displacement;
-            public float Velocity;
-            public AnimationCurve LerpCurve;
-        }
         
+        
+        #region job data
         
         [StructLayout(LayoutKind.Sequential)]
         public readonly struct NoisePhase
@@ -71,6 +65,8 @@ namespace Sonosthesia.Builder
                 return $"({nameof(Frequency)} : {Frequency}, {nameof(TriPhase)} : {TriPhase})";
             }
         }
+        
+        #endregion job data
         
         private const float ONE_THIRD = 1f / 3f;
         

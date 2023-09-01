@@ -28,13 +28,6 @@ namespace Sonosthesia.Builder
             }
         }
 
-        [Serializable]
-        private class DomainDynamicSettings
-        {
-            public TriNoise.DynamicSettings Settings;
-            public SpaceTRS Domain = new SpaceTRS { scale = 1f };
-        }
-        
         private delegate JobHandle JobScheduleDelegate (
             Mesh.MeshData meshData, int resolution, NativeArray<DomainNoiseComponent> configs,
             bool isPlane, JobHandle dependency
@@ -153,6 +146,8 @@ namespace Sonosthesia.Builder
                 Job<Noise.Voronoi3D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F2MinusF1>>.ScheduleParallel
             }
         };
+
+        public DomainDynamicSettings GetSettings(int index) => _settings[index];
 
         [SerializeField] private List<DomainDynamicSettings> _settings;
         private NativeArray<DomainNoiseComponent> _noiseConfigs;
