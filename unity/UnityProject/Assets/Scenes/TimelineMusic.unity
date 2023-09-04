@@ -169,7 +169,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _targetBlend: 2
-  _source: {fileID: 732467785}
+  _source: {fileID: 1772877004}
   _direction: {x: 0, y: 1, z: 0}
 --- !u!1 &140088293
 GameObject:
@@ -785,7 +785,7 @@ MonoBehaviour:
   _source: {fileID: 1772877004}
   _bypass: 0
   _offset: 0
-  _scale: 2
+  _scale: 2.5
 --- !u!114 &490457720
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1374,8 +1374,8 @@ Transform:
   - {fileID: 1370635755}
   - {fileID: 770357688}
   - {fileID: 1257050656}
-  - {fileID: 1458748919}
   - {fileID: 490457718}
+  - {fileID: 1458748919}
   m_Father: {fileID: 824487869}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1528,7 +1528,7 @@ MonoBehaviour:
         z: 1
   - Settings:
       Frequency: 4
-      Displacement: 0.2
+      Displacement: 0.1
       Velocity: 1
       LerpCurve:
         serializedVersion: 2
@@ -2021,7 +2021,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _targetBlend: 2
-  _source: {fileID: 1482678758}
+  _source: {fileID: 1788768730}
   _direction: {x: 0, y: 1, z: 0}
 --- !u!1 &1053237975
 GameObject:
@@ -2241,7 +2241,7 @@ MonoBehaviour:
   _source: {fileID: 1788768730}
   _bypass: 0
   _offset: 0
-  _scale: 2
+  _scale: 1
 --- !u!114 &1257050658
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2254,7 +2254,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff337cf678fd549d3998badbd60d23ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _targetBlend: 0
+  _targetBlend: 2
   _source: {fileID: 0}
   _noiseController: {fileID: 833523852}
   _componentIndex: 1
@@ -2401,7 +2401,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.4750801, g: 0.5398026, b: 0.6415094, a: 0}
+  m_BackGroundColor: {r: 0.38972944, g: 0.45197332, b: 0.5471698, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -2760,7 +2760,7 @@ MonoBehaviour:
   _targetBlend: 2
   _source: {fileID: 0}
   _noiseController: {fileID: 833523852}
-  _componentIndex: 2
+  _componentIndex: 3
   _targetType: 1
 --- !u!114 &1482678758 stripped
 MonoBehaviour:
