@@ -9,8 +9,9 @@ namespace Sonosthesia.Spawn
 
         [SerializeField] private string _name;
         
-        protected void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             if (!_renderer)
             {
                 _renderer = GetComponent<Renderer>();

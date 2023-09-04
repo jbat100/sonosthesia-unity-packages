@@ -16,8 +16,9 @@ namespace Sonosthesia.Builder
 
         private float _reference;
         
-        protected void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _reference = _targetType switch
             {
                 TargetType.Velocity => DynamicSettings.Velocity,

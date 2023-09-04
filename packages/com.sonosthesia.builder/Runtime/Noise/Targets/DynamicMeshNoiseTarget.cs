@@ -43,5 +43,14 @@ namespace Sonosthesia.Builder
                 }
             }
         }
+
+        protected override void Awake()
+        {
+            base.Awake();
+            if (!_noiseController)
+            {
+                _noiseController = GetComponent<MeshNoiseController>();
+            }
+        }
     }
 }

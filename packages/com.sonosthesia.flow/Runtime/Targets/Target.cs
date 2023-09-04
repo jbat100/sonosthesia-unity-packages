@@ -53,6 +53,14 @@ namespace Sonosthesia.Flow
 
         private IDisposable _subscription;
 
+        protected virtual void Awake()
+        {
+            if (!_source)
+            {
+                _source = GetComponent<Signal<T>>();
+            }
+        }
+        
         protected void OnEnable()
         {
             _subscription?.Dispose();

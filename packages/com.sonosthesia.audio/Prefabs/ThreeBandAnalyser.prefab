@@ -47,8 +47,8 @@ MonoBehaviour:
   _log: 0
   _source: {fileID: 2569024689269991343}
   _bypass: 0
-  _beta: 0.2
-  _minCutoff: 0.2
+  _beta: 0.1
+  _minCutoff: 0.1
 --- !u!1 &2074982873629410967
 GameObject:
   m_ObjectHideFlags: 0
@@ -197,8 +197,8 @@ MonoBehaviour:
   _log: 0
   _source: {fileID: 4199897699164961336}
   _bypass: 0
-  _beta: 1
-  _minCutoff: 1
+  _beta: 0.1
+  _minCutoff: 0.1
 --- !u!1 &7325557834603119590
 GameObject:
   m_ObjectHideFlags: 0

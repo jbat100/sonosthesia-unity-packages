@@ -7,8 +7,9 @@ namespace Sonosthesia.Spawn
     {
         [SerializeField] private Light _light;
 
-        protected void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             if (!_light)
             {
                 _light = GetComponent<Light>();

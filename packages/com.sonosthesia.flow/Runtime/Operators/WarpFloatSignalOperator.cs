@@ -8,6 +8,6 @@ namespace Sonosthesia.Flow
         
         [SerializeField] private float _scale = 1f;
 
-        protected override float Process(float input) => Mathf.Lerp(0f, 1f, input) * _scale + _offset;
+        protected override float Process(float input) => input * _scale + _offset;
     }
 }

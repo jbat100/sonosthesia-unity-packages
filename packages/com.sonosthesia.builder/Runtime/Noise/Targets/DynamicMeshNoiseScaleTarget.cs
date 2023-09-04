@@ -7,8 +7,9 @@ namespace Sonosthesia.Builder
     {
         private Vector3 _reference;
 
-        protected void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _reference = Domain.scale;
         }
 

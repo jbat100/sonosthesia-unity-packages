@@ -9,8 +9,9 @@ namespace Sonosthesia.Spawn
         
         private Vector3 _reference;
         
-        protected void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _reference = transform.localPosition;
         }
         

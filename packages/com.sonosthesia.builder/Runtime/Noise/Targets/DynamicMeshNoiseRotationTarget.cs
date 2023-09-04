@@ -7,8 +7,9 @@ namespace Sonosthesia.Builder
     {
         private Quaternion _reference;
 
-        protected void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _reference = Quaternion.Euler(Domain.rotation);
         }
         

@@ -7,8 +7,9 @@ namespace Sonosthesia.Flow
     {
         [SerializeField] private Lerper _groupLerper;
 
-        protected void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             if (!_groupLerper)
             {
                 _groupLerper = GetComponent<Lerper>();

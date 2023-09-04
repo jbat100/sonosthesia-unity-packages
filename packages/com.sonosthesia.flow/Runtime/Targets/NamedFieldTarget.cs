@@ -11,8 +11,9 @@ namespace Sonosthesia.Flow
 
         private FieldInfo _fieldInfo;
         
-        protected void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _fieldInfo = _component.GetType().GetField(_name, BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
