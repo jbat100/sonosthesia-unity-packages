@@ -3,19 +3,10 @@ using UnityEngine;
 
 namespace Sonosthesia.Spawn
 {
-    public class TransformSizeTarget : Target<float>
+    public class TransformSizeTarget : AdaptorBlendTarget<float, Vector3, Vector3Blender>
     {
-        private float _reference;
-
-        protected override void Awake()
-        {
-            base.Awake();
-            _reference = transform.localScale.x;
-        }
-        
-        protected override void Apply(float value)
-        {
-            transform.localScale = Vector3.one * TargetBlend.Blend(_reference, value);
-        }
+        protected override Vector3 Reference => transform.localScale;
+        protected override Vector3 Adapt(float value) => Vector3.one * value;
+        protected override void ApplyBlended(Vector3 value) => transform.localScale = value;
     }
 }

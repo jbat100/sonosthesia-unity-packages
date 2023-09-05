@@ -3,20 +3,14 @@ using UnityEngine;
 
 namespace Sonosthesia.Builder
 {
-    public class DynamicMeshNoiseRotationTarget : DynamicMeshNoiseDomainTarget<Quaternion>
+    public class DynamicMeshNoiseRotationTarget : DynamicMeshNoiseDomainTarget<Quaternion, QuaternionBlender>
     {
-        private Quaternion _reference;
+        protected override Quaternion Reference => Quaternion.Euler(Domain.rotation);
 
-        protected override void Awake()
-        {
-            base.Awake();
-            _reference = Quaternion.Euler(Domain.rotation);
-        }
-        
-        protected override void Apply(Quaternion value)
+        protected override void ApplyBlended(Quaternion value)
         {
             SpaceTRS domain = Domain;
-            domain.rotation = TargetBlend.Blend(_reference, value).eulerAngles;
+            domain.rotation = value.eulerAngles;
             Domain = domain;
         }
     }

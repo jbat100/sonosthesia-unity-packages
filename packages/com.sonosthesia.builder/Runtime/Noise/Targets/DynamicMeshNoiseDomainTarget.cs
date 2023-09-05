@@ -1,6 +1,9 @@
+using Sonosthesia.Flow;
+
 namespace Sonosthesia.Builder
 {
-    public abstract class DynamicMeshNoiseDomainTarget<T> : DynamicMeshNoiseTarget<T> where T : struct
+    public abstract class DynamicMeshNoiseDomainTarget<T, B> : DynamicMeshNoiseTarget<T, B> 
+        where T : struct where B : struct, IBlender<T>
     {
         
     }

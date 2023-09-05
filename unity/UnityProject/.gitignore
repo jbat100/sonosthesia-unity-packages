@@ -1,4 +1,9 @@
 Build.app/
+Recordings/
+Assets/TextMesh Pro/
+Assets/TextMesh Pro.meta
+Assets/Unity.VisualScripting.Generated
+
 
 # This .gitignore file should be placed at the root of your Unity project directory
 #

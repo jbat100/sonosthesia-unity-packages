@@ -1,0 +1,17 @@
+{
+    "name": "Sonosthesia.VisualFlow",
+    "rootNamespace": "Sonosthesia.VisualFlow",
+    "references": [
+        "GUID:d13cd110c9ead484abd4d8de740b818b",
+        "GUID:21b0c8d1703a94250bfac916590cea4f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

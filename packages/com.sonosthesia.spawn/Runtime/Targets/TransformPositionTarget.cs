@@ -3,19 +3,11 @@ using UnityEngine;
 
 namespace Sonosthesia.Spawn
 {
-    public class TransformPositionTarget : Target<Vector3>
+    public class TransformPositionTarget : BlendTarget<Vector3, Vector3Blender>
     {
-        private Vector3 _reference;
-        
-        protected override void Awake()
-        {
-            base.Awake();
-            _reference = transform.localPosition;
-        }
-        
-        protected override void Apply(Vector3 value)
-        {
-            transform.localPosition = TargetBlend.Blend(_reference, value);
-        }
+        protected override Vector3 Reference => transform.localPosition;
+
+        protected override void ApplyBlended(Vector3 value) => transform.localPosition = value;
+
     }
 }

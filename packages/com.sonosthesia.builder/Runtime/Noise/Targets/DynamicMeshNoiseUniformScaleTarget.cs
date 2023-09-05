@@ -2,20 +2,14 @@ using Sonosthesia.Flow;
 
 namespace Sonosthesia.Builder
 {
-    public class DynamicMeshNoiseUniformScaleTarget : DynamicMeshNoiseTarget<float>
+    public class DynamicMeshNoiseUniformScaleTarget : DynamicMeshNoiseTarget<float, FloatBlender>
     {
-        private float _reference;
+        protected override float Reference => Domain.scale.x;
 
-        protected override void Awake()
-        {
-            base.Awake();
-            _reference = Domain.scale.x;
-        }
-
-        protected override void Apply(float value)
+        protected override void ApplyBlended(float value)
         {
             SpaceTRS domain = Domain;
-            domain.scale = TargetBlend.Blend(_reference, value);
+            domain.scale = value;
             Domain = domain;
         }
     }

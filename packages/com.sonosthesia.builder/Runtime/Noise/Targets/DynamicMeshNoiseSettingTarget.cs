@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Builder
 {
-    public class DynamicMeshNoiseSettingTarget : DynamicMeshNoiseTarget<float>
+    public class DynamicMeshNoiseSettingTarget : DynamicMeshNoiseTarget<float, FloatBlender>
     {
         private enum TargetType
         {
@@ -14,30 +14,22 @@ namespace Sonosthesia.Builder
 
         [SerializeField] private TargetType _targetType;
 
-        private float _reference;
-        
-        protected override void Awake()
+        protected override float Reference => _targetType switch
         {
-            base.Awake();
-            _reference = _targetType switch
-            {
-                TargetType.Velocity => DynamicSettings.Velocity,
-                TargetType.Displacement => DynamicSettings.Displacement,
-                _ => throw new ArgumentOutOfRangeException()
-            };
-        }
-        
-        protected override void Apply(float value)
+            TargetType.Velocity => DynamicSettings.Velocity,
+            TargetType.Displacement => DynamicSettings.Displacement,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        protected override void ApplyBlended(float value)
         {
-            float result = TargetBlend.Blend(_reference, value);
-            
             switch (_targetType)
             {
                 case TargetType.Velocity:
-                    DynamicSettings.Velocity = result;
+                    DynamicSettings.Velocity = value;
                     break;
                 case TargetType.Displacement:
-                    DynamicSettings.Displacement = result;
+                    DynamicSettings.Displacement = value;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

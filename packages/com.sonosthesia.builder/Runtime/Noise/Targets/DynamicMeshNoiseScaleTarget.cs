@@ -3,20 +3,14 @@ using UnityEngine;
 
 namespace Sonosthesia.Builder
 {
-    public class DynamicMeshNoiseScaleTarget : DynamicMeshNoiseTarget<Vector3>
+    public class DynamicMeshNoiseScaleTarget : DynamicMeshNoiseTarget<Vector3, Vector3Blender>
     {
-        private Vector3 _reference;
+        protected override Vector3 Reference => Domain.scale;
 
-        protected override void Awake()
-        {
-            base.Awake();
-            _reference = Domain.scale;
-        }
-
-        protected override void Apply(Vector3 value)
+        protected override void ApplyBlended(Vector3 value)
         {
             SpaceTRS domain = Domain;
-            domain.scale = TargetBlend.Blend(_reference, (Vector3)value);
+            domain.scale = value;
             Domain = domain;
         }
     }

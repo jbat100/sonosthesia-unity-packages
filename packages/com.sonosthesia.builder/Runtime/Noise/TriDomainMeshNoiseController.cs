@@ -164,8 +164,19 @@ namespace Sonosthesia.Builder
             Debug.Log($"Local times is {string.Join(", ", _localTimes)}");
             base.Update();
         }
-        
+
+        protected virtual void OnEnable()
+        {
+            CheckArrays();
+        }
+
         protected override void OnValidate()
+        {
+            CheckArrays();
+            base.OnValidate();
+        }
+
+        private void CheckArrays()
         {
             if (_noiseConfigs.Length != _settings.Count)
             {
@@ -178,8 +189,6 @@ namespace Sonosthesia.Builder
                 _localTimes = new float[_settings.Count];
                 Debug.Log("Init _localTimes");
             }
-            
-            base.OnValidate();
         }
 
         protected override JobHandle PerturbMesh(Mesh.MeshData meshData, int resolution, float displacement, NoiseType noiseType, int dimensions, int seed, JobHandle dependency)

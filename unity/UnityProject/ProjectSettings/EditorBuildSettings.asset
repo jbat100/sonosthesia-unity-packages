@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/TimelineMusic.unity
+    path: Assets/Scenes/Timeline/TimelineMusicMeshNoise.unity
     guid: 6eaa8ae53546541948692c5172346b47
   m_configObjects: {}

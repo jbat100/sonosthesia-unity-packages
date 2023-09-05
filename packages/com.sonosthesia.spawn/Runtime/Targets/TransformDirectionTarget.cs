@@ -3,23 +3,15 @@ using UnityEngine;
 
 namespace Sonosthesia.Spawn
 {
-    public class TransformDirectionTarget : Target<float>
+    public class TransformDirectionTarget : AdaptorBlendTarget<float, Vector3, Vector3Blender>
     {
         [SerializeField] private Vector3 _direction;
+
+        protected override Vector3 Reference => transform.localPosition;
         
-        private Vector3 _reference;
-        
-        protected override void Awake()
-        {
-            base.Awake();
-            _reference = transform.localPosition;
-        }
-        
-        protected override void Apply(float value)
-        {
-            Vector3 displacement = _direction * value;
-            transform.localPosition = TargetBlend.Blend(_reference, displacement);
-        }
+        protected override Vector3 Adapt(float value) => _direction * value;
+
+        protected override void ApplyBlended(Vector3 value) => transform.localPosition = value;
     }
 }
 

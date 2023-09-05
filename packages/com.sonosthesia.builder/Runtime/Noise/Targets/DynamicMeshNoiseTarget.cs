@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace Sonosthesia.Builder
 {
-    public abstract class DynamicMeshNoiseTarget<T> : Target<T> where T : struct
+    public abstract class DynamicMeshNoiseTarget<T, B> : BlendTarget<T, B> 
+        where T : struct where B : struct, IBlender<T>
     {
         [SerializeField] private MeshNoiseController _noiseController;
         
