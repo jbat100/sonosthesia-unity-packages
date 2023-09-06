@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95e66c6366d904e98bc83428217d4fd7, type: 3}
+  m_Name: FloatWarp2
+  m_EditorClassIdentifier: 
+  _data:
+    _json: '{"graph":{"variables":{"Kind":"Flow","collection":{"$content":[],"$version":"A"},"$version":"A"},"controlInputDefinitions":[],"controlOutputDefinitions":[],"valueInputDefinitions":[{"hasDefaultValue":false,"defaultValue":{"$content":0.0,"$type":"System.Single"},"_type":"System.Single","key":"In","label":"
+      ","summary":null,"hideLabel":false},{"hasDefaultValue":false,"defaultValue":{"$content":0.0,"$type":"System.Single"},"_type":"System.Single","key":"Scale","label":null,"summary":null,"hideLabel":false},{"hasDefaultValue":false,"defaultValue":{"$content":0.0,"$type":"System.Single"},"_type":"System.Single","key":"Offset","label":null,"summary":null,"hideLabel":false}],"valueOutputDefinitions":[{"_type":"System.Single","key":"Out","label":null,"summary":null,"hideLabel":false}],"title":"FloatWarp2","summary":"Scale
+      and offset float signal using float data for configuration","pan":{"x":-152.7509,"y":19.24881},"zoom":1.0,"elements":[{"defaultValues":{},"position":{"x":-71.0,"y":-118.0},"guid":"d5e28f63-7c9a-4e96-88cf-bb7a75e16613","$version":"A","$type":"Unity.VisualScripting.GraphOutput","$id":"13"},{"defaultValues":{},"position":{"x":-405.0,"y":-165.0},"guid":"9d323d1a-65b8-4751-b3ed-471ba26d53be","$version":"A","$type":"Unity.VisualScripting.GenericMultiply","$id":"15"},{"inputCount":2,"defaultValues":{},"position":{"x":-244.0,"y":-35.0},"guid":"09d9ae33-dff2-4b3c-83aa-4d7559e9af4e","$version":"A","$type":"Unity.VisualScripting.GenericSum","$id":"17"},{"defaultValues":{},"position":{"x":-542.0,"y":-116.0},"guid":"12b81b74-0b25-4c03-9ba9-b76043cbbbcf","$version":"A","$type":"Unity.VisualScripting.GraphInput","$id":"19"},{"sourceUnit":{"$ref":"15"},"sourceKey":"product","destinationUnit":{"$ref":"17"},"destinationKey":"0","guid":"c52f037f-4858-4993-985c-f1b58895f6df","$type":"Unity.VisualScripting.ValueConnection"},{"sourceUnit":{"$ref":"17"},"sourceKey":"sum","destinationUnit":{"$ref":"13"},"destinationKey":"Out","guid":"3211e4b9-acee-4fed-862e-509f43d01a5a","$type":"Unity.VisualScripting.ValueConnection"},{"sourceUnit":{"$ref":"19"},"sourceKey":"In","destinationUnit":{"$ref":"15"},"destinationKey":"a","guid":"be82add7-7ee6-49c9-9ef4-87cab2193cb5","$type":"Unity.VisualScripting.ValueConnection"},{"sourceUnit":{"$ref":"19"},"sourceKey":"Scale","destinationUnit":{"$ref":"15"},"destinationKey":"b","guid":"cb7ab1c1-7064-4ed3-8d5c-45c00dea1cef","$type":"Unity.VisualScripting.ValueConnection"},{"sourceUnit":{"$ref":"19"},"sourceKey":"Offset","destinationUnit":{"$ref":"17"},"destinationKey":"1","guid":"0838098c-86a0-45b1-9355-6236a0b93727","$type":"Unity.VisualScripting.ValueConnection"}],"$version":"A"}}'
+    _objectReferences: []

@@ -1,0 +1,20 @@
+{
+    "name": "Sonosthesia.Nodes",
+    "rootNamespace": "Sonosthesia.Nodes",
+    "references": [
+        "GUID:21b0c8d1703a94250bfac916590cea4f",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:d13cd110c9ead484abd4d8de740b818b",
+        "GUID:29b8d708933b7442298da530230da635"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
