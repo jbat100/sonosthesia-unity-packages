@@ -1,5 +1,5 @@
-using System;
 using Sonosthesia.Flow;
+using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Audio
@@ -11,19 +11,26 @@ namespace Sonosthesia.Audio
         [SerializeField] private int[] _bins;
 
         [SerializeField] private LevelType _levelType;
-
-        [SerializeField] private bool _db;
-
-        [SerializeField] private float _scale = 1f;
-
-        [SerializeField] private float _offset;
         
+        [SerializeField] private FloatWarpSettings _warp;
+
+        [SerializeField] private FloatOneEuroFilterSettings _oneEuroFilter;
+
+        [SerializeField] private FloatSoftLandingSettings _softLanding;
+
+        private ProcessorChain<float> _chain = new();
+
         protected void Awake()
         {
             if (!_spectrum)
             {
                 _spectrum = GetComponentInParent<AudioSpectrum>();
             }
+
+            _chain = new ProcessorChain<float>(
+                new FloatWarpProcessor(_warp),
+                new FloatOneEuroFilterProcessor(_oneEuroFilter),
+                new FloatSoftLandingProcessor(_softLanding));
         }
 
         protected void Update()
@@ -41,14 +48,14 @@ namespace Sonosthesia.Audio
 
                 result += data[bin];
             }
-            if (_db)
-            {
-                result = 10f * Mathf.Log10(result + 1f);
-            }
-            result = (result * _scale) + _offset;
+
+            result = _chain.Process(result, Time.time);
             Broadcast(result);
         }
-        
-        
+
+        protected void OnEnable()
+        {
+            _chain.Reset();
+        }
     }
 }

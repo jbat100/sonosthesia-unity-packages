@@ -7,7 +7,7 @@ namespace Sonosthesia.Flow
 {
     public class SoftLandingOperator : Operator<float>
     {
-        [SerializeField] private float _landingSpeed = 1;
+        [SerializeField] private float _speed = 1;
 
         private SoftLanding _softLanding;
         
@@ -21,6 +21,7 @@ namespace Sonosthesia.Flow
 
         protected virtual void Update()
         {
+            _softLanding.Speed = _speed;
             _softLanding.Step(Time.deltaTime);
             Broadcast(_softLanding.Current);
         }

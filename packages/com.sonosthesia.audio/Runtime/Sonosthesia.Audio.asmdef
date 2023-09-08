@@ -2,7 +2,8 @@
     "name": "Sonosthesia.Audio",
     "rootNamespace": "",
     "references": [
-        "GUID:d13cd110c9ead484abd4d8de740b818b"
+        "GUID:d13cd110c9ead484abd4d8de740b818b",
+        "GUID:25e5e4b6f3916462c92ecc1d0ffca2c2"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
