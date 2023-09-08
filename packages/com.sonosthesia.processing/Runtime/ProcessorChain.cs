@@ -1,6 +1,6 @@
 using System.Linq;
 
-namespace Sonosthesia.Utils
+namespace Sonosthesia.Processing
 {
     public class ProcessorChain<T> : IDynamicProcessor<T> where T : struct
     {

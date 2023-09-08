@@ -1,8 +1,9 @@
 using System;
+using Sonosthesia.Utils;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Sonosthesia.Utils
+namespace Sonosthesia.Processing
 {
     [Serializable]
     public class FloatOneEuroFilterSettings : DynamicProcessorSettings

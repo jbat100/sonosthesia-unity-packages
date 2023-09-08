@@ -79,6 +79,14 @@
         "com.sonosthesia.flow": "1.0.1"
       }
     },
+    "com.sonosthesia.processing": {
+      "version": "file:../../../packages/com.sonosthesia.processing",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.sonosthesia.utils": "1.0.0"
+      }
+    },
     "com.sonosthesia.rtmidi": {
       "version": "file:../../../packages/com.sonosthesia.rtmidi",
       "depth": 0,

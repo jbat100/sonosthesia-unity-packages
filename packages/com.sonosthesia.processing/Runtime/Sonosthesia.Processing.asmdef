@@ -1,10 +1,9 @@
 {
-    "name": "Sonosthesia.Audio",
+    "name": "Sonosthesia.Processing",
     "rootNamespace": "",
     "references": [
-        "GUID:d13cd110c9ead484abd4d8de740b818b",
-        "GUID:25e5e4b6f3916462c92ecc1d0ffca2c2",
-        "GUID:5e5de655b35d84bd7a36486ee1824671"
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:25e5e4b6f3916462c92ecc1d0ffca2c2"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

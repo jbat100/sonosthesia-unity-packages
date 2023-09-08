@@ -1,7 +1,8 @@
 using System;
+using Sonosthesia.Utils;
 using UnityEngine;
 
-namespace Sonosthesia.Utils
+namespace Sonosthesia.Processing
 {
     [Serializable]
     public class FloatSoftLandingSettings : DynamicProcessorSettings
