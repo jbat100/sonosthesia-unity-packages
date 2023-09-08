@@ -30,4 +30,11 @@ namespace Sonosthesia.Processing
             return input;
         }
     }
+    
+    public class FloatWarpProcessorFactory 
+        : ConfigurableDynamicProcessorFactory<FloatWarpSettings, float>
+    {
+        protected override IDynamicProcessor<float> Make(FloatWarpSettings settings)
+            => new FloatWarpProcessor(settings);
+    }
 }

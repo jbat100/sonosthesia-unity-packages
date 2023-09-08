@@ -33,4 +33,11 @@ namespace Sonosthesia.Processing
             _filter = new OneEuroFilter2();
         }
     }
+
+    public class FloatOneEuroFilterProcessorFactory 
+        : ConfigurableDynamicProcessorFactory<FloatOneEuroFilterSettings, float>
+    {
+        protected override IDynamicProcessor<float> Make(FloatOneEuroFilterSettings settings)
+            => new FloatOneEuroFilterProcessor(settings);
+    }
 }

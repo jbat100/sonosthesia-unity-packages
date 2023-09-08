@@ -32,4 +32,11 @@ namespace Sonosthesia.Processing
             _softLanding = new SoftLanding ();
         }
     }
+    
+    public class FloatSoftLandingProcessorFactory 
+        : ConfigurableDynamicProcessorFactory<FloatSoftLandingSettings, float>
+    {
+        protected override IDynamicProcessor<float> Make(FloatSoftLandingSettings settings)
+            => new FloatSoftLandingProcessor(settings);
+    }
 }
