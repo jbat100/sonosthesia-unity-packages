@@ -13,5 +13,35 @@ namespace Sonosthesia.Utils
         {
             return new float3(0f, v.y, 0f);
         }
+        
+        // https://github.com/keijiro/ProceduralMotion/blob/master/Packages/jp.keijiro.klak.motion/Runtime/Internal/Utilities.cs
+        public static Random Random(uint seed)
+        {
+            // Auto reseeding
+            if (seed == 0) seed = (uint)UnityEngine.Random.Range(0, 0x7fffffff);
+
+            var random = new Random(seed);
+
+            // Abandon a few first numbers to warm up the PRNG.
+            random.NextUInt();
+            random.NextUInt();
+
+            return random;
+        }
+        
+        // https://github.com/keijiro/ProceduralMotion/blob/master/Packages/jp.keijiro.klak.motion/Runtime/BrownianMotion.cs
+        public static float BrownianFbm(float x, float y, int octave)
+        {
+            float2 p = math.float2(x, y);
+            float f = 0.0f;
+            float w = 0.5f;
+            for (int i = 0; i < octave; i++)
+            {
+                f += w * noise.snoise(p);
+                p *= 2.0f;
+                w *= 0.5f;
+            }
+            return f;
+        }
     }
 }

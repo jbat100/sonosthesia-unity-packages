@@ -2,11 +2,11 @@ using UnityEngine;
 
 namespace Sonosthesia.Flow
 {
-    public class GeneratorFloatSignal : Signal<float>
+    public class GeneratorSignal<T> : Signal<T> where T : struct
     {
-        [SerializeField] private Generator<float> _generator;
+        [SerializeField] private Generator<T> _generator;
 
-        [SerializeField] private float _timeFator = 1f;
+        [SerializeField] private float _timeFactor = 1f;
         
         private float _time;
         
@@ -14,7 +14,7 @@ namespace Sonosthesia.Flow
         
         protected void Update()
         {
-            _time += _timeFator * Time.deltaTime;
+            _time += _timeFactor * Time.deltaTime;
             Broadcast(_generator.Evaluate(_time));
         }
     }

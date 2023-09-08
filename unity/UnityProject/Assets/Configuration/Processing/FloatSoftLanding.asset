@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _settings:
     _bypass: 0
-    _speed: 1
+    _speed: 1.32
