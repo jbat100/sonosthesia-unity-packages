@@ -1,35 +1,28 @@
 using System;
 using UniRx;
 using UnityEngine;
+using Sonosthesia.Utils;
 
 namespace Sonosthesia.Flow
 {
     public class SoftLandingOperator : Operator<float>
     {
         [SerializeField] private float _landingSpeed = 1;
-        
-        private float? _target;
-        private float? _current;
+
+        private SoftLanding _softLanding;
         
         protected override IDisposable Setup(Signal<float> source)
         {
             return source.SignalObservable.Subscribe(value =>
             {
-                _target = value;
+                _softLanding.Target = value;
             });
         }
 
         protected virtual void Update()
         {
-            _current ??= _target;
-            if (!_current.HasValue || !_target.HasValue)
-            {
-                return;
-            }
-            _current = _current.Value > _target.Value ? 
-                Mathf.MoveTowards(_current.Value, _target.Value, Time.deltaTime * _landingSpeed) : 
-                _target;
-            Broadcast(_current.Value);
+            _softLanding.Step(Time.deltaTime);
+            Broadcast(_softLanding.Current);
         }
     }
 }

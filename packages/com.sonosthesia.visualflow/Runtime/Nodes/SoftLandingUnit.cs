@@ -1,3 +1,4 @@
+using Sonosthesia.Utils;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -22,23 +23,21 @@ namespace Sonosthesia.VisualFlow
         [DoNotSerialize]
         public ValueOutput result;
 
-        private float _target;
-        private float _current;
+        private SoftLanding _softLanding = new();
         
         protected override void Definition()
         {
             inputTrigger = ControlInput("inputTrigger", (flow) =>
             {
-                _target = flow.GetValue<float>(value);
-                _current = _current > _target ? 
-                    Mathf.MoveTowards(_current, _target, Time.deltaTime * flow.GetValue<float>(landingSpeed)) : 
-                    _target;
+                _softLanding.Speed = flow.GetValue<float>(landingSpeed);
+                _softLanding.Target = flow.GetValue<float>(value);
+                _softLanding.Step(Time.deltaTime);
                 return outputTrigger;
             });
             outputTrigger = ControlOutput("outputTrigger");
             value = ValueInput<float>("value", 0);
             landingSpeed = ValueInput<float>("landingSpeed", 0);
-            result = ValueOutput<float>("result", (flow) => _current);
+            result = ValueOutput<float>("result", (flow) => _softLanding.Current);
         }
     }
 }
