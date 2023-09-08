@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cafe718e757d4c18b3835e731ca8d13, type: 3}
+  m_Name: FloatOneEuroFilter
+  m_EditorClassIdentifier: 
+  _settings:
+    _bypass: 0
+    _beta: 1
+    _minCutoff: 1

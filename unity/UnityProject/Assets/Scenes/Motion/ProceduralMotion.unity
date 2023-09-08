@@ -424,6 +424,21 @@ PrefabInstance:
       propertyPath: _start
       value: 58
       objectReference: {fileID: 0}
+    - target: {fileID: 8257809110151618832, guid: ceaded3538dc548d3b8ba593980163aa,
+        type: 3}
+      propertyPath: _warp._bypass
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8257809110151618832, guid: ceaded3538dc548d3b8ba593980163aa,
+        type: 3}
+      propertyPath: _softLanding._bypass
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8257809110151618832, guid: ceaded3538dc548d3b8ba593980163aa,
+        type: 3}
+      propertyPath: _oneEuroFilter._bypass
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -543,6 +558,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1968065237}
   - component: {fileID: 1968065238}
+  - component: {fileID: 1968065239}
   m_Layer: 0
   m_Name: Test1
   m_TagString: Untagged
@@ -578,6 +594,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb106a381d5a4d78955772edbfcde7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _source: {fileID: 1753641198}
+  _source: {fileID: 1968065239}
   _targetBlend: 2
   _direction: {x: 0, y: 1, z: 0}
+--- !u!114 &1968065239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1968065236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed240a8aca11e43ffa1707db2be976f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _log: 0
+  _source: {fileID: 1753641198}
+  _bypass: 0
+  _operatorFactory: {fileID: 11400000, guid: 629a49b949bbe463eae3985569922136, type: 2}
+  _timeScale: 1

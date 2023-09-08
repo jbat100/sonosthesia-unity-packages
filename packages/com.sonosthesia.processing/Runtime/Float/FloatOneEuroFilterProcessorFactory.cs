@@ -34,6 +34,8 @@ namespace Sonosthesia.Processing
         }
     }
 
+    
+    [CreateAssetMenu(fileName = "FloatOneEuroFilter", menuName = "ScriptableObjects/Sonosthesia/FloatOneEuroFilter")]
     public class FloatOneEuroFilterProcessorFactory 
         : ConfigurableDynamicProcessorFactory<FloatOneEuroFilterSettings, float>
     {

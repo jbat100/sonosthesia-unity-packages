@@ -31,6 +31,7 @@ namespace Sonosthesia.Processing
         }
     }
     
+    [CreateAssetMenu(fileName = "FloatWarp", menuName = "ScriptableObjects/Sonosthesia/FloatWarp")]
     public class FloatWarpProcessorFactory 
         : ConfigurableDynamicProcessorFactory<FloatWarpSettings, float>
     {
