@@ -20,9 +20,9 @@ namespace Sonosthesia.Flow
         public override Vector3 Evaluate(float time)
         {
             float3 np = math.float3(
-                MathExtensions.BrownianFbm(_offset.x, time, _octaves),
-                MathExtensions.BrownianFbm(_offset.y, time, _octaves),
-                MathExtensions.BrownianFbm(_offset.z, time, _octaves)
+                MathExtensions.FractalBrownianMotion(_offset.x, time, _octaves),
+                MathExtensions.FractalBrownianMotion(_offset.y, time, _octaves),
+                MathExtensions.FractalBrownianMotion(_offset.z, time, _octaves)
             );
 
             return np * _amount / 0.75f;

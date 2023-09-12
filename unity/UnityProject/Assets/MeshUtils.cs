@@ -1,33 +1,14 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 using VertexData = System.Tuple<UnityEngine.Vector3, UnityEngine.Vector3, UnityEngine.Vector2>;
 
-namespace Sonosthesia.Builder
-{
-    public static class VoxelUtils
-    {
-        public enum BlockSide
-        {
-            BOTTOM,
-            TOP,
-            LEFT,
-            RIGHT,
-            FRONT,
-            BACK
-        }
+public static class MeshUtils {
+    public enum BlockType {
+        GRASSTOP, GRASSSIDE, DIRT, WATER, STONE, SAND
+    };
 
-        public enum BlockType
-        {
-            GRASSTOP,
-            GRASSSIDE,
-            DIRT,
-            WATER,
-            STONE,
-            SAND,
-            AIR
-        }
-    
+    public enum BlockSide { BOTTOM, TOP, LEFT, RIGHT, FRONT, BACK };
 
     public static Vector2[,] blockUVs = {
         /*GRASSTOP*/ {  new Vector2(0.125f, 0.375f), new Vector2(0.1875f,0.375f),
@@ -44,44 +25,6 @@ namespace Sonosthesia.Builder
                         new Vector2(0.125f,0.9375f), new Vector2(0.1875f,0.9375f)}
     };
 
-    public static T FlatGet<T>(this T[] array, int width, int depth, int x, int y, int z)
-    {
-        return array[x + width * (y + depth * z)];
-    }
-
-    public static float FBM2(float x, float z, PerlinConfiguration configuration)
-    {
-        return FBM2(x, z, configuration.Octaves, configuration.Scale, configuration.HeightScale, configuration.HeightOffset);
-    }
-    
-    public static float FBM2(float x, float z, int octaves, float scale, float heightScale, float heightOffset)
-    {
-        float total = 0f;
-        float frequency = 1;
-        for (int i = 0; i < octaves; i++)
-        {
-            total += Mathf.PerlinNoise(x * scale * frequency, z * scale * frequency) * heightScale;
-            frequency *= 2f;
-        }
-        return total + heightOffset;
-    }
-
-    public static float FBM3(float x, float y, float z, PerlinConfiguration configuration)
-    {
-        return FBM3(x, y, z, configuration.Octaves, configuration.Scale, configuration.HeightScale, configuration.HeightOffset);   
-    }
-
-    public static float FBM3(float x, float y, float z, int octaves, float scale, float heightScale, float heightOffset)
-    {
-        float xy = FBM2(x, y, octaves, scale, heightScale, heightOffset);
-        float yz = FBM2(y, z, octaves, scale, heightScale, heightOffset);
-        float xz = FBM2(x, z, octaves, scale, heightScale, heightOffset);
-        float yx = FBM2(y, x, octaves, scale, heightScale, heightOffset);
-        float zy = FBM2(z, y, octaves, scale, heightScale, heightOffset);
-        float zx = FBM2(z, x, octaves, scale, heightScale, heightOffset);
-
-        return (xy + yz + xz + yx + zy + zx) / 6f;
-    }
 
     public static Mesh MergeMeshes(Mesh[] meshes) {
         Mesh mesh = new Mesh();
@@ -143,5 +86,5 @@ namespace Sonosthesia.Builder
         mesh.normals = norms.ToArray();
         mesh.uv = uvs.ToArray();
     }
-    }
+
 }

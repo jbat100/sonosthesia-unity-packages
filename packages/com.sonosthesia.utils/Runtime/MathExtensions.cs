@@ -30,7 +30,7 @@ namespace Sonosthesia.Utils
         }
         
         // https://github.com/keijiro/ProceduralMotion/blob/master/Packages/jp.keijiro.klak.motion/Runtime/BrownianMotion.cs
-        public static float BrownianFbm(float x, float y, int octave)
+        public static float FractalBrownianMotion(float x, float y, int octave)
         {
             float2 p = math.float2(x, y);
             float f = 0.0f;
@@ -42,6 +42,13 @@ namespace Sonosthesia.Utils
                 w *= 0.5f;
             }
             return f;
+        }
+
+        public static void TestNoise()
+        {
+            float4 v4 = default;
+            float3 v3 = default;
+            noise.snoise(v3, out float3 gradient);
         }
     }
 }
