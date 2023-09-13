@@ -1,6 +1,7 @@
 {
   "author": "Jonathan Thorpe",
   "dependencies": {
+    "com.unity.splines": "2.2.1",
     "com.sonosthesia.utils": "1.0.0"
   },
   "description": "Sonosthesia unity builder",

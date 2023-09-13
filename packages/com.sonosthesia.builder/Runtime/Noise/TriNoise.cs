@@ -1,13 +1,12 @@
 using System;
 using System.Runtime.InteropServices;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Sonosthesia.Builder
 {
     public static class TriNoise
     {
-        
-        
         #region job data
         
         [StructLayout(LayoutKind.Sequential)]
@@ -63,6 +62,21 @@ namespace Sonosthesia.Builder
             public override string ToString()
             {
                 return $"({nameof(Frequency)} : {Frequency}, {nameof(TriPhase)} : {TriPhase})";
+            }
+        }
+        
+        [StructLayout(LayoutKind.Sequential)]
+        public readonly struct DomainNoiseComponent
+        {
+            public readonly TriNoise.NoiseComponent Component;
+            public readonly float3x4 DomainTRS;
+            public readonly float3x3 DerivativeMatrix;
+
+            public DomainNoiseComponent(NoiseComponent component, float3x4 domainTRS, float3x3 derivativeMatrix)
+            {
+                Component = component;
+                DomainTRS = domainTRS;
+                DerivativeMatrix = derivativeMatrix;
             }
         }
         

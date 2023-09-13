@@ -13,30 +13,15 @@ namespace Sonosthesia.Builder
 {
     public class TriDomainMeshNoiseController : CatlikeMeshNoiseController
     {
-        [StructLayout(LayoutKind.Sequential)]
-        private readonly struct DomainNoiseComponent
-        {
-            public readonly TriNoise.NoiseComponent Component;
-            public readonly float3x4 DomainTRS;
-            public readonly float3x3 DerivativeMatrix;
-
-            public DomainNoiseComponent(TriNoise.NoiseComponent component, float3x4 domainTRS, float3x3 derivativeMatrix)
-            {
-                Component = component;
-                DomainTRS = domainTRS;
-                DerivativeMatrix = derivativeMatrix;
-            }
-        }
-
         private delegate JobHandle JobScheduleDelegate (
-            Mesh.MeshData meshData, int resolution, NativeArray<DomainNoiseComponent> configs,
+            Mesh.MeshData meshData, int resolution, NativeArray<TriNoise.DomainNoiseComponent> configs,
             bool isPlane, JobHandle dependency
         );
         
         [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
         private struct Job<N> : IJobFor where N : struct, Noise.INoise
         {
-            [ReadOnly] private NativeArray<DomainNoiseComponent> configs;
+            [ReadOnly] private NativeArray<TriNoise.DomainNoiseComponent> configs;
             
             private bool isPlane;
             private NativeArray<Vertex4> vertices;
@@ -47,7 +32,7 @@ namespace Sonosthesia.Builder
                 Sample4 noise = default;
                 for (int c = 0; c < configs.Length; c++)
                 {
-                    DomainNoiseComponent component = configs[c];
+                    TriNoise.DomainNoiseComponent component = configs[c];
                     float4x3 position = component.DomainTRS.TransformVectors(transpose(float3x4(
                         v.v0.position, v.v1.position, v.v2.position, v.v3.position
                     )));
@@ -57,7 +42,7 @@ namespace Sonosthesia.Builder
             }
         
             public static JobHandle ScheduleParallel (Mesh.MeshData meshData, int resolution, 
-                NativeArray<DomainNoiseComponent> configs, bool isPlane, JobHandle dependency
+                NativeArray<TriNoise.DomainNoiseComponent> configs, bool isPlane, JobHandle dependency
             )
             {
                 return new Job<N>
@@ -150,7 +135,7 @@ namespace Sonosthesia.Builder
         public DomainDynamicSettings GetSettings(int index) => _settings[index];
 
         [SerializeField] private List<DomainDynamicSettings> _settings;
-        private NativeArray<DomainNoiseComponent> _noiseConfigs;
+        private NativeArray<TriNoise.DomainNoiseComponent> _noiseConfigs;
         private float[] _localTimes;
 
         protected override bool IsDynamic => true;
@@ -181,7 +166,7 @@ namespace Sonosthesia.Builder
             if (_noiseConfigs.Length != _settings.Count)
             {
                 _noiseConfigs.Dispose();
-                _noiseConfigs = new NativeArray<DomainNoiseComponent>(_settings.Count, Allocator.Persistent);
+                _noiseConfigs = new NativeArray<TriNoise.DomainNoiseComponent>(_settings.Count, Allocator.Persistent);
             }
 
             if (_localTimes == null || _localTimes.Length != _settings.Count)
@@ -196,7 +181,7 @@ namespace Sonosthesia.Builder
             for (int i = 0; i < _settings.Count; i++)
             {
                 DomainDynamicSettings settings = _settings[i];
-                _noiseConfigs[i] = new DomainNoiseComponent(
+                _noiseConfigs[i] = new TriNoise.DomainNoiseComponent(
                     TriNoise.GetNoiseComponent(settings.Settings, seed, displacement, _localTimes[i]),
                     settings.Domain.Matrix,
                     settings.Domain.DerivativeMatrix
