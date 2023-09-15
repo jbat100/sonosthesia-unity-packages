@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
@@ -54,7 +52,7 @@ namespace Sonosthesia.Builder
             }
         }   
         
-        private static JobScheduleDelegate[,] _jobs = {
+        private static readonly JobScheduleDelegate[,] _jobs = {
             {
                 Job<Noise.Lattice1D<Noise.Perlin, Noise.LatticeNormal>>.ScheduleParallel,
                 Job<Noise.Lattice2D<Noise.Perlin, Noise.LatticeNormal>>.ScheduleParallel,

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
@@ -6,51 +5,53 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
 
-using static Unity.Mathematics.math;
-
 namespace Sonosthesia.Builder
 {
-    public class TriNoiseDeformableSplineExtrude : NoiseDeformableSplineExtrude
+    public class FractalNoiseDeformableSplineExtrude : NoiseDeformableSplineExtrude
     {
+        [SerializeField] private Noise.Settings _noiseSettings = Noise.Settings.Default;
+        
+        [SerializeField] private SpaceTRS _domain = new SpaceTRS { scale = 1f };
+
+        [SerializeField] private float _displacement = 0.1f;
+        
         private delegate JobHandle JobScheduleDelegate (
-            Mesh.MeshData meshData, int innerloopBatchCount, NativeArray<TriNoise.DomainNoiseComponent> configs,
-            JobHandle dependency
+            Mesh.MeshData meshData, int innerloopBatchCount, Noise.Settings settings, int seed, SpaceTRS domain, 
+            float displacement, JobHandle dependency
         );
         
         [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
-        private struct Job<N> : IJobFor where N : struct, Noise.INoise
+        public struct Job<N> : IJobFor where N : struct, Noise.INoise
         {
-            [ReadOnly] private NativeArray<TriNoise.DomainNoiseComponent> configs;
-            
+            private Noise.Settings settings;
+            private int seed;
+            private float3x4 domainTRS;
+            private float3x3 derivativeMatrix;
+            private float displacement;
             private NativeArray<SplineVertexData4> vertices;
 
             public void Execute(int i)
             {
                 SplineVertexData4 v = vertices[i];
-                Sample4 noise = default;
-                for (int c = 0; c < configs.Length; c++)
-                {
-                    TriNoise.DomainNoiseComponent component = configs[c];
-                    float4x3 position = component.DomainTRS.TransformVectors(transpose(float3x4(
-                        v.v0.position, v.v1.position, v.v2.position, v.v3.position
-                    )));
-                    noise += position.GetNoise<N>(component.Component, component.DerivativeMatrix);
-                }
+                Sample4 noise = SplineUtils.GetFractalNoise<N>(v, domainTRS, settings, seed) * displacement;
+                noise.Derivatives = derivativeMatrix.TransformVectors(noise.Derivatives);
                 vertices[i] = SplineUtils.DeformVerticesAlongNormals(v, noise);
             }
         
             public static JobHandle ScheduleParallel (Mesh.MeshData meshData, int innerloopBatchCount, 
-                NativeArray<TriNoise.DomainNoiseComponent> configs, JobHandle dependency
-            )
-            {
-                return new Job<N>
+                Noise.Settings settings, int seed, SpaceTRS domain, float displacement, 
+                JobHandle dependency
+            ) => 
+                new Job<N>
                 {
                     vertices = meshData.GetVertexData<SplineVertexData>().Reinterpret<SplineVertexData4>(12 + 12 + 8),
-                    configs = configs
+                    settings = settings,
+                    seed = seed,
+                    domainTRS = domain.Matrix,
+                    derivativeMatrix = domain.DerivativeMatrix,
+                    displacement = displacement
                 }.ScheduleParallel(meshData.vertexCount / 4, innerloopBatchCount, dependency);
-            }
-        }   
-        
+        }
         
         private static JobScheduleDelegate[,] _jobs = {
             {
@@ -130,69 +131,19 @@ namespace Sonosthesia.Builder
             }
         };
         
-        [SerializeField, Range(-0.1f, 0.1f)] private float _displacement = 0.01f;
-        
-        public DomainDynamicSettings GetSettings(int index) => _settings[index];
-
-        [SerializeField] private List<DomainDynamicSettings> _settings;
-        private NativeArray<TriNoise.DomainNoiseComponent> _noiseConfigs;
-        private float[] _localTimes;
-        
-        protected override void Update()
+        protected override void Deform(ISpline spline, Mesh.MeshData data, 
+            float radius, int sides, float segmentsPerUnit, bool capped, float2 range,
+            NoiseType noiseType, int dimensions, int seed)
         {
-            for (int i = 0; i < _settings.Count; i++)
-            {
-                _localTimes[i] += Time.deltaTime * _settings[i].Settings.Velocity;
-            }
-            base.Update();
-        }
-        
-        protected override void OnEnable()
-        {
-            CheckArrays();
-            base.OnEnable();
-        }
-
-        protected override void OnValidate()
-        {
-            CheckArrays();
-            base.OnValidate();
-        }
-        
-        private void CheckArrays()
-        {
-            if (_noiseConfigs.Length != _settings.Count)
-            {
-                _noiseConfigs.Dispose();
-                _noiseConfigs = new NativeArray<TriNoise.DomainNoiseComponent>(_settings.Count, Allocator.Persistent);
-            }
-
-            if (_localTimes == null || _localTimes.Length != _settings.Count)
-            {
-                _localTimes = new float[_settings.Count];
-                Debug.Log("Init _localTimes");
-            }
-        }
-
-        protected override void Deform(ISpline spline, Mesh.MeshData data, float radius, int sides, float segmentsPerUnit, 
-            bool capped, float2 range, NoiseType noiseType, int dimensions, int seed)
-        {
-            for (int i = 0; i < _settings.Count; i++)
-            {
-                DomainDynamicSettings settings = _settings[i];
-                _noiseConfigs[i] = new TriNoise.DomainNoiseComponent(
-                    TriNoise.GetNoiseComponent(settings.Settings, seed, _displacement, _localTimes[i]),
-                    settings.Domain.Matrix,
-                    settings.Domain.DerivativeMatrix
-                );
-            }
-            
             int innerloopBatchCount = (int)math.sqrt(segmentsPerUnit);
             
             _jobs[(int) noiseType, dimensions - 1](
                 data,
                 innerloopBatchCount,
-                _noiseConfigs,
+                _noiseSettings,
+                seed,
+                _domain,
+                _displacement,
                 default).Complete();
         }
     }

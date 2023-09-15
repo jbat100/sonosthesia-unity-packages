@@ -35,8 +35,8 @@ namespace Sonosthesia.Builder
         
         [SerializeField] private Material[] _materials;
         
-        [System.Flags]
-        public enum GizmoMode
+        [Flags]
+        private enum GizmoMode
         {
             Vertices = 1 << 1, 
             Normals = 1 << 2, 

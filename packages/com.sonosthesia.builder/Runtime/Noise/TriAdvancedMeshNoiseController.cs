@@ -12,7 +12,7 @@ namespace Sonosthesia.Builder
     public class TriAdvancedMeshNoiseController : CatlikeMeshNoiseController
     {
         private delegate JobHandle JobScheduleDelegate (
-            Mesh.MeshData meshData, int resolution, NativeArray<TriNoise.NoiseComponent> configs, SpaceTRS domain,
+            Mesh.MeshData meshData, int innerloopBatchCount, NativeArray<TriNoise.NoiseComponent> configs, SpaceTRS domain,
             bool isPlane, JobHandle dependency
         );
         
@@ -40,7 +40,7 @@ namespace Sonosthesia.Builder
                 vertices[i] = SurfaceUtils.SetVertices(v, noise, isPlane);
             }
         
-            public static JobHandle ScheduleParallel (Mesh.MeshData meshData, int resolution, 
+            public static JobHandle ScheduleParallel (Mesh.MeshData meshData, int innerloopBatchCount, 
                 NativeArray<TriNoise.NoiseComponent> configs, SpaceTRS domain, bool isPlane, JobHandle dependency
             )
             {
@@ -51,7 +51,7 @@ namespace Sonosthesia.Builder
                     derivativeMatrix = domain.DerivativeMatrix,
                     configs = configs,
                     isPlane = isPlane
-                }.ScheduleParallel(meshData.vertexCount / 4, resolution, dependency);
+                }.ScheduleParallel(meshData.vertexCount / 4, innerloopBatchCount, dependency);
             }
         }   
         
