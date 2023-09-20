@@ -1,9 +1,10 @@
 using System;
-using UniRx;
 using UnityEngine;
 using UnityEngine.VFX;
+using UniRx;
+using Sonosthesia.Spawn;
 
-namespace Sonosthesia
+namespace Sonosthesia.VFX
 {
     public class SpawnChannelVFXEvent : MonoBehaviour
     {
@@ -45,8 +46,7 @@ namespace Sonosthesia
             private void ConfigureAttribute(VFXEventAttribute eventAttribute, SpawnPayload payload)
             {
                 eventAttribute.SetVector3("color", new Vector3(payload.Color.r, payload.Color.g, payload.Color.b));
-                eventAttribute.SetVector3("position", payload.Trans.Position);
-                eventAttribute.SetVector3("scale", payload.Trans.Scale);
+                eventAttribute.SetVector3("position", payload.Trans.pos);
                 eventAttribute.SetFloat("size", payload.Size);
                 eventAttribute.SetFloat("lifetime", payload.Lifetime);
             }

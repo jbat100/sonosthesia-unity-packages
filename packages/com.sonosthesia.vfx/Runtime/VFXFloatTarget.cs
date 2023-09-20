@@ -1,6 +1,6 @@
 using UnityEngine.VFX;
 
-namespace Sonosthesia
+namespace Sonosthesia.VFX
 {
     public class VFXFloatTarget : VFXTarget<float>
     {

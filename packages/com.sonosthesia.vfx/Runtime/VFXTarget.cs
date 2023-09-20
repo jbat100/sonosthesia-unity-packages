@@ -1,7 +1,8 @@
 using UnityEngine;
+using Sonosthesia.Flow;
 using UnityEngine.VFX;
 
-namespace Sonosthesia
+namespace Sonosthesia.VFX
 {
     public abstract class VFXTarget<T> : Target<T> where T : struct
     {

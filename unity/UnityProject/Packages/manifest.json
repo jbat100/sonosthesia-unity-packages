@@ -13,6 +13,7 @@
     "com.sonosthesia.utils": "file:../../../packages/com.sonosthesia.utils",
     "com.sonosthesia.visualflow": "file:../../../packages/com.sonosthesia.visualflow",
     "com.sonosthesia.processing": "file:../../../packages/com.sonosthesia.processing",
+    "com.sonosthesia.vfx": "file:../../../packages/com.sonosthesia.vfx",
     "com.unity.cinemachine": "2.9.5",
     "com.unity.collab-proxy": "2.0.4",
     "com.unity.ide.rider": "3.0.21",

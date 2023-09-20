@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.VFX;
 
-namespace Sonosthesia
+namespace Sonosthesia.VFX
 {
     public class VFXColorTarget : VFXTarget<Color>
     {
