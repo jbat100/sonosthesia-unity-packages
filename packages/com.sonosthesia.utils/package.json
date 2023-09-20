@@ -6,7 +6,9 @@
   },
   "description": "Sonosthesia utils",
   "displayName": "Sonosthesia Utils",
-  "keywords": [ "unity" ],
+  "keywords": [
+    "unity"
+  ],
   "license": "Unlicense",
   "name": "com.sonosthesia.utils",
   "repository": "github:jbat100/sonosthesia-unity-utils",

@@ -3,11 +3,13 @@
   "dependencies": {
     "com.unity.splines": "2.2.1",
     "com.neuecc.unirx": "7.1.0",
-    "com.sonosthesia.flow": "1.0.0"
+    "com.sonosthesia.flow": "1.0.2"
   },
   "description": "Sonosthesia unity spawn",
   "displayName": "Sonosthesia Spawn",
-  "keywords": [ "unity" ],
+  "keywords": [
+    "unity"
+  ],
   "license": "Unlicense",
   "name": "com.sonosthesia.spawn",
   "repository": "github:jbat100/sonosthesia-unity-spawn",

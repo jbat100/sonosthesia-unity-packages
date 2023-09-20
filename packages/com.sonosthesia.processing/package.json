@@ -1,11 +1,13 @@
 {
   "author": "Jonathan Thorpe",
   "dependencies": {
-    "com.sonosthesia.utils": "1.0.0"
+    "com.sonosthesia.utils": "1.0.2"
   },
   "description": "Sonosthesia processing",
   "displayName": "Sonosthesia Processing",
-  "keywords": [ "unity" ],
+  "keywords": [
+    "unity"
+  ],
   "license": "Unlicense",
   "name": "com.sonosthesia.processing",
   "repository": "github:jbat100/sonosthesia-unity-packages",

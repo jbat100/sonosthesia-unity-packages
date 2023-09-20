@@ -5,7 +5,9 @@
   },
   "description": "Sonosthesia unity adaptive midi",
   "displayName": "Sonosthesia Adaptive MIDI",
-  "keywords": [ "unity" ],
+  "keywords": [
+    "unity"
+  ],
   "license": "Unlicense",
   "name": "com.sonosthesia.adaptivemidi",
   "repository": "github:jbat100/sonosthesia-unity-adaptivemidi",

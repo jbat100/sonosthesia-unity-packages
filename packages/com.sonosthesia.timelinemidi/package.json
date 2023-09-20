@@ -1,16 +1,18 @@
 {
-    "author": "Jonathan Thorpe",
-    "dependencies": { 
-        "com.unity.timeline": "1.7.1",
-        "com.sonosthesia.midi": "1.0.0"
-    },
-    "description": "Custom timeline/playables package that provides callbacks based on sequence data contained in a standard MIDI file",
-    "displayName": "Sonosthesia Timeline Midi",
-    "keywords": [ "unity" ],
-    "license": "Unlicense",
-    "name": "com.sonosthesia.timelinemidi",
-    "repository": "github:jbat100/sonosthesia-unity-timelinemidi",
-    "unity": "2022.2",
-    "unityRelease": "0f1",
-    "version": "1.0.1"
+  "author": "Jonathan Thorpe",
+  "dependencies": {
+    "com.unity.timeline": "1.7.1",
+    "com.sonosthesia.midi": "1.0.2"
+  },
+  "description": "Custom timeline/playables package that provides callbacks based on sequence data contained in a standard MIDI file",
+  "displayName": "Sonosthesia Timeline Midi",
+  "keywords": [
+    "unity"
+  ],
+  "license": "Unlicense",
+  "name": "com.sonosthesia.timelinemidi",
+  "repository": "github:jbat100/sonosthesia-unity-timelinemidi",
+  "unity": "2022.2",
+  "unityRelease": "0f1",
+  "version": "1.0.1"
 }

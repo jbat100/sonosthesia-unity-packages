@@ -2,11 +2,13 @@
   "author": "Jonathan Thorpe",
   "dependencies": {
     "com.unity.splines": "2.2.1",
-    "com.sonosthesia.utils": "1.0.0"
+    "com.sonosthesia.utils": "1.0.2"
   },
   "description": "Sonosthesia unity builder",
   "displayName": "Sonosthesia Builder",
-  "keywords": [ "unity" ],
+  "keywords": [
+    "unity"
+  ],
   "license": "Unlicense",
   "name": "com.sonosthesia.builder",
   "repository": "github:jbat100/sonosthesia-unity-packages",
