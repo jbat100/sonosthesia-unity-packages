@@ -28,8 +28,8 @@
       "source": "local",
       "dependencies": {
         "com.neuecc.unirx": "7.1.0",
-        "com.sonosthesia.flow": "1.0.0",
-        "com.sonosthesia.utils": "1.0.0"
+        "com.sonosthesia.flow": "1.0.2",
+        "com.sonosthesia.utils": "1.0.2"
       }
     },
     "com.sonosthesia.builder": {
@@ -38,7 +38,7 @@
       "source": "local",
       "dependencies": {
         "com.unity.splines": "2.2.1",
-        "com.sonosthesia.utils": "1.0.0"
+        "com.sonosthesia.utils": "1.0.2"
       }
     },
     "com.sonosthesia.flow": {
@@ -48,8 +48,8 @@
       "dependencies": {
         "com.cysharp.unitask": "2.3.3",
         "com.neuecc.unirx": "7.1.0",
-        "com.sonosthesia.utils": "1.0.0",
-        "com.sonosthesia.processing": "1.0.0"
+        "com.sonosthesia.utils": "1.0.2",
+        "com.sonosthesia.processing": "1.0.2"
       }
     },
     "com.sonosthesia.link": {
@@ -57,9 +57,9 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.sonosthesia.midi": "1.0.0",
-        "com.sonosthesia.spawn": "1.0.0",
-        "com.sonosthesia.touch": "1.0.0"
+        "com.sonosthesia.midi": "1.0.2",
+        "com.sonosthesia.spawn": "1.0.2",
+        "com.sonosthesia.touch": "1.0.2"
       }
     },
     "com.sonosthesia.midi": {
@@ -68,8 +68,8 @@
       "source": "local",
       "dependencies": {
         "com.neuecc.unirx": "7.1.0",
-        "com.sonosthesia.adaptivemidi": "1.0.0",
-        "com.sonosthesia.flow": "1.0.0"
+        "com.sonosthesia.adaptivemidi": "1.0.2",
+        "com.sonosthesia.flow": "1.0.2"
       }
     },
     "com.sonosthesia.pack": {
@@ -78,7 +78,7 @@
       "source": "local",
       "dependencies": {
         "com.neuecc.unirx": "7.1.0",
-        "com.sonosthesia.flow": "1.0.1"
+        "com.sonosthesia.flow": "1.0.2"
       }
     },
     "com.sonosthesia.processing": {
@@ -86,7 +86,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.sonosthesia.utils": "1.0.0"
+        "com.sonosthesia.utils": "1.0.2"
       }
     },
     "com.sonosthesia.rtmidi": {
@@ -96,7 +96,7 @@
       "dependencies": {
         "jp.keijiro.rtmidi": "1.0.4",
         "com.neuecc.unirx": "7.1.0",
-        "com.sonosthesia.midi": "1.0.1"
+        "com.sonosthesia.midi": "1.0.2"
       }
     },
     "com.sonosthesia.spawn": {
@@ -106,7 +106,7 @@
       "dependencies": {
         "com.unity.splines": "2.2.1",
         "com.neuecc.unirx": "7.1.0",
-        "com.sonosthesia.flow": "1.0.0"
+        "com.sonosthesia.flow": "1.0.2"
       }
     },
     "com.sonosthesia.touch": {
@@ -116,7 +116,7 @@
       "dependencies": {
         "com.unity.mathematics": "1.2.6",
         "com.neuecc.unirx": "7.1.0",
-        "com.sonosthesia.flow": "1.0.0"
+        "com.sonosthesia.flow": "1.0.2"
       }
     },
     "com.sonosthesia.utils": {
@@ -133,7 +133,9 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.neuecc.unirx": "7.1.0"
+        "com.neuecc.unirx": "7.1.0",
+        "com.sonosthesia.flow": "1.0.2",
+        "com.sonosthesia.spawn": "1.0.2"
       }
     },
     "com.sonosthesia.visualflow": {
@@ -143,8 +145,8 @@
       "dependencies": {
         "com.cysharp.unitask": "2.3.3",
         "com.neuecc.unirx": "7.1.0",
-        "com.sonosthesia.utils": "1.0.0",
-        "com.sonosthesia.flow": "1.0.0"
+        "com.sonosthesia.utils": "1.0.2",
+        "com.sonosthesia.flow": "1.0.2"
       }
     },
     "com.unity.burst": {
