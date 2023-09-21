@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Sonosthesia.Flow
 {
     
-    [CreateAssetMenu(fileName = "CustomSchedulerConfiguration", menuName = "Sonosthesia/CustomSchedulerConfiguration")]
+    [CreateAssetMenu(fileName = "CustomSchedulerConfiguration", menuName = "Sonosthesia/Scheduling/CustomSchedulerConfiguration")]
     public class CustomSchedulerConfiguration : SchedulerConfiguration
     {
         [SerializeField] private float _duration;

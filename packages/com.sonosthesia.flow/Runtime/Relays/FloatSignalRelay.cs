@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Flow
 {
-    [CreateAssetMenu(fileName = "FloatRelay", menuName = "Sonosthesia/FloatRelay")]
+    [CreateAssetMenu(fileName = "FloatSignalRelay", menuName = "Sonosthesia/Relays/FloatSignalRelay")]
     public class FloatSignalRelay : SignalRelay<float>
     {
         

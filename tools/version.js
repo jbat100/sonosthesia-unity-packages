@@ -14,14 +14,14 @@ function getPackageDescription(package) {
 
 // returns a set of package dependencies for a local package
 function getPackageVersion(package) {
-    return getPackageDescription(package).version;
+    return getPackageDescription(package).version
 }
 
 function extractDependencies(description) {
     let dependencies = new Set()
     for (const [dependency, version] of Object.entries(description.dependencies)) {
         if (!dependency.startsWith("com.sonosthesia")) {
-            continue
+            continue;
         }
         dependencies.add(dependency);
     }
@@ -30,48 +30,20 @@ function extractDependencies(description) {
 
 // returns a set of local paths to dependencies for a unity project manifest as object
 function getPackageDependencies(package) {
-    return extractDependencies(getPackageDescription(package));
+    return extractDependencies(getPackageDescription(package))
 }
 
 function updatePackageDependencies(package, updated) {
-    let description = getPackageDescription(package);
+    let description = getPackageDescription(package)
+    description.version = updated
     for (const [dependency, version] of Object.entries(description.dependencies)) {
         if (!dependency.startsWith("com.sonosthesia")) {
-            continue
+            continue;
         }
-        description.dependencies[dependency] = updated;
+        description.dependencies[dependency] = updated
     }
     let packagePath = path.join(getPackagePath(package), "package.json")
     fs.writeFileSync(packagePath, JSON.stringify(description, null, 2))
-}
-
-function localizeDependencies(manifest) {
-    console.log("Switching to localDependencies " + manifest)
-    if (!fs.existsSync(manifest)) {
-        console.log("bailing out...")
-        return
-    }
-    let unityJSON = JSON.parse(fs.readFileSync(manifest));
-    let manifestDependencies = getManifestDependencies(unityJSON)
-    let manifestDirectory = path.dirname(manifest)
-    for (const dependency of manifestDependencies) {
-        console.log("processing " + dependency)
-        // tried to use path.posix.relative but things get messy
-        unityJSON.dependencies[dependency] = "file:" + path.relative(
-            manifestDirectory, 
-            getPackagePath(dependency)
-        ).replaceAll(path.sep, "/"); 
-    }
-    console.log(unityJSON)
-    fs.writeFileSync(manifest, JSON.stringify(unityJSON, null, 2))
-}
-
-function getManifestPath(projectPath) {
-    return path.join(projectPath, "Packages", "manifest.json")
-}
-
-function getPackagesRootPath() {
-    return path.join(__dirname, "..", "packages")
 }
 
 function getPackageNames(rootPath) {

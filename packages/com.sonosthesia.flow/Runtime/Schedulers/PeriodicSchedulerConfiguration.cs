@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Flow
 {
-    [CreateAssetMenu(fileName = "PeriodicSchedulerConfiguration", menuName = "Sonosthesia/PeriodicSchedulerConfiguration")]
+    [CreateAssetMenu(fileName = "PeriodicSchedulerConfiguration", menuName = "Sonosthesia/Scheduling/PeriodicSchedulerConfiguration")]
     public class PeriodicSchedulerConfiguration : SchedulerConfiguration
     {
         [SerializeField] private float _duration;

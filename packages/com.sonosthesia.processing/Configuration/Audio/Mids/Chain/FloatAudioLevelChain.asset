@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dce7c1a8d9510496aac44c6eee24cb85, type: 3}
+  m_Name: FloatAudioLevelChain
+  m_EditorClassIdentifier: 
+  _chain:
+  - {fileID: 11400000, guid: f24f33ed5ca2f4a90baba7de06b2a6c9, type: 2}
+  - {fileID: 11400000, guid: ca72fbdd2a99645e6a23d38e2d822b02, type: 2}
+  - {fileID: 11400000, guid: 48c7bc56681f54b03ab3bee91c5de47c, type: 2}

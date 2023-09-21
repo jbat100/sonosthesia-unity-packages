@@ -33,7 +33,7 @@ namespace Sonosthesia.Processing
         }
     }
     
-    [CreateAssetMenu(fileName = "FloatSoftLanding", menuName = "ScriptableObjects/Sonosthesia/FloatSoftLanding")]
+    [CreateAssetMenu(fileName = "FloatSoftLanding", menuName = "Sonosthesia/Processing/FloatSoftLanding")]
     public class FloatSoftLandingProcessorFactory 
         : ConfigurableDynamicProcessorFactory<FloatSoftLandingSettings, float>
     {
