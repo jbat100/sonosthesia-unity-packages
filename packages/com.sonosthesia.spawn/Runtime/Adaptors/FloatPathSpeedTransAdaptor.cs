@@ -10,7 +10,7 @@ namespace Sonosthesia.Spawn
         
         protected override Trans Map(float value)
         {
-            return new Trans(_path.Position(value, true), _path.Rotation(value, true), Vector3.one);
+            return new Trans(_path.GetPosition(value, true), _path.GetRotation(value, true), Vector3.one);
         }
     }
 }

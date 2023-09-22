@@ -41,11 +41,14 @@ namespace Sonosthesia.Utils
             Scale = transfrom.localScale;
         }
 
-        public void ApplyTo(Transform transform)
+        public void ApplyTo(Transform transform, bool applyScale = true, bool applyPosition = true, bool applyRotation = true)
         {
-            transform.localPosition = Position;
-            transform.localRotation = Rotation;
-            transform.localScale = Scale;
+            if (applyPosition)
+                transform.localPosition = Position;
+            if (applyRotation)
+                transform.localRotation = Rotation;
+            if (applyScale)
+                transform.localScale = Scale;
         }
     }
 }

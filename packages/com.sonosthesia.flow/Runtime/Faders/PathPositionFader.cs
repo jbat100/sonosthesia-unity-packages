@@ -11,7 +11,7 @@ namespace Sonosthesia.Flow
         
         public override Vector3 Fade(float fade)
         {
-            return _path.Position(fade, _normlized);
+            return _path.GetPosition(fade, _normlized);
         }
     }
 }
