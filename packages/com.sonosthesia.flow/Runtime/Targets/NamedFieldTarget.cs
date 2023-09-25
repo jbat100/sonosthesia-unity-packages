@@ -1,4 +1,6 @@
+using System;
 using System.Reflection;
+using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Flow
@@ -13,13 +15,15 @@ namespace Sonosthesia.Flow
         
         protected override void Awake()
         {
+            _fieldInfo = _component.GetType().GetFieldInHierarchy(_name, 
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            
             base.Awake();
-            _fieldInfo = _component.GetType().GetField(_name, BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
         protected override void Apply(T value)
         {
-            _fieldInfo.SetValue(_component, value);
+            _fieldInfo?.SetValue(_component, value);
         }
     }
 }

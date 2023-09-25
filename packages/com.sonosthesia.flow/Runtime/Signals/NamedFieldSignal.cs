@@ -1,4 +1,5 @@
 using System.Reflection;
+using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Flow
@@ -13,7 +14,8 @@ namespace Sonosthesia.Flow
         
         protected void Awake()
         {
-            _fieldInfo = _component.GetType().GetField(_name, BindingFlags.NonPublic | BindingFlags.Instance);
+            _fieldInfo = _component.GetType().GetFieldInHierarchy(_name, 
+                BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
         protected void Update()

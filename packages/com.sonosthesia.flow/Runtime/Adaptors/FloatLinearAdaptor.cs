@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Flow
 {
-    public abstract class FloatLinearAdaptor<T> : SimpleFloatAdaptor<T> where T : struct
+    public abstract class FloatLinearAdaptor<T> : FloatMapAdaptor<T> where T : struct
     {
         [SerializeField] private T _start;
         [SerializeField] private T _end;

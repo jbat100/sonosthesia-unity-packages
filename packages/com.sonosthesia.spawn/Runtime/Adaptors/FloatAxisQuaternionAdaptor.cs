@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Spawn
 {
-    public class FloatAxisQuaternionAdaptor : SimpleFloatAdaptor<Quaternion>
+    public class FloatAxisQuaternionAdaptor : FloatMapAdaptor<Quaternion>
     {
         [SerializeField] private Vector3 _axis = Vector3.up;
 

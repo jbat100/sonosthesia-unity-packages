@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Sonosthesia.Spawn
 {
     [RequireComponent(typeof(BehaviourSelector))]
-    public class BehaviourFloatAdaptor : SimpleAdaptor<BehaviourPayload, float>
+    public class BehaviourFloatAdaptor : MapAdaptor<BehaviourPayload, float>
     {
         private BehaviourSelector _selector;
 

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Spawn
 {
-    public class FloatGradientColorAdaptor : SimpleFloatAdaptor<Color>
+    public class FloatGradientColorAdaptor : FloatMapAdaptor<Color>
     {
         [SerializeField] private Gradient _gradient;
 

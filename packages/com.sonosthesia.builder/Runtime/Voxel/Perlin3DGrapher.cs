@@ -6,7 +6,7 @@ namespace Sonosthesia.Builder
     {
         [SerializeField] private Vector3 _dimensions = new Vector3(10, 10, 10);
         
-        [SerializeField] private PerlinConfiguration _configuration;
+        [SerializeField] private PerlinSettings settings;
 
         [SerializeField] [Range(0, 10)] private float _drawCutoff;
 
@@ -47,7 +47,7 @@ namespace Sonosthesia.Builder
                 {
                     for (int x = 0; x < _dimensions.x; x++)
                     {
-                        float noise = VoxelUtils.FBM3(x, y, z, _configuration);
+                        float noise = VoxelUtils.FBM3(x, y, z, settings);
                         MeshRenderer meshRenderer = cubes.FlatGet((int) _dimensions.x, (int) _dimensions.z, x, y, z);
                         meshRenderer.enabled = noise > _drawCutoff;
                     }

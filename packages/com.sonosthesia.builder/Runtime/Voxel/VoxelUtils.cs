@@ -49,9 +49,9 @@ namespace Sonosthesia.Builder
         return array[x + width * (y + depth * z)];
     }
 
-    public static float FBM2(float x, float z, PerlinConfiguration configuration)
+    public static float FBM2(float x, float z, PerlinSettings settings)
     {
-        return FBM2(x, z, configuration.Octaves, configuration.Scale, configuration.HeightScale, configuration.HeightOffset);
+        return FBM2(x, z, settings.Octaves, settings.Scale, settings.HeightScale, settings.HeightOffset);
     }
     
     public static float FBM2(float x, float z, int octaves, float scale, float heightScale, float heightOffset)
@@ -66,9 +66,9 @@ namespace Sonosthesia.Builder
         return total + heightOffset;
     }
 
-    public static float FBM3(float x, float y, float z, PerlinConfiguration configuration)
+    public static float FBM3(float x, float y, float z, PerlinSettings settings)
     {
-        return FBM3(x, y, z, configuration.Octaves, configuration.Scale, configuration.HeightScale, configuration.HeightOffset);   
+        return FBM3(x, y, z, settings.Octaves, settings.Scale, settings.HeightScale, settings.HeightOffset);   
     }
 
     public static float FBM3(float x, float y, float z, int octaves, float scale, float heightScale, float heightOffset)

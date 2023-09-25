@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Spawn
 {
-    public class FloatPathTransAdaptor : SimpleFloatAdaptor<Trans>
+    public class FloatPathTransAdaptor : FloatMapAdaptor<Trans>
     {
         [SerializeField] private Path _path;
         

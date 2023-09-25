@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Flow
 {
-    public abstract class SimpleFloatAdaptor<TTarget> : Adaptor<float, TTarget> where TTarget : struct
+    public abstract class FloatMapAdaptor<TTarget> : Adaptor<float, TTarget> where TTarget : struct
     {
         [SerializeField] private float _offset = 0f;
         

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Spawn
 {
-    public class FloatLinearColorAdaptor : SimpleFloatAdaptor<Color>
+    public class FloatLinearColorAdaptor : FloatMapAdaptor<Color>
     {
         [SerializeField] [ColorUsage(true, true)] private Color _start;
         [SerializeField] [ColorUsage(true, true)] private Color _end;

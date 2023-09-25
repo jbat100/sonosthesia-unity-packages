@@ -3,7 +3,7 @@ using UniRx;
 
 namespace Sonosthesia.Flow
 {
-    public abstract class SimpleAdaptor<TSource, TTarget> : Adaptor<TSource, TTarget> where TTarget : struct where TSource : struct
+    public abstract class MapAdaptor<TSource, TTarget> : Adaptor<TSource, TTarget> where TTarget : struct where TSource : struct
     {
         protected abstract TTarget Map(TSource source);
         

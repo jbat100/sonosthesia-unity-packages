@@ -17,8 +17,8 @@ namespace Sonosthesia.Builder
         public int height = 2;
         public int depth = 2;
         
-        public PerlinConfiguration dirtConfiguration;
-        public PerlinConfiguration stoneConfiguration;   
+        public PerlinSettings dirtSettings;
+        public PerlinSettings stoneSettings;   
         
         public Vector3 location;
 
@@ -37,11 +37,11 @@ namespace Sonosthesia.Builder
                 int x = i % width + (int)location.x;
                 int y = (i / width) % height + (int)location.y;
                 int z = i / (width * height) + (int)location.z;
-                int dirtHeight = (int)VoxelUtils.FBM2(x, z, dirtConfiguration);
-                int stoneHeight = (int)VoxelUtils.FBM2(x, z, stoneConfiguration);
+                int dirtHeight = (int)VoxelUtils.FBM2(x, z, dirtSettings);
+                int stoneHeight = (int)VoxelUtils.FBM2(x, z, stoneSettings);
                 if (dirtHeight == y)
                     ChunkData[i] = VoxelUtils.BlockType.GRASSSIDE;
-                else if (y < stoneHeight && stoneConfiguration.TryProbability())
+                else if (y < stoneHeight && stoneSettings.TryProbability())
                     ChunkData[i] = VoxelUtils.BlockType.STONE;
                 else if (y < dirtHeight)
                     ChunkData[i] = VoxelUtils.BlockType.DIRT;

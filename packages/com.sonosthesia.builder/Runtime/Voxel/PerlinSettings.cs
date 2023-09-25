@@ -3,8 +3,8 @@ using UnityEngine.Events;
 
 namespace Sonosthesia.Builder
 {
-    [CreateAssetMenu(fileName = "PerlinConfiguration", menuName = "ScriptableObjects/Sonosthesia/PerlinConfiguration")]
-    public class PerlinConfiguration : ScriptableObject
+    [CreateAssetMenu(fileName = "PerlinConfiguration", menuName = "Sonosthesia/Settings/PerlinConfiguration")]
+    public class PerlinSettings : ScriptableObject
     {
         public int Octaves = 8;
         public float Scale = 0.001f;
