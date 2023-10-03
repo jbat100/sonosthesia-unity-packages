@@ -10,8 +10,11 @@ namespace Sonosthesia.RtMIDI
     {
         #region Observables
         
-        private readonly Subject<MIDINote> _noteSubject = new ();
-        public IObservable<MIDINote> NoteObservable => _noteSubject.AsObservable();
+        private readonly Subject<MIDINote> _noteOnSubject = new ();
+        public IObservable<MIDINote> NoteOnObservable => _noteOnSubject.AsObservable();
+        
+        private readonly Subject<MIDINote> _noteOffSubject = new ();
+        public IObservable<MIDINote> NoteOffObservable => _noteOffSubject.AsObservable();
         
         private readonly Subject<MIDIControl> _controlSubject = new ();
         public IObservable<MIDIControl> ControlObservable => _controlSubject.AsObservable();
@@ -66,7 +69,8 @@ namespace Sonosthesia.RtMIDI
             
             _clockSubject.Dispose();
             _controlSubject.Dispose();
-            _noteSubject.Dispose();
+            _noteOnSubject.Dispose();
+            _noteOffSubject.Dispose();
             _polyphonicAftertouchSubject.Dispose();
             _songPositionPointerSubject.Dispose();
             _syncSubject.Dispose();
@@ -143,10 +147,10 @@ namespace Sonosthesia.RtMIDI
                     switch (status)
                     {
                         case 0x9:
-                            _noteSubject.OnNext(new MIDINote(channel, data1, data2));
+                            _noteOnSubject.OnNext(new MIDINote(channel, data1, data2));
                             break;
                         case 0x8:
-                            _noteSubject.OnNext(new MIDINote(channel, data1, 0));
+                            _noteOffSubject.OnNext(new MIDINote(channel, data1, data2));
                             break;
                         case 0xb:
                             _controlSubject.OnNext(new MIDIControl(channel, data1, data2));

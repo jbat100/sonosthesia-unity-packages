@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.Playables;
 using Sonosthesia.MIDI;
-using Sonosthesia.MIDI.Messages;
+using Sonosthesia.AdaptiveMIDI;
+using Sonosthesia.AdaptiveMIDI.Messages;
 
 namespace Sonosthesia.Timeline.Midi
 {
@@ -17,19 +18,19 @@ namespace Sonosthesia.Timeline.Midi
 
             if (midiEvent.IsNoteOn)
             {
-                Broadcast(new MIDINote(midiEvent.status & 0x0f, midiEvent.data1, midiEvent.data2));
+                BroadcastNoteOn(new MIDINote(midiEvent.status & 0x0f, midiEvent.data1, midiEvent.data2));
             }
             else if (midiEvent.IsNoteOff)
             {
-                Broadcast(new MIDINote(midiEvent.status & 0x0f, midiEvent.data1, 0));
+                BroadcastNoteOff(new MIDINote(midiEvent.status & 0x0f, midiEvent.data1, 0));
             }
             else if (midiEvent.IsCC)
             {
-                Broadcast(new MIDIControl(midiEvent.status & 0x0f, midiEvent.data1, midiEvent.data2));
+                BroadcastControl(new MIDIControl(midiEvent.status & 0x0f, midiEvent.data1, midiEvent.data2));
             }
             else if (midiEvent.IsPolyphonicAftertouch)
             {
-                Broadcast(new MIDIPolyphonicAftertouch(midiEvent.status & 0x0f, midiEvent.data1, midiEvent.data2));
+                BroadcastAftertouch(new MIDIPolyphonicAftertouch(midiEvent.status & 0x0f, midiEvent.data1, midiEvent.data2));
             }
         }
     }

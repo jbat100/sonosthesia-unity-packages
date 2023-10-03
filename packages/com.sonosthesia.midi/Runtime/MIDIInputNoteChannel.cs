@@ -11,6 +11,8 @@ namespace Sonosthesia.MIDI
     {
         [SerializeField] private MIDIInput _input;
 
+        [SerializeField] private bool _endOnZeroVelocity;
+        
         [Header("Filtering")]
         
         [SerializeField] private int _channel;
@@ -40,7 +42,7 @@ namespace Sonosthesia.MIDI
             {
                 return;
             }
-            _subscriptions.Add(_input.NoteObservable.Subscribe(note =>
+            _subscriptions.Add(_input.NoteOnObservable.Subscribe(note =>
             {
                 if (ShouldFilterNote(note))
                 {
@@ -48,7 +50,7 @@ namespace Sonosthesia.MIDI
                 }
                 if (_notes.TryGetValue(note.Note, out Guid id))
                 {
-                    if (note.Velocity == 0)
+                    if (_endOnZeroVelocity && note.Velocity == 0)
                     {
                         _notes.Remove(note.Note);
                         EndEvent(id, note);
@@ -62,6 +64,18 @@ namespace Sonosthesia.MIDI
                 {
                     id = BeginEnvent(note);
                     _notes[note.Note] = id;   
+                }
+            }));
+            _subscriptions.Add(_input.NoteOffObservable.Subscribe(note =>
+            {
+                if (ShouldFilterNote(note))
+                {
+                    return;
+                }
+                if (_notes.TryGetValue(note.Note, out Guid id))
+                {
+                    _notes.Remove(note.Note);
+                    EndEvent(id, note);
                 }
             }));
         }

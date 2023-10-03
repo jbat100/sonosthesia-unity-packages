@@ -1,6 +1,6 @@
 namespace Sonosthesia.Pack
 {
-    public class MediapipePoseReceiver : ContentReceiver<MediapipePose>
+    public class MediapipePoseReceiver : TypedContentReceiver<MediapipePose>
     {
 
     }

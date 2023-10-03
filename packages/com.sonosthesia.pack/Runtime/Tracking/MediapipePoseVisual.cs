@@ -8,7 +8,7 @@ namespace Sonosthesia.Pack
 {
     public class MediapipePoseVisual : MonoBehaviour
     {
-        [SerializeField] private ContentReceiver<MediapipePose> _receiver;
+        [SerializeField] private TypedContentReceiver<MediapipePose> _receiver;
 
         [SerializeField] private MediapipePoseVisualElement _prefab;
 
@@ -21,7 +21,7 @@ namespace Sonosthesia.Pack
         {
             if (!_receiver)
             {
-                _receiver = GetComponentInParent<ContentReceiver<MediapipePose>>();
+                _receiver = GetComponentInParent<TypedContentReceiver<MediapipePose>>();
             }
         }
 

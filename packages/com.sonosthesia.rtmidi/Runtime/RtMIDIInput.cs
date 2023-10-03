@@ -44,12 +44,13 @@ namespace Sonosthesia.RtMIDI
                         _subscription?.Dispose();
                         _port?.Dispose();
                         _port = new RtMIDIPort(i, portName);
-                        _port.NoteObservable.Subscribe(Broadcast);
-                        _port.ControlObservable.Subscribe(Broadcast);
-                        _port.PolyphonicAftertouchObservable.Subscribe(Broadcast);
-                        _port.SongPositionPointerObservable.Subscribe(Broadcast);
-                        _port.SyncObservable.Subscribe(Broadcast);
-                        _port.ClockObservable.Subscribe(Broadcast);
+                        _port.NoteOnObservable.Subscribe(BroadcastNoteOn);
+                        _port.NoteOffObservable.Subscribe(BroadcastNoteOff);
+                        _port.ControlObservable.Subscribe(BroadcastControl);
+                        _port.PolyphonicAftertouchObservable.Subscribe(BroadcastAftertouch);
+                        _port.SongPositionPointerObservable.Subscribe(BroadcastPositionPointer);
+                        _port.SyncObservable.Subscribe(BroadcastSync);
+                        _port.ClockObservable.Subscribe(BroadcastClock);
                         break;
                     }
                 }

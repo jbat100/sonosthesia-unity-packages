@@ -9,8 +9,11 @@ namespace Sonosthesia.AdaptiveMIDI
     {
         #region Observables
         
-        private readonly Subject<MIDINote> _noteSubject = new ();
-        public IObservable<MIDINote> NoteObservable => _noteSubject.AsObservable();
+        private readonly Subject<MIDINote> _noteOnSubject = new ();
+        public IObservable<MIDINote> NoteOnObservable => _noteOnSubject.AsObservable();
+        
+        private readonly Subject<MIDINote> _noteOffSubject = new ();
+        public IObservable<MIDINote> NoteOffObservable => _noteOffSubject.AsObservable();
         
         private readonly Subject<MIDIControl> _controlSubject = new ();
         public IObservable<MIDIControl> ControlObservable => _controlSubject.AsObservable();
@@ -29,12 +32,13 @@ namespace Sonosthesia.AdaptiveMIDI
 
         #endregion
 
-        public void Broadcast(MIDINote note) => _noteSubject.OnNext(note);
-        public void Broadcast(MIDIControl control) => _controlSubject.OnNext(control);
-        public void Broadcast(MIDIPolyphonicAftertouch aftertouch) => _polyphonicAftertouchSubject.OnNext(aftertouch);
-        public void Broadcast(MIDIClock clock) => _clockSubject.OnNext(clock);
-        public void Broadcast(MIDISongPositionPointer pointer) => _songPositionPointerSubject.OnNext(pointer);
-        public void Broadcast(MIDISync sync) => _syncSubject.OnNext(sync);
+        public void BroadcastNoteOn(MIDINote note) => _noteOnSubject.OnNext(note);
+        public void BroadcastNoteOff(MIDINote note) => _noteOffSubject.OnNext(note);
+        public void BroadcastControl(MIDIControl control) => _controlSubject.OnNext(control);
+        public void BroadcastAftertouch(MIDIPolyphonicAftertouch aftertouch) => _polyphonicAftertouchSubject.OnNext(aftertouch);
+        public void BroadcastClock(MIDIClock clock) => _clockSubject.OnNext(clock);
+        public void BroadcastPositionPointer(MIDISongPositionPointer pointer) => _songPositionPointerSubject.OnNext(pointer);
+        public void BroadcastSync(MIDISync sync) => _syncSubject.OnNext(sync);
 
     }
 }

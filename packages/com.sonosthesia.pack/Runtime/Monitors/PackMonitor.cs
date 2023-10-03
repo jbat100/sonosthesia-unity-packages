@@ -7,7 +7,7 @@ namespace Sonosthesia.Pack
     public class PackMonitor<T> : MonoBehaviour
     {
         [SerializeField]
-        private PackReceiver _receiver;
+        private TypedPackReceiver _receiver;
 
         private IDisposable _subscription;
 
@@ -15,7 +15,7 @@ namespace Sonosthesia.Pack
         {
             if (!_receiver)
             {
-                _receiver = GetComponentInParent<PackReceiver>();
+                _receiver = GetComponentInParent<TypedPackReceiver>();
             }
         }
 

@@ -20,7 +20,8 @@ namespace Sonosthesia.AdaptiveMIDI
             _subscriptions = new CompositeDisposable()
             {
                 _input.ClockObservable.Subscribe(m => Debug.Log(m)),
-                _input.NoteObservable.Subscribe(m => Debug.Log(m)),
+                _input.NoteOnObservable.Subscribe(m => Debug.Log(m)),
+                _input.NoteOffObservable.Subscribe(m => Debug.Log(m)),
                 _input.ControlObservable.Subscribe(m => Debug.Log(m)),
                 _input.PolyphonicAftertouchObservable.Subscribe(m => Debug.Log(m)),
                 _input.SongPositionPointerObservable.Subscribe(m => Debug.Log(m)),

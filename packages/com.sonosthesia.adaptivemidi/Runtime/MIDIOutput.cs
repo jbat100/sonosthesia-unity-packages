@@ -5,9 +5,10 @@ namespace Sonosthesia.AdaptiveMIDI
 {
     public abstract class MIDIOutput : MonoBehaviour
     {
-        protected abstract void Broadcast(MIDINote note);
-        protected abstract void Broadcast(MIDIControl control);
-        protected abstract void Broadcast(MIDIPolyphonicAftertouch aftertouch);
+        protected abstract void BroadcastNoteOn(MIDINote note);
+        protected abstract void BroadcastNoteOff(MIDINote note);
+        protected abstract void BroadcastControl(MIDIControl control);
+        protected abstract void BroadcastAftertouch(MIDIPolyphonicAftertouch aftertouch);
     }    
 }
 

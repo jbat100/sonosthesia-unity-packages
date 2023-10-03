@@ -50,7 +50,7 @@ namespace MessagePack.Resolvers
             lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(4)
             {
                 { typeof(global::Sonosthesia.Pack.Counting), 0 },
-                { typeof(global::Sonosthesia.Pack.Envelope), 1 },
+                { typeof(global::Sonosthesia.Pack.TypedEnvelope), 1 },
                 { typeof(global::Sonosthesia.Pack.MediapipePose), 2 },
                 { typeof(global::Sonosthesia.Pack.Point), 3 },
             };
@@ -168,14 +168,14 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
         }
     }
 
-    public sealed class EnvelopeFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Sonosthesia.Pack.Envelope>
+    public sealed class EnvelopeFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Sonosthesia.Pack.TypedEnvelope>
     {
         // type
         private static global::System.ReadOnlySpan<byte> GetSpan_Type() => new byte[1 + 4] { 164, 116, 121, 112, 101 };
         // content
         private static global::System.ReadOnlySpan<byte> GetSpan_Content() => new byte[1 + 7] { 167, 99, 111, 110, 116, 101, 110, 116 };
 
-        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Sonosthesia.Pack.Envelope value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Sonosthesia.Pack.TypedEnvelope value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value is null)
             {
@@ -190,7 +190,7 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
             writer.Write(value.Content);
         }
 
-        public global::Sonosthesia.Pack.Envelope Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::Sonosthesia.Pack.TypedEnvelope Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -199,7 +199,7 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
 
             options.Security.DepthStep(ref reader);
             var length = reader.ReadMapHeader();
-            var ____result = new global::Sonosthesia.Pack.Envelope();
+            var ____result = new global::Sonosthesia.Pack.TypedEnvelope();
 
             for (int i = 0; i < length; i++)
             {

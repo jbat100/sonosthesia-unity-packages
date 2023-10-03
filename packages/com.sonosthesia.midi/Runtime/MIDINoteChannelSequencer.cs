@@ -55,7 +55,7 @@ namespace Sonosthesia.MIDI
             {
                 return;
             }
-            stream.Subscribe(note => _relay.Broadcast(note));
+            stream.Subscribe(note => _relay.BroadcastNoteOn(note));
         }
 
         protected override MIDINote ForgeStart(MIDINoteChannelSequenceElement element)

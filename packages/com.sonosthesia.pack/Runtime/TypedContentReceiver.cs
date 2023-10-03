@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace Sonosthesia.Pack
 {
-    public class ContentReceiver<T> : MonoBehaviour
+    public class TypedContentReceiver<T> : MonoBehaviour
     {
         [SerializeField]
-        private PackReceiver _receiver;
+        private TypedPackReceiver _receiver;
 
         private IDisposable _subscription;
         private readonly Subject<T> _subject = new ();
@@ -18,7 +18,7 @@ namespace Sonosthesia.Pack
         {
             if (!_receiver)
             {
-                _receiver = GetComponentInParent<PackReceiver>();
+                _receiver = GetComponentInParent<TypedPackReceiver>();
             }
         }
 
