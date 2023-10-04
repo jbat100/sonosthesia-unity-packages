@@ -73,12 +73,14 @@ namespace Sonosthesia.Pack
     // note, serialize can be expensive and should be called from a background thread
     internal interface IOutgoingQueueItem
     {
+        string Address { get; }
+        
         byte[] Serialize();
     }
         
     internal struct OutgoingQueueItem<T> : IOutgoingQueueItem
     {
-        public string Address;
+        public string Address { get; set; }
         public T Content;
 
         public byte[] Serialize() => AddressedEnvelopeUtils.SerializedEnvelope(Address, Content);
@@ -103,6 +105,7 @@ namespace Sonosthesia.Pack
                     {
                         byte[] bytes = item.Serialize();
                         await _connection.Send(bytes);
+                        Debug.Log($"WebSocket sent content to address: {item.Address}");
                     }
                     catch (Exception e)
                     {
@@ -175,6 +178,7 @@ namespace Sonosthesia.Pack
                     {
                         byte[] bytes = item.Serialize();
                         await _connection.Send(bytes);
+                        Debug.Log($"WebSocket sent content to address: {item.Address}");
                     }
                     catch (Exception e)
                     {

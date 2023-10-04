@@ -3,6 +3,8 @@ using Sonosthesia.AdaptiveMIDI.Messages;
 
 namespace Sonosthesia.Pack
 {
+    // MessagePackObject must be public
+    
     [MessagePackObject]
     public class PackedMIDIPolyphonicAftertouch
     {

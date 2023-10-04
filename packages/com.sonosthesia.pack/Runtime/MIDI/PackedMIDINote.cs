@@ -3,8 +3,10 @@ using Sonosthesia.AdaptiveMIDI.Messages;
 
 namespace Sonosthesia.Pack
 {
+    // MessagePackObject must be public
+    
     [MessagePackObject]
-    internal class PackedMIDINote
+    public class PackedMIDINote
     {
         [Key("port")]
         public string Port { get; set; }

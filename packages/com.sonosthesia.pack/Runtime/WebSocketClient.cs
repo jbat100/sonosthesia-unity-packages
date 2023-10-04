@@ -6,52 +6,40 @@ using UnityEngine;
 
 namespace Sonosthesia.Pack
 {
+#if UNITY_EDITOR
+    using UnityEditor;
+
+    [CustomEditor(typeof(WebSocketClient), true)]
+    public class WebSocketClientEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            DrawDefaultInspector();
+
+            WebSocketClient client = (WebSocketClient)target;
+            if(GUILayout.Button("Reconnect"))
+            {
+                client.Reconnect().Forget();
+            }
+        }
+    }
+#endif
+
     public class WebSocketClient : MonoBehaviour
     {
         [SerializeField] private string _address;
         
         private WebSocket websocket;
+
+        public async UniTask Reconnect()
+        {
+            await Disconnect();
+            await Connect();
+        }
         
-        // Start is called before the first frame update
         protected virtual void Start()
         {
-            websocket = new WebSocket(_address);
-
-            websocket.OnOpen += () =>
-            {
-                Debug.Log("Connection open!");
-            };
-
-            websocket.OnError += (e) =>
-            {
-                Debug.Log("Error! " + e);
-            };
-
-            websocket.OnClose += (e) =>
-            {
-                Debug.Log("Connection closed!");
-            };
-
-            websocket.OnMessage += (bytes) =>
-            {
-                //Debug.Log("OnMessage!");
-                //Debug.Log(bytes);
-
-                // getting the message as a string
-                // var message = System.Text.Encoding.UTF8.GetString(bytes);
-                //Debug.Log("OnMessage! " + message);
-
-                //TypedEnvelope envelope = MessagePackSerializer.Deserialize<TypedEnvelope>(bytes);
-                //Debug.Log($"Received {nameof(TypedEnvelope)} with type {envelope.Type}");
-                //_envelopeSubject.OnNext(envelope);
-
-                OnMessage(bytes);
-            };
-
-            // Keep sending messages at every 0.3s
-            //InvokeRepeating("SendWebSocketMessage", 0.0f, 0.3f);
-
-            Connect().Forget();
+            Setup();
         }
 
         protected virtual void OnMessage(byte[] bytes)
@@ -103,6 +91,47 @@ namespace Sonosthesia.Pack
         {
             Debug.Log($"{this} disconnect {nameof(OnApplicationQuit)}");
             Disconnect().Forget();
+        }
+
+        private void Setup()
+        {
+            websocket = new WebSocket(_address);
+
+            websocket.OnOpen += () =>
+            {
+                Debug.Log("Connection open!");
+            };
+
+            websocket.OnError += (e) =>
+            {
+                Debug.Log("Error! " + e);
+            };
+
+            websocket.OnClose += (e) =>
+            {
+                Debug.Log("Connection closed!");
+            };
+
+            websocket.OnMessage += (bytes) =>
+            {
+                //Debug.Log("OnMessage!");
+                //Debug.Log(bytes);
+
+                // getting the message as a string
+                // var message = System.Text.Encoding.UTF8.GetString(bytes);
+                //Debug.Log("OnMessage! " + message);
+
+                //TypedEnvelope envelope = MessagePackSerializer.Deserialize<TypedEnvelope>(bytes);
+                //Debug.Log($"Received {nameof(TypedEnvelope)} with type {envelope.Type}");
+                //_envelopeSubject.OnNext(envelope);
+
+                OnMessage(bytes);
+            };
+
+            // Keep sending messages at every 0.3s
+            //InvokeRepeating("SendWebSocketMessage", 0.0f, 0.3f);
+
+            Connect().Forget();
         }
         
         private async UniTask Connect()
