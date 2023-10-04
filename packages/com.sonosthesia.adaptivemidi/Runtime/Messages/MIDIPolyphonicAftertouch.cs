@@ -13,6 +13,13 @@ namespace Sonosthesia.AdaptiveMIDI.Messages
             Value = value;
         }
 
+        public MIDIPolyphonicAftertouch(MIDINote note)
+        {
+            Channel = note.Channel;
+            Note = note.Note;
+            Value = note.Velocity;
+        }
+
         public override string ToString()
         {
             return $"{nameof(MIDIPolyphonicAftertouch)} <{nameof(Channel)} {Channel} {nameof(Note)} {Note} {nameof(Value)} {Value}>";

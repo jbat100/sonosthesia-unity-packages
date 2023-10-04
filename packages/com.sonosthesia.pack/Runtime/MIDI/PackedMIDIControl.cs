@@ -4,7 +4,7 @@ using Sonosthesia.AdaptiveMIDI.Messages;
 namespace Sonosthesia.Pack
 {
     [MessagePackObject]
-    public class PackedMIDIControl
+    internal class PackedMIDIControl
     {
         [Key("port")]
         public string Port { get; set; }
@@ -19,11 +19,22 @@ namespace Sonosthesia.Pack
         public int Value { get; set; }
     }
 
-    public static class PackedMIDIControlExtensions
+    internal static class PackedMIDIControlExtensions
     {
         public static MIDIControl Unpack(this PackedMIDIControl control)
         {
             return new MIDIControl(control.Channel, control.Number, control.Value);
+        }
+        
+        public static PackedMIDIControl Pack(this MIDIControl control, string port)
+        {
+            return new PackedMIDIControl()
+            {
+                Port = port,
+                Channel = control.Channel,
+                Number = control.Number,
+                Value = control.Value
+            };
         }
     }
 }

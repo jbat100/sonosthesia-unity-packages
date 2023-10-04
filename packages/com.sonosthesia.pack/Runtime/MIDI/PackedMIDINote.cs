@@ -4,7 +4,7 @@ using Sonosthesia.AdaptiveMIDI.Messages;
 namespace Sonosthesia.Pack
 {
     [MessagePackObject]
-    public class PackedMIDINote
+    internal class PackedMIDINote
     {
         [Key("port")]
         public string Port { get; set; }
@@ -19,11 +19,22 @@ namespace Sonosthesia.Pack
         public int Velocity { get; set; }
     }
     
-    public static class PackedMIDINoteExtensions
+    internal static class PackedMIDINoteExtensions
     {
         public static MIDINote Unpack(this PackedMIDINote note)
         {
             return new MIDINote(note.Channel, note.Note, note.Velocity);
+        }
+
+        public static PackedMIDINote Pack(this MIDINote note, string port)
+        {
+            return new PackedMIDINote()
+            {
+                Port = port,
+                Channel = note.Channel,
+                Note = note.Note,
+                Velocity = note.Velocity
+            };
         }
     }
 }

@@ -1,9 +1,10 @@
 using System;
+using System.Collections.Concurrent;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using UniRx;
 using MessagePack;
-using NativeWebSocket;
+using Sonosthesia.Utils;
 
 namespace Sonosthesia.Pack
 {
@@ -16,53 +17,330 @@ namespace Sonosthesia.Pack
         [Key("content")]
         public byte[] Content { get; set; }
     }
+
+#region Outgoing Queue
     
-    public class AddressedPackConnection : WebSocketClient
+    internal static class AddressedEnvelopeUtils
     {
-        [SerializeField] private string _address;
-        
-        private WebSocket websocket;
-
-        private readonly Subject<AddressedEnvelope> _envelopeSubject = new();
-        
-        protected override void OnMessage(byte[] bytes)
+        public static byte[] SerializedEnvelope<T>(string address, T content)
         {
-            base.OnMessage(bytes);
-            AddressedEnvelope envelope = MessagePackSerializer.Deserialize<AddressedEnvelope>(bytes);
-            Debug.Log($"Received {nameof(AddressedEnvelope)} with address {envelope.Address}");
-            _envelopeSubject.OnNext(envelope);
-        }
-        
-        public IObservable<T> PublishContent<T>(string address)
-        {
-            return _envelopeSubject.Where(e => e.Address == address)
-                .ObserveOn(Scheduler.ThreadPool)
-                .Select(envelope =>
-                {
-                    try
-                    {
-                        return MessagePackSerializer.Deserialize<T>(envelope.Content);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogException(e);
-                        throw;
-                    }
-                })
-                .ObserveOnMainThread()
-                .AsObservable();
-        }
-
-        public async UniTask<bool> SendContent<T>(string address, T content)
-        {
-            await UniTask.SwitchToThreadPool();
             byte[] bytes = MessagePackSerializer.Serialize(content);
             AddressedEnvelope envelope = new AddressedEnvelope()
             {
                 Address = address,
                 Content = bytes
             };
-            return await Send(MessagePackSerializer.Serialize(envelope));
+            return MessagePackSerializer.Serialize(envelope);
+        }
+    }
+
+    internal interface IOutgoingAddressedPackQueue : IDisposable
+    {
+        void Push<T>(string address, T content);
+    }
+    
+    // TODO : performance stress check
+    
+    // note the Forget() approach might lead to messages being sent out of order
+    // we could have a Queue content API which is synchronous and an internal thread which 
+    // handles the sending asynchronously
+    
+    internal class ForgetOutgoingAddressedPackQueue : IOutgoingAddressedPackQueue
+    {
+        private bool _isDisposed;
+        private AddressedPackConnection _connection;
+        
+        public ForgetOutgoingAddressedPackQueue(AddressedPackConnection connection)
+        {
+            _connection = connection;
+        }
+        
+        public void Push<T>(string address, T content)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+            _connection.Send(AddressedEnvelopeUtils.SerializedEnvelope(address, content)).Forget();
+        }
+        
+        public void Dispose()
+        {
+            _isDisposed = true;
+        }
+    }
+    
+    // note, serialize can be expensive and should be called from a background thread
+    internal interface IOutgoingQueueItem
+    {
+        byte[] Serialize();
+    }
+        
+    internal struct OutgoingQueueItem<T> : IOutgoingQueueItem
+    {
+        public string Address;
+        public T Content;
+
+        public byte[] Serialize() => AddressedEnvelopeUtils.SerializedEnvelope(Address, Content);
+    }
+    
+    internal class RxOutgoingAddressedPackQueue : IOutgoingAddressedPackQueue
+    {
+        private AddressedPackConnection _connection;
+        private bool _isDisposed;
+        private Subject<IOutgoingQueueItem> _subject = new ();
+        private IDisposable _subscription;
+
+        public RxOutgoingAddressedPackQueue(AddressedPackConnection connection, bool background)
+        {
+            _connection = connection;
+
+            IObservable<IOutgoingQueueItem> observable = background ? _subject.ObserveOn(Scheduler.ThreadPool) : _subject.AsObservable();
+
+            _subscription = observable.Subscribe(async item =>
+                {
+                    try
+                    {
+                        byte[] bytes = item.Serialize();
+                        await _connection.Send(bytes);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError("WebSocket send error: " + e.Message);
+                        // If you want to re-queue the message:
+                        // messageStream.OnNext(message);
+                    }
+                });
+        }
+
+        public void Push<T>(string address, T content)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+            _subject.OnNext(new OutgoingQueueItem<T> {Address = address, Content = content});
+        }
+
+        public void Dispose()
+        {
+            _subscription?.Dispose();
+            _subscription = null;
+            _subject?.Dispose();
+            _subject = null;
+            _isDisposed = true;
+        }
+    }
+    
+    internal class TaskOutgoingAddressedPackQueue : IOutgoingAddressedPackQueue
+    {
+        private ConcurrentQueue<IOutgoingQueueItem> _queue = new ();
+        private AddressedPackConnection _connection;
+        private bool _isProcessingQueue;
+        private bool _isDisposed;
+        
+        public TaskOutgoingAddressedPackQueue(AddressedPackConnection connection)
+        {
+            _connection = connection;
+        }
+        
+        public void Push<T>(string address, T content)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+            
+            _queue.Enqueue(new OutgoingQueueItem<T>()
+            {
+                Address = address,
+                Content = content
+            });
+            
+            if (!_isProcessingQueue)
+            {
+                ProcessQueue().Forget();
+            }
+        }
+        
+        private async UniTaskVoid ProcessQueue()
+        {
+            _isProcessingQueue = true;
+
+            while (!_queue.IsEmpty && !_isDisposed)
+            {
+                if (_queue.TryDequeue(out IOutgoingQueueItem item))
+                {
+                    try
+                    {
+                        byte[] bytes = item.Serialize();
+                        await _connection.Send(bytes);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError("WebSocket send error: " + e.Message);
+                        // Optionally: Re-queue the message if needed.
+                        // messageQueue.Enqueue(message);
+                    }
+                }
+            }
+
+            _isProcessingQueue = false;
+        }
+
+        public void Dispose()
+        {
+            _connection = null;
+            _queue = null;
+            _isDisposed = true;
+        }
+    }
+    
+#endregion
+
+#region Incoming Queue
+
+    internal interface IIncomingAddressedPackQueue : IDisposable
+    {
+        void Push(byte[] bytes);
+
+        IObservable<T> IncomingContentObservable<T>(string address);
+    }
+
+    internal class RxIncomingAddressedPackQueue : IIncomingAddressedPackQueue
+    {
+        private readonly Subject<byte[]> _incomingSubject = new();
+        private readonly Subject<AddressedEnvelope> _envelopeSubject = new();
+        private IDisposable _subscription;
+        private bool _isDisposed;
+        
+        public RxIncomingAddressedPackQueue(bool background)
+        {
+            IObservable<byte[]> observable = background ? 
+                _incomingSubject.ObserveOn(Scheduler.ThreadPool) 
+                : _incomingSubject.AsObservable();
+
+            observable.Subscribe(bytes =>
+            {
+                _envelopeSubject.OnNext(MessagePackSerializer.Deserialize<AddressedEnvelope>(bytes));
+            });
+        }
+        
+        public void Push(byte[] bytes)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+            
+            _incomingSubject.OnNext(bytes);
+        }
+
+        public IObservable<T> IncomingContentObservable<T>(string address)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+            
+            return _envelopeSubject.Where(e => e.Address == address)
+                .Select(envelope =>
+                {
+                    try
+                    {
+                        return Option<T>.Some(MessagePackSerializer.Deserialize<T>(envelope.Content));
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
+                        return Option<T>.None;
+                    } 
+                }).Where(option => option.HasValue).Select(option => option.Value);
+        }
+
+        public void Dispose()
+        {
+            _isDisposed = true;
+            _incomingSubject?.Dispose();
+            _envelopeSubject?.Dispose();
+            _subscription?.Dispose();
+        }
+    }
+
+#endregion
+    
+    
+    // note could separate out the websocket to potentially swap it out for any other stream 
+
+    public class AddressedPackConnection : WebSocketClient
+    {
+        private enum OutgoingQueueType
+        {
+            Forget,
+            Task,
+            RxMainThread,
+            RxThreadPool
+        }
+
+        [SerializeField] private OutgoingQueueType _outgoingQueueType;
+        
+        private IOutgoingAddressedPackQueue _outgoingQueue;
+        private IOutgoingAddressedPackQueue OutgoingQueue => _outgoingQueue ??= CreateOutgoingQueue();
+
+        private enum IncomingQueueType
+        {
+            RxMainThread,
+            RxThreadPool
+        }
+        
+        [SerializeField] private IncomingQueueType _incomingQueueType;
+
+        private IIncomingAddressedPackQueue _incomingQueue;
+        private IIncomingAddressedPackQueue IncomingQueue => _incomingQueue ??= CreateIncomingQueue();
+
+        protected virtual void OnValidate()
+        {
+            _outgoingQueue?.Dispose();
+            _outgoingQueue = null;
+            
+            _incomingQueue?.Dispose();
+            _incomingQueue = null;
+        }
+
+        private IIncomingAddressedPackQueue CreateIncomingQueue() => _incomingQueueType switch
+        {
+            IncomingQueueType.RxMainThread => new RxIncomingAddressedPackQueue(false),
+            IncomingQueueType.RxThreadPool => new RxIncomingAddressedPackQueue(true),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+        
+        protected override void OnMessage(byte[] bytes)
+        {
+            base.OnMessage(bytes);
+            if (!PlayerLoopHelper.IsMainThread)
+            {
+                Debug.LogWarning($"Unexpected {nameof(OnMessage)} call off main thread");
+            }
+            IncomingQueue.Push(bytes);
+        }
+
+        private IOutgoingAddressedPackQueue CreateOutgoingQueue() => _outgoingQueueType switch
+        {
+            OutgoingQueueType.Forget => new ForgetOutgoingAddressedPackQueue(this),
+            OutgoingQueueType.Task => new TaskOutgoingAddressedPackQueue(this),
+            OutgoingQueueType.RxMainThread => new RxOutgoingAddressedPackQueue(this, false),
+            OutgoingQueueType.RxThreadPool => new RxOutgoingAddressedPackQueue(this, true),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        public void QueueOutgoingContent<T>(string address, T content)
+        {
+            OutgoingQueue.Push(address, content);
+        }
+        
+        public IObservable<T> IncomingContentObservable<T>(string address)
+        {
+            return IncomingQueue.IncomingContentObservable<T>(address);
         }
     }
 }

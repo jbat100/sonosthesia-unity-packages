@@ -1,9 +1,7 @@
 using System;
-using Sonosthesia.AdaptiveMIDI;
 using Sonosthesia.AdaptiveMIDI.Messages;
 using Sonosthesia.Flow;
 using UnityEngine;
-using UniRx;
 
 namespace Sonosthesia.MIDI
 {
@@ -39,24 +37,10 @@ namespace Sonosthesia.MIDI
         [SerializeField] private int _velocity;
         public int Velocity => _velocity;
     }
-    
-    // TODO: Think about targeting MIDIInput rather that MIDINoteChannel 
-    
+
     public class MIDINoteChannelSequencer : ChannelSequencer<MIDINote, MIDINoteChannelSequenceElement>
     {
-        [SerializeField] private MIDIInput _relay;
-        
         [SerializeField] private int _channel;
-
-        protected override void Sequence(IObservable<MIDINote> stream)
-        {
-            base.Sequence(stream);
-            if (!_relay)
-            {
-                return;
-            }
-            stream.Subscribe(note => _relay.BroadcastNoteOn(note));
-        }
 
         protected override MIDINote ForgeStart(MIDINoteChannelSequenceElement element)
         {

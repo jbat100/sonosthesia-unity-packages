@@ -20,17 +20,36 @@ namespace Sonosthesia.MIDI
             _subscription?.Dispose();
             _subscription = _channel.StreamObservable.Subscribe(stream =>
             {
-                bool started = false;
+                MIDINote? initial = null;
+                MIDINote? previous = null;
                 stream.Subscribe(note =>
                 {
-                    if (!started)
+                    if (initial.HasValue)
                     {
-                        started = true;
-                        
+                        if (initial.Value.Note != note.Note)
+                        {
+                            Debug.LogError("Unexpected note mismatch withing MIDI note stream");
+                            return;
+                        }
+                        if (initial.Value.Velocity != note.Velocity)
+                        {
+                            Debug.LogError("Unexpected velocity mismatch withing MIDI note stream");
+                            return;
+                        }
+                        _output.BroadcastAftertouch(new MIDIPolyphonicAftertouch(note));
                     }
+                    else
+                    {
+                        initial = note;
+                        _output.BroadcastNoteOn(note);
+                    }
+                    previous = note;
                 }, () =>
                 {
-                    
+                    if (previous.HasValue)
+                    {
+                        _output.BroadcastNoteOff(previous.Value);   
+                    }
                 });
             });
         }

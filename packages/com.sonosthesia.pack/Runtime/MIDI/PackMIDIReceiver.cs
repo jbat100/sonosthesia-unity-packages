@@ -14,20 +14,20 @@ namespace Sonosthesia.Pack
         private CompositeDisposable _subscriptions = new ();
         
         private readonly Subject<PackedMIDINote> _noteOnSubject = new ();
-        public IObservable<PackedMIDINote> NoteOnObservable => _noteOnSubject.AsObservable();
+        internal IObservable<PackedMIDINote> NoteOnObservable => _noteOnSubject.AsObservable();
         
         private readonly Subject<PackedMIDINote> _noteOffSubject = new ();
-        public IObservable<PackedMIDINote> NoteOffObservable => _noteOffSubject.AsObservable();
+        internal IObservable<PackedMIDINote> NoteOffObservable => _noteOffSubject.AsObservable();
         
         private readonly Subject<PackedMIDIControl> _controlSubject = new ();
-        public IObservable<PackedMIDIControl> ControlObservable => _controlSubject.AsObservable();
+        internal IObservable<PackedMIDIControl> ControlObservable => _controlSubject.AsObservable();
 
         protected virtual void OnEnable()
         {
             _subscriptions.Clear();
-            _subscriptions.Add(_connection.PublishContent<PackedMIDINote>(PackMIDIAddress.NOTE_ON).Subscribe(_noteOnSubject));
-            _subscriptions.Add(_connection.PublishContent<PackedMIDINote>(PackMIDIAddress.NOTE_OFF).Subscribe(_noteOffSubject));
-            _subscriptions.Add(_connection.PublishContent<PackedMIDIControl>(PackMIDIAddress.CONTROL).Subscribe(_controlSubject));
+            _subscriptions.Add(_connection.IncomingContentObservable<PackedMIDINote>(PackMIDIAddress.NOTE_ON).Subscribe(_noteOnSubject));
+            _subscriptions.Add(_connection.IncomingContentObservable<PackedMIDINote>(PackMIDIAddress.NOTE_OFF).Subscribe(_noteOffSubject));
+            _subscriptions.Add(_connection.IncomingContentObservable<PackedMIDIControl>(PackMIDIAddress.CONTROL).Subscribe(_controlSubject));
         }
         
         protected virtual void OnDisable() => _subscriptions.Clear();
