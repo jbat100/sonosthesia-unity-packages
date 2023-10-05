@@ -224,9 +224,26 @@ namespace Sonosthesia.Pack
                 _incomingSubject.ObserveOn(Scheduler.ThreadPool) 
                 : _incomingSubject.AsObservable();
 
-            observable.Subscribe(bytes =>
+            _subscription = observable.Subscribe(bytes =>
             {
-                _envelopeSubject.OnNext(MessagePackSerializer.Deserialize<AddressedEnvelope>(bytes));
+                try
+                {
+                    AddressedEnvelope envelope = MessagePackSerializer.Deserialize<AddressedEnvelope>(bytes);
+                    if (envelope != null)
+                    {
+                        Debug.LogWarning($"{nameof(AddressedPackConnection)} deserialized envelope successfully");
+                        _envelopeSubject.OnNext(envelope);
+                        Debug.LogWarning($"{nameof(AddressedPackConnection)} onNext called successfully");
+                    }
+                    else
+                    {
+                        Debug.LogError($"{nameof(AddressedPackConnection)} failed to deserialize envelope");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"{nameof(AddressedPackConnection)} failed to deserialize envelope : ${e.Message}");
+                }
             });
         }
         
@@ -252,7 +269,14 @@ namespace Sonosthesia.Pack
                 {
                     try
                     {
-                        return Option<T>.Some(MessagePackSerializer.Deserialize<T>(envelope.Content));
+                        T content = MessagePackSerializer.Deserialize<T>(envelope.Content);
+                        if (content != null)
+                        {
+                            Debug.LogWarning($"{nameof(RxIncomingAddressedPackQueue)} deserialized content {content}");
+                            return Option<T>.Some(content);
+                        }
+                        Debug.LogError($"{nameof(RxIncomingAddressedPackQueue)} failed to deserialize content");
+                        return Option<T>.None;
                     }
                     catch (Exception e)
                     {
@@ -268,6 +292,7 @@ namespace Sonosthesia.Pack
             _incomingSubject?.Dispose();
             _envelopeSubject?.Dispose();
             _subscription?.Dispose();
+            _subscription = null;
         }
     }
 
@@ -323,7 +348,11 @@ namespace Sonosthesia.Pack
             base.OnMessage(bytes);
             if (!PlayerLoopHelper.IsMainThread)
             {
-                Debug.LogWarning($"Unexpected {nameof(OnMessage)} call off main thread");
+                Debug.LogWarning($"Unexpected {nameof(OnMessage)} call off main thread ({bytes.Length} bytes)");
+            }
+            else
+            {
+                Debug.Log($"{nameof(OnMessage)} call on main thread ({bytes.Length} bytes)");
             }
             IncomingQueue.Push(bytes);
         }

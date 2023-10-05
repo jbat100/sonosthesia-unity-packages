@@ -12,8 +12,10 @@ namespace Sonosthesia.MIDI
         [SerializeField] private MIDIInput _input;
 
         [SerializeField] private bool _endOnZeroVelocity;
+
+        [Header("Filtering")] 
         
-        [Header("Filtering")]
+        [SerializeField] private bool _filter;
         
         [SerializeField] private int _channel;
 
@@ -88,6 +90,10 @@ namespace Sonosthesia.MIDI
         
         protected virtual bool ShouldFilterNote(MIDINote note)
         {
+            if (!_filter)
+            {
+                return false;
+            }
             if (_channel >= 0 && note.Channel != _channel)
             {
                 return true;

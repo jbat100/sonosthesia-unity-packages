@@ -8,14 +8,38 @@ namespace Sonosthesia.Pack
     {
         [SerializeField] private PackMIDIReceiver _receiver;
 
+        [SerializeField] private string _portFilter;
+
         private readonly CompositeDisposable _subscriptions = new();
 
         protected virtual void OnEnable()
         {
             _subscriptions.Clear();
-            _subscriptions.Add(_receiver.NoteOnObservable.Select(note => note.Unpack()).Subscribe(BroadcastNoteOn));
-            _subscriptions.Add(_receiver.NoteOffObservable.Select(note => note.Unpack()).Subscribe(BroadcastNoteOff));
-            _subscriptions.Add(_receiver.ControlObservable.Select(control => control.Unpack()).Subscribe(BroadcastControl));
+
+            bool FilterPort(IPackedMIDIPortMessage message)
+            {
+                return string.IsNullOrEmpty(_portFilter) || message.Port == _portFilter;
+            }
+            
+            _subscriptions.Add(_receiver.NoteOnObservable
+                .Where(FilterPort)
+                .Select(note => note.Unpack())
+                .Subscribe(BroadcastNoteOn));
+            
+            _subscriptions.Add(_receiver.NoteOffObservable
+                .Where(FilterPort)
+                .Select(note => note.Unpack())
+                .Subscribe(BroadcastNoteOff));
+            
+            _subscriptions.Add(_receiver.ControlObservable
+                .Where(FilterPort)
+                .Select(control => control.Unpack())
+                .Subscribe(BroadcastControl));
+            
+            _subscriptions.Add(_receiver.PolyphonicAftertouchObservable
+                .Where(FilterPort)
+                .Select(aftertouch => aftertouch.Unpack())
+                .Subscribe(BroadcastAftertouch));
         }
 
         protected virtual void OnDisable() => _subscriptions.Clear();
