@@ -5,7 +5,7 @@ namespace Sonosthesia.Pack
 {
     // MessagePackObject must be public
     
-    //[MessagePackObject]
+    [MessagePackObject]
     public class PackedMIDIControl : IPackedMIDIPortMessage
     {
         [Key("port")]

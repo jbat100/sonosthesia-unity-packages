@@ -240,6 +240,7 @@ namespace Sonosthesia.Pack
                     if (envelope.Address == EnvelopeBundle.ADDRESS)
                     {
                         EnvelopeBundle bundle = MessagePackSerializer.Deserialize<EnvelopeBundle>(envelope.Content);
+                        Debug.LogWarning($"{nameof(AddressedPackConnection)} deserialized bundle with {bundle.Envelopes.Length} envelopes successfully");
                         foreach (AddressedEnvelope child in bundle.Envelopes)
                         {
                             ProcessEnvelope(child);           
@@ -297,7 +298,7 @@ namespace Sonosthesia.Pack
                         T content = MessagePackSerializer.Deserialize<T>(envelope.Content);
                         if (content != null)
                         {
-                            Debug.LogWarning($"{nameof(RxIncomingAddressedPackQueue)} deserialized content {content}");
+                            Debug.Log($"{nameof(RxIncomingAddressedPackQueue)} deserialized content {content}");
                             return Option<T>.Some(content);
                         }
                         Debug.LogError($"{nameof(RxIncomingAddressedPackQueue)} failed to deserialize content");
