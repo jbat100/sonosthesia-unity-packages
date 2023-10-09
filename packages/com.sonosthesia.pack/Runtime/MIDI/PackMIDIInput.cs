@@ -10,6 +10,8 @@ namespace Sonosthesia.Pack
 
         [SerializeField] private string _portFilter;
 
+        [SerializeField] private string _trackFilter;
+
         private readonly CompositeDisposable _subscriptions = new();
 
         protected virtual void OnEnable()
@@ -18,7 +20,8 @@ namespace Sonosthesia.Pack
 
             bool FilterPort(IPackedMIDIPortMessage message)
             {
-                return string.IsNullOrEmpty(_portFilter) || message.Port == _portFilter;
+                return (string.IsNullOrEmpty(_portFilter) || message.Port == _portFilter) &&
+                       (string.IsNullOrEmpty(_trackFilter) || message.Track == _trackFilter);
             }
             
             _subscriptions.Add(_receiver.NoteOnObservable

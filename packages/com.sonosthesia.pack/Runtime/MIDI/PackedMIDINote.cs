@@ -10,6 +10,9 @@ namespace Sonosthesia.Pack
     {
         [Key("port")]
         public string Port { get; set; }
+        
+        [Key("track")]
+        public string Track { get; set; }
 
         [Key("channel")]
         public int Channel { get; set; }
@@ -19,6 +22,12 @@ namespace Sonosthesia.Pack
         
         [Key("velocity")]
         public int Velocity { get; set; }
+        
+        public override string ToString()
+        {
+            return $"{nameof(PackedMIDINote)} {nameof(Port)} {Port} {nameof(Track)} {Track} " +
+                   $"{nameof(Channel)} {Channel} {nameof(Note)} {Note} {nameof(Velocity)} {Velocity}";
+        }
     }
     
     internal static class PackedMIDINoteExtensions

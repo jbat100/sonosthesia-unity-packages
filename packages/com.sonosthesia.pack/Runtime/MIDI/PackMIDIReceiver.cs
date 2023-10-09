@@ -28,6 +28,10 @@ namespace Sonosthesia.Pack
         private readonly Subject<PackedMIDIPolyphonicAftertouch> _polyphonicAftertouchSubject = new ();
         internal IObservable<PackedMIDIPolyphonicAftertouch> PolyphonicAftertouchObservable 
             => _polyphonicAftertouchSubject.AsObservable();
+        
+        private readonly Subject<PackedMIDIClock> _clockSubject = new ();
+        internal IObservable<PackedMIDIClock> ClockObservable 
+            => _clockSubject.AsObservable();
 
         protected virtual void OnEnable()
         {
@@ -58,6 +62,10 @@ namespace Sonosthesia.Pack
             _subscriptions.Add(_connection.IncomingContentObservable<PackedMIDIPolyphonicAftertouch>(PackMIDIAddress.AFTERTOUCH)
                 .ObserveOnMainThread()
                 .Subscribe(_polyphonicAftertouchSubject));
+            
+            _subscriptions.Add(_connection.IncomingContentObservable<PackedMIDIClock>(PackMIDIAddress.CLOCK)
+                .ObserveOnMainThread()
+                .Subscribe(_clockSubject));
         }
         
         protected virtual void OnDisable() => _subscriptions.Clear();

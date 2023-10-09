@@ -5,11 +5,14 @@ namespace Sonosthesia.Pack
 {
     // MessagePackObject must be public
     
-    [MessagePackObject]
+    //[MessagePackObject]
     public class PackedMIDIControl : IPackedMIDIPortMessage
     {
         [Key("port")]
         public string Port { get; set; }
+        
+        [Key("track")]
+        public string Track { get; set; }
 
         [Key("channel")]
         public int Channel { get; set; }
@@ -19,6 +22,12 @@ namespace Sonosthesia.Pack
         
         [Key("value")]
         public int Value { get; set; }
+        
+        public override string ToString()
+        {
+            return $"{nameof(PackedMIDIControl)} {nameof(Port)} {Port} {nameof(Track)} {Track} " +
+                   $"{nameof(Channel)} {Channel} {nameof(Number)} {Number} {nameof(Value)} {Value}";
+        }
     }
 
     internal static class PackedMIDIControlExtensions

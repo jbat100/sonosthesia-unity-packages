@@ -18,6 +18,15 @@ namespace Sonosthesia.Pack
         public byte[] Content { get; set; }
     }
 
+    [MessagePackObject]
+    public class EnvelopeBundle
+    {
+        internal const string ADDRESS = "/bundle";
+        
+        [Key("envelopes")]
+        public AddressedEnvelope[] Envelopes { get; set; }
+    }
+
 #region Outgoing Queue
     
     internal static class AddressedEnvelopeUtils
@@ -224,21 +233,37 @@ namespace Sonosthesia.Pack
                 _incomingSubject.ObserveOn(Scheduler.ThreadPool) 
                 : _incomingSubject.AsObservable();
 
+            void ProcessEnvelope(AddressedEnvelope envelope)
+            {
+                if (envelope != null)
+                {
+                    if (envelope.Address == EnvelopeBundle.ADDRESS)
+                    {
+                        EnvelopeBundle bundle = MessagePackSerializer.Deserialize<EnvelopeBundle>(envelope.Content);
+                        foreach (AddressedEnvelope child in bundle.Envelopes)
+                        {
+                            ProcessEnvelope(child);           
+                        }
+                    }
+                    else
+                    {
+                        //Debug.LogWarning($"{nameof(AddressedPackConnection)} deserialized envelope successfully");
+                        _envelopeSubject.OnNext(envelope);
+                        //Debug.LogWarning($"{nameof(AddressedPackConnection)} onNext called successfully");    
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"{nameof(AddressedPackConnection)} failed to deserialize envelope");
+                }
+            }
+            
             _subscription = observable.Subscribe(bytes =>
             {
                 try
                 {
                     AddressedEnvelope envelope = MessagePackSerializer.Deserialize<AddressedEnvelope>(bytes);
-                    if (envelope != null)
-                    {
-                        Debug.LogWarning($"{nameof(AddressedPackConnection)} deserialized envelope successfully");
-                        _envelopeSubject.OnNext(envelope);
-                        Debug.LogWarning($"{nameof(AddressedPackConnection)} onNext called successfully");
-                    }
-                    else
-                    {
-                        Debug.LogError($"{nameof(AddressedPackConnection)} failed to deserialize envelope");
-                    }
+                    ProcessEnvelope(envelope);
                 }
                 catch (Exception e)
                 {
