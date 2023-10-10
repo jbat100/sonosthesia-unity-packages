@@ -41,9 +41,14 @@ namespace Sonosthesia.Flow
         protected virtual void OnDisable()
         {
             _logSubscriptions.Clear();
+            foreach (BehaviorSubject<T> ongoing in _ongoingSubjects.Values)
+            {
+                ongoing.OnCompleted();
+            }
+            _ongoingSubjects.Clear();
         }
 
-        protected Guid BeginEnvent(T value)
+        protected Guid BeginEvent(T value)
         {
             Guid id = Guid.NewGuid();
             BehaviorSubject<T> subject = new BehaviorSubject<T>(value);
@@ -51,7 +56,7 @@ namespace Sonosthesia.Flow
             _streamSubject.OnNext(subject.AsObservable());
             if (_log)
             {
-                Debug.Log($"{this} {nameof(BeginEnvent)} {id} {value}");   
+                Debug.Log($"{this} {nameof(BeginEvent)} {id} {value}");   
             }
             return id;
         }
@@ -101,6 +106,21 @@ namespace Sonosthesia.Flow
                 Debug.Log($"{this} {nameof(EndEvent)}");   
             }
             subject.OnNext(end);
+            subject.OnCompleted();
+            subject.Dispose();
+            _ongoingSubjects.Remove(id);
+        }
+        
+        protected void EndEvent(Guid id)
+        {
+            if (!_ongoingSubjects.TryGetValue(id, out BehaviorSubject<T> subject))
+            {
+                throw new Exception($"invalid id {id}");
+            }
+            if (_log)
+            {
+                Debug.Log($"{this} {nameof(EndEvent)}");   
+            }
             subject.OnCompleted();
             subject.Dispose();
             _ongoingSubjects.Remove(id);

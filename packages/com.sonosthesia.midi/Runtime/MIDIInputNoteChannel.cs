@@ -64,7 +64,7 @@ namespace Sonosthesia.MIDI
                 }
                 else
                 {
-                    id = BeginEnvent(note);
+                    id = BeginEvent(note);
                     _notes[note.Note] = id;   
                 }
             }));

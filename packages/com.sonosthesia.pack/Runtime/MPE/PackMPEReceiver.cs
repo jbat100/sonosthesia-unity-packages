@@ -4,12 +4,9 @@ using UnityEngine;
 
 namespace Sonosthesia.Pack
 {
-    // separating the receiver from MIDIInput allows multiple MIDIInputs (filtering on port or track)
-    // without needing the deserialization to be 
-    
-    public class PackMIDIReceiver : MonoBehaviour
+    public class PackMPEReceiver : MonoBehaviour
     {
-        [SerializeField] private AddressedPackConnection _connection;
+         [SerializeField] private AddressedPackConnection _connection;
 
         private IDisposable _subscription;
         
@@ -25,47 +22,47 @@ namespace Sonosthesia.Pack
         internal IObservable<PackedMIDIControl> ControlObservable 
             => _controlSubject.AsObservable();
         
-        private readonly Subject<PackedMIDIPolyphonicAftertouch> _polyphonicAftertouchSubject = new ();
-        internal IObservable<PackedMIDIPolyphonicAftertouch> PolyphonicAftertouchObservable 
-            => _polyphonicAftertouchSubject.AsObservable();
+        private readonly Subject<PackedMPEAftertouch> _aftertouchSubject = new ();
+        internal IObservable<PackedMPEAftertouch> AftertouchObservable 
+            => _aftertouchSubject.AsObservable();
         
-        private readonly Subject<PackedMIDIClock> _clockSubject = new ();
-        internal IObservable<PackedMIDIClock> ClockObservable 
-            => _clockSubject.AsObservable();
-
+        private readonly Subject<PackedMPEBend> _bendSubject = new ();
+        internal IObservable<PackedMPEBend> BendObservable 
+            => _bendSubject.AsObservable();
+        
         private protected virtual IDisposable Setup(AddressedPackConnection connection)
         {
             CompositeDisposable subscriptions = new();
             
-            subscriptions.Add(connection.IncomingContentObservable<PackedMIDINote>(PackMIDIAddress.NOTE)
+            subscriptions.Add(connection.IncomingContentObservable<PackedMIDINote>(PackMPEAddress.NOTE)
                 .Where(note => note.Velocity > 0)
                 .ObserveOnMainThread()
                 .Subscribe(_noteOnSubject));
             
-            subscriptions.Add(connection.IncomingContentObservable<PackedMIDINote>(PackMIDIAddress.NOTE)
+            subscriptions.Add(connection.IncomingContentObservable<PackedMIDINote>(PackMPEAddress.NOTE)
                 .Where(note => note.Velocity <= 0)
                 .ObserveOnMainThread()
                 .Subscribe(_noteOffSubject));
             
-            subscriptions.Add(connection.IncomingContentObservable<PackedMIDINote>(PackMIDIAddress.NOTE_ON)
+            subscriptions.Add(connection.IncomingContentObservable<PackedMIDINote>(PackMPEAddress.NOTE_ON)
                 .ObserveOnMainThread()
                 .Subscribe(_noteOnSubject));
             
-            subscriptions.Add(connection.IncomingContentObservable<PackedMIDINote>(PackMIDIAddress.NOTE_OFF)
+            subscriptions.Add(connection.IncomingContentObservable<PackedMIDINote>(PackMPEAddress.NOTE_OFF)
                 .ObserveOnMainThread()
                 .Subscribe(_noteOffSubject));
             
-            subscriptions.Add(connection.IncomingContentObservable<PackedMIDIControl>(PackMIDIAddress.CONTROL)
+            subscriptions.Add(connection.IncomingContentObservable<PackedMIDIControl>(PackMPEAddress.CONTROL)
                 .ObserveOnMainThread()
                 .Subscribe(_controlSubject));
             
-            subscriptions.Add(connection.IncomingContentObservable<PackedMIDIPolyphonicAftertouch>(PackMIDIAddress.AFTERTOUCH)
+            subscriptions.Add(connection.IncomingContentObservable<PackedMPEAftertouch>(PackMPEAddress.AFTERTOUCH)
                 .ObserveOnMainThread()
-                .Subscribe(_polyphonicAftertouchSubject));
+                .Subscribe(_aftertouchSubject));
             
-            subscriptions.Add(connection.IncomingContentObservable<PackedMIDIClock>(PackMIDIAddress.CLOCK)
+            subscriptions.Add(connection.IncomingContentObservable<PackedMPEBend>(PackMPEAddress.BEND)
                 .ObserveOnMainThread()
-                .Subscribe(_clockSubject));
+                .Subscribe(_bendSubject));
 
             return subscriptions;
         }
