@@ -1,5 +1,8 @@
 namespace Sonosthesia.AdaptiveMIDI.Messages
 {
+    // polyphonic aftertouch and channel aftertouch are different kinds of messages 
+    // https://learn.sparkfun.com/tutorials/midi-tutorial/advanced-messages
+    
     public readonly struct MIDIPolyphonicAftertouch
     {
         public readonly int Channel;
@@ -17,7 +20,7 @@ namespace Sonosthesia.AdaptiveMIDI.Messages
         {
             Channel = note.Channel;
             Note = note.Note;
-            Value = note.Velocity;
+            Value = note.Pressure;
         }
 
         public override string ToString()

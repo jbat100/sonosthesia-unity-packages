@@ -1,4 +1,5 @@
 using System;
+using Sonosthesia.AdaptiveMIDI;
 using Sonosthesia.AdaptiveMIDI.Messages;
 using UniRx;
 using UnityEngine;
@@ -21,6 +22,12 @@ namespace Sonosthesia.RtMIDI
         
         private readonly Subject<MIDIPolyphonicAftertouch> _polyphonicAftertouchSubject = new ();
         public IObservable<MIDIPolyphonicAftertouch> PolyphonicAftertouchObservable => _polyphonicAftertouchSubject.AsObservable();
+        
+        private readonly Subject<MIDIChannelAftertouch> _channelAftertouchSubject = new ();
+        public IObservable<MIDIChannelAftertouch> ChannelAftertouchObservable => _channelAftertouchSubject.AsObservable();
+
+        private readonly Subject<MIDIPitchBend> _pitchBendSubject = new ();
+        public IObservable<MIDIPitchBend> PitchBendObservable => _pitchBendSubject.AsObservable();
         
         private readonly Subject<MIDIClock> _clockSubject = new ();
         public IObservable<MIDIClock> ClockObservable => _clockSubject.AsObservable();
@@ -93,11 +100,11 @@ namespace Sonosthesia.RtMIDI
                 return;
             }
 
+            var size = 4ul;
+            var message = stackalloc byte [(int)size];
+            
             while (true)
             {
-                var size = 4ul;
-                var message = stackalloc byte [(int)size];
-
                 var stamp = RtMidiDll.InGetMessage(_rtmidi, message, ref size);
                 
                 if (stamp < 0 || size == 0) break;
@@ -124,23 +131,38 @@ namespace Sonosthesia.RtMIDI
                             break;
                     }
                 }
-                
-                if (size == 3)
+                else if (size == 2)
                 {
+                    var status = message[0] >> 4;
+                    var channel = message[0] & 0xf;
+                    var data1 = message[1];
+                    
+                    if (data1 > 0x7f) continue; // Invalid data
+                    
+                    switch (status)
+                    {
+                        case 0xd:
+                            _channelAftertouchSubject.OnNext(new MIDIChannelAftertouch(channel, data1));
+                            break;
+                    }
+                }
+                else if (size == 3)
+                {
+                    var data1 = message[1];
+                    var data2 = message[2];
+                    
                     // handle system messages separately
                     if ((message[0] & 0xf0) == 0xf0)
                     {
                         if (message[0] == 0xf2)
                         {
                             _clockCount = 0;
-                            _songPositionPointerSubject.OnNext(new MIDISongPositionPointer((message[2] << 7) | message[1]));
+                            _songPositionPointerSubject.OnNext(new MIDISongPositionPointer(MIDIUtils.To14BitInt(data2, data1, false)));
                         }
                     }
 
                     var status = message[0] >> 4;
                     var channel = message[0] & 0xf;
-                    var data1 = message[1];
-                    var data2 = message[2];
 
                     if (data1 > 0x7f || data2 > 0x7f) continue; // Invalid data
 
@@ -157,6 +179,9 @@ namespace Sonosthesia.RtMIDI
                             break;
                         case 0xa:
                             _polyphonicAftertouchSubject.OnNext(new MIDIPolyphonicAftertouch(channel, data1, data2));
+                            break;
+                        case 0xe:
+                            _pitchBendSubject.OnNext(new MIDIPitchBend(channel, MIDIUtils.To14BitInt(data2, data1, true)));
                             break;
                     }
                 }

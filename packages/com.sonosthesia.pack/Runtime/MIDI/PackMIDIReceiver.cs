@@ -29,6 +29,14 @@ namespace Sonosthesia.Pack
         internal IObservable<PackedMIDIPolyphonicAftertouch> PolyphonicAftertouchObservable 
             => _polyphonicAftertouchSubject.AsObservable();
         
+        private readonly Subject<PackedMIDIChannelAftertouch> _channelAftertouchSubject = new ();
+        internal IObservable<PackedMIDIChannelAftertouch> ChannelAftertouchObservable 
+            => _channelAftertouchSubject.AsObservable();
+        
+        private readonly Subject<PackedMIDIPitchBend> _pitchBendSubject = new ();
+        internal IObservable<PackedMIDIPitchBend> PitchBendObservable 
+            => _pitchBendSubject.AsObservable();
+        
         private readonly Subject<PackedMIDIClock> _clockSubject = new ();
         internal IObservable<PackedMIDIClock> ClockObservable 
             => _clockSubject.AsObservable();
@@ -36,37 +44,25 @@ namespace Sonosthesia.Pack
         private protected virtual IDisposable Setup(AddressedPackConnection connection)
         {
             CompositeDisposable subscriptions = new();
-            
-            subscriptions.Add(connection.IncomingContentObservable<PackedMIDINote>(PackMIDIAddress.NOTE)
-                .Where(note => note.Velocity > 0)
-                .ObserveOnMainThread()
-                .Subscribe(_noteOnSubject));
-            
-            subscriptions.Add(connection.IncomingContentObservable<PackedMIDINote>(PackMIDIAddress.NOTE)
-                .Where(note => note.Velocity <= 0)
-                .ObserveOnMainThread()
-                .Subscribe(_noteOffSubject));
-            
-            subscriptions.Add(connection.IncomingContentObservable<PackedMIDINote>(PackMIDIAddress.NOTE_ON)
-                .ObserveOnMainThread()
-                .Subscribe(_noteOnSubject));
-            
-            subscriptions.Add(connection.IncomingContentObservable<PackedMIDINote>(PackMIDIAddress.NOTE_OFF)
-                .ObserveOnMainThread()
-                .Subscribe(_noteOffSubject));
-            
-            subscriptions.Add(connection.IncomingContentObservable<PackedMIDIControl>(PackMIDIAddress.CONTROL)
-                .ObserveOnMainThread()
-                .Subscribe(_controlSubject));
-            
-            subscriptions.Add(connection.IncomingContentObservable<PackedMIDIPolyphonicAftertouch>(PackMIDIAddress.AFTERTOUCH)
-                .ObserveOnMainThread()
-                .Subscribe(_polyphonicAftertouchSubject));
-            
-            subscriptions.Add(connection.IncomingContentObservable<PackedMIDIClock>(PackMIDIAddress.CLOCK)
-                .ObserveOnMainThread()
-                .Subscribe(_clockSubject));
 
+            void Connect<T>(string address, IObserver<T> observer, Func<T, bool> filter = null)
+            {
+                subscriptions.Add(connection.IncomingContentObservable<T>(address)
+                    .Where(item => filter == null || filter(item))
+                    .ObserveOnMainThread()
+                    .Subscribe(observer));
+            }
+            
+            Connect(PackMIDIAddress.NOTE, _noteOnSubject, note => note.Velocity > 0);
+            Connect(PackMIDIAddress.NOTE, _noteOffSubject, note => note.Velocity <= 0);
+            Connect(PackMIDIAddress.NOTE_ON, _noteOnSubject);
+            Connect(PackMIDIAddress.NOTE_OFF, _noteOffSubject);
+            Connect(PackMIDIAddress.CONTROL, _controlSubject);
+            Connect(PackMIDIAddress.POLYPHONIC_AFTERTOUCH, _polyphonicAftertouchSubject);
+            Connect(PackMIDIAddress.CHANNEL_AFTERTOUCH, _channelAftertouchSubject);
+            Connect(PackMIDIAddress.PITCH_BEND, _pitchBendSubject);
+            Connect(PackMIDIAddress.CLOCK, _clockSubject);
+            
             return subscriptions;
         }
         

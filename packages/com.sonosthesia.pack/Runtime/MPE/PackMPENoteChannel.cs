@@ -9,16 +9,19 @@ namespace Sonosthesia.Pack
 {
     public class PackMPENoteChannel : MPENoteChannel
     {
-        [SerializeField] private PackMPEReceiver _receiver;
+        [SerializeField] private PackMIDIReceiver _receiver;
 
         [SerializeField] private string _track;
         
         // typically these parameters will be sent on the channel by the DAW before note so need to cache it
         private class ChannelState
         {
+            // 48 semitones up/down mapped to pitch bend [-8192 8191]
+            const float BEND_SEMITONES = 96f / 16383f;
+            
             public int Slide { get; set; }
             public int Pressure { get; set; }
-            public float Bend { get; set; }
+            public int Bend { get; set; }
             
             public MPENote? CurrentNote { get; set; }
             public Guid? EventId { get; set; }
@@ -27,7 +30,7 @@ namespace Sonosthesia.Pack
 
             public MPENote Begin(PackedMIDINote note)
             {
-                MPENote mpeNote = new MPENote(note.Note, note.Velocity, Slide, Pressure, Bend);
+                MPENote mpeNote = new MPENote(note.Note, note.Velocity, Slide, Pressure, Bend * BEND_SEMITONES);
                 CurrentNote = mpeNote;
                 return mpeNote;
             }
@@ -35,7 +38,7 @@ namespace Sonosthesia.Pack
             public MPENote Update()
             {
                 MPENote current = CurrentNote.Value;
-                MPENote updated = new MPENote(current.Note, current.Velocity, Slide, Pressure, Bend);
+                MPENote updated = new MPENote(current.Note, current.Velocity, Slide, Pressure, Bend * BEND_SEMITONES);
                 CurrentNote = updated;
                 return updated;
             }
@@ -91,7 +94,7 @@ namespace Sonosthesia.Pack
                 state.End();
             }));
             
-            _mpeSubscriptions.Add(_receiver.AftertouchObservable.Where(aftertouch => aftertouch.Track == _track).Subscribe(aftertouch =>
+            _mpeSubscriptions.Add(_receiver.ChannelAftertouchObservable.Where(aftertouch => aftertouch.Track == _track).Subscribe(aftertouch =>
             {
                 ChannelState state = GetState(aftertouch.Channel);
                 state.Pressure = aftertouch.Value;
@@ -118,7 +121,7 @@ namespace Sonosthesia.Pack
                 }
             }));
             
-            _mpeSubscriptions.Add(_receiver.BendObservable.Where(bend => bend.Track == _track).Subscribe(bend =>
+            _mpeSubscriptions.Add(_receiver.PitchBendObservable.Where(bend => bend.Track == _track).Subscribe(bend =>
             {
                 ChannelState state = GetState(bend.Channel);
                 state.Bend = bend.Value;

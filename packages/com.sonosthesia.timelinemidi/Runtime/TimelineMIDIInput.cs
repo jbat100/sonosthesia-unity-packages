@@ -30,7 +30,7 @@ namespace Sonosthesia.Timeline.Midi
             }
             else if (midiEvent.IsPolyphonicAftertouch)
             {
-                BroadcastAftertouch(new MIDIPolyphonicAftertouch(midiEvent.status & 0x0f, midiEvent.data1, midiEvent.data2));
+                BroadcastPolyphonicAftertouch(new MIDIPolyphonicAftertouch(midiEvent.status & 0x0f, midiEvent.data1, midiEvent.data2));
             }
         }
     }

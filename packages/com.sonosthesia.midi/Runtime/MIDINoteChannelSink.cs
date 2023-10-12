@@ -36,7 +36,7 @@ namespace Sonosthesia.MIDI
                             Debug.LogError("Unexpected velocity mismatch withing MIDI note stream");
                             return;
                         }
-                        _output.BroadcastAftertouch(new MIDIPolyphonicAftertouch(note));
+                        _output.BroadcastPolyphonicAftertouch(new MIDIPolyphonicAftertouch(note));
                     }
                     else
                     {
@@ -53,6 +53,8 @@ namespace Sonosthesia.MIDI
                 });
             });
         }
-        
+
+        protected virtual void OnDisable() => _subscription?.Dispose();
+
     }
 }

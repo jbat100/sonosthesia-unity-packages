@@ -1,0 +1,22 @@
+{
+    "name": "Sonosthesia.Instrument",
+    "rootNamespace": "",
+    "references": [
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:6c6dc842e821b4881bee7a84bbd34b94",
+        "GUID:d13cd110c9ead484abd4d8de740b818b",
+        "GUID:25e5e4b6f3916462c92ecc1d0ffca2c2",
+        "GUID:38486b356fe2649a3abdb6285911b25d",
+        "GUID:5498766dc821c4d57a7ccc41bc91fe53",
+        "GUID:d8b63aba1907145bea998dd612889d6b"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

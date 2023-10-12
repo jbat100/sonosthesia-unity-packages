@@ -47,7 +47,9 @@ namespace Sonosthesia.RtMIDI
                         _port.NoteOnObservable.Subscribe(BroadcastNoteOn);
                         _port.NoteOffObservable.Subscribe(BroadcastNoteOff);
                         _port.ControlObservable.Subscribe(BroadcastControl);
-                        _port.PolyphonicAftertouchObservable.Subscribe(BroadcastAftertouch);
+                        _port.ChannelAftertouchObservable.Subscribe(BroadcastChannelAftertouch);
+                        _port.PolyphonicAftertouchObservable.Subscribe(BroadcastPolyphonicAftertouch);
+                        _port.PitchBendObservable.Subscribe(BroadcastPitchBend);
                         _port.SongPositionPointerObservable.Subscribe(BroadcastPositionPointer);
                         _port.SyncObservable.Subscribe(BroadcastSync);
                         _port.ClockObservable.Subscribe(BroadcastClock);

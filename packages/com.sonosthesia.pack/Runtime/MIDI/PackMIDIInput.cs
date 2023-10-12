@@ -42,7 +42,7 @@ namespace Sonosthesia.Pack
             _subscriptions.Add(_receiver.PolyphonicAftertouchObservable
                 .Where(FilterPort)
                 .Select(aftertouch => aftertouch.Unpack())
-                .Subscribe(BroadcastAftertouch));
+                .Subscribe(BroadcastPolyphonicAftertouch));
         }
 
         protected virtual void OnDisable() => _subscriptions.Clear();

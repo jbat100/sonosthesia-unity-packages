@@ -1,4 +1,3 @@
-using Cysharp.Threading.Tasks;
 using Sonosthesia.AdaptiveMIDI;
 using Sonosthesia.AdaptiveMIDI.Messages;
 using UnityEngine;
@@ -29,10 +28,20 @@ namespace Sonosthesia.Pack
             _connection.QueueOutgoingContent(PackMIDIAddress.CONTROL, packed);
         }
 
-        public override void BroadcastAftertouch(MIDIPolyphonicAftertouch aftertouch)
+        public override void BroadcastPolyphonicAftertouch(MIDIPolyphonicAftertouch aftertouch)
         {
             PackedMIDIPolyphonicAftertouch packed = aftertouch.Pack(_port);
-            _connection.QueueOutgoingContent(PackMIDIAddress.AFTERTOUCH, packed);
+            _connection.QueueOutgoingContent(PackMIDIAddress.POLYPHONIC_AFTERTOUCH, packed);
+        }
+
+        public override void BrodcatstChannelAftertouch(MIDIChannelAftertouch aftertouch)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void BroadcastPitchBend(MIDIPitchBend pitchBend)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

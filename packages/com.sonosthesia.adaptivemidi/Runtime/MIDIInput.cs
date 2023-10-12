@@ -18,9 +18,15 @@ namespace Sonosthesia.AdaptiveMIDI
         private readonly Subject<MIDIControl> _controlSubject = new ();
         public IObservable<MIDIControl> ControlObservable => _controlSubject.AsObservable();
         
+        private readonly Subject<MIDIChannelAftertouch> _channelAftertouchSubject = new ();
+        public IObservable<MIDIChannelAftertouch> ChannelAftertouchObservable => _channelAftertouchSubject.AsObservable();
+
         private readonly Subject<MIDIPolyphonicAftertouch> _polyphonicAftertouchSubject = new ();
         public IObservable<MIDIPolyphonicAftertouch> PolyphonicAftertouchObservable => _polyphonicAftertouchSubject.AsObservable();
         
+        private readonly Subject<MIDIPitchBend> _pitchBendSubject = new ();
+        public IObservable<MIDIPitchBend> PitchBendObservable => _pitchBendSubject.AsObservable();
+
         private readonly Subject<MIDIClock> _clockSubject = new ();
         public IObservable<MIDIClock> ClockObservable => _clockSubject.AsObservable();
         
@@ -35,7 +41,9 @@ namespace Sonosthesia.AdaptiveMIDI
         public void BroadcastNoteOn(MIDINote note) => _noteOnSubject.OnNext(note);
         public void BroadcastNoteOff(MIDINote note) => _noteOffSubject.OnNext(note);
         public void BroadcastControl(MIDIControl control) => _controlSubject.OnNext(control);
-        public void BroadcastAftertouch(MIDIPolyphonicAftertouch aftertouch) => _polyphonicAftertouchSubject.OnNext(aftertouch);
+        public void BroadcastChannelAftertouch(MIDIChannelAftertouch aftertouch) => _channelAftertouchSubject.OnNext(aftertouch);
+        public void BroadcastPolyphonicAftertouch(MIDIPolyphonicAftertouch aftertouch) => _polyphonicAftertouchSubject.OnNext(aftertouch);
+        public void BroadcastPitchBend(MIDIPitchBend pitchBend) => _pitchBendSubject.OnNext(pitchBend);
         public void BroadcastClock(MIDIClock clock) => _clockSubject.OnNext(clock);
         public void BroadcastPositionPointer(MIDISongPositionPointer pointer) => _songPositionPointerSubject.OnNext(pointer);
         public void BroadcastSync(MIDISync sync) => _syncSubject.OnNext(sync);

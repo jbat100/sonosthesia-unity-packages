@@ -23,6 +23,7 @@ namespace Sonosthesia.AdaptiveMIDI
                 _input.NoteOnObservable.Subscribe(m => Debug.Log(m)),
                 _input.NoteOffObservable.Subscribe(m => Debug.Log(m)),
                 _input.ControlObservable.Subscribe(m => Debug.Log(m)),
+                _input.ChannelAftertouchObservable.Subscribe(m => Debug.Log(m)),
                 _input.PolyphonicAftertouchObservable.Subscribe(m => Debug.Log(m)),
                 _input.SongPositionPointerObservable.Subscribe(m => Debug.Log(m)),
                 _input.SyncObservable.Subscribe(m => Debug.Log(m)),

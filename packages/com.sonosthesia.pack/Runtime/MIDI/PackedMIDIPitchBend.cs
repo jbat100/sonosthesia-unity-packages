@@ -3,7 +3,7 @@ using MessagePack;
 namespace Sonosthesia.Pack
 {
     [MessagePackObject]
-    public class PackedMPEAftertouch
+    public class PackedMIDIPitchBend
     {
         [Key("port")]
         public string Port { get; set; }
@@ -19,7 +19,7 @@ namespace Sonosthesia.Pack
         
         public override string ToString()
         {
-            return $"{nameof(PackedMPEAftertouch)} {nameof(Port)} {Port} {nameof(Track)} {Track} " +
+            return $"{nameof(PackedMIDIPitchBend)} {nameof(Port)} {Port} {nameof(Track)} {Track} " +
                    $"{nameof(Channel)} {Channel} {nameof(Value)} {Value}";
         }
     }

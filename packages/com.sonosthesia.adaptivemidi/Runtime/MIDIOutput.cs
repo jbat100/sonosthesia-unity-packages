@@ -8,7 +8,9 @@ namespace Sonosthesia.AdaptiveMIDI
         public abstract void BroadcastNoteOn(MIDINote note);
         public abstract void BroadcastNoteOff(MIDINote note);
         public abstract void BroadcastControl(MIDIControl control);
-        public abstract void BroadcastAftertouch(MIDIPolyphonicAftertouch aftertouch);
+        public abstract void BroadcastPolyphonicAftertouch(MIDIPolyphonicAftertouch aftertouch);
+        public abstract void BrodcatstChannelAftertouch(MIDIChannelAftertouch aftertouch);
+        public abstract void BroadcastPitchBend(MIDIPitchBend pitchBend);
     }    
 }
 
