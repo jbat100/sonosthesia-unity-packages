@@ -68,8 +68,8 @@ namespace Sonosthesia.AdaptiveMIDI.Messages
         
         public static MIDIPitchBend GetPitchBend(this MPENote mpeNote, int channel)
         {
-            const float scale = 16383f / (2 * MPENote.BEND_RANGE);
-            return new MIDIPitchBend(channel, (int)(mpeNote.Bend * scale));
+            const float scale = 8192f / MPENote.BEND_RANGE;
+            return new MIDIPitchBend(channel, 8192 + (int)(mpeNote.Bend * scale));
         }
     }
 }

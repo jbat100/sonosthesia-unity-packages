@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UniRx;
 using Sonosthesia.AdaptiveMIDI;
@@ -12,39 +13,39 @@ namespace Sonosthesia.Pack
 
         [SerializeField] private string _trackFilter;
 
-        private readonly CompositeDisposable _subscriptions = new();
+        private IDisposable _subscription;
 
-        protected virtual void OnEnable()
+        protected virtual IDisposable Setup(PackMIDIReceiver receiver)
         {
-            _subscriptions.Clear();
+            CompositeDisposable subscriptions = new();
 
-            bool FilterPort(IPackedMIDIPortMessage message)
+            void Connect<T>(IObservable<T> observable, Action<T> processor) where T : IPackedAddressedMIDIMessage
             {
-                return (string.IsNullOrEmpty(_portFilter) || message.Port == _portFilter) &&
-                       (string.IsNullOrEmpty(_trackFilter) || message.Track == _trackFilter);
+                subscriptions.Add(observable
+                    .Where(item => item.Check(_portFilter, _trackFilter))
+                    .Subscribe(processor));
             }
             
-            _subscriptions.Add(_receiver.NoteOnObservable
-                .Where(FilterPort)
-                .Select(note => note.Unpack())
-                .Subscribe(BroadcastNoteOn));
-            
-            _subscriptions.Add(_receiver.NoteOffObservable
-                .Where(FilterPort)
-                .Select(note => note.Unpack())
-                .Subscribe(BroadcastNoteOff));
-            
-            _subscriptions.Add(_receiver.ControlObservable
-                .Where(FilterPort)
-                .Select(control => control.Unpack())
-                .Subscribe(BroadcastControl));
-            
-            _subscriptions.Add(_receiver.PolyphonicAftertouchObservable
-                .Where(FilterPort)
-                .Select(aftertouch => aftertouch.Unpack())
-                .Subscribe(BroadcastPolyphonicAftertouch));
+            Connect(_receiver.NoteOnObservable, note => BroadcastNoteOn(note.Unpack()));
+            Connect(_receiver.NoteOffObservable, note => BroadcastNoteOff(note.Unpack()));
+            Connect(_receiver.ControlObservable, control => BroadcastControl(control.Unpack()));
+            Connect(_receiver.PolyphonicAftertouchObservable, aftertouch => BroadcastPolyphonicAftertouch(aftertouch.Unpack()));
+            Connect(_receiver.ChannelAftertouchObservable, aftertouch => BroadcastChannelAftertouch(aftertouch.Unpack()));
+            Connect(_receiver.PitchBendObservable, bend => BroadcastPitchBend(bend.Unpack()));
+
+            return subscriptions;
+        }
+        
+        protected virtual void OnEnable()
+        {
+            _subscription?.Dispose();
+            _subscription = Setup(_receiver);
         }
 
-        protected virtual void OnDisable() => _subscriptions.Clear();
+        protected virtual void OnDisable()
+        {
+            _subscription?.Dispose();
+            _subscription = null;
+        }
     }
 }
