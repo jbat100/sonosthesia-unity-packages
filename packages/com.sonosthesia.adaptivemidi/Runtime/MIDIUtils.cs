@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Sonosthesia.AdaptiveMIDI
 {
     public static class MIDIUtils
@@ -12,6 +14,16 @@ namespace Sonosthesia.AdaptiveMIDI
             int combinedValue = (msb << 7) | lsb;
 
             return signed ? combinedValue - 8192 : combinedValue;
+        }
+
+        public static int ClampTo7Bit(int value)
+        {
+            return Mathf.Clamp(value, 0, 127);
+        }
+        
+        public static float ClampTo7Bit(float value)
+        {
+            return Mathf.Clamp(value, 0, 127);
         }
     }
 }

@@ -24,6 +24,7 @@ namespace Sonosthesia.Pack
 
         public override void BroadcastChannelControl(MIDIControl control)
         {
+            Debug.Log($"{this} {nameof(BroadcastChannelControl)} {control}");
             PackedMIDIControl packed = control.Pack(_port);
             _connection.QueueOutgoingContent(PackMIDIAddress.CONTROL, packed);
         }

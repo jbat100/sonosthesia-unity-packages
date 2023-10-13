@@ -114,7 +114,7 @@ namespace Sonosthesia.Pack
                     {
                         byte[] bytes = item.Serialize();
                         await _connection.Send(bytes);
-                        Debug.Log($"WebSocket sent content to address: {item.Address}");
+                        //Debug.Log($"WebSocket sent content to address: {item.Address}");
                     }
                     catch (Exception e)
                     {

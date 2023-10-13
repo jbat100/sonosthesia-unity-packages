@@ -8,8 +8,8 @@ using UnityEngine.EventSystems;
 namespace Sonosthesia.Instrument
 {
     // a silly test instrument 
-    
-    static class MPENoteExtensions
+
+    internal static class MPENoteExtensions
     {
         public static MPENote ApplyDiff(this MPENote note, float diff, MPEPointerInstrument.DragMapping mapping)
         {
