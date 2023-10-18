@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Sonosthesia.Utils
 {
@@ -8,5 +9,17 @@ namespace Sonosthesia.Utils
         X = 1 << 0,
         Y = 1 << 1,
         Z = 1 << 2
+    }
+
+    public static class AxesExtensions
+    {
+        public static Vector3 SetAxes(this Vector3 input, Vector3 set, Axes axes)
+        {
+            return new Vector3(
+                axes.HasFlag(Axes.X) ? set.x : input.x,
+                axes.HasFlag(Axes.Y) ? set.y : input.y,
+                axes.HasFlag(Axes.Z) ? set.z : input.z
+            );
+        }
     }
 }
