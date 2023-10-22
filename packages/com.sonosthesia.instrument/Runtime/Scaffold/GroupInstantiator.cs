@@ -8,11 +8,12 @@ using UnityEditor;
 
 namespace Sonosthesia.Instrument
 {
+
     // Based on object handling sections of SplineInstantiate.cs to ensure that the instantiation is done 
     // and cleaned up correctly
     
     [ExecuteInEditMode]
-    public class GroupInstantiator<TEntry> : MonoBehaviour where TEntry : MonoBehaviour, IIndexed
+    public abstract class GroupInstantiator<TEntry> : BaseGroupInstantiator where TEntry : MonoBehaviour, IIndexed
     {
         private const string k_InstancesRootName = "root-";
         private GameObject _instancesRoot;
@@ -45,16 +46,11 @@ namespace Sonosthesia.Instrument
         
         private TEntry _previousPrefab;
 
-        private int _requiredCount = 0;
+        protected abstract int RequiredCount { get; }
 
-        public int RequiredCount
+        public override void Reload()
         {
-            get => _requiredCount;
-            set
-            {
-                _requiredCount = value;
-                _dirtyInstances = true;
-            }
+            _dirtyInstances = true;
         }
 
         protected virtual void OnEnable()

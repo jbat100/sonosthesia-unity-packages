@@ -1,9 +1,23 @@
 using Unity.Mathematics;
+using UnityEngine;
+using Random = Unity.Mathematics.Random;
 
 namespace Sonosthesia.Utils
 {
     public static class MathExtensions
     {
+        public static float SumComponents(this Vector3 v)
+        {
+            return v.x + v.y + v.z;
+        }
+        
+        public static float Remap(this float value, float from1, float to1, float from2, float to2)
+        {
+            float inverseLerped = Mathf.InverseLerp(from1, to1, value);
+            float remapped = Mathf.Lerp(from2, to2, inverseLerped);
+            return remapped;
+        }
+        
         public static float3 Horizontal(this float3 v)
         {
             return new float3(v.x, 0f, v.z);

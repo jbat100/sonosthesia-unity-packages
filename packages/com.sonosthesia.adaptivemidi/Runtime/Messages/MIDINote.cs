@@ -5,7 +5,7 @@ namespace Sonosthesia.AdaptiveMIDI.Messages
         public readonly int Channel;
         public readonly int Note;
         public readonly int Velocity;
-        public readonly int Pressure; // set with aftertouch messages
+        public readonly int Pressure; // set with polyphonic aftertouch messages
 
         public MIDINote(int channel, int note, int velocity)
         {

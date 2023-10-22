@@ -21,5 +21,10 @@ namespace Sonosthesia.Utils
                 axes.HasFlag(Axes.Z) ? set.z : input.z
             );
         }
+
+        public static Vector3 FilterAxes(this Vector3 input, Axes axes)
+        {
+            return SetAxes(input, Vector3.zero, ~axes);
+        }
     }
 }

@@ -13,6 +13,8 @@ namespace Sonosthesia.MIDI
 
         [SerializeField] private MIDIOutput _output;
 
+        [SerializeField] private bool _aftertouch;
+
         private IDisposable _subscription;
 
         protected virtual void OnEnable()
@@ -26,17 +28,25 @@ namespace Sonosthesia.MIDI
                 {
                     if (initial.HasValue)
                     {
+                        if (initial.Value.Channel != note.Channel)
+                        {
+                            Debug.LogError("Unexpected channel mismatch within MIDI note stream");
+                            return;
+                        }
                         if (initial.Value.Note != note.Note)
                         {
-                            Debug.LogError("Unexpected note mismatch withing MIDI note stream");
+                            Debug.LogError("Unexpected note mismatch within MIDI note stream");
                             return;
                         }
                         if (initial.Value.Velocity != note.Velocity)
                         {
-                            Debug.LogError("Unexpected velocity mismatch withing MIDI note stream");
+                            Debug.LogError("Unexpected velocity mismatch within MIDI note stream");
                             return;
                         }
-                        _output.BroadcastPolyphonicAftertouch(new MIDIPolyphonicAftertouch(note));
+                        if (_aftertouch && initial.Value.Pressure != note.Pressure)
+                        {
+                            _output.BroadcastPolyphonicAftertouch(new MIDIPolyphonicAftertouch(note));   
+                        }
                     }
                     else
                     {

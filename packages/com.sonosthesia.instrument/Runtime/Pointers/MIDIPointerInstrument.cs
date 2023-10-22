@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Sonosthesia.AdaptiveMIDI.Messages;
 using Sonosthesia.Flow;
 using UnityEngine;
@@ -14,24 +15,25 @@ namespace Sonosthesia.Instrument
         
         [SerializeField] private int _velocity;
 
-        private Guid? eventId;
+        private readonly Dictionary<int, Guid> _pointerEvents = new(); 
         
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (eventId.HasValue)
+            if (_pointerEvents.TryGetValue(eventData.pointerId, out Guid eventId))
             {
-                EndEvent(eventId.Value);
+                EndEvent(eventId);
+                _pointerEvents.Remove(eventData.pointerId);
             }
 
-            eventId = BeginEvent(new MIDINote(_channel, _note, _velocity));
+            _pointerEvents[eventData.pointerId] = BeginEvent(new MIDINote(_channel, _note, _velocity));
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
-            if (eventId.HasValue)
+            if (_pointerEvents.TryGetValue(eventData.pointerId, out Guid eventId))
             {
-                EndEvent(eventId.Value);
-                eventId = null;
+                EndEvent(eventId);
+                _pointerEvents.Remove(eventData.pointerId);
             }
         }
     }

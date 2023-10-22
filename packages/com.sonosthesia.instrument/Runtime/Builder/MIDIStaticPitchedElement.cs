@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Builder
+namespace Sonosthesia.Instrument
 {
     public class MIDIStaticPitchedElement : MonoBehaviour, IMIDIPitchedElement
     {

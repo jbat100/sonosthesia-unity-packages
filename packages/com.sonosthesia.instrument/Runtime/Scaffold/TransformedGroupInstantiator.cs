@@ -11,8 +11,20 @@ namespace Sonosthesia.Instrument
         [SerializeField] private List<GroupTransformer> _groupTransformers;
 
         private readonly CompositeDisposable _changeSubscriptions = new ();
+
+        protected override int RequiredCount => Offsets.Count;
+
+        protected abstract IReadOnlyList<float> ComputeOffsets();
         
-        protected abstract IReadOnlyList<float> Offsets { get; }
+        private IReadOnlyList<float> _offsets;
+        private IReadOnlyList<float> Offsets
+        {
+            get
+            {
+                _offsets ??= ComputeOffsets();
+                return _offsets;
+            }
+        }
 
         private bool _dirtyTransforms;
         
@@ -34,6 +46,7 @@ namespace Sonosthesia.Instrument
 
         protected override void OnValidate()
         {
+            _offsets = null;
             _dirtyTransforms = true;
             base.OnValidate();
         }

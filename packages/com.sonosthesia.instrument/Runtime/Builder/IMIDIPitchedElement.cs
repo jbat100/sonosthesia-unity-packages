@@ -1,6 +1,6 @@
 using Sonosthesia.MIDI;
 
-namespace Builder
+namespace Sonosthesia.Instrument
 {
     public interface IMIDIPitchedElement
     {

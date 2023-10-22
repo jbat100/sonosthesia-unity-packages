@@ -14,33 +14,18 @@ namespace Sonosthesia.Instrument
 
         [SerializeField] private bool _closed;
 
-        protected override void OnValidate()
+        protected override IReadOnlyList<float> ComputeOffsets()
         {
-            RequiredCount = _count;
-            base.OnValidate();
-        }
-
-        protected override void OnEnable()
-        {
-            RequiredCount = _count;
-            base.OnEnable();
-        }
-
-        protected override IReadOnlyList<float> Offsets
-        {
-            get
+            List<float> result = new();
+            float range = _end - _start;
+            float increment = range / (_closed ? _count : _count - 1);
+            float current = _start;
+            for (int i = 0; i < _count; i++)
             {
-                List<float> result = new();
-                float range = _end - _start;
-                float increment = range / (_closed ? _count : _count - 1);
-                float current = _start;
-                for (int i = 0; i < _count; i++)
-                {
-                    result.Add(current);
-                    current += increment;
-                }
-                return result.AsReadOnly();
+                result.Add(current);
+                current += increment;
             }
+            return result.AsReadOnly();
         }
     }
 }
