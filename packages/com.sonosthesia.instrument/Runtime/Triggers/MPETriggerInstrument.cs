@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Instrument
 {
-    public class MPETriggerInstrument : TriggerChannel<MPENote>
+    public class MPETriggerInstrument : TriggerChannelDriver<MPENote>
     {
         [SerializeField] private TriggerValueGenerator<float> _note;
         
@@ -16,26 +16,26 @@ namespace Sonosthesia.Instrument
         
         [SerializeField] private TriggerValueGenerator<float> _bend;
         
-        protected override bool Extract(Collider collider, out MPENote mpeNote)
+        protected override bool Extract(bool initial, Collider collider, out MPENote mpeNote)
         {
             mpeNote = default;
-            if (!_note.ProcessTriggerEnter(collider, out float note))
+            if (!_note.ProcessTrigger(initial, collider, out float note))
             {
                 return false;
             }
-            if (!_velocity.ProcessTriggerEnter(collider, out float velocity))
+            if (!_velocity.ProcessTrigger(initial, collider, out float velocity))
             {
                 return false;
             }
-            if (!_slide.ProcessTriggerEnter(collider, out float slide))
+            if (!_slide.ProcessTrigger(initial, collider, out float slide))
             {
                 return false;
             }
-            if (!_pressure.ProcessTriggerEnter(collider, out float pressure))
+            if (!_pressure.ProcessTrigger(initial, collider, out float pressure))
             {
                 return false;
             }
-            if (!_bend.ProcessTriggerEnter(collider, out float bend))
+            if (!_bend.ProcessTrigger(initial, collider, out float bend))
             {
                 return false;
             }

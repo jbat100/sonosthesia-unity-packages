@@ -39,7 +39,7 @@ namespace Sonosthesia.Touch
         {
             if (_history.TryGetValue(other, out History history))
             {
-                if (_track)
+                if (!_track)
                 {
                     value = history.InitialValue;
                     return true;

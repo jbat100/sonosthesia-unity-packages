@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 namespace Sonosthesia.Instrument
 {
-    public class GeneratorMIDIPointerInstrument : PointerChannel<MIDINote>
+    public class GeneratorMIDIPointerInstrument : PointerChannelDriver<MIDINote>
     {
         [SerializeField] private PointerValueGenerator<float> _channel;
         
@@ -15,25 +15,25 @@ namespace Sonosthesia.Instrument
         
         [SerializeField] private PointerValueGenerator<float> _pressure;
 
-        protected override bool Extract(PointerEventData eventData, out MIDINote midiNote)
+        protected override bool Extract(bool initial, PointerEventData eventData, out MIDINote midiNote)
         {
             midiNote = default;
-            if (!_note.OnPointerDown(eventData, out float note))
+            if (!_note.OnPointer(initial, eventData, out float note))
             {
                 return false;
             }
-            if (!_velocity.OnPointerDown(eventData, out float velocity))
+            if (!_velocity.OnPointer(initial, eventData, out float velocity))
             {
                 return false;
             }
-            if (!_channel.OnPointerDown(eventData, out float channel))
+            if (!_channel.OnPointer(initial, eventData, out float channel))
             {
                 return false;
             }
 
             // pressure is optional
             float pressure = 0;
-            if (_pressure && !_pressure.OnPointerDown(eventData, out  pressure))
+            if (_pressure && !_pressure.OnPointer(initial, eventData, out  pressure))
             {
                 return false;
             }

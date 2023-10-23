@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public abstract class TriggerChannel<TValue> : Channel<TValue> where TValue : struct
+    public abstract class TriggerChannelDriver<TValue> : ChannelDriver<TValue> where TValue : struct
     {
         [SerializeField] private bool _endOnExit = true;
 
@@ -17,18 +17,20 @@ namespace Sonosthesia.Touch
         {
             if (_triggerEvents.TryGetValue(other, out Guid eventId))
             {
+                _triggerEvents.Remove(other);
                 EndEvent(eventId);
             }
         }
 
         protected virtual void OnTriggerEnter(Collider other)
         {
+            Debug.Log($"{this} {nameof(OnTriggerEnter)} {other}");
             if (_triggerEvents.TryGetValue(other, out Guid eventId))
             {
-                EndEvent(eventId);
                 _triggerEvents.Remove(other);
+                EndEvent(eventId);
             }
-            if (Extract(other, out TValue value))
+            if (Extract(true, other, out TValue value))
             {
                 _triggerEvents[other] = BeginEvent(value);
             }
@@ -36,7 +38,8 @@ namespace Sonosthesia.Touch
         
         protected virtual void OnTriggerStay(Collider other)
         {
-            if (_triggerEvents.TryGetValue(other, out Guid eventId) && Extract(other, out TValue value))
+            Debug.Log($"{this} {nameof(OnTriggerStay)} {other}");
+            if (_triggerEvents.TryGetValue(other, out Guid eventId) && Extract(false, other, out TValue value))
             {
                 UpdateEvent(eventId, value);
             }
@@ -44,12 +47,14 @@ namespace Sonosthesia.Touch
         
         protected virtual void OnTriggerExit(Collider other)
         {
+            Debug.Log($"{this} {nameof(OnTriggerExit)} {other}");
             if (_endOnExit && _triggerEvents.TryGetValue(other, out Guid eventId))
             {
+                _triggerEvents.Remove(other);
                 EndEvent(eventId);
             }
         }
         
-        protected abstract bool Extract(Collider collider, out TValue value);
+        protected abstract bool Extract(bool initial, Collider collider, out TValue value);
     }
 }

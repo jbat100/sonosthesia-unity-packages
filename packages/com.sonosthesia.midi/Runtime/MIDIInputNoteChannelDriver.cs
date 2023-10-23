@@ -4,10 +4,11 @@ using Sonosthesia.AdaptiveMIDI;
 using UniRx;
 using UnityEngine;
 using Sonosthesia.AdaptiveMIDI.Messages;
+using Sonosthesia.Flow;
 
 namespace Sonosthesia.MIDI
 {
-    public class MIDIInputNoteChannel : MIDINoteChannel
+    public class MIDIInputNoteChannelDriver : ChannelDriver<MIDINote>
     {
         [SerializeField] private MIDIInput _input;
 
@@ -27,18 +28,16 @@ namespace Sonosthesia.MIDI
 
         private readonly Dictionary<int, Guid> _notes = new ();
 
-        protected override void Awake()
+        protected virtual void Awake()
         {
-            base.Awake();
             if (!_input)
             {
                 _input = GetComponentInParent<MIDIInput>();
             }
         }
         
-        protected override void OnEnable()
+        protected virtual void OnEnable()
         {
-            base.OnEnable();
             _subscriptions.Clear();
             if (!_input)
             {

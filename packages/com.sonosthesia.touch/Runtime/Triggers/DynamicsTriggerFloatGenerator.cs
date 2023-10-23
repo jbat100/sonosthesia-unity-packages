@@ -14,9 +14,7 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private TransformDynamics.Domain _domain;
 
-        [SerializeField] private Vector3Selector _selector;
-
-        [SerializeField] private bool _abs;
+        [SerializeField] private Vector3ToFloat _extractor;
 
         protected override bool ProcessTriggerEnter(Collider other, State state, out float value)
         {
@@ -40,11 +38,8 @@ namespace Sonosthesia.Touch
         protected virtual float Extract(TransformDynamicsMonitor monitor)
         {
             Vector3 v = monitor.Select(_order).Select(_domain);
-            if (_abs)
-            {
-                v = v.Abs();
-            }
-            return v.Select(_selector);
+            Vector3 local = transform.InverseTransformDirection(v);
+            return _extractor.Process(v);
         }
     }
 }

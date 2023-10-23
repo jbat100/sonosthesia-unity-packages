@@ -23,7 +23,7 @@ namespace Sonosthesia.Instrument
         }
     }
     
-    public class MPEPointerInstrument : Channel<MPENote>, IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler
+    public class MPEPointerInstrument : ChannelDriver<MPENote>, IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler
     {
         internal enum DragMapping
         {

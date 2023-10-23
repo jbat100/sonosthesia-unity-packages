@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 namespace Sonosthesia.Touch
 {
-    public abstract class PointerChannel<TValue> : Channel<TValue>, 
+    public abstract class PointerChannelDriver<TValue> : ChannelDriver<TValue>, 
         IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler, IPointerExitHandler
         where TValue : struct
     {
@@ -22,7 +22,7 @@ namespace Sonosthesia.Touch
                 EndEvent(eventId);
                 _pointerEvents.Remove(eventData.pointerId);
             }
-            if (Extract(eventData, out TValue mpeNote))
+            if (Extract(true, eventData, out TValue mpeNote))
             {
                 _pointerEvents[eventData.pointerId] = BeginEvent(mpeNote);
             }
@@ -39,7 +39,7 @@ namespace Sonosthesia.Touch
 
         public void OnPointerMove(PointerEventData eventData)
         {
-            if (_pointerEvents.TryGetValue(eventData.pointerId, out Guid eventId) && Extract(eventData, out TValue value))
+            if (_pointerEvents.TryGetValue(eventData.pointerId, out Guid eventId) && Extract(false, eventData, out TValue value))
             {
                 UpdateEvent(eventId, value);
             }
@@ -54,6 +54,6 @@ namespace Sonosthesia.Touch
             }
         }
 
-        protected abstract bool Extract(PointerEventData eventData, out TValue value);
+        protected abstract bool Extract(bool initial, PointerEventData eventData, out TValue value);
     }
 }

@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 
 namespace Sonosthesia.Instrument
 {
-    public class MIDIPointerInstrument : Channel<MIDINote>, IPointerDownHandler, IPointerUpHandler
+    public class MIDIPointerInstrument : ChannelDriver<MIDINote>, IPointerDownHandler, IPointerUpHandler
     {
         [SerializeField] private int _channel;
         

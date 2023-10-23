@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Sonosthesia.AdaptiveMIDI.Messages;
-using Sonosthesia.MIDI;
+using Sonosthesia.Flow;
 using UniRx;
 using UnityEngine;
 
 namespace Sonosthesia.Pack
 {
-    public class PackMPENoteChannel : MPENoteChannel
+    public class PackMPENoteChannelDriver : ChannelDriver<MPENote>
     {
         [SerializeField] private PackMIDIReceiver _receiver;
 
@@ -65,18 +65,17 @@ namespace Sonosthesia.Pack
             return state;
         }
         
-        protected override void OnEnable()
+        protected virtual void OnEnable()
         {
             _mpeSubscriptions.Clear();
             _states.Clear();
-            base.OnEnable();
             
             _mpeSubscriptions.Add(_receiver.NoteOnObservable.Where(note => note.Track == _track).Subscribe(note =>
             {
                 ChannelState state = GetState(note.Channel);
                 if (state.CurrentNote.HasValue)
                 {
-                    Debug.LogWarning($"{nameof(PackMPENoteChannel)} unexpected note on {note}");
+                    Debug.LogWarning($"{nameof(PackMPENoteChannelDriver)} unexpected note on {note}");
                     return;
                 }
                 state.EventId = BeginEvent(state.Begin(note));
@@ -87,7 +86,7 @@ namespace Sonosthesia.Pack
                 ChannelState state = GetState(note.Channel);
                 if (!state.CurrentNote.HasValue)
                 {
-                    Debug.LogWarning($"{nameof(PackMPENoteChannel)} expected note {note}");
+                    Debug.LogWarning($"{nameof(PackMPENoteChannelDriver)} expected note {note}");
                     return;
                 }
                 EndEvent(state.EventId.Value);
@@ -110,7 +109,7 @@ namespace Sonosthesia.Pack
                 ChannelState state = GetState(control.Channel);
                 if (control.Number != 74)
                 {
-                    Debug.LogWarning($"{nameof(PackMPENoteChannel)} unexpected control number {control}");
+                    Debug.LogWarning($"{nameof(PackMPENoteChannelDriver)} unexpected control number {control}");
                     return;
                 }
                 state.Slide = control.Value;
