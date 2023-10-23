@@ -21,6 +21,17 @@ namespace Sonosthesia.Utils
 
         public TransformDynamics Dynamics => new TransformDynamics(Velocity, Acceleration, Jerk);
 
+        public TransformDynamics.Data Select(TransformDynamics.Order order)
+        {
+            return order switch
+            {
+                TransformDynamics.Order.Velocity => Velocity,
+                TransformDynamics.Order.Acceleration => Acceleration,
+                TransformDynamics.Order.Jerk => Jerk,
+                _ => default
+            };
+        }
+        
         protected virtual void OnEnable()
         {
             _current = null;

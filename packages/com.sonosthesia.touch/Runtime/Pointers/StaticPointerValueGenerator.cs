@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Sonosthesia.Instrument
+namespace Sonosthesia.Touch
 {
     public class StaticPointerValueGenerator<TValue> : PointerValueGenerator<TValue> where TValue : struct
     {

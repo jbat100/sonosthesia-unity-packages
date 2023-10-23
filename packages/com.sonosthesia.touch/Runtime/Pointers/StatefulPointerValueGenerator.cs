@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Sonosthesia.Instrument
+namespace Sonosthesia.Touch
 {
     public class EmptyPointerState { }
     
@@ -21,6 +22,8 @@ namespace Sonosthesia.Instrument
                 State = state;
             }
         }
+
+        [SerializeField] private bool _track;
         
         private readonly Dictionary<int, History> _history = new ();
 
@@ -39,6 +42,11 @@ namespace Sonosthesia.Instrument
         {
             if (_history.TryGetValue(eventData.pointerId, out History history))
             {
+                if (!_track)
+                {
+                    value = history.InitialValue;
+                    return true;
+                }
                 if (OnPointerMove(eventData, history.State, history.InitialValue, history.PreviousValue, out value))
                 {
                     history.PreviousValue = value;

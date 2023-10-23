@@ -107,7 +107,7 @@ namespace Sonosthesia.Instrument
                 element.Transform.localRotation = Quaternion.LookRotation(SelectDirection(_forwardDirection), SelectDirection(_upDirection));
 
                 Vector3 localScale = Vector3.Magnitude(guidePosition - orientationPosition) * _scale;
-                element.Transform.localScale = element.Transform.localScale.SetAxes(localScale, _scaleAxes);
+                element.ScaleTransform.localScale = element.ScaleTransform.localScale.SetAxes(localScale, _scaleAxes);
             }
         }
     }

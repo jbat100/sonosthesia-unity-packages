@@ -2,15 +2,11 @@ using Sonosthesia.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Sonosthesia.Instrument
+namespace Sonosthesia.Touch
 {
-    public class AxisDragPointerValueGenerator : StatefulPointerValueGenerator<EmptyPointerState, float>
+    public class AxisDragPointerFloatGenerator : StatefulPointerValueGenerator<EmptyPointerState, float>
     {
-        [SerializeField] private Axes _dragAxis;
-
-        [SerializeField] private float _scale;
-
-        [SerializeField] private float _offset;
+        [SerializeField] private Vector3ToFloat _extractor;
 
         [SerializeField] private bool _relative;
 
@@ -34,12 +30,10 @@ namespace Sonosthesia.Instrument
                 return false;
             }
 
-            Vector3 drag = _relative ?
-                eventData.pointerCurrentRaycast.worldPosition - eventData.pointerPressRaycast.worldPosition :
-                eventData.pointerCurrentRaycast.worldPosition;
-
-            drag = transform.InverseTransformPoint(drag).FilterAxes(_dragAxis);
-            value = _offset + drag.SumComponents() * _scale;
+            Vector3 localCurrent = transform.InverseTransformPoint(eventData.pointerCurrentRaycast.worldPosition);
+            Vector3 localPress = transform.InverseTransformPoint(eventData.pointerPressRaycast.worldPosition);
+            Vector3 drag = _relative ? localCurrent - localPress : localCurrent;
+            value = _extractor.Process(drag);
             return true;
         }
     }

@@ -10,6 +10,7 @@ namespace Sonosthesia.Utils
         Max,
         Min,
         Average,
+        Sum,
         X,
         Y,
         Z
@@ -23,9 +24,10 @@ namespace Sonosthesia.Utils
             {
                 Vector3Selector.Magnitude => vector.magnitude,
                 Vector3Selector.SqrMagnitude => vector.sqrMagnitude,
-                Vector3Selector.Max => Mathf.Max(vector.x, vector.y, vector.z),
-                Vector3Selector.Min => Mathf.Min(vector.x, vector.y, vector.z),
-                Vector3Selector.Average => (vector.x + vector.y + vector.z) * 0.333333333333f,
+                Vector3Selector.Max => vector.Max(),
+                Vector3Selector.Min => vector.Min(),
+                Vector3Selector.Average => vector.Average(),
+                Vector3Selector.Sum => vector.Sum(),
                 Vector3Selector.X => vector.x,
                 Vector3Selector.Y => vector.y,
                 Vector3Selector.Z => vector.z,

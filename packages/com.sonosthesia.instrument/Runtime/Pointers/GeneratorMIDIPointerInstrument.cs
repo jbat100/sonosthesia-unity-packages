@@ -1,10 +1,11 @@
 using Sonosthesia.AdaptiveMIDI.Messages;
+using Sonosthesia.Touch;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Sonosthesia.Instrument
 {
-    public class GeneratorMIDIPointerInstrument : PolyphonicPointerInstrument<MIDINote>
+    public class GeneratorMIDIPointerInstrument : PointerChannel<MIDINote>
     {
         [SerializeField] private PointerValueGenerator<float> _channel;
         

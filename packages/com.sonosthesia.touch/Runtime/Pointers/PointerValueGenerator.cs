@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Sonosthesia.Instrument
+namespace Sonosthesia.Touch
 {
     public abstract class PointerValueGenerator<TValue> : MonoBehaviour where TValue : struct
     {

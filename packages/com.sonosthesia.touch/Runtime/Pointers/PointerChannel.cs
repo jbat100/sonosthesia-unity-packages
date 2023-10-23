@@ -4,9 +4,9 @@ using Sonosthesia.Flow;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Sonosthesia.Instrument
+namespace Sonosthesia.Touch
 {
-    public abstract class PolyphonicPointerInstrument<TValue> : Channel<TValue>, 
+    public abstract class PointerChannel<TValue> : Channel<TValue>, 
         IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler, IPointerExitHandler
         where TValue : struct
     {

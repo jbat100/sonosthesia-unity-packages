@@ -126,6 +126,16 @@ namespace Sonosthesia.Flow
             _ongoingSubjects.Remove(id);
         }
 
+        protected void EndAllEvents()
+        {
+            foreach (BehaviorSubject<T> behaviorSubject in _ongoingSubjects.Values)
+            {
+                behaviorSubject.OnCompleted();
+                behaviorSubject.Dispose();
+            }
+            _ongoingSubjects.Clear();
+        }
+
         public void Pipe(IObservable<T> observable)
         {
             _streamSubject.OnNext(observable);
