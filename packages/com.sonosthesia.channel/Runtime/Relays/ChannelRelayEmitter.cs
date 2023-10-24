@@ -2,7 +2,7 @@ using System;
 using UniRx;
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Channel
 {
     public class ChannelRelayEmitter<T> : MonoBehaviour where T : struct
     {

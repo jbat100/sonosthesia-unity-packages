@@ -1,8 +1,9 @@
 using System;
+using Sonosthesia.Channel;
 using UniRx;
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Arpeggiator
 {
     public abstract class Aftertoucher<T> : Channel<T> where T : struct
     {

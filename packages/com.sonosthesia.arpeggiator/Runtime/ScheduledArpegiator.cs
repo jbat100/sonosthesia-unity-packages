@@ -1,8 +1,9 @@
 using System;
 using UnityEngine;
 using UniRx;
+using Sonosthesia.Channel;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Arpeggiator
 {
     public abstract class ScheduledArpegiator<T> : Arpegiator<T> where T : struct
     {

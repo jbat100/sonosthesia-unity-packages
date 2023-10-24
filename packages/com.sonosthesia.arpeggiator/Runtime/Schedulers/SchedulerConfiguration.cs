@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Arpeggiator
 {
     public abstract class SchedulerConfiguration : ScriptableObject
     {

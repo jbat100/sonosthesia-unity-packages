@@ -2,7 +2,7 @@ using System;
 using UniRx;
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Channel
 {
     public abstract class ChannelStreamHandler<T> : MonoBehaviour, IChannelStreamHandler<T> where T : struct
     {

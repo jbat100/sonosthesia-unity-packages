@@ -1,5 +1,5 @@
 using Sonosthesia.AdaptiveMIDI.Messages;
-using Sonosthesia.Flow;
+using Sonosthesia.Mapping;
 using UnityEngine;
 
 namespace Sonosthesia.MIDI

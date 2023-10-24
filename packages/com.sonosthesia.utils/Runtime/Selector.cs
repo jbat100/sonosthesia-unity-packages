@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Utils
 {
     public abstract class Selector<T> : MonoBehaviour where T : struct
     {

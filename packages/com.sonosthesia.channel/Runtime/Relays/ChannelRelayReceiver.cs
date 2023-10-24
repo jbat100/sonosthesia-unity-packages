@@ -2,7 +2,7 @@ using System;
 using UniRx;
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Channel
 {
     public class ChannelRelayReceiver<T> : Channel<T> where T : struct
     {

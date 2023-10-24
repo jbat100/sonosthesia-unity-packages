@@ -1,4 +1,4 @@
-using Sonosthesia.Flow;
+using Sonosthesia.Signal;
 using Unity.Mathematics;
 
 namespace Sonosthesia.Spawn

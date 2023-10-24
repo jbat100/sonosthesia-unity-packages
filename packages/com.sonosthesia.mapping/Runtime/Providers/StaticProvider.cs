@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Mapping
 {
     // move to a separate provider package
     

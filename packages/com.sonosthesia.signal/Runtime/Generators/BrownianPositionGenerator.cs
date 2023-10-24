@@ -2,7 +2,7 @@ using Sonosthesia.Utils;
 using UnityEngine;
 using Unity.Mathematics;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Signal
 {
     public class BrownianPositionGenerator : Generator<Vector3>
     {

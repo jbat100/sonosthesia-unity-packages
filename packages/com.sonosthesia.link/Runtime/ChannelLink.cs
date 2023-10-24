@@ -1,8 +1,10 @@
 using System;
 using UniRx;
 using UnityEngine;
+using Sonosthesia.Mapping;
+using Sonosthesia.Channel;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Link
 {
     // TODO move ChannelLink to a separate link package
     

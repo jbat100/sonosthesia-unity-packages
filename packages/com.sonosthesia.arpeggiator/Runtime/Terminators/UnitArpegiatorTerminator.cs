@@ -1,6 +1,6 @@
 using UniRx;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Arpeggiator
 {
     public class UnitArpegiatorTerminator : ArpegiatorTimerTerminator<Unit>
     {

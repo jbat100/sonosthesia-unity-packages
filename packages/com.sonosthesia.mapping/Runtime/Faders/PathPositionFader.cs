@@ -1,7 +1,7 @@
 using Sonosthesia.Utils;
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Mapping
 {
     public class PathPositionFader : Fader<Vector3>
     {

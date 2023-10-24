@@ -1,7 +1,7 @@
 using System;
-using Sonosthesia.Flow;
 using UniRx;
 using UnityEngine;
+using Sonosthesia.Signal;
 
 namespace Sonosthesia.Pack
 {

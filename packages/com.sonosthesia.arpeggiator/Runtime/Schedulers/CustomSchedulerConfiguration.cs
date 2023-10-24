@@ -1,7 +1,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Arpeggiator
 {
     
     [CreateAssetMenu(fileName = "CustomSchedulerConfiguration", menuName = "Sonosthesia/Scheduling/CustomSchedulerConfiguration")]

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Signal
 {
     public abstract class Adaptor<TSource, TTarget> : Signal<TTarget> where TSource : struct where TTarget : struct
     {

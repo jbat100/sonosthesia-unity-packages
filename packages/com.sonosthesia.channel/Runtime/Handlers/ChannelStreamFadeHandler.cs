@@ -1,9 +1,10 @@
 using System;
+using Sonosthesia.Signal;
 using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Channel
 {
     public abstract class ChannelStreamFadeHandler<T> : ChannelStreamHandler<T> where T : struct
     {

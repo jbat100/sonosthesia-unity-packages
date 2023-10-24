@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Signal
 {
 #if UNITY_EDITOR
     using UnityEditor;

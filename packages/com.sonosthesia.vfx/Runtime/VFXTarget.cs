@@ -1,5 +1,5 @@
 using UnityEngine;
-using Sonosthesia.Flow;
+using Sonosthesia.Signal;
 using UnityEngine.VFX;
 
 namespace Sonosthesia.VFX

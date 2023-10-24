@@ -2,7 +2,7 @@ using System;
 using UniRx;
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Arpeggiator
 {
     public class ArpegiatorTimerTerminator<T> : ArpegiatorTerminator<T> where T : struct
     {

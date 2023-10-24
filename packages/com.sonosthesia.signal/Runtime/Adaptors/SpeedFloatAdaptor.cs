@@ -2,7 +2,7 @@ using System;
 using UniRx;
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Signal
 {
     public abstract class SpeedFloatAdaptor<TTarget> : Adaptor<float, TTarget> where TTarget : struct
     {

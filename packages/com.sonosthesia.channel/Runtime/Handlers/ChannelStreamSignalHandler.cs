@@ -1,8 +1,9 @@
 using System;
 using UniRx;
 using UnityEngine;
+using Sonosthesia.Signal;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Channel
 {
     public abstract class ChannelStreamSignalHandler<T> : ChannelStreamHandler<T> where T : struct
     {

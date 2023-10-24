@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Sonosthesia.Flow;
+using Sonosthesia.Channel;
 using UnityEngine;
 
 namespace Sonosthesia.Touch

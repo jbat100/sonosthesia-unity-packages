@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UniRx;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Arpeggiator
 {
     public abstract class FrozenScheduler : Scheduler
     {

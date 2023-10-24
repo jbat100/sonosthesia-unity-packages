@@ -5,7 +5,7 @@ using Cysharp.Threading.Tasks;
 using UniRx;
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Channel
 {
     [Serializable]
     public class ChannelSequenceElement

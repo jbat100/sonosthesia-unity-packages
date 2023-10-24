@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Sonosthesia.Flow;
+using Sonosthesia.Channel;
 using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;

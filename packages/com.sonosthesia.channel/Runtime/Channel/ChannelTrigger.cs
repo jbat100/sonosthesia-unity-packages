@@ -1,8 +1,10 @@
 using System;
 using UniRx;
 using UnityEngine;
+using Sonosthesia.Signal;
+using Sonosthesia.Utils;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Channel
 {
     public class ChannelTrigger<T> : MonoBehaviour where T : struct
     {

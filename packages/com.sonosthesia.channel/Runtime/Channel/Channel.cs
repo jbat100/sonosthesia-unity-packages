@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UniRx;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Channel
 {
     public class Channel<T> : MonoBehaviour where T : struct
     {

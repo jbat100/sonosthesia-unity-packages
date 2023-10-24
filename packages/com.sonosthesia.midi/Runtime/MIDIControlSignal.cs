@@ -1,5 +1,5 @@
 using System;
-using Sonosthesia.Flow;
+using Sonosthesia.Signal;
 using Sonosthesia.AdaptiveMIDI;
 using UnityEngine;
 using UniRx;

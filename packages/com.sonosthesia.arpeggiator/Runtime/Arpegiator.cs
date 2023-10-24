@@ -1,8 +1,9 @@
 using System;
 using UniRx;
 using UnityEngine;
+using Sonosthesia.Channel;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Arpeggiator
 {
     public abstract class Arpegiator<T> : Channel<T> where T : struct
     {

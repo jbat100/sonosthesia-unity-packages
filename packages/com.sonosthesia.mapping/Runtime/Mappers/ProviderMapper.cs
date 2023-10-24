@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Mapping
 {
     public class ProviderMapper<TSource, TTarget> : Mapper<TSource, TTarget> where TSource : struct where TTarget : struct
     {

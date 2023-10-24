@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Mapping
 {
     public abstract class LinearFader<T> : Fader<T> where T : struct
     {

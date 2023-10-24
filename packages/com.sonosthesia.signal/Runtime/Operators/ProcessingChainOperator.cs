@@ -3,7 +3,7 @@ using System.Linq;
 using Sonosthesia.Processing;
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Signal
 {
     public class ProcessingChainOperator<T> : SimpleOperator<T> where T : struct
     {

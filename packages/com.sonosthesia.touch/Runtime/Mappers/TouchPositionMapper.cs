@@ -1,4 +1,4 @@
-using Sonosthesia.Flow;
+using Sonosthesia.Mapping;
 using UnityEngine;
 
 namespace Sonosthesia.Touch

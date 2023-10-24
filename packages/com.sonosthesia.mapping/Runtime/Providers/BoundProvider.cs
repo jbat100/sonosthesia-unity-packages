@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Mapping
 {
     public abstract class BoundProvider<T> : ValueProvider<T> where T : struct
     {

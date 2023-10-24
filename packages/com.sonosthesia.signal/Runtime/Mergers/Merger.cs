@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
 
-namespace Sonosthesia.Flow.Mergers
+namespace Sonosthesia.Signal
 {
     public abstract class Merger<T1, T2, TResult> : Signal<TResult> where T1 : struct where T2 : struct where TResult : struct
     {

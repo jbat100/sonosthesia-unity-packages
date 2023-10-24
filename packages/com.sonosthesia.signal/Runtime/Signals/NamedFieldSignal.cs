@@ -2,7 +2,7 @@ using System.Reflection;
 using Sonosthesia.Utils;
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Signal
 {
     public abstract class NamedFieldSignal<T> : Signal<T> where T: struct
     {

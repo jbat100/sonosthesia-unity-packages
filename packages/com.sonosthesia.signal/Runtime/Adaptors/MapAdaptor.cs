@@ -1,7 +1,7 @@
 using System;
 using UniRx;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Signal
 {
     public abstract class MapAdaptor<TSource, TTarget> : Adaptor<TSource, TTarget> where TTarget : struct where TSource : struct
     {

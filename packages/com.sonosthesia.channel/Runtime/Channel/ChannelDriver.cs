@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Channel
 {
     public class ChannelDriver<T> : MonoBehaviour where T : struct
     {

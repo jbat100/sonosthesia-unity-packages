@@ -1,4 +1,4 @@
-using Sonosthesia.Flow;
+using Sonosthesia.Channel;
 using Sonosthesia.Utils;
 using Unity.Mathematics;
 using UnityEngine;

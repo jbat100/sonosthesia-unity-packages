@@ -1,6 +1,7 @@
 using UnityEngine;
+using Sonosthesia.Channel;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Arpeggiator
 {
     public class StaticArpegiator<T> : Channel<T> where T : struct
     {

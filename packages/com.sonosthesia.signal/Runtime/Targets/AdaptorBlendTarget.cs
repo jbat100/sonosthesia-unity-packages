@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Signal
 {
     // this is a bit silly, used to handle cases like TransformDirectionTarget, TransformSizeTarget
     // where the blended type is not the 

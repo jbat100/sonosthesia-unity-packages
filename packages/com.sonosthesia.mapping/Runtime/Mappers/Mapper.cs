@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Mapping
 {
     public abstract class Mapper<TSource, TTarget> : MonoBehaviour where TSource : struct where TTarget : struct
     {

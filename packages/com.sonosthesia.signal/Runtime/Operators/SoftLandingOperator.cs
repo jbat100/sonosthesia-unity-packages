@@ -3,7 +3,7 @@ using UniRx;
 using UnityEngine;
 using Sonosthesia.Utils;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Signal
 {
     public class SoftLandingOperator : Operator<float>
     {

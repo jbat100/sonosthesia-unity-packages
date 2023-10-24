@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Mapping
 {
     public abstract class FaderMapper<TSource, TTarget> : Mapper<TSource, TTarget> where TSource : struct where TTarget : struct
     {

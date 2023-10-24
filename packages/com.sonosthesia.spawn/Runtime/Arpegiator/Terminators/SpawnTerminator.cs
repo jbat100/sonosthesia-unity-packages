@@ -1,4 +1,4 @@
-using Sonosthesia.Flow;
+using Sonosthesia.Arpeggiator;
 
 namespace Sonosthesia.Spawn
 {

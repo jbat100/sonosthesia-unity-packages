@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Arpeggiator
 {
     [CreateAssetMenu(fileName = "RegularSchedulerConfiguration", menuName = "Sonosthesia/Scheduling/RegularSchedulerConfiguration")]
     public class RegularSchedulerConfiguration : SchedulerConfiguration

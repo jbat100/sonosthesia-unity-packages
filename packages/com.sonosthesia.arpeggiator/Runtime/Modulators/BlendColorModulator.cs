@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Arpeggiator
 {
     public abstract class BlendColorModulator : Modulator<Color>
     {

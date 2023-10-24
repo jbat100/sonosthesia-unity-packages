@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Sonosthesia.AdaptiveMIDI.Messages;
-using Sonosthesia.Flow;
+using Sonosthesia.Channel;
 using UniRx;
 using UnityEngine;
 

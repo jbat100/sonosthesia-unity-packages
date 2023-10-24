@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Flow.Mergers
+namespace Sonosthesia.Signal
 {
     public class AlphaColorMerger : Merger<float, Color, Color>
     {

@@ -3,7 +3,7 @@ using System.Linq;
 using UniRx;
 using UnityEngine;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Signal
 {
     public enum FloatSignalMixerMode
     {

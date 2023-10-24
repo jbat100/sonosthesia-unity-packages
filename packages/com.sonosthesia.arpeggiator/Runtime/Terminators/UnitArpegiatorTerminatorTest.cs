@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UniRx;
 
-namespace Sonosthesia.Flow
+namespace Sonosthesia.Arpeggiator
 {
 #if UNITY_EDITOR
     using UnityEditor;
