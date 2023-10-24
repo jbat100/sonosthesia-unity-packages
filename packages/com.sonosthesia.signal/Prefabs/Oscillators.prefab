@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7801974716869402528}
   - component: {fileID: 7899820832404095934}
-  - component: {fileID: 2838502758515611761}
+  - component: {fileID: 5701898788418854585}
   m_Layer: 0
   m_Name: Sine
   m_TagString: Untagged
@@ -50,7 +50,7 @@ MonoBehaviour:
   _amplitude: 1
   _offset: 0
   _primitiveType: 3
---- !u!114 &2838502758515611761
+--- !u!114 &5701898788418854585
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -59,11 +59,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 4981183088376516272}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06e781ce11bf4ac89b0a0f16a4ed859e, type: 3}
+  m_Script: {fileID: 11500000, guid: 5cb28e8350e8c49dd8f36b8a4b7cd89a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _log: 0
   _generator: {fileID: 7899820832404095934}
+  _timeFator: 1
 --- !u!1 &5405611184256397930
 GameObject:
   m_ObjectHideFlags: 0
@@ -74,7 +75,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2913577040825887555}
   - component: {fileID: 1782459704633660701}
-  - component: {fileID: 8055884162577517903}
+  - component: {fileID: 2047135361929660866}
   m_Layer: 0
   m_Name: Triangle
   m_TagString: Untagged
@@ -114,7 +115,7 @@ MonoBehaviour:
   _amplitude: 0.5
   _offset: 0
   _primitiveType: 4
---- !u!114 &8055884162577517903
+--- !u!114 &2047135361929660866
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -123,11 +124,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 5405611184256397930}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06e781ce11bf4ac89b0a0f16a4ed859e, type: 3}
+  m_Script: {fileID: 11500000, guid: 5cb28e8350e8c49dd8f36b8a4b7cd89a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _log: 0
   _generator: {fileID: 1782459704633660701}
+  _timeFator: 1
 --- !u!1 &7825924720204756798
 GameObject:
   m_ObjectHideFlags: 0
