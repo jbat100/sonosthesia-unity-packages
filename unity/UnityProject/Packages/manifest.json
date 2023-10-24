@@ -2,8 +2,11 @@
   "dependencies": {
     "com.sonosthesia.adaptivemidi": "file:../../../packages/com.sonosthesia.adaptivemidi",
     "com.sonosthesia.audio": "file:../../../packages/com.sonosthesia.audio",
+    "com.sonosthesia.arpeggiator": "file:../../../packages/com.sonosthesia.arpeggiator",
     "com.sonosthesia.builder": "file:../../../packages/com.sonosthesia.builder",
-    "com.sonosthesia.flow": "file:../../../packages/com.sonosthesia.flow",
+    "com.sonosthesia.signal": "file:../../../packages/com.sonosthesia.signal",
+    "com.sonosthesia.channel": "file:../../../packages/com.sonosthesia.channel",
+    "com.sonosthesia.mapping": "file:../../../packages/com.sonosthesia.mapping",
     "com.sonosthesia.link": "file:../../../packages/com.sonosthesia.link",
     "com.sonosthesia.midi": "file:../../../packages/com.sonosthesia.midi",
     "com.sonosthesia.pack": "file:../../../packages/com.sonosthesia.pack",

@@ -6,14 +6,14 @@
     "com.sonosthesia.utils": "1.0.2",
     "com.sonosthesia.processing": "1.0.2"
   },
-  "description": "Sonosthesia unity flow",
-  "displayName": "Sonosthesia Flow",
+  "description": "Sonosthesia unity signal",
+  "displayName": "Sonosthesia Signal",
   "keywords": [
     "unity"
   ],
   "license": "Unlicense",
-  "name": "com.sonosthesia.flow",
-  "repository": "github:jbat100/sonosthesia-unity-flow",
+  "name": "com.sonosthesia.signal",
+  "repository": "github:jbat100/sonosthesia-unity-packages",
   "unity": "2021.3",
   "unityRelease": "28f1",
   "version": "1.0.0"

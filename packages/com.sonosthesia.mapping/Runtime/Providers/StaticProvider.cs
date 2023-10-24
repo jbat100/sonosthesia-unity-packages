@@ -2,6 +2,8 @@ using UnityEngine;
 
 namespace Sonosthesia.Flow
 {
+    // move to a separate provider package
+    
     public class StaticProvider<T> : ValueProvider<T> where T : struct
     {
         [SerializeField] private T _value;

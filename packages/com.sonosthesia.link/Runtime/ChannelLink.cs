@@ -4,6 +4,8 @@ using UnityEngine;
 
 namespace Sonosthesia.Flow
 {
+    // TODO move ChannelLink to a separate link package
+    
     public abstract class ChannelLink<TSource, TTarget> : MonoBehaviour where TSource : struct where TTarget : struct
     {
         [SerializeField] private bool _log;

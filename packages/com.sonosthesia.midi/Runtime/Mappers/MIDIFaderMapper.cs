@@ -17,6 +17,8 @@ namespace Sonosthesia.MIDI
         
         [SerializeField] private Driver _driver;
         
+        // TODO : seems like this is overly complicated something which could be done with a selector 
+        
         protected override float Drive(MIDINote payload)
         {
             return _driver switch
