@@ -8,50 +8,121 @@ namespace Sonosthesia.Touch
     public abstract class TriggerChannelDriver<TValue> : ChannelDriver<TValue> where TValue : struct
     {
         [SerializeField] private bool _endOnExit = true;
+        
+        [SerializeField] private bool _restartOnEnter = true;
 
+        // note : we don't want concurrent events from the same collider
+        
         private readonly HashSet<Collider> _colliding = new();
 
-        private readonly Dictionary<Collider, Guid> _triggerEvents = new();
+        private class Trigger
+        {
+            public readonly Guid EventId;
+            public readonly TriggerActor<TValue> Actor;
 
+            public Trigger(Guid eventId, TriggerActor<TValue> actor)
+            {
+                EventId = eventId;
+                Actor = actor;
+            }
+        }
+
+        private readonly Dictionary<Collider, Trigger> _triggers = new();
+        
         public void EndEvent(Collider other)
         {
-            if (_triggerEvents.TryGetValue(other, out Guid eventId))
+            EndEvent(other, _colliding.Contains(other));
+        }
+
+        protected virtual void FixedUpdate()
+        {
+            foreach (KeyValuePair<Collider, Trigger> pair in _triggers)
             {
-                _triggerEvents.Remove(other);
-                EndEvent(eventId);
+                if (_colliding.Contains(pair.Key))
+                {
+                    continue;
+                }
+                UpdateEvent(pair.Key, pair.Value, false);
             }
         }
 
         protected virtual void OnTriggerEnter(Collider other)
         {
-            Debug.Log($"{this} {nameof(OnTriggerEnter)} {other}");
-            if (_triggerEvents.TryGetValue(other, out Guid eventId))
+            //Debug.Log($"{this} {nameof(OnTriggerEnter)} {other}");
+            
+            _colliding.Add(other);
+            
+            if (_triggers.TryGetValue(other, out Trigger trigger))
             {
-                _triggerEvents.Remove(other);
-                EndEvent(eventId);
+                if (!_restartOnEnter)
+                {
+                    UpdateEvent(other, trigger, true);
+                    return;
+                }
+                EndEvent(other, true);
             }
+            
+            TriggerActor<TValue> actor = other.GetComponentInParent<TriggerActor<TValue>>();
+            if (actor && !actor.IsAvailable(other))
+            {
+                return;
+            }
+            
             if (Extract(true, other, out TValue value))
             {
-                _triggerEvents[other] = BeginEvent(value);
+                Guid evendId = BeginEvent(value);
+                _triggers[other] = new Trigger(evendId, actor);
+                if (actor)
+                {
+                    actor.OnTriggerStarted(evendId, other, value, true);
+                }
             }
         }
         
         protected virtual void OnTriggerStay(Collider other)
         {
-            Debug.Log($"{this} {nameof(OnTriggerStay)} {other}");
-            if (_triggerEvents.TryGetValue(other, out Guid eventId) && Extract(false, other, out TValue value))
+            //Debug.Log($"{this} {nameof(OnTriggerStay)} {other}");
+            
+            if (_triggers.TryGetValue(other, out Trigger trigger))
             {
-                UpdateEvent(eventId, value);
+                UpdateEvent(other, trigger, true);
             }
         }
         
         protected virtual void OnTriggerExit(Collider other)
         {
-            Debug.Log($"{this} {nameof(OnTriggerExit)} {other}");
-            if (_endOnExit && _triggerEvents.TryGetValue(other, out Guid eventId))
+            //Debug.Log($"{this} {nameof(OnTriggerExit)} {other}");
+            
+            _colliding.Remove(other);
+            
+            if (_endOnExit)
             {
-                _triggerEvents.Remove(other);
-                EndEvent(eventId);
+                EndEvent(other, false);
+            }
+        }
+
+        private void UpdateEvent(Collider other, Trigger trigger, bool colliding)
+        {
+            if (Extract(false, other, out TValue value))
+            {
+                UpdateEvent(trigger.EventId, value);
+                if (trigger.Actor)
+                {
+                    trigger.Actor.OnTriggerUpdated(trigger.EventId, other, value, colliding);
+                }
+            }
+        }
+
+        private void EndEvent(Collider other, bool colliding)
+        {
+            if (_triggers.TryGetValue(other, out Trigger trigger))
+            {
+                _triggers.Remove(other);
+                EndEvent(trigger.EventId);
+                if (trigger.Actor)
+                {
+                    trigger.Actor.OnTriggerEnded(trigger.EventId, other, colliding);
+                }
             }
         }
         

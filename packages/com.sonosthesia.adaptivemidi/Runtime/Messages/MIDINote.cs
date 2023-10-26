@@ -22,6 +22,11 @@ namespace Sonosthesia.AdaptiveMIDI.Messages
             Velocity = velocity;
             Pressure = pressure;
         }
+        
+        public MIDINote WithPressure(int pressure)
+        {
+            return new MIDINote(Channel, Note, Velocity, pressure);
+        }
 
         public override string ToString()
         {

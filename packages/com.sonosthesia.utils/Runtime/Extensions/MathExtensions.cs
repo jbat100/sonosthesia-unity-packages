@@ -6,6 +6,12 @@ namespace Sonosthesia.Utils
 {
     public static class MathExtensions
     {
+        // https://stackoverflow.com/questions/1082917/mod-of-negative-number-is-melting-my-brain
+        public static float Modulus(float a,float b)
+        {
+            return a - b * Mathf.FloorToInt(a / b);
+        }
+        
         public static Vector3 Abs(this Vector3 v)
         {
             return new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
