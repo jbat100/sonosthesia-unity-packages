@@ -1,8 +1,9 @@
 using System;
-using UniRx;
 using UnityEngine;
+using UniRx;
+using Sonosthesia.Signal;
 
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Target
 {
     public abstract class Target<T> : MonoBehaviour where T : struct
     {

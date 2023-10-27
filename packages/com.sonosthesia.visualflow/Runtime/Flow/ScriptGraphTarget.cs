@@ -1,4 +1,4 @@
-using Sonosthesia.Signal;
+using Sonosthesia.Target;
 using UnityEngine;
 
 namespace Sonosthesia.VisualFlow

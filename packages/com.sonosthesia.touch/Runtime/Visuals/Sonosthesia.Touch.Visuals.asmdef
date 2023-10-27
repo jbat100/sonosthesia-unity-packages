@@ -1,5 +1,5 @@
 {
-    "name": "Sonosthesia.Touch",
+    "name": "Sonosthesia.Touch.Visuals",
     "rootNamespace": "",
     "references": [
         "GUID:560b04d1a97f54a4e82edc0cbbb69285",
@@ -7,7 +7,8 @@
         "GUID:25e5e4b6f3916462c92ecc1d0ffca2c2",
         "GUID:0e73a958ea93c4999aae301d99219c62",
         "GUID:319f02148647a4150b5487ff70ad53bc",
-        "GUID:f09d8d2cfc85540a095af5db6fd137f0"
+        "GUID:f09d8d2cfc85540a095af5db6fd137f0",
+        "GUID:5498766dc821c4d57a7ccc41bc91fe53"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

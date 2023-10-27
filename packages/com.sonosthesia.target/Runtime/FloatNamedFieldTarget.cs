@@ -1,4 +1,4 @@
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Target
 {
     public class FloatNamedFieldTarget : NamedFieldTarget<float>
     {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Target
 {
     public class Vector3NamedFieldTarget : NamedFieldTarget<Vector3>
     {

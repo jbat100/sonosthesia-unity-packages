@@ -52,7 +52,8 @@
         "com.unity.splines": "2.2.1",
         "com.unity.mathematics": "1.2.6",
         "com.unity.burst": "1.8.4",
-        "com.sonosthesia.utils": "1.0.2"
+        "com.sonosthesia.utils": "1.0.2",
+        "com.sonosthesia.target": "1.0.2"
       }
     },
     "com.sonosthesia.channel": {
@@ -151,10 +152,21 @@
         "com.unity.splines": "2.2.1",
         "com.neuecc.unirx": "7.1.0",
         "com.sonosthesia.signal": "1.0.2",
+        "com.sonosthesia.target": "1.0.2",
         "com.sonosthesia.channel": "1.0.2",
         "com.sonosthesia.utils": "1.0.2",
         "com.sonosthesia.mapping": "1.0.2",
         "com.sonosthesia.arpeggiator": "1.0.2"
+      }
+    },
+    "com.sonosthesia.target": {
+      "version": "file:../../../packages/com.sonosthesia.target",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.neuecc.unirx": "7.1.0",
+        "com.sonosthesia.utils": "1.0.2",
+        "com.sonosthesia.signal": "1.0.2"
       }
     },
     "com.sonosthesia.touch": {
@@ -187,6 +199,7 @@
         "com.neuecc.unirx": "7.1.0",
         "com.sonosthesia.channel": "1.0.2",
         "com.sonosthesia.signal": "1.0.2",
+        "com.sonosthesia.target": "1.0.2",
         "com.sonosthesia.spawn": "1.0.2"
       }
     },

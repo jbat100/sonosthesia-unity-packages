@@ -1,7 +1,6 @@
-using Sonosthesia.Signal;
 using UnityEngine;
 
-namespace Sonosthesia.Spawn
+namespace Sonosthesia.Target
 {
     public class TransformScaleTarget : BlendTarget<Vector3, Vector3Blender>
     {

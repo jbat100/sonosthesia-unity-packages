@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Target
 {
     public enum TargetBlend
     {

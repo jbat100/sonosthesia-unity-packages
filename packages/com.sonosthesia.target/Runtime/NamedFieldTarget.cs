@@ -1,9 +1,8 @@
-using System;
 using System.Reflection;
 using Sonosthesia.Utils;
 using UnityEngine;
 
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Target
 {
     public class NamedFieldTarget<T> : Target<T> where T : struct
     {

@@ -1,7 +1,7 @@
 using Sonosthesia.Utils;
 using UnityEngine;
 
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Target
 {
     public class LerpTarget : Target<float>
     {

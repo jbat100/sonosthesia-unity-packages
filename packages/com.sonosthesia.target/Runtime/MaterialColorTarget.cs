@@ -1,13 +1,12 @@
-using Sonosthesia.Signal;
 using UnityEngine;
 
-namespace Sonosthesia.Spawn
+namespace Sonosthesia.Target
 {
     public class MaterialColorTarget : Target<Color>
     {
         [SerializeField] private Renderer _renderer;
 
-        [SerializeField] private string _name;
+        [SerializeField] private string _name = "_BaseColor";
         
         protected override void Awake()
         {

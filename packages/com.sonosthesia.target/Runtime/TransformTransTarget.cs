@@ -1,8 +1,7 @@
-using Sonosthesia.Signal;
 using Sonosthesia.Utils;
 using UnityEngine;
 
-namespace Sonosthesia.Spawn
+namespace Sonosthesia.Target
 {
     public class TransformTransTarget : Target<Trans>
     {

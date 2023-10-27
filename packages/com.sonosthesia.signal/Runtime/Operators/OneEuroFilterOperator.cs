@@ -10,12 +10,12 @@ namespace Sonosthesia.Signal
 
         [SerializeField] private float _minCutoff;
         
-        private OneEuroFilter2 _oneEuroFilter2 = new ();
+        private OneEuroFilter1 _oneEuroFilter = new ();
 
         protected override void OnEnable()
         {
             base.OnEnable();
-            _oneEuroFilter2 = new OneEuroFilter2
+            _oneEuroFilter = new OneEuroFilter1
             {
                 MinCutoff = _minCutoff,
                 Beta = _beta
@@ -24,10 +24,10 @@ namespace Sonosthesia.Signal
 
         protected void OnValidate()
         {
-            _oneEuroFilter2.MinCutoff = _minCutoff;
-            _oneEuroFilter2.Beta = _beta;
+            _oneEuroFilter.MinCutoff = _minCutoff;
+            _oneEuroFilter.Beta = _beta;
         }
 
-        protected override float Process(float input) => _oneEuroFilter2.Step(Time.time, new float2(input, 0)).x;
+        protected override float Process(float input) => _oneEuroFilter.Step(Time.time, input);
     }
 }
