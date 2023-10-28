@@ -1,8 +1,9 @@
+using Sonosthesia.Mapping;
 using UnityEngine;
 
-namespace Sonosthesia.Mapping
+namespace Sonosthesia.Link
 {
-    public class ProviderMapper<TSource, TTarget> : Mapper<TSource, TTarget> where TSource : struct where TTarget : struct
+    public class ProviderLinkMapper<TSource, TTarget> : LinkMapper<TSource, TTarget> where TSource : struct where TTarget : struct
     {
         [SerializeField] private ValueProvider<TTarget> _provider;
 

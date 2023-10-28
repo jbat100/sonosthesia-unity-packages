@@ -2,9 +2,9 @@ using Sonosthesia.AdaptiveMIDI.Messages;
 using Sonosthesia.Mapping;
 using UnityEngine;
 
-namespace Sonosthesia.MIDI
+namespace Sonosthesia.Link
 {
-    public abstract class MIDIFaderMapper<TTarget> : FaderMapper<MIDINote, TTarget> where TTarget : struct
+    public abstract class MIDIFaderMapper<TTarget> : FaderLinkMapper<MIDINote, TTarget> where TTarget : struct
     {
         private enum Driver
         {

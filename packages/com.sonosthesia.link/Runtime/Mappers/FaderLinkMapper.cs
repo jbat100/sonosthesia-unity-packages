@@ -1,9 +1,10 @@
 using System;
+using Sonosthesia.Mapping;
 using UnityEngine;
 
-namespace Sonosthesia.Mapping
+namespace Sonosthesia.Link
 {
-    public abstract class FaderMapper<TSource, TTarget> : Mapper<TSource, TTarget> where TSource : struct where TTarget : struct
+    public abstract class FaderLinkMapper<TSource, TTarget> : LinkMapper<TSource, TTarget> where TSource : struct where TTarget : struct
     {
         private enum DriveType
         {

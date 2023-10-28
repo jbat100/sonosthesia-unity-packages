@@ -1,10 +1,11 @@
 using Sonosthesia.Mapping;
+using Sonosthesia.Touch;
 using Sonosthesia.Utils;
 using UnityEngine;
 
-namespace Sonosthesia.Touch
+namespace Sonosthesia.Link
 {
-    public abstract class TouchFaderMapper<T> : FaderMapper<TouchPayload, T> where T : struct
+    public abstract class TouchFaderMapper<T> : FaderLinkMapper<TouchPayload, T> where T : struct
     {
         private enum Driver
         {

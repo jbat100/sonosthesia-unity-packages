@@ -87,7 +87,8 @@
       "source": "local",
       "dependencies": {
         "com.neuecc.unirx": "7.1.0",
-        "com.sonosthesia.utils": "1.0.2"
+        "com.sonosthesia.utils": "1.0.2",
+        "com.sonosthesia.signal": "1.0.2"
       }
     },
     "com.sonosthesia.midi": {

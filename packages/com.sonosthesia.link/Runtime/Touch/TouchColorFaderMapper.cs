@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Touch
+namespace Sonosthesia.Link
 {
     public class TouchColorFaderMapper : TouchFaderMapper<Color>
     {

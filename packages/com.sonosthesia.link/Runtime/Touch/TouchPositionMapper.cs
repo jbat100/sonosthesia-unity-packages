@@ -1,9 +1,9 @@
-using Sonosthesia.Mapping;
+using Sonosthesia.Touch;
 using UnityEngine;
 
-namespace Sonosthesia.Touch
+namespace Sonosthesia.Link
 {
-    public class TouchPositionMapper : Mapper<TouchPayload, Vector3>
+    public class TouchPositionMapper : LinkMapper<TouchPayload, Vector3>
     {
         [SerializeField] private Vector3 _offset;
 

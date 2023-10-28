@@ -6,8 +6,6 @@ using Sonosthesia.Channel;
 
 namespace Sonosthesia.Link
 {
-    // TODO move ChannelLink to a separate link package
-    
     public abstract class ChannelLink<TSource, TTarget> : MonoBehaviour where TSource : struct where TTarget : struct
     {
         [SerializeField] private bool _log;
@@ -19,15 +17,15 @@ namespace Sonosthesia.Link
         [Serializable]
         public class Mapping<T> where T : struct
         {
-            [SerializeField] private Mapper<TSource, T> _mapper;
+            [SerializeField] private LinkMapper<TSource, T> linkMapper;
             [SerializeField] private ValueProvider<T> _provider;
             [SerializeField] private T _fallback;
             
             public T Map(TSource source, TSource reference, float timeOffset) 
             {
-                if (_mapper)
+                if (linkMapper)
                 {
-                    return _mapper.Map(source, reference, timeOffset);
+                    return linkMapper.Map(source, reference, timeOffset);
                 }
                 if (_provider)
                 {

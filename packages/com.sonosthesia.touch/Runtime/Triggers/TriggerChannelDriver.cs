@@ -74,7 +74,7 @@ namespace Sonosthesia.Touch
                 _triggers[other] = new Trigger(evendId, actor);
                 if (actor)
                 {
-                    actor.OnTriggerStarted(evendId, other, value, true);
+                    actor.OnTriggerStarted(evendId, this, other, value, true);
                 }
             }
         }
@@ -108,7 +108,7 @@ namespace Sonosthesia.Touch
                 UpdateEvent(trigger.EventId, value);
                 if (trigger.Actor)
                 {
-                    trigger.Actor.OnTriggerUpdated(trigger.EventId, other, value, colliding);
+                    trigger.Actor.OnTriggerUpdated(trigger.EventId, this, other, value, colliding);
                 }
             }
         }
@@ -121,7 +121,7 @@ namespace Sonosthesia.Touch
                 EndEvent(trigger.EventId);
                 if (trigger.Actor)
                 {
-                    trigger.Actor.OnTriggerEnded(trigger.EventId, other, colliding);
+                    trigger.Actor.OnTriggerEnded(trigger.EventId, this, other, colliding);
                 }
             }
         }
