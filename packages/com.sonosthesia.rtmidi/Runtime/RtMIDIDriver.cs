@@ -10,14 +10,14 @@ namespace Sonosthesia.RtMIDI
     {
         #region Internal objects and methods
 
-        private RtMIDIProbe _probe;
-        private readonly List<RtMIDIPort> _ports = new ();
+        private RtMIDIInputProbe _probe;
+        private readonly List<RtMIDIInputPort> _ports = new ();
 
         private void ScanPorts()
         {
             for (var i = 0; i < _probe.PortCount; i++)
             {
-                _ports.Add(new RtMIDIPort(i, _probe.GetPortName(i)));
+                _ports.Add(new RtMIDIInputPort(i, _probe.GetPortName(i)));
             }
         }
 
@@ -36,7 +36,7 @@ namespace Sonosthesia.RtMIDI
 
         public void Update()
         {
-            _probe ??= new RtMIDIProbe();
+            _probe ??= new RtMIDIInputProbe();
 
             // Rescan the ports if the count of the ports doesn't match.
             if (_ports.Count != _probe.PortCount)

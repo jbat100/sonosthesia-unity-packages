@@ -1,6 +1,7 @@
 using System.Reflection;
 using Sonosthesia.Utils;
 using UnityEngine;
+using Sonosthesia.Signal;
 
 namespace Sonosthesia.Target
 {

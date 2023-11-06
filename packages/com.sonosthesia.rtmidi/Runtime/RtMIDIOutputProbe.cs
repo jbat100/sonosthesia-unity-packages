@@ -6,21 +6,21 @@ namespace Sonosthesia.RtMIDI
     //
     // MIDI probe class used for enumerating MIDI ports
     //
-    // This is actually an RtMidi input object without any input functionality.
+    // This is actually an RtMidi output object without any output functionality.
     //
-    sealed unsafe class RtMIDIProbe : System.IDisposable
+    sealed unsafe class RtMIDIOutputProbe : System.IDisposable
     {
         RtMidiDll.Wrapper* _rtmidi;
 
-        public RtMIDIProbe()
+        public RtMIDIOutputProbe()
         {
-            _rtmidi = RtMidiDll.InCreateDefault();
+            _rtmidi = RtMidiDll.OutCreateDefault();
 
             if (_rtmidi == null || !_rtmidi->ok)
-                UnityEngine.Debug.LogWarning("Failed to create an RtMidi device object.");
+                UnityEngine.Debug.LogWarning("Failed to create an RtMidi output device object.");
         }
 
-        ~RtMIDIProbe()
+        ~RtMIDIOutputProbe()
         {
             if (_rtmidi == null || !_rtmidi->ok) return;
             RtMidiDll.InFree(_rtmidi);
@@ -30,7 +30,7 @@ namespace Sonosthesia.RtMIDI
         {
             if (_rtmidi == null || !_rtmidi->ok) return;
 
-            RtMidiDll.InFree(_rtmidi);
+            RtMidiDll.OutFree(_rtmidi);
             _rtmidi = null;
 
             System.GC.SuppressFinalize(this);

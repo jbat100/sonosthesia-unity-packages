@@ -3,7 +3,7 @@ using UniRx;
 using UnityEngine;
 using Sonosthesia.Signal;
 
-namespace Sonosthesia.Touch.Visuals
+namespace Sonosthesia.Touch
 {
     public class TriggerActorCountSignal : Signal<float>
     {

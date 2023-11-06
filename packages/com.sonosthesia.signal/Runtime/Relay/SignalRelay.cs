@@ -1,14 +1,12 @@
 using System;
-using UniRx;
 using UnityEngine;
 
 namespace Sonosthesia.Signal
 {
-    public class SignalRelay<T> : ScriptableObject where T : struct
+    public abstract class SignalRelay<TValue> : ScriptableObject where TValue : struct
     {
-        private readonly BehaviorSubject<T> _subject = new BehaviorSubject<T>(default);
-        public IObservable<T> Observable => _subject.AsObservable();
+        public abstract void Broadcast(TValue value);
 
-        public void Broadcast(T value) => _subject.OnNext(value);
+        public abstract IObservable<TValue> Observable { get; }
     }
 }

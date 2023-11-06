@@ -7,7 +7,7 @@ using RtMidiDll = RtMidi.Unmanaged;
 
 namespace Sonosthesia.RtMIDI
 {
-    internal sealed unsafe class RtMIDIPort : IDisposable
+    internal sealed unsafe class RtMIDIInputPort : IDisposable
     {
         #region Observables
         
@@ -49,7 +49,7 @@ namespace Sonosthesia.RtMIDI
 
         #region Public methods
 
-        public RtMIDIPort(int portNumber, string portName)
+        public RtMIDIInputPort(int portNumber, string portName)
         {
             _portName = portName;
 
@@ -64,7 +64,7 @@ namespace Sonosthesia.RtMIDI
             RtMidiDll.OpenPort(_rtmidi, (uint)portNumber, portName);
         }
 
-        ~RtMIDIPort()
+        ~RtMIDIInputPort()
         {
             if (_rtmidi == null || !_rtmidi->ok) return;
             RtMidiDll.InFree(_rtmidi);
@@ -72,7 +72,7 @@ namespace Sonosthesia.RtMIDI
 
         public void Dispose()
         {
-            Debug.LogWarning($"{nameof(RtMIDIPort)} {nameof(Dispose)}");
+            Debug.LogWarning($"{nameof(RtMIDIInputPort)} {nameof(Dispose)}");
             
             _clockSubject.Dispose();
             _controlSubject.Dispose();

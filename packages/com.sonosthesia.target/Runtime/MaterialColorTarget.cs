@@ -1,4 +1,5 @@
 using UnityEngine;
+using Sonosthesia.Signal;
 
 namespace Sonosthesia.Target
 {

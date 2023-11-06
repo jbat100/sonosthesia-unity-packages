@@ -12,8 +12,8 @@ namespace Sonosthesia.RtMIDI
 
         [SerializeField] private float _retryInterval = 1;
 
-        private RtMIDIProbe _probe;
-        private RtMIDIPort _port;
+        private RtMIDIInputProbe _probe;
+        private RtMIDIInputPort _port;
         private IDisposable _subscription;
 
         private string Description()
@@ -43,7 +43,7 @@ namespace Sonosthesia.RtMIDI
                         found = true;
                         _subscription?.Dispose();
                         _port?.Dispose();
-                        _port = new RtMIDIPort(i, portName);
+                        _port = new RtMIDIInputPort(i, portName);
                         _port.NoteOnObservable.Subscribe(BroadcastNoteOn);
                         _port.NoteOffObservable.Subscribe(BroadcastNoteOff);
                         _port.ControlObservable.Subscribe(BroadcastControl);
@@ -69,7 +69,7 @@ namespace Sonosthesia.RtMIDI
         
         protected void Awake()
         {
-            _probe = new RtMIDIProbe();
+            _probe = new RtMIDIInputProbe();
             Scan();
         }
 

@@ -10,6 +10,14 @@ namespace Sonosthesia.Pack
         
         [SerializeField] private string _port;
 
+        protected virtual void Awake()
+        {
+            if (!_connection)
+            {
+                _connection = GetComponentInParent<AddressedPackConnection>();
+            }
+        }
+
         public override void BroadcastNoteOn(MIDINote note)
         {
             PackedMIDINote packed = note.Pack(_port);
@@ -24,7 +32,6 @@ namespace Sonosthesia.Pack
 
         public override void BroadcastChannelControl(MIDIControl control)
         {
-            Debug.Log($"{this} {nameof(BroadcastChannelControl)} {control}");
             PackedMIDIControl packed = control.Pack(_port);
             _connection.QueueOutgoingContent(PackMIDIAddress.CONTROL, packed);
         }
