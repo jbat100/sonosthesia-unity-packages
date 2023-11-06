@@ -13,6 +13,5 @@
   "name": "com.sonosthesia.timelinemidi",
   "repository": "github:jbat100/sonosthesia-unity-packages",
   "unity": "2022.3",
-  "unityRelease": "0f1",
   "version": "1.1.0"
 }
