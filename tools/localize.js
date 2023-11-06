@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
-const parser = require('args-parser')
+const parser = require('args-parser');
+const { getPackageVersion } = require('./packages');
 
 // memoize
 let packageDependencyCache = {}
@@ -50,8 +51,8 @@ function localizeDependencies(manifest) {
         return
     }
     let unityJSON = JSON.parse(fs.readFileSync(manifest));
-    let manifestDependencies = getManifestDependencies(unityJSON)
-    let manifestDirectory = path.dirname(manifest)
+    let manifestDependencies = getManifestDependencies(unityJSON);
+    let manifestDirectory = path.dirname(manifest);
     for (const dependency of manifestDependencies) {
         console.log("processing " + dependency)
         // tried to use path.posix.relative but things get messy
@@ -61,7 +62,24 @@ function localizeDependencies(manifest) {
         ).replaceAll(path.sep, "/"); 
     }
     console.log(unityJSON)
-    fs.writeFileSync(manifest, JSON.stringify(unityJSON, null, 2))
+    fs.writeFileSync(manifest, JSON.stringify(unityJSON, null, 2));
+}
+
+function versionDependencies(manifest) {
+    console.log("Switching to versionDependencies " + manifest)
+    if (!fs.existsSync(manifest)) {
+        console.log("bailing out...")
+        return
+    }
+    let unityJSON = JSON.parse(fs.readFileSync(manifest));
+    let manifestDependencies = getManifestDependencies(unityJSON);
+    for (const dependency of manifestDependencies) {
+        console.log("processing " + dependency)
+        // tried to use path.posix.relative but things get messy
+        unityJSON.dependencies[dependency] = getPackageVersion(dependency); 
+    }
+    console.log(unityJSON)
+    fs.writeFileSync(manifest, JSON.stringify(unityJSON, null, 2));
 }
 
 function getManifestPath(projectPath) {
@@ -87,7 +105,12 @@ function run() {
     let args = parser(process.argv)
     let project = args.project ?? getDefaultProjectPath()
     let manifest = getManifestPath(project)
-    localizeDependencies(manifest)
+
+    if (args.local) {
+        localizeDependencies(manifest)
+    } else if (args.version) {
+        versionDependencies(manifest)
+    }
 }
 
 run()

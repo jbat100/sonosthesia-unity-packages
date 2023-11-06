@@ -1,6 +1,6 @@
 using UnityEngine;
-using Sonosthesia.Target;
 using UnityEngine.VFX;
+using Sonosthesia.Signal;
 
 namespace Sonosthesia.VFX
 {
