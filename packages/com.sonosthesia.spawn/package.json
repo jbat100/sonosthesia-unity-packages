@@ -15,10 +15,10 @@
   "keywords": [
     "unity"
   ],
-  "license": "Unlicense",
+  "license": "MIT",
   "name": "com.sonosthesia.spawn",
-  "repository": "github:jbat100/sonosthesia-unity-spawn",
-  "unity": "2021.3",
+  "repository": "github:jbat100/sonosthesia-unity-packages",
+  "unity": "2022.3",
   "unityRelease": "28f1",
   "version": "1.1.0"
 }

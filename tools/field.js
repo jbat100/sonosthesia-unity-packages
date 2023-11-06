@@ -26,7 +26,7 @@ function run() {
 
     if (args.field) {
         for (const package of packageNames) {
-            updatePackageField(package, args.field, args.value)
+            updatePackageField(package, args.field, String(args.value))
         }
     }
 }
