@@ -2,10 +2,10 @@
   "author": "Jonathan Thorpe",
   "dependencies": {
     "com.neuecc.unirx": "7.1.0",
-    "com.sonosthesia.channel": "1.0.2",
-    "com.sonosthesia.signal": "1.0.2",
-    "com.sonosthesia.target": "1.0.2",
-    "com.sonosthesia.spawn": "1.0.2"
+    "com.sonosthesia.channel": "1.1.0",
+    "com.sonosthesia.signal": "1.1.0",
+    "com.sonosthesia.target": "1.1.0",
+    "com.sonosthesia.spawn": "1.1.0"
   },
   "description": "Sonosthesia vfx",
   "displayName": "Sonosthesia VFX",
@@ -17,5 +17,5 @@
   "repository": "github:jbat100/sonosthesia-unity-packages",
   "unity": "2021.3",
   "unityRelease": "28f1",
-  "version": "1.0.0"
+  "version": "1.1.0"
 }

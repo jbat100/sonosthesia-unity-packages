@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const semver = require('semver');
-const parser = require('args-parser')
+const parser = require('args-parser');
 
 const { 
     getPackageDescription, 
@@ -9,7 +9,7 @@ const {
     getPackageNames, 
     getPackageVersion, 
     getPackageDependencies 
-} = require('./packages')
+} = require('./packages');
 
 function updatePackageDependencies(package, updated) {
     let description = getPackageDescription(package)

@@ -3,7 +3,7 @@
   "dependencies": {
     "jp.keijiro.rtmidi": "1.0.4",
     "com.neuecc.unirx": "7.1.0",
-    "com.sonosthesia.adaptivemidi": "1.0.2"
+    "com.sonosthesia.adaptivemidi": "1.1.0"
   },
   "description": "Sonosthesia unity Rt midi",
   "displayName": "Sonosthesia RtMIDI",
@@ -15,5 +15,5 @@
   "repository": "github:jbat100/sonosthesia-unity-rtmidi",
   "unity": "2021.3",
   "unityRelease": "28f1",
-  "version": "1.0.0"
+  "version": "1.1.0"
 }
