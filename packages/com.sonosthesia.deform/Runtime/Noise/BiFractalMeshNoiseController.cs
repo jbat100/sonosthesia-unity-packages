@@ -35,10 +35,10 @@ namespace Sonosthesia.Builder
             {
                 Vertex4 v = vertices[i];
                 
-                Sample4 noise1 = Noise.GetFractalNoise<N>(v, domainTRS, settings, seed) * displacement1;
+                Sample4 noise1 = v.GetFractalNoise<N>(domainTRS, settings, seed) * displacement1;
                 noise1.Derivatives = derivativeMatrix.TransformVectors(noise1.Derivatives);
                 
-                Sample4 noise2 = Noise.GetFractalNoise<N>(v, domainTRS, settings, seed + 1) * displacement2;
+                Sample4 noise2 = v.GetFractalNoise<N>(domainTRS, settings, seed + 1) * displacement2;
                 noise2.Derivatives = derivativeMatrix.TransformVectors(noise2.Derivatives);
                 
                 vertices[i] = SurfaceUtils.SetVertices(v, noise1 + noise2, isPlane);

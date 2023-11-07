@@ -1,8 +1,11 @@
+using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
+
+using static Unity.Mathematics.math;
 
 namespace Sonosthesia.Builder
 {
@@ -19,8 +22,8 @@ namespace Sonosthesia.Builder
     public static class Vertex4Extensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Sample4 GetFractalNoise<N>(this Vertex4 v, float3x4 domainTRS, Settings settings, int seed) 
-            where N : struct, INoise
+        public static Sample4 GetFractalNoise<N>(this Vertex4 v, float3x4 domainTRS, Noise.Settings settings, int seed) 
+            where N : struct, Noise.INoise
         {
             return Noise.GetFractalNoise<N>(
                 domainTRS.TransformVectors(transpose(float3x4(
@@ -31,10 +34,10 @@ namespace Sonosthesia.Builder
         }   
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float4 GetSimpleFractalNoise<N>(this Vertex4 v, float3x4 domainTRS, Settings settings, int seed) 
-            where N : struct, ISimpleNoise
+        public static float4 GetSimpleFractalNoise<N>(this Vertex4 v, float3x4 domainTRS, Noise.Settings settings, int seed) 
+            where N : struct, Noise.ISimpleNoise
         {
-            return GetSimpleFractalNoise<N>(
+            return Noise.GetSimpleFractalNoise<N>(
                 domainTRS.TransformVectors(transpose(float3x4(
                     v.v0.position, v.v1.position, v.v2.position, v.v3.position
                 ))),
@@ -57,7 +60,7 @@ namespace Sonosthesia.Builder
         public void Execute(int i)
         {
             Vertex4 v = vertices[i];
-            Sample4 noise = Noise.GetFractalNoise<N>(v, domainTRS, settings, seed) * displacement;
+            Sample4 noise = v.GetFractalNoise<N>(domainTRS, settings, seed) * displacement;
             noise.Derivatives = derivativeMatrix.TransformVectors(noise.Derivatives);
             vertices[i] = SurfaceUtils.SetVertices(v, noise, isPlane);
         }

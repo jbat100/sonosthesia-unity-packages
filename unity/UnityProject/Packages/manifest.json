@@ -3,6 +3,7 @@
     "com.sonosthesia.adaptivemidi": "file:../../../packages/com.sonosthesia.adaptivemidi",
     "com.sonosthesia.audio": "file:../../../packages/com.sonosthesia.audio",
     "com.sonosthesia.arpeggiator": "file:../../../packages/com.sonosthesia.arpeggiator",
+    "com.sonosthesia.deform": "file:../../../packages/com.sonosthesia.deform",
     "com.sonosthesia.fractal": "file:../../../packages/com.sonosthesia.fractal",
     "com.sonosthesia.signal": "file:../../../packages/com.sonosthesia.signal",
     "com.sonosthesia.channel": "file:../../../packages/com.sonosthesia.channel",
