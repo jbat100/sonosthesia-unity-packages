@@ -269,7 +269,7 @@ MonoBehaviour:
   _material: {fileID: 2100000, guid: 48608c32def7f4fee832947c5a2b8684, type: 2}
   _mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   _resolution: 315
-  _computeShader: {fileID: 7200000, guid: d66819aff3f0c4856a60c0063ea63523, type: 3}
+  _computeShader: {fileID: 7200000, guid: f62f1572d343a4fdc9ab045d1406c0f1, type: 3}
   _functionName: 2
 --- !u!4 &655538930
 Transform:
@@ -557,7 +557,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1315798253
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -580,11 +580,11 @@ MonoBehaviour:
   _type: 5
   _dimensions: 3
   _settings:
-    seed: 0
     frequency: 4
     octaves: 1
     lacunarity: 3
     persistence: 0.284
+  _seed: 0
   domain:
     translation:
       x: 0
@@ -630,7 +630,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1641751538
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -46,18 +46,6 @@ namespace Sonosthesia.Builder
         );
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Sample4 GetFractalNoise<N>(Vertex4 v, float3x4 domainTRS, Settings settings, int seed) 
-            where N : struct, INoise
-        {
-            return GetFractalNoise<N>(
-                domainTRS.TransformVectors(transpose(float3x4(
-                    v.v0.position, v.v1.position, v.v2.position, v.v3.position
-                ))),
-                settings, seed
-            );
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Sample4 GetFractalNoise<N>(float4x3 position, Settings settings, int seed) where N : struct, INoise
         {
             SmallXXHash4 hash = SmallXXHash4.Seed(seed);
@@ -75,19 +63,7 @@ namespace Sonosthesia.Builder
             
             return sum / amplitudeSum;
         }
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float4 GetSimpleFractalNoise<N>(Vertex4 v, float3x4 domainTRS, Settings settings, int seed) 
-            where N : struct, ISimpleNoise
-        {
-            return GetSimpleFractalNoise<N>(
-                domainTRS.TransformVectors(transpose(float3x4(
-                    v.v0.position, v.v1.position, v.v2.position, v.v3.position
-                ))),
-                settings, seed
-            );
-        }
-        
+
         public static float4 GetSimpleFractalNoise<N>(float4x3 position, Settings settings, int seed) 
             where N : struct, ISimpleNoise
         {

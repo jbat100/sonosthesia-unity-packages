@@ -15,7 +15,34 @@ namespace Sonosthesia.Builder
     {
         public SingleStreams.Stream0 v0, v1, v2, v3;
     }
-    
+
+    public static class Vertex4Extensions
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Sample4 GetFractalNoise<N>(this Vertex4 v, float3x4 domainTRS, Settings settings, int seed) 
+            where N : struct, INoise
+        {
+            return Noise.GetFractalNoise<N>(
+                domainTRS.TransformVectors(transpose(float3x4(
+                    v.v0.position, v.v1.position, v.v2.position, v.v3.position
+                ))),
+                settings, seed
+            );
+        }   
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float4 GetSimpleFractalNoise<N>(this Vertex4 v, float3x4 domainTRS, Settings settings, int seed) 
+            where N : struct, ISimpleNoise
+        {
+            return GetSimpleFractalNoise<N>(
+                domainTRS.TransformVectors(transpose(float3x4(
+                    v.v0.position, v.v1.position, v.v2.position, v.v3.position
+                ))),
+                settings, seed
+            );
+        }
+    }
+
     [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
     public struct SurfaceJob<N> : IJobFor where N : struct, Noise.INoise
     {
