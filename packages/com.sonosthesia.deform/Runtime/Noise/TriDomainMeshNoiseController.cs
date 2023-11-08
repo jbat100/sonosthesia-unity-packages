@@ -144,7 +144,7 @@ namespace Sonosthesia.Builder
             {
                 _localTimes[i] += Time.deltaTime * _settings[i].Settings.Velocity;
             }
-            Debug.Log($"Local times is {string.Join(", ", _localTimes)}");
+            //Debug.Log($"Local times is {string.Join(", ", _localTimes)}");
             base.Update();
         }
 
@@ -170,7 +170,7 @@ namespace Sonosthesia.Builder
             if (_localTimes == null || _localTimes.Length != _settings.Count)
             {
                 _localTimes = new float[_settings.Count];
-                Debug.Log("Init _localTimes");
+                //Debug.Log("Init _localTimes");
             }
         }
 
@@ -186,7 +186,7 @@ namespace Sonosthesia.Builder
                     );
             }
             
-            Debug.Log($"Scheduling with configs {string.Join(",", _noiseConfigs)}");
+            //Debug.Log($"Scheduling with configs {string.Join(",", _noiseConfigs)}");
             
             return _jobs[(int) noiseType, dimensions - 1](
                 meshData,

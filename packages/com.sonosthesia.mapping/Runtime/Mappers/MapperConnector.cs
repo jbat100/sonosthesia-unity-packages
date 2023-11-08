@@ -22,7 +22,7 @@ namespace Sonosthesia.Mapping
             }
             else
             {
-                Mapper<TValue>.AutoMap(_source, _target);
+                _subscription = Mapper<TValue>.AutoMap(_source, _target);
             }
         }
         

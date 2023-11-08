@@ -18,9 +18,10 @@ namespace Sonosthesia.Mapping
                 
             }
 
-            public Slot(string name)
+            public Slot(string name, Signal<TValue> signal)
             {
                 _name = name;
+                _signal = signal;
             }
             
             [SerializeField] private string _name;
@@ -49,13 +50,19 @@ namespace Sonosthesia.Mapping
                 if (processors.Count == 0)
                 {
                     return source._signal.SignalObservable
-                        .Subscribe(value => _signal.Broadcast(value));
+                        .Subscribe(value =>
+                        {
+                            _signal.Broadcast(value);
+                        });
                 }
 
                 float startTime = Time.time;
                 ProcessorChain<TValue> chain = new ProcessorChain<TValue>(processors.ToArray());
                 return source._signal.SignalObservable
-                    .Subscribe(value => _signal.Broadcast(chain.Process(value, Time.time - startTime)));
+                    .Subscribe(value =>
+                    {
+                        _signal.Broadcast(chain.Process(value, Time.time - startTime));
+                    });
             }
         }
 
@@ -67,27 +74,18 @@ namespace Sonosthesia.Mapping
 
         public Slot GetSlot(string slotName)
         {
-            return _slots.FirstOrDefault(slot => slot.Name == name);
+            return _slots.FirstOrDefault(slot => slot.Name == slotName);
         }
 
-        public override bool HasSlot(string slotName)
+        public override void AutofillSlots()
         {
-            return _slots.Any(slot => slot.Name == slotName);
-        }
-
-        public override void CreateSlot(string slotName)
-        {
-            _slots.Add(new Slot(slotName));
-        }
-
-        public override void DeleteSlot(string slotName)
-        {
-            for (int i = _slots.Count - 1; i >= 0; i--)
+            foreach (Transform child in transform)
             {
-                if (_slots[i] != null && _slots[i].Name == slotName)
+                if (_slots.Any(slot => slot.Name == child.name))
                 {
-                    _slots.RemoveAt(i);
+                    continue;
                 }
+                _slots.Add(new Slot(child.name, child.GetComponent<Signal<TValue>>()));
             }
         }
 

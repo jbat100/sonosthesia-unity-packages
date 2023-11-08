@@ -14,13 +14,7 @@ namespace Sonosthesia.Mapping
             MapperConnectionBase connection = (MapperConnectionBase)target;
             if (GUILayout.Button("Autofill"))
             {
-                foreach (Transform child in connection.transform)
-                {
-                    if (!connection.HasSlot(child.name))
-                    {
-                        connection.CreateSlot(child.name);
-                    }
-                }
+                connection.AutofillSlots();
             }
             if (GUILayout.Button("Clear"))
             {
@@ -32,11 +26,7 @@ namespace Sonosthesia.Mapping
     
     public abstract class MapperConnectionBase : MonoBehaviour
     {
-        public abstract bool HasSlot(string slotName);
-        
-        public abstract void CreateSlot(string slotName);
-        
-        public abstract void DeleteSlot(string slotName);
+        public abstract void AutofillSlots();
         
         public abstract void DeleteAllSlots();
     }

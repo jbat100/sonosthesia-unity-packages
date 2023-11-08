@@ -15,8 +15,8 @@ namespace Sonosthesia.Mapping
             // attempt to map the remaining target slots with source slots with the same name
             foreach (string targetSlotName in target.SlotNames)
             {
-                MapperConnection<TValue>.Slot targetSlot = source.GetSlot(targetSlotName);
-                MapperConnection<TValue>.Slot sourceSlot = target.GetSlot(targetSlotName);
+                MapperConnection<TValue>.Slot targetSlot = target.GetSlot(targetSlotName);
+                MapperConnection<TValue>.Slot sourceSlot = source.GetSlot(targetSlotName);
                 if (targetSlot == null || sourceSlot == null)
                 {
                     continue;
