@@ -3,16 +3,17 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using Sonosthesia.Mapping;
+using UniRx;
 
 namespace Sonosthesia.Touch
 {
-    public class TriggerMapperConnection<TValue> : MonoBehaviour where TValue : struct
+    public class TriggerMapperConnector<TValue> : MonoBehaviour where TValue : struct
     {
-        [SerializeField] private MapperTarget<TValue> _target;
+        [SerializeField] private MapperConnection<TValue> _target;
 
         [SerializeField] private Mapper<TValue> _mapper;
 
-        private Dictionary<Collider, IDisposable> _connections = new();
+        private readonly Dictionary<Collider, IDisposable> _connections = new();
 
         private readonly HashSet<string> _mapperCompatibility = new();
         
@@ -40,17 +41,20 @@ namespace Sonosthesia.Touch
         {
             ClearConnection(other);
             
-            MapperSource<TValue>[] sources = other.GetComponentsInParent<MapperSource<TValue>>();
-            foreach (MapperSource<TValue> source in sources)
+            MapperConnection<TValue>[] sources = other.GetComponentsInParent<MapperConnection<TValue>>();
+            CompositeDisposable subscriptions = new CompositeDisposable();
+            foreach (MapperConnection<TValue> source in sources)
             {
                 _sourceCompatibility.Clear();
                 _sourceCompatibility.UnionWith(source.Compatibility);
 
                 if (_mapperCompatibility.Intersect(_sourceCompatibility).Any())
                 {
-                    _connections[other] = _mapper.Map(source, _target);
+                    subscriptions.Add(_mapper.Map(source, _target));
                 }
             }
+
+            _connections[other] = subscriptions;
         }
         
         protected virtual void OnTriggerExit(Collider other)

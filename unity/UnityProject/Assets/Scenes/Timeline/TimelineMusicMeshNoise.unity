@@ -540,6 +540,8 @@ GameObject:
   - component: {fileID: 833523854}
   - component: {fileID: 833523853}
   - component: {fileID: 833523852}
+  - component: {fileID: 833523855}
+  - component: {fileID: 833523856}
   m_Layer: 0
   m_Name: TriDomain
   m_TagString: Untagged
@@ -882,6 +884,45 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 833523850}
   m_Mesh: {fileID: 0}
+--- !u!114 &833523855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 833523850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edb789808f37433a892ce4ce093df94c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _slots:
+  - _name: BassLows
+    _signal: {fileID: 1370635757}
+  - _name: BassMids
+    _signal: {fileID: 770357690}
+  - _name: DrumsLows
+    _signal: {fileID: 1257050657}
+  - _name: DrumsMids
+    _signal: {fileID: 490457719}
+  - _name: DrumsHighs
+    _signal: {fileID: 490457719}
+  _compatibility: []
+--- !u!114 &833523856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 833523850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26d505d4a70e433997f7a176c5818731, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _source: {fileID: 0}
+  _target: {fileID: 833523855}
+  _mapper: {fileID: 0}
 --- !u!114 &1045351572 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5572751924984970467, guid: ceaded3538dc548d3b8ba593980163aa,
