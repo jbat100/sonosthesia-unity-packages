@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Sonosthesia.Signal;
 
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Generator
 {
     public enum AccumulationMode
     {

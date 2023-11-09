@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Generator
 {
     public class AnimationCurveFloatEnvelope : FloatEnvelope
     {

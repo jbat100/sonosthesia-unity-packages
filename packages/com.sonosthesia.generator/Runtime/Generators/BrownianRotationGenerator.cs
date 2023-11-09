@@ -2,7 +2,7 @@ using Sonosthesia.Utils;
 using UnityEngine;
 using Unity.Mathematics;
 
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Generator
 {
     public class BrownianRotationGenerator : Generator<Quaternion>
     {

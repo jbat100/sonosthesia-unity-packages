@@ -1,6 +1,7 @@
 using UnityEngine;
+using Sonosthesia.Signal;
 
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Generator
 {
     public class GeneratorSignal<T> : Signal<T> where T : struct
     {

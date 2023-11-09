@@ -1,6 +1,6 @@
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Generator
 {
-    public class TimeFloatGenerator : FloatGenerator
+    public class TimeFloatGenerator : Generator<float>
     {
         public override float Evaluate(float time)
         {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Generator
 {
 #if UNITY_EDITOR
     using UnityEditor;

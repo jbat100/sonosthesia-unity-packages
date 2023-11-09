@@ -1,4 +1,4 @@
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Generator
 {
     public abstract class FloatEnvelope : ValueEnvelope<float>
     {

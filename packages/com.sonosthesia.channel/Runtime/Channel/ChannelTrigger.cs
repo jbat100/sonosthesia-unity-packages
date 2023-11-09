@@ -1,8 +1,8 @@
 using System;
 using UniRx;
 using UnityEngine;
-using Sonosthesia.Signal;
 using Sonosthesia.Utils;
+using Sonosthesia.Generator;
 
 namespace Sonosthesia.Channel
 {

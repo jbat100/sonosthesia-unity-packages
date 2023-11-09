@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Generator
 {
     public abstract class ValueEnvelope<T> : Generator<T> where T : struct
     {
