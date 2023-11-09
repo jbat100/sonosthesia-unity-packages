@@ -6,7 +6,7 @@ namespace Sonosthesia.Signal
     {
         [SerializeField] private Generator<float> _generator;
 
-        [SerializeField] private float _timeFator = 1f;
+        [SerializeField] private float _timeFactor = 1f;
         
         private float _time;
         
@@ -14,7 +14,7 @@ namespace Sonosthesia.Signal
         
         protected void Update()
         {
-            _time += _timeFator * Time.deltaTime;
+            _time += _timeFactor * Time.deltaTime;
             Broadcast(_generator.Evaluate(_time));
         }
     }

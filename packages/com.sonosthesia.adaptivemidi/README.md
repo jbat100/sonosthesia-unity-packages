@@ -1,1 +1,1 @@
-MIDI utilities for the sonosthesia project
+MIDI data containers and abstract output and input for the sonosthesia project

@@ -710,7 +710,7 @@ MonoBehaviour:
         z: 1
   - Settings:
       Frequency: 4
-      Displacement: 0.1
+      Displacement: 0
       Velocity: 1
       LerpCurve:
         serializedVersion: 2
@@ -769,7 +769,7 @@ MonoBehaviour:
         z: 1
   - Settings:
       Frequency: 8
-      Displacement: 0.1
+      Displacement: 0
       Velocity: 0.5
       LerpCurve:
         serializedVersion: 2

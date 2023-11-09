@@ -1,1 +1,1 @@
-MIDI utilities for the sonosthesia project
+Channel GameObject spawning for the sonosthesia project

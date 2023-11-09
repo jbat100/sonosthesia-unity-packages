@@ -1,0 +1,1 @@
+Core Signals for the sonosthesia project

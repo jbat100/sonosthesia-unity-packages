@@ -1,0 +1,1 @@
+Channel arpeggiator for the sonosthesia project

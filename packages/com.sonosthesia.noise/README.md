@@ -1,0 +1,1 @@
+Procedural noise for the sonosthesia project, based on [Catlike Coding tutorials](https://catlikecoding.com/unity/tutorials/pseudorandom-noise/)
