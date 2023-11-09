@@ -4,7 +4,6 @@ using System.Threading;
 using UniRx;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
-using Sonosthesia.Channel;
 
 namespace Sonosthesia.Sequencer
 {
