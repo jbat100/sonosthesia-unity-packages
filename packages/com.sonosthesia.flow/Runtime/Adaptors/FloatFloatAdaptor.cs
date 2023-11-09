@@ -1,4 +1,4 @@
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Flow
 {
     public class FloatFloatAdaptor : FloatMapAdaptor<float>
     {

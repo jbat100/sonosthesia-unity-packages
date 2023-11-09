@@ -1,4 +1,4 @@
-using Sonosthesia.Signal;
+using Sonosthesia.Flow;
 
 namespace Sonosthesia.Spawn
 {

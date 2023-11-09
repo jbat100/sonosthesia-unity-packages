@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
+using Sonosthesia.Signal;
 
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Flow
 {
     public class SwitcherSignal<TValue> : Signal<TValue> where TValue : struct
     {

@@ -1,6 +1,6 @@
 using System;
 using Sonosthesia.AdaptiveMIDI.Messages;
-using Sonosthesia.Channel;
+using Sonosthesia.Sequencer;
 using UnityEngine;
 
 namespace Sonosthesia.MIDI

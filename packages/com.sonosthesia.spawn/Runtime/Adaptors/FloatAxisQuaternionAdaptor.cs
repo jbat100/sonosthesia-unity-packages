@@ -1,5 +1,5 @@
-using Sonosthesia.Signal;
 using UnityEngine;
+using Sonosthesia.Flow;
 
 namespace Sonosthesia.Spawn
 {

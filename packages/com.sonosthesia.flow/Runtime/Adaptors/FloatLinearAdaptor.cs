@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Flow
 {
     public abstract class FloatLinearAdaptor<T> : FloatMapAdaptor<T> where T : struct
     {

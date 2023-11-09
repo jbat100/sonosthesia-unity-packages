@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Flow
 {
     public class BehaviourSwitcher : Switcher<Behaviour>
     {

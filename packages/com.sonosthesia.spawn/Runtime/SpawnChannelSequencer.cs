@@ -1,5 +1,5 @@
 using System;
-using Sonosthesia.Channel;
+using Sonosthesia.Sequencer;
 using Unity.Mathematics;
 using UnityEngine;
 

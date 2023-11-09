@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
+using Sonosthesia.Signal;
 
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Flow
 {
     public abstract class Mixer<TValue> : Signal<TValue> where TValue : struct
     {

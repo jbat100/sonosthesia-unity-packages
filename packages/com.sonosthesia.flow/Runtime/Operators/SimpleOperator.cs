@@ -1,8 +1,8 @@
 using System;
 using UniRx;
-using UnityEngine;
+using Sonosthesia.Signal;
 
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Flow
 {
     public abstract class SimpleOperator<T> : Operator<T> where T : struct
     {

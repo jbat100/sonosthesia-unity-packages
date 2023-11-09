@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
+using Sonosthesia.Signal;
 
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Flow
 {
     public abstract class Switcher<T> : MonoBehaviour where T : class
     {

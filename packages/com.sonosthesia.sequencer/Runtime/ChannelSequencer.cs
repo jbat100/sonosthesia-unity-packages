@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Cysharp.Threading.Tasks;
 using UniRx;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
+using Sonosthesia.Channel;
 
-namespace Sonosthesia.Channel
+namespace Sonosthesia.Sequencer
 {
     [Serializable]
     public class ChannelSequenceElement
@@ -19,7 +20,7 @@ namespace Sonosthesia.Channel
     
     public abstract class ChannelSequencer<T, TElement> : MonoBehaviour where T : struct where TElement : ChannelSequenceElement
     {
-        [SerializeField] private Channel<T> _target;
+        [SerializeField] private Channel.Channel<T> _target;
 
         [SerializeField] private bool _autoPlay;
         

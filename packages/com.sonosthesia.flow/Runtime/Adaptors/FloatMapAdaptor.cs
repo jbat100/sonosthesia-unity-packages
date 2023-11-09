@@ -1,8 +1,9 @@
 using System;
 using UniRx;
 using UnityEngine;
+using Sonosthesia.Signal;
 
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Flow
 {
     public abstract class FloatMapAdaptor<TTarget> : Adaptor<float, TTarget> where TTarget : struct
     {

@@ -2,7 +2,7 @@ using Sonosthesia.Utils;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Flow
 {
     public class OneEuroFilterOperator : SimpleOperator<float>
     {

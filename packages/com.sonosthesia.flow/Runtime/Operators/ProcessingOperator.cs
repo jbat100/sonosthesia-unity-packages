@@ -1,7 +1,7 @@
 using Sonosthesia.Processing;
 using UnityEngine;
 
-namespace Sonosthesia.Signal
+namespace Sonosthesia.Flow
 {
     public class ProcessingOperator<T> : SimpleOperator<T> where T : struct
     {
