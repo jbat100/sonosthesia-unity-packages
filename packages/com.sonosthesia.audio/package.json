@@ -4,7 +4,8 @@
     "com.neuecc.unirx": "7.1.0",
     "com.sonosthesia.signal": "1.1.0",
     "com.sonosthesia.utils": "1.1.0",
-    "com.sonosthesia.processing": "1.1.0"
+    "com.sonosthesia.processing": "1.1.0",
+    "com.sonosthesia.flow": "1.1.0"
   },
   "description": "Sonosthesia unity audio",
   "displayName": "Sonosthesia Audio",

@@ -41,7 +41,8 @@
         "com.neuecc.unirx": "7.1.0",
         "com.sonosthesia.signal": "1.1.0",
         "com.sonosthesia.utils": "1.1.0",
-        "com.sonosthesia.processing": "1.1.0"
+        "com.sonosthesia.processing": "1.1.0",
+        "com.sonosthesia.flow": "1.1.0"
       }
     },
     "com.sonosthesia.channel": {
@@ -52,7 +53,8 @@
         "com.cysharp.unitask": "2.3.3",
         "com.neuecc.unirx": "7.1.0",
         "com.sonosthesia.utils": "1.1.0",
-        "com.sonosthesia.signal": "1.1.0"
+        "com.sonosthesia.signal": "1.1.0",
+        "com.sonosthesia.generator": "1.1.0"
       }
     },
     "com.sonosthesia.deform": {
@@ -69,6 +71,17 @@
         "com.sonosthesia.target": "1.1.0"
       }
     },
+    "com.sonosthesia.flow": {
+      "version": "file:../../../packages/com.sonosthesia.flow",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.neuecc.unirx": "7.1.0",
+        "com.sonosthesia.utils": "1.1.0",
+        "com.sonosthesia.signal": "1.1.0",
+        "com.sonosthesia.processing": "1.1.0"
+      }
+    },
     "com.sonosthesia.fractal": {
       "version": "file:../../../packages/com.sonosthesia.fractal",
       "depth": 0,
@@ -76,6 +89,31 @@
       "dependencies": {
         "com.unity.mathematics": "1.2.6",
         "com.unity.burst": "1.8.4"
+      }
+    },
+    "com.sonosthesia.generator": {
+      "version": "file:../../../packages/com.sonosthesia.generator",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.neuecc.unirx": "7.1.0",
+        "com.sonosthesia.utils": "1.1.0",
+        "com.sonosthesia.processing": "1.1.0",
+        "com.sonosthesia.signal": "1.1.0"
+      }
+    },
+    "com.sonosthesia.instrument": {
+      "version": "file:../../../packages/com.sonosthesia.instrument",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.unity.mathematics": "1.2.6",
+        "com.neuecc.unirx": "7.1.0",
+        "com.sonosthesia.midi": "1.1.0",
+        "com.sonosthesia.touch": "1.1.0",
+        "com.sonosthesia.channel": "1.1.0",
+        "com.sonosthesia.signal": "1.1.0",
+        "com.sonosthesia.mapping": "1.1.0"
       }
     },
     "com.sonosthesia.link": {
@@ -121,7 +159,8 @@
         "com.sonosthesia.adaptivemidi": "1.1.0",
         "com.sonosthesia.channel": "1.1.0",
         "com.sonosthesia.signal": "1.1.0",
-        "com.sonosthesia.mapping": "1.1.0"
+        "com.sonosthesia.mapping": "1.1.0",
+        "com.sonosthesia.sequencer": "1.1.0"
       }
     },
     "com.sonosthesia.noise": {
@@ -164,6 +203,16 @@
         "com.sonosthesia.adaptivemidi": "1.1.0"
       }
     },
+    "com.sonosthesia.sequencer": {
+      "version": "file:../../../packages/com.sonosthesia.sequencer",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.neuecc.unirx": "7.1.0",
+        "com.sonosthesia.utils": "1.1.0",
+        "com.sonosthesia.channel": "1.1.0"
+      }
+    },
     "com.sonosthesia.shape": {
       "version": "file:../../../packages/com.sonosthesia.shape",
       "depth": 0,
@@ -196,7 +245,9 @@
         "com.sonosthesia.channel": "1.1.0",
         "com.sonosthesia.utils": "1.1.0",
         "com.sonosthesia.mapping": "1.1.0",
-        "com.sonosthesia.arpeggiator": "1.1.0"
+        "com.sonosthesia.arpeggiator": "1.1.0",
+        "com.sonosthesia.flow": "1.1.0",
+        "com.sonosthesia.sequencer": "1.1.0"
       }
     },
     "com.sonosthesia.target": {

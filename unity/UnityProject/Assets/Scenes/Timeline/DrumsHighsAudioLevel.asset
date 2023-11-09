@@ -15,7 +15,7 @@ MonoBehaviour:
   _warp:
     _bypass: 0
     _db: 1
-    _scale: 3.83
+    _scale: 3.77
     _offset: 0
   _oneEuroFilter:
     _bypass: 0
