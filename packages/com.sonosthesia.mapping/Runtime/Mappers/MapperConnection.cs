@@ -66,7 +66,9 @@ namespace Sonosthesia.Mapping
             }
         }
 
-        [SerializeField] private List<Slot> _slots;
+        // note : initializing _slots avoids some occasional null ref errors when using Autofill/Clear outside play mode
+        
+        [SerializeField] private List<Slot> _slots = new();
         public IEnumerable<string> SlotNames => _slots.Select(slot => slot.Name);
 
         [SerializeField] private List<string> _compatibility;

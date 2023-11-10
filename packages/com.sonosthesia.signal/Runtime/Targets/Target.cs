@@ -1,4 +1,5 @@
 using System;
+using Sonosthesia.Processing;
 using UnityEngine;
 using UniRx;
 
@@ -8,7 +9,10 @@ namespace Sonosthesia.Signal
     {
         [SerializeField] private Signal<T> _source;
 
+        [SerializeField] private DynamicProcessorFactory<T> _processingFactory;
+
         private IDisposable _subscription;
+        private IDynamicProcessor<T> _processor;
 
         protected virtual void Awake()
         {
@@ -20,12 +24,26 @@ namespace Sonosthesia.Signal
         
         protected void OnEnable()
         {
+            _processor = _processingFactory ? _processingFactory.Make() : null;
             _subscription?.Dispose();
-            _subscription = _source.SignalObservable.Subscribe(Apply);
+
+            if (_processor != null)
+            {
+                float startTime = Time.time;
+                _subscription = _source.SignalObservable.Subscribe(value =>
+                {
+                    Apply(_processor.Process(value, Time.time - startTime));
+                });    
+            }
+            else
+            {
+                _subscription = _source.SignalObservable.Subscribe(Apply); 
+            }
         }
 
         protected void OnDisable()
         {
+            _processor = null;
             _subscription?.Dispose();
             _subscription = null;
         }

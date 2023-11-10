@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UniRx;
 
-namespace Sonosthesia
+namespace Sonosthesia.Utils
 {
     public class DelayedPlay : MonoBehaviour
     {
