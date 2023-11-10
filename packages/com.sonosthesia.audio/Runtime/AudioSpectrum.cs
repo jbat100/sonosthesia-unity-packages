@@ -48,7 +48,7 @@ namespace Sonosthesia.Audio
         [SerializeField] private FFTWindow _fftWindow = FFTWindow.BlackmanHarris;
         [SerializeField] private BandType _bandType = BandType.TenBand;
         [SerializeField] private float _fallSpeed = 0.08f;
-        [SerializeField] private float _sensibility = 8.0f;
+        [SerializeField] private float _sensitivity = 8.0f;
 
         private float[] _rawSpectrum;
 
@@ -104,7 +104,7 @@ namespace Sonosthesia.Audio
             float[] middlefrequencies = _middleFrequenciesForBands [(int)_bandType];
             float bandwidth = _bandwidthForBands [(int)_bandType];
             float falldown = _fallSpeed * Time.deltaTime;
-            float filter = Mathf.Exp (-_sensibility * Time.deltaTime);
+            float filter = Mathf.Exp (-_sensitivity * Time.deltaTime);
 
             for (var bi = 0; bi < Levels.Length; bi++) 
             {

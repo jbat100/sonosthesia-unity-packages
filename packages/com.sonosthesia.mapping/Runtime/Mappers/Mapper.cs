@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UniRx;
 using Sonosthesia.Processing;
@@ -61,8 +62,8 @@ namespace Sonosthesia.Mapping
                     continue;
                 }
                 
-                MapperConnection<TValue>.Slot targetSlot = source.GetSlot(connectionInfo.Source);
-                MapperConnection<TValue>.Slot sourceSlot = target.GetSlot(connectionInfo.Target);
+                MapperConnection<TValue>.Slot targetSlot = target.GetSlot(connectionInfo.Target);
+                MapperConnection<TValue>.Slot sourceSlot = source.GetSlot(connectionInfo.Source);
                 
                 if (targetSlot == null || sourceSlot == null)
                 {
@@ -77,18 +78,24 @@ namespace Sonosthesia.Mapping
             if (_autoMap)
             {
                 // attempt to map the remaining target slots with source slots with the same name
-                foreach (string targetSlotName in targetSlotNames)
+                foreach (string targetSlotName in targetSlotNames.ToList())
                 {
-                    MapperConnection<TValue>.Slot targetSlot = source.GetSlot(targetSlotName);
-                    MapperConnection<TValue>.Slot sourceSlot = target.GetSlot(targetSlotName); 
+                    MapperConnection<TValue>.Slot targetSlot = target.GetSlot(targetSlotName);
+                    MapperConnection<TValue>.Slot sourceSlot = source.GetSlot(targetSlotName); 
                     
                     if (targetSlot == null || sourceSlot == null)
                     {
                         continue;
                     }
-                    
+
+                    targetSlotNames.Remove(targetSlotName);
                     subscriptions.Add(targetSlot.Connect(sourceSlot));
                 }
+            }
+
+            if (targetSlotNames.Count > 0)
+            {
+                Debug.LogWarning($"{this} target slots are not filled : {string.Join(", ", targetSlotNames)}");
             }
             
             return subscriptions;
