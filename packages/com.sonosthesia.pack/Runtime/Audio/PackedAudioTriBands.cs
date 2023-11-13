@@ -4,7 +4,7 @@ using MessagePack;
 namespace Sonosthesia.Pack
 {
     [MessagePackObject]
-    public class PackedAudioTriBands
+    public class PackedAudioTriBands : IPackedAudioBands
     {
         [Key("track")]
         public string Track { get; set; }
@@ -22,6 +22,19 @@ namespace Sonosthesia.Pack
         {
             return $"{nameof(PackedAudioTriBands)} {Track} {B1} {B2} {B3}";
         }
+
+        public int BandCount => 3;
+        
+        public float GetBand(int index)
+        {
+            return index switch
+            {
+                0 => B1,
+                1 => B2,
+                2 => B3,
+                _ => throw new ArgumentOutOfRangeException(nameof(index), index, null)
+            };
+        }
     }
     
     public static class PackedAudioTriBandsExtensions
@@ -29,17 +42,6 @@ namespace Sonosthesia.Pack
         public static TriAudioBands Unpack(this PackedAudioTriBands bands)
         {
             return new TriAudioBands(bands.B1, bands.B2, bands.B3);
-        }
-
-        public static float GetBand(this PackedAudioTriBands bands, int index)
-        {
-            return index switch
-            {
-                1 => bands.B1,
-                2 => bands.B2,
-                3 => bands.B3,
-                _ => throw new ArgumentOutOfRangeException(nameof(index), index, null)
-            };
         }
     }
 }

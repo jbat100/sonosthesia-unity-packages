@@ -27,7 +27,7 @@ namespace Sonosthesia.Pack
 
     public class WebSocketClient : MonoBehaviour
     {
-        [SerializeField] private string _address;
+        [SerializeField] private string _address = "ws://127.0.0.1";
         
         private WebSocket websocket;
 

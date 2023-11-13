@@ -1,1 +1,1 @@
-Channel arpeggiator for the sonosthesia project
+Channel arpeggiator for the sonosthesia project. This package generalizes the concept of a MIDI note arpeggiator to any data type. An arpeggiator is itself a channel which takes a channel as input and generates modulated delayed copies of each input stream.

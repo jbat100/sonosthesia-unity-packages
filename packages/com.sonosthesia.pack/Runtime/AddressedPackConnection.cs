@@ -226,9 +226,12 @@ namespace Sonosthesia.Pack
         private readonly Subject<AddressedEnvelope> _envelopeSubject = new();
         private IDisposable _subscription;
         private bool _isDisposed;
+        private bool _log;
         
-        public RxIncomingAddressedPackQueue(bool background)
+        public RxIncomingAddressedPackQueue(bool background, bool log)
         {
+            _log = log;
+            
             IObservable<byte[]> observable = background ? 
                 _incomingSubject.ObserveOn(Scheduler.ThreadPool) 
                 : _incomingSubject.AsObservable();
@@ -240,7 +243,10 @@ namespace Sonosthesia.Pack
                     if (envelope.Address == EnvelopeBundle.ADDRESS)
                     {
                         EnvelopeBundle bundle = MessagePackSerializer.Deserialize<EnvelopeBundle>(envelope.Content);
-                        Debug.LogWarning($"{nameof(AddressedPackConnection)} deserialized bundle with {bundle.Envelopes.Length} envelopes successfully");
+                        if (_log)
+                        {
+                            Debug.Log($"{nameof(AddressedPackConnection)} deserialized bundle with {bundle.Envelopes.Length} envelopes successfully");
+                        }
                         foreach (AddressedEnvelope child in bundle.Envelopes)
                         {
                             ProcessEnvelope(child);           
@@ -298,7 +304,10 @@ namespace Sonosthesia.Pack
                         T content = MessagePackSerializer.Deserialize<T>(envelope.Content);
                         if (content != null)
                         {
-                            Debug.Log($"{nameof(RxIncomingAddressedPackQueue)} deserialized content {content}");
+                            if (_log)
+                            {
+                                Debug.Log($"{nameof(RxIncomingAddressedPackQueue)} deserialized content {content}");   
+                            }
                             return Option<T>.Some(content);
                         }
                         Debug.LogError($"{nameof(RxIncomingAddressedPackQueue)} failed to deserialize content");
@@ -329,6 +338,8 @@ namespace Sonosthesia.Pack
 
     public class AddressedPackConnection : WebSocketClient
     {
+        [SerializeField] private bool _log;
+        
         private enum OutgoingQueueType
         {
             Forget,
@@ -337,7 +348,7 @@ namespace Sonosthesia.Pack
             RxThreadPool
         }
 
-        [SerializeField] private OutgoingQueueType _outgoingQueueType;
+        [SerializeField] private OutgoingQueueType _outgoingQueueType = OutgoingQueueType.RxThreadPool;
         
         private IOutgoingAddressedPackQueue _outgoingQueue;
         private IOutgoingAddressedPackQueue OutgoingQueue => _outgoingQueue ??= CreateOutgoingQueue();
@@ -348,7 +359,7 @@ namespace Sonosthesia.Pack
             RxThreadPool
         }
         
-        [SerializeField] private IncomingQueueType _incomingQueueType;
+        [SerializeField] private IncomingQueueType _incomingQueueType = IncomingQueueType.RxThreadPool;
 
         private IIncomingAddressedPackQueue _incomingQueue;
         private IIncomingAddressedPackQueue IncomingQueue => _incomingQueue ??= CreateIncomingQueue();
@@ -364,8 +375,8 @@ namespace Sonosthesia.Pack
 
         private IIncomingAddressedPackQueue CreateIncomingQueue() => _incomingQueueType switch
         {
-            IncomingQueueType.RxMainThread => new RxIncomingAddressedPackQueue(false),
-            IncomingQueueType.RxThreadPool => new RxIncomingAddressedPackQueue(true),
+            IncomingQueueType.RxMainThread => new RxIncomingAddressedPackQueue(false, _log),
+            IncomingQueueType.RxThreadPool => new RxIncomingAddressedPackQueue(true, _log),
             _ => throw new ArgumentOutOfRangeException()
         };
         
@@ -376,7 +387,7 @@ namespace Sonosthesia.Pack
             {
                 Debug.LogWarning($"Unexpected {nameof(OnMessage)} call off main thread ({bytes.Length} bytes)");
             }
-            else
+            else if (_log)
             {
                 Debug.Log($"{nameof(OnMessage)} call on main thread ({bytes.Length} bytes)");
             }

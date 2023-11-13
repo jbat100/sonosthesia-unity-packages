@@ -1,1 +1,1 @@
-Audio descriptors for the sonosthesia project
+Audio descriptors for the sonosthesia project. Provides descriptor signals for audio.

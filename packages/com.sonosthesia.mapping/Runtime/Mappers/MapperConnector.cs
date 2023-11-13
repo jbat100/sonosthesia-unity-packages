@@ -13,11 +13,18 @@ namespace Sonosthesia.Mapping
 
         private IDisposable _subscription;
 
-        protected virtual void OnEnable()
+        private void Subscribe()
         {
             _subscription?.Dispose();
-            _subscription = _mapper ? _mapper.Map(_source, _target) : Mapper<TValue>.AutoMap(_source, _target);
+            if (_source && _target)
+            {
+                _subscription = _mapper ? _mapper.Map(_source, _target) : Mapper<TValue>.AutoMap(_source, _target);   
+            }
         }
+
+        protected virtual void OnValidate() => Subscribe();
+
+        protected virtual void OnEnable() => Subscribe();
         
         protected virtual void OnDisable()
         {

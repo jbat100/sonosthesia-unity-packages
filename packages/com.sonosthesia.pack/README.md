@@ -1,1 +1,1 @@
-MIDI utilities for the sonosthesia project
+MessagePack data structures and WebSocket based communications for the sonosthesia project

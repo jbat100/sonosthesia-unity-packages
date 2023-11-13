@@ -1,1 +1,1 @@
-MIDI utilities for the sonosthesia project
+Channels for the sonosthesia project
