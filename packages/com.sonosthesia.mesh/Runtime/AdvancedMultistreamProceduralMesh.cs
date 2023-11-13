@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 using Unity.Mathematics;
 using static Unity.Mathematics.math;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Mesh
 {
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public class AdvancedMultistreamProceduralMesh : MonoBehaviour
@@ -15,8 +15,8 @@ namespace Sonosthesia.Builder
             const int vertexCount = 4;
             const int triangleIndexCount = 6;
             
-            Mesh.MeshDataArray meshDataArray = Mesh.AllocateWritableMeshData(1);
-            Mesh.MeshData meshData = meshDataArray[0];
+            UnityEngine.Mesh.MeshDataArray meshDataArray = UnityEngine.Mesh.AllocateWritableMeshData(1);
+            UnityEngine.Mesh.MeshData meshData = meshDataArray[0];
             var vertexAttributes = new NativeArray<VertexAttributeDescriptor>(
                 vertexAttributeCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory
             );
@@ -70,12 +70,12 @@ namespace Sonosthesia.Builder
                 vertexCount = vertexCount
             });
             
-            Mesh mesh = new Mesh
+            UnityEngine.Mesh mesh = new UnityEngine.Mesh
             {
                 name = "Procedural Mesh",
                 bounds = bounds
             };
-            Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, mesh);
+            UnityEngine.Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, mesh);
             GetComponent<MeshFilter>().mesh = mesh;
         }
     }

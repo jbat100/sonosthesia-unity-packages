@@ -1,8 +1,9 @@
 using System;
+using Sonosthesia.Noise;
 using UnityEngine;
 using Sonosthesia.Target;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     public abstract class DynamicMeshNoiseTarget<T, B> : BlendTarget<T, B> 
         where T : struct where B : struct, IBlender<T>

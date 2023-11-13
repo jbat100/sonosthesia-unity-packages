@@ -1,7 +1,7 @@
 using System;
 using Unity.Mathematics;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Noise
 {
     [Serializable]
     public struct SpaceTRS {

@@ -8,45 +8,45 @@ using UnityEngine;
 
 using static Unity.Mathematics.math;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Noise
 {
+    [Serializable]
+    public struct FractalSettings 
+    {
+        [Min(1)] public int frequency;
+        [Range(1, 6)] public int octaves;
+        [Range(2, 4)] public int lacunarity;
+        [Range(0f, 1f)] public float persistence;
+            
+        public static FractalSettings Default => new FractalSettings
+        {
+            frequency = 4,
+            octaves = 1,
+            lacunarity = 2,
+            persistence = 0.5f
+        };
+    }
+        
+    public interface INoise 
+    {
+        Sample4 GetNoise4 (float4x3 positions, SmallXXHash4 hash, int frequency);
+    }
+
+    public interface ISimpleNoise
+    {
+        // simplified version of INoise which doesn't bother computing derivatives
+        float4 GetNoiseValue4 (float4x3 positions, SmallXXHash4 hash, int frequency);
+    }
+    
     public static partial class Noise
     {
-        [Serializable]
-        public struct Settings 
-        {
-            [Min(1)] public int frequency;
-            [Range(1, 6)] public int octaves;
-            [Range(2, 4)] public int lacunarity;
-            [Range(0f, 1f)] public float persistence;
-            
-            public static Settings Default => new Settings
-            {
-                frequency = 4,
-                octaves = 1,
-                lacunarity = 2,
-                persistence = 0.5f
-            };
-        }
-        
-        public interface INoise 
-        {
-            Sample4 GetNoise4 (float4x3 positions, SmallXXHash4 hash, int frequency);
-        }
-
-        public interface ISimpleNoise
-        {
-            // simplified version of INoise which doesn't bother computing derivatives
-            float4 GetNoiseValue4 (float4x3 positions, SmallXXHash4 hash, int frequency);
-        }
-        
         public delegate JobHandle ScheduleDelegate (
             NativeArray<float3x4> positions, NativeArray<float4> noise,
-            Settings settings, int seed, SpaceTRS domainTRS, int resolution, JobHandle dependency
+            FractalSettings settings, int seed, SpaceTRS domainTRS, int resolution, JobHandle dependency
         );
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Sample4 GetFractalNoise<N>(float4x3 position, Settings settings, int seed) where N : struct, INoise
+        public static Sample4 GetFractalNoise<N>(float4x3 position, FractalSettings settings, int seed) where N : struct, INoise
         {
             SmallXXHash4 hash = SmallXXHash4.Seed(seed);
             int frequency = settings.frequency;
@@ -64,7 +64,7 @@ namespace Sonosthesia.Builder
             return sum / amplitudeSum;
         }
 
-        public static float4 GetSimpleFractalNoise<N>(float4x3 position, Settings settings, int seed) 
+        public static float4 GetSimpleFractalNoise<N>(float4x3 position, FractalSettings settings, int seed) 
             where N : struct, ISimpleNoise
         {
             SmallXXHash4 hash = SmallXXHash4.Seed(seed);
@@ -90,7 +90,7 @@ namespace Sonosthesia.Builder
 
             [WriteOnly] public NativeArray<float4> noise;
 
-            public Settings settings;
+            public FractalSettings settings;
 
             public int seed;
             
@@ -102,7 +102,7 @@ namespace Sonosthesia.Builder
             
             public static JobHandle ScheduleParallel (
                 NativeArray<float3x4> positions, NativeArray<float4> noise,
-                Settings settings, int seed, SpaceTRS domainTRS, int innerLoopBatchCount, JobHandle dependency
+                FractalSettings settings, int seed, SpaceTRS domainTRS, int innerLoopBatchCount, JobHandle dependency
             ) => new Job<N> {
                 positions = positions,
                 noise = noise,

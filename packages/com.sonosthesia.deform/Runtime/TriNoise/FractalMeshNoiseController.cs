@@ -1,15 +1,16 @@
+using Sonosthesia.Noise;
 using Unity.Jobs;
 using UnityEngine;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     public abstract class FractalMeshNoiseController : CatlikeMeshNoiseController
     {
-        [SerializeField] private Noise.Settings _noiseSettings = Noise.Settings.Default;
+        [SerializeField] private FractalSettings _noiseSettings = FractalSettings.Default;
         
         [SerializeField] private SpaceTRS _domain = new SpaceTRS { scale = 1f };
         
-        protected sealed override JobHandle PerturbMesh(Mesh.MeshData meshData, int resolution, float displacement,
+        protected sealed override JobHandle PerturbMesh(UnityEngine.Mesh.MeshData meshData, int resolution, float displacement,
             NoiseType noiseType, int dimensions, int seed,
             JobHandle dependency)
         {
@@ -17,8 +18,8 @@ namespace Sonosthesia.Builder
         }
 
         protected abstract JobHandle PerturbMesh(
-            Mesh.MeshData meshData, int resolution, float displacement,
-            NoiseType noiseType, int dimensions, Noise.Settings settings, int seed, SpaceTRS domain,
+            UnityEngine.Mesh.MeshData meshData, int resolution, float displacement,
+            NoiseType noiseType, int dimensions, FractalSettings settings, int seed, SpaceTRS domain,
             JobHandle dependency);
         
     }

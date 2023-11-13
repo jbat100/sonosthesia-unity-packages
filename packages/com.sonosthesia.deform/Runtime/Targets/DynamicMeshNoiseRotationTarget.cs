@@ -1,7 +1,8 @@
+using Sonosthesia.Noise;
 using Sonosthesia.Target;
 using UnityEngine;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     public class DynamicMeshNoiseRotationTarget : DynamicMeshNoiseDomainTarget<Quaternion, QuaternionBlender>
     {

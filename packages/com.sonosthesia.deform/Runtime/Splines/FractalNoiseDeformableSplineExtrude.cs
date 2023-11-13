@@ -1,3 +1,4 @@
+using Sonosthesia.Noise;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
@@ -5,25 +6,25 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     public class FractalNoiseDeformableSplineExtrude : NoiseDeformableSplineExtrude
     {
-        [SerializeField] private Noise.Settings _noiseSettings = Noise.Settings.Default;
+        [SerializeField] private FractalSettings _noiseSettings = FractalSettings.Default;
         
         [SerializeField] private SpaceTRS _domain = new SpaceTRS { scale = 1f };
 
         [SerializeField] private float _displacement = 0.1f;
         
         private delegate JobHandle JobScheduleDelegate (
-            Mesh.MeshData meshData, int innerloopBatchCount, Noise.Settings settings, int seed, SpaceTRS domain, 
+            UnityEngine.Mesh.MeshData meshData, int innerloopBatchCount, FractalSettings settings, int seed, SpaceTRS domain, 
             float displacement, JobHandle dependency
         );
         
         [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
         public struct Job<N> : IJobFor where N : struct, Noise.INoise
         {
-            private Noise.Settings settings;
+            private FractalSettings settings;
             private int seed;
             private float3x4 domainTRS;
             private float3x3 derivativeMatrix;
@@ -38,8 +39,8 @@ namespace Sonosthesia.Builder
                 vertices[i] = SplineUtils.DeformVerticesAlongNormals(v, noise);
             }
         
-            public static JobHandle ScheduleParallel (Mesh.MeshData meshData, int innerloopBatchCount, 
-                Noise.Settings settings, int seed, SpaceTRS domain, float displacement, 
+            public static JobHandle ScheduleParallel (UnityEngine.Mesh.MeshData meshData, int innerloopBatchCount, 
+                FractalSettings settings, int seed, SpaceTRS domain, float displacement, 
                 JobHandle dependency
             ) => 
                 new Job<N>
@@ -131,7 +132,7 @@ namespace Sonosthesia.Builder
             }
         };
         
-        protected override void Deform(ISpline spline, Mesh.MeshData data, 
+        protected override void Deform(ISpline spline, UnityEngine.Mesh.MeshData data, 
             float radius, int sides, float segmentsPerUnit, bool capped, float2 range,
             NoiseType noiseType, int dimensions, int seed)
         {

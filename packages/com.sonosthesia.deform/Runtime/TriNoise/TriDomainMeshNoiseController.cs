@@ -1,21 +1,21 @@
 using System.Collections.Generic;
+using Sonosthesia.Mesh;
 using Sonosthesia.Noise;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Splines;
 
 using static Unity.Mathematics.math;
 
 namespace Sonosthesia.Deform
 {
-    public class TriNoiseDeformableSplineExtrude : NoiseDeformableSplineExtrude
+    public class TriDomainMeshNoiseController : CatlikeMeshNoiseController
     {
         private delegate JobHandle JobScheduleDelegate (
-            UnityEngine.Mesh.MeshData meshData, int innerloopBatchCount, NativeArray<TriNoise.DomainNoiseComponent> configs,
-            JobHandle dependency
+            UnityEngine.Mesh.MeshData meshData, int resolution, NativeArray<TriNoise.DomainNoiseComponent> configs,
+            bool isPlane, JobHandle dependency
         );
         
         [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
@@ -23,11 +23,12 @@ namespace Sonosthesia.Deform
         {
             [ReadOnly] private NativeArray<TriNoise.DomainNoiseComponent> configs;
             
-            private NativeArray<SplineVertexData4> vertices;
+            private bool isPlane;
+            private NativeArray<Vertex4> vertices;
 
             public void Execute(int i)
             {
-                SplineVertexData4 v = vertices[i];
+                Vertex4 v = vertices[i];
                 Sample4 noise = default;
                 for (int c = 0; c < configs.Length; c++)
                 {
@@ -37,23 +38,23 @@ namespace Sonosthesia.Deform
                     )));
                     noise += position.GetNoise<N>(component.Component, component.DerivativeMatrix);
                 }
-                vertices[i] = SplineUtils.DeformVerticesAlongNormals(v, noise);
+                vertices[i] = SurfaceUtils.SetVertices(v, noise, isPlane);
             }
         
-            public static JobHandle ScheduleParallel (UnityEngine.Mesh.MeshData meshData, int innerloopBatchCount, 
-                NativeArray<TriNoise.DomainNoiseComponent> configs, JobHandle dependency
+            public static JobHandle ScheduleParallel (UnityEngine.Mesh.MeshData meshData, int resolution, 
+                NativeArray<TriNoise.DomainNoiseComponent> configs, bool isPlane, JobHandle dependency
             )
             {
                 return new Job<N>
                 {
-                    vertices = meshData.GetVertexData<SplineVertexData>().Reinterpret<SplineVertexData4>(12 + 12 + 8),
-                    configs = configs
-                }.ScheduleParallel(meshData.vertexCount / 4, innerloopBatchCount, dependency);
+                    vertices = meshData.GetVertexData<SingleStreams.Stream0>().Reinterpret<Vertex4>(12 * 4),
+                    configs = configs,
+                    isPlane = isPlane
+                }.ScheduleParallel(meshData.vertexCount / 4, resolution, dependency);
             }
         }   
         
-        
-        private static JobScheduleDelegate[,] _jobs = {
+        private static readonly JobScheduleDelegate[,] _jobs = {
             {
                 Job<Lattice1D<Perlin, LatticeNormal>>.ScheduleParallel,
                 Job<Lattice2D<Perlin, LatticeNormal>>.ScheduleParallel,
@@ -130,28 +131,28 @@ namespace Sonosthesia.Deform
                 Job<Voronoi3D<LatticeNormal, Chebyshev, F2MinusF1>>.ScheduleParallel
             }
         };
-        
-        [SerializeField, Range(-0.1f, 0.1f)] private float _displacement = 0.01f;
-        
+
         public DomainDynamicSettings GetSettings(int index) => _settings[index];
 
         [SerializeField] private List<DomainDynamicSettings> _settings;
         private NativeArray<TriNoise.DomainNoiseComponent> _noiseConfigs;
         private float[] _localTimes;
-        
+
+        protected override bool IsDynamic => true;
+
         protected override void Update()
         {
             for (int i = 0; i < _settings.Count; i++)
             {
                 _localTimes[i] += Time.deltaTime * _settings[i].Settings.Velocity;
             }
+            //Debug.Log($"Local times is {string.Join(", ", _localTimes)}");
             base.Update();
         }
-        
-        protected override void OnEnable()
+
+        protected virtual void OnEnable()
         {
             CheckArrays();
-            base.OnEnable();
         }
 
         protected override void OnValidate()
@@ -159,7 +160,7 @@ namespace Sonosthesia.Deform
             CheckArrays();
             base.OnValidate();
         }
-        
+
         private void CheckArrays()
         {
             if (_noiseConfigs.Length != _settings.Count)
@@ -171,30 +172,30 @@ namespace Sonosthesia.Deform
             if (_localTimes == null || _localTimes.Length != _settings.Count)
             {
                 _localTimes = new float[_settings.Count];
-                Debug.Log("Init _localTimes");
+                //Debug.Log("Init _localTimes");
             }
         }
 
-        protected override void Deform(ISpline spline, UnityEngine.Mesh.MeshData data, float radius, int sides, float segmentsPerUnit, 
-            bool capped, float2 range, NoiseType noiseType, int dimensions, int seed)
+        protected override JobHandle PerturbMesh(UnityEngine.Mesh.MeshData meshData, int resolution, float displacement, NoiseType noiseType, int dimensions, int seed, JobHandle dependency)
         {
             for (int i = 0; i < _settings.Count; i++)
             {
                 DomainDynamicSettings settings = _settings[i];
                 _noiseConfigs[i] = new TriNoise.DomainNoiseComponent(
-                    TriNoise.GetNoiseComponent(settings.Settings, seed, _displacement, _localTimes[i]),
+                    TriNoise.GetNoiseComponent(settings.Settings, seed, displacement, _localTimes[i]),
                     settings.Domain.Matrix,
                     settings.Domain.DerivativeMatrix
-                );
+                    );
             }
             
-            int innerloopBatchCount = (int)sqrt(segmentsPerUnit);
+            //Debug.Log($"Scheduling with configs {string.Join(",", _noiseConfigs)}");
             
-            _jobs[(int) noiseType, dimensions - 1](
-                data,
-                innerloopBatchCount,
+            return _jobs[(int) noiseType, dimensions - 1](
+                meshData,
+                resolution,
                 _noiseConfigs,
-                default).Complete();
+                IsPlane,
+                dependency);
         }
     }
 }

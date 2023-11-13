@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Mesh
 {
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public class JobProceduralMesh : MonoBehaviour
@@ -75,7 +75,7 @@ namespace Sonosthesia.Builder
 
         [SerializeField] private GizmoMode _gizmoMode;
 
-        private Mesh _mesh;
+        private UnityEngine.Mesh _mesh;
 
         [NonSerialized] private Vector3[] _vertices, _normals;
         [NonSerialized] private Vector4[] _tangents;
@@ -83,7 +83,7 @@ namespace Sonosthesia.Builder
 
         protected void Awake () 
         {
-            _mesh = new Mesh { name = "Procedural Mesh" };
+            _mesh = new UnityEngine.Mesh { name = "Procedural Mesh" };
             GetComponent<MeshFilter>().mesh = _mesh;
         }
         
@@ -169,10 +169,10 @@ namespace Sonosthesia.Builder
         private void GenerateMesh()
         {
             Debug.Log($"{this} {nameof(GenerateMesh)} with {nameof(_resolution)} {_resolution}");
-            Mesh.MeshDataArray meshDataArray = Mesh.AllocateWritableMeshData(1);
-            Mesh.MeshData meshData = meshDataArray[0];
+            UnityEngine.Mesh.MeshDataArray meshDataArray = UnityEngine.Mesh.AllocateWritableMeshData(1);
+            UnityEngine.Mesh.MeshData meshData = meshDataArray[0];
             _jobs[(int)_meshType](_mesh, meshData, _resolution, default).Complete();
-            Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, _mesh);
+            UnityEngine.Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, _mesh);
             switch (_meshOptimization)
             {
                 case MeshOptimizationMode.ReorderIndices:

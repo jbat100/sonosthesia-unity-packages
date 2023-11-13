@@ -1,7 +1,8 @@
+using Sonosthesia.Noise;
 using Unity.Collections;
 using Unity.Jobs;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     public struct SumArrayJob<T> : IJobFor where T : struct, ISummable<T>
     {

@@ -2,7 +2,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using static Unity.Mathematics.math;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Mesh
 {
     public struct SharedCubeSphere : IMeshGenerator
     {

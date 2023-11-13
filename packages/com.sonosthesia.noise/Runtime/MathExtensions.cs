@@ -3,7 +3,7 @@ using Unity.Mathematics;
 
 using static Unity.Mathematics.math;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Noise
 {
     public static class MathExtensions 
     {
@@ -34,9 +34,9 @@ namespace Sonosthesia.Builder
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Sample4 GetFractalNoise<N>(this float4x3 position, Noise.Settings settings, 
+        public static Sample4 GetFractalNoise<N>(this float4x3 position, FractalSettings settings, 
             int seed, float displacement, float3x3 derivativeMatrix)
-            where N : struct, Noise.INoise
+            where N : struct, INoise
         {
             Sample4 result = Noise.GetFractalNoise<N>(position, settings, seed) * displacement;
             result.Derivatives = derivativeMatrix.TransformVectors(result.Derivatives);
@@ -44,8 +44,8 @@ namespace Sonosthesia.Builder
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float4 GetSimpleFractalNoise<N>(this float4x3 position, Noise.Settings settings, 
-            int seed, float displacement) where N : struct, Noise.ISimpleNoise
+        public static float4 GetSimpleFractalNoise<N>(this float4x3 position, FractalSettings settings, 
+            int seed, float displacement) where N : struct, ISimpleNoise
         {
             return Noise.GetSimpleFractalNoise<N>(position, settings, seed) * displacement;
         }

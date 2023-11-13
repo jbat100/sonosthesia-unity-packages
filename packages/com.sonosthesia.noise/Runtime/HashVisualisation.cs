@@ -6,7 +6,7 @@ using UnityEngine;
 
 using static Unity.Mathematics.math;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Noise
 {
     public class HashVisualisation : Visualisation
     {

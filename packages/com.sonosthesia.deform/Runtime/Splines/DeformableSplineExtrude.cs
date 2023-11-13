@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Splines;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     // pretty much copy pasted from com.unity.splines SplineExtrude.cs with obsolete methods removed and hooks added
     
@@ -63,7 +63,7 @@ namespace Sonosthesia.Builder
         [SerializeField] 
         bool m_RecalculateTangents;
         
-        Mesh m_Mesh;
+        UnityEngine.Mesh m_Mesh;
         bool m_RebuildRequested;
         float m_NextScheduledRebuild;
         
@@ -221,8 +221,8 @@ namespace Sonosthesia.Builder
                 return;
             
             m_Mesh.Clear();
-            Mesh.MeshDataArray meshDataArray = Mesh.AllocateWritableMeshData(1);
-            Mesh.MeshData data = meshDataArray[0];
+            UnityEngine.Mesh.MeshDataArray meshDataArray = UnityEngine.Mesh.AllocateWritableMeshData(1);
+            UnityEngine.Mesh.MeshData data = meshDataArray[0];
             
             Extrude(Splines[0], data, m_Radius, m_Sides, m_SegmentsPerUnit, m_Capped, m_Range);
 
@@ -231,7 +231,7 @@ namespace Sonosthesia.Builder
                 Deform(Splines[0], data, m_Radius, m_Sides, m_SegmentsPerUnit, m_Capped, m_Range);   
             }
 
-            Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, m_Mesh);
+            UnityEngine.Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, m_Mesh);
             
             m_Mesh.RecalculateBounds();
             
@@ -274,7 +274,7 @@ namespace Sonosthesia.Builder
             new (VertexAttribute.TexCoord0, dimension: 2)
         };
         
-        private void Extrude<TSpline>(TSpline spline, Mesh.MeshData data, float radius, int sides, float segmentsPerUnit, bool capped, float2 range) 
+        private void Extrude<TSpline>(TSpline spline, UnityEngine.Mesh.MeshData data, float radius, int sides, float segmentsPerUnit, bool capped, float2 range) 
             where TSpline : ISpline
         {
             data.subMeshCount = 1;
@@ -305,7 +305,7 @@ namespace Sonosthesia.Builder
             data.SetSubMesh(0, new SubMeshDescriptor(0, vertexCount));
         }
 
-        protected abstract void Deform(ISpline spline, Mesh.MeshData data, 
+        protected abstract void Deform(ISpline spline, UnityEngine.Mesh.MeshData data, 
             float radius, int sides, float segmentsPerUnit, bool capped, float2 range);
 
         protected virtual void OnValidate()

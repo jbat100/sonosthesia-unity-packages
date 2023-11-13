@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Splines;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct SplineVertexData : SplineMesh.ISplineVertexData

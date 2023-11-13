@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Mesh
 {
 
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
@@ -10,14 +10,14 @@ namespace Sonosthesia.Builder
     {
         protected void OnEnable ()
         {
-            Mesh mesh = SimpleReusedVertices();
+            UnityEngine.Mesh mesh = SimpleReusedVertices();
 
             GetComponent<MeshFilter>().mesh = mesh;
         }
         
-        private Mesh SimpleDoubledVertices() 
+        private UnityEngine.Mesh SimpleDoubledVertices() 
         {
-            return new Mesh
+            return new UnityEngine.Mesh
             {
                 name = "Procedural Mesh",
                 vertices = new []
@@ -44,9 +44,9 @@ namespace Sonosthesia.Builder
             };
         }
         
-        private Mesh SimpleReusedVertices() 
+        private UnityEngine.Mesh SimpleReusedVertices() 
         {
-            return new Mesh
+            return new UnityEngine.Mesh
             {
                 name = "Procedural Mesh",
                 vertices = new []

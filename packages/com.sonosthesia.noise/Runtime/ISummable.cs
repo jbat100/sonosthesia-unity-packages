@@ -1,4 +1,4 @@
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Noise
 {
     public interface ISummable<T>
     {

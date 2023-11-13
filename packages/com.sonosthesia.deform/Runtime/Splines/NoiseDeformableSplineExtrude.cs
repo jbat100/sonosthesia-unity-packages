@@ -2,7 +2,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     public abstract class NoiseDeformableSplineExtrude : DeformableSplineExtrude
     {
@@ -21,13 +21,13 @@ namespace Sonosthesia.Builder
         
         [SerializeField] private int _seed;
 
-        protected sealed override void Deform(ISpline spline, Mesh.MeshData data, 
+        protected sealed override void Deform(ISpline spline, UnityEngine.Mesh.MeshData data, 
             float radius, int sides, float segmentsPerUnit, bool capped, float2 range)
         {
             Deform(spline, data, radius, sides, segmentsPerUnit, capped, range, _noiseType, _dimensions, _seed);
         }
 
-        protected abstract void Deform(ISpline spline, Mesh.MeshData data,
+        protected abstract void Deform(ISpline spline, UnityEngine.Mesh.MeshData data,
             float radius, int sides, float segmentsPerUnit, bool capped, float2 range,
             NoiseType noiseType, int dimensions, int seed);
     }

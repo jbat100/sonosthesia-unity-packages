@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Sonosthesia.Target;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     public class DynamicMeshNoiseSettingTarget : DynamicMeshNoiseTarget<float, FloatBlender>
     {

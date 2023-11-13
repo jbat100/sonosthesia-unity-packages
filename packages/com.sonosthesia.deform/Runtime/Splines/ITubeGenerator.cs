@@ -1,6 +1,7 @@
+using Sonosthesia.Mesh;
 using UnityEngine;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     public interface ITubeGenerator
     {

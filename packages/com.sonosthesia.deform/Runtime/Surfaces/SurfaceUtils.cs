@@ -1,7 +1,9 @@
+using Sonosthesia.Noise;
 using Unity.Mathematics;
+
 using static Unity.Mathematics.math;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     public static class SurfaceUtils
     {

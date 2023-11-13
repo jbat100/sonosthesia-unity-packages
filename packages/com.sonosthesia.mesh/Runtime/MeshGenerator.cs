@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Mesh
 {
     public interface IMeshGenerator
     {

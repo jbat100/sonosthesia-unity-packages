@@ -5,7 +5,7 @@ using Unity.Mathematics;
 
 using static Unity.Mathematics.math;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Noise
 {
     public static class Shapes 
     {

@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Splines;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     public static class ParallelSplineMesh
     {
@@ -131,7 +131,7 @@ namespace Sonosthesia.Builder
         /// <param name="segments">How many sections compose the length of the mesh.</param>
         /// <param name="capped">Whether the start and end of the mesh is filled. This setting is ignored when spline is closed.</param>
         /// <typeparam name="T">A type implementing ISpline.</typeparam>
-        public static void Extrude<T>(T spline, Mesh mesh, float radius, int sides, int segments, bool capped = true) where T : ISpline
+        public static void Extrude<T>(T spline, UnityEngine.Mesh mesh, float radius, int sides, int segments, bool capped = true) where T : ISpline
         {
             Extrude(spline, mesh, radius, sides, segments, capped, new float2(0f, 1f));
         }
@@ -150,12 +150,12 @@ namespace Sonosthesia.Builder
         /// I.e., [0,1] is the entire Spline, whereas [.5, 1] is the last half of the Spline.
         /// </param>
         /// <typeparam name="T">A type implementing ISpline.</typeparam>
-        public static void Extrude<T>(T spline, Mesh mesh, float radius, int sides, int segments, bool capped, float2 range) where T : ISpline
+        public static void Extrude<T>(T spline, UnityEngine.Mesh mesh, float radius, int sides, int segments, bool capped, float2 range) where T : ISpline
         {
             var settings = new Settings(sides, segments, capped, spline.Closed, range, radius);
             GetVertexAndIndexCount(settings, out var vertexCount, out var indexCount);
 
-            var meshDataArray = Mesh.AllocateWritableMeshData(1);
+            var meshDataArray = UnityEngine.Mesh.AllocateWritableMeshData(1);
             var data = meshDataArray[0];
 
             var indexFormat = vertexCount >= ushort.MaxValue ? IndexFormat.UInt32 : IndexFormat.UInt16;
@@ -178,7 +178,7 @@ namespace Sonosthesia.Builder
             mesh.Clear();
             data.subMeshCount = 1;
             data.SetSubMesh(0, new SubMeshDescriptor(0, indexCount));
-            Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, mesh);
+            UnityEngine.Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, mesh);
             mesh.RecalculateBounds();
         }
         
@@ -196,10 +196,10 @@ namespace Sonosthesia.Builder
         /// I.e., [0,1] is the entire Spline, whereas [.5, 1] is the last half of the Spline.
         /// </param>
         /// <typeparam name="T">A type implementing ISpline.</typeparam>
-        public static void Extrude<T>(IReadOnlyList<T> splines, Mesh mesh, float radius, int sides, float segmentsPerUnit, bool capped, float2 range) where T : ISpline
+        public static void Extrude<T>(IReadOnlyList<T> splines, UnityEngine.Mesh mesh, float radius, int sides, float segmentsPerUnit, bool capped, float2 range) where T : ISpline
         {
             mesh.Clear();
-            var meshDataArray = Mesh.AllocateWritableMeshData(1);
+            var meshDataArray = UnityEngine.Mesh.AllocateWritableMeshData(1);
             var data = meshDataArray[0];
             data.subMeshCount = 1;
 
@@ -243,7 +243,7 @@ namespace Sonosthesia.Builder
             
             data.SetSubMesh(0, new SubMeshDescriptor(0, totalIndexCount));
 
-            Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, mesh);
+            UnityEngine.Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, mesh);
             mesh.RecalculateBounds();
         }
 

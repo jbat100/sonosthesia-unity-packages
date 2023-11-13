@@ -1,7 +1,7 @@
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     public static class NativeArrayExtensions
     {

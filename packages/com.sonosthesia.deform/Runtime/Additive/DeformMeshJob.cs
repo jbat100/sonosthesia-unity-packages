@@ -2,9 +2,10 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
-using UnityEngine;
+using Sonosthesia.Noise;
+using Sonosthesia.Mesh;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
     public struct DeformMeshJob : IJobFor
@@ -23,7 +24,7 @@ namespace Sonosthesia.Builder
             vertices[i] = SurfaceUtils.SetVertices(v, noise, isPlane);
         }
 
-        public static JobHandle ScheduleParallel (Mesh.MeshData meshData, NativeArray<Sample4> defomations, 
+        public static JobHandle ScheduleParallel (UnityEngine.Mesh.MeshData meshData, NativeArray<Sample4> defomations, 
             SpaceTRS domain, float displacement, bool isPlane, int innerloopBatchCount, JobHandle dependency
             ) => new DeformMeshJob
             {

@@ -2,8 +2,9 @@ using Unity.Jobs;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
+using Sonosthesia.Noise;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     public class NoiseDeformationComponent : DeformationComponent
     {
@@ -15,7 +16,7 @@ namespace Sonosthesia.Builder
 	
         [SerializeField, Range(1, 3)] int _dimensions = 3;
         
-        [SerializeField] private Noise.Settings _settings = Noise.Settings.Default;
+        [SerializeField] private FractalSettings _settings = FractalSettings.Default;
 
         [SerializeField] private float _displacement = 1f;
         
@@ -202,7 +203,7 @@ namespace Sonosthesia.Builder
                 dependency);
         }
         
-        public override JobHandle GetDeformation(Mesh.MeshData meshData, 
+        public override JobHandle GetDeformation(UnityEngine.Mesh.MeshData meshData, 
             NativeArray<Sample4> deformations, SpaceTRS domain, float time, int innerloopBatchCount, JobHandle dependency)
         {
             int seed = Mathf.FloorToInt(time);

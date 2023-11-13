@@ -1,6 +1,7 @@
+using Sonosthesia.Noise;
 using Sonosthesia.Target;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     public class DynamicMeshNoiseUniformScaleTarget : DynamicMeshNoiseTarget<float, FloatBlender>
     {

@@ -2,7 +2,7 @@ using Unity.Mathematics;
 
 using static Unity.Mathematics.math;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Noise
 {
     public struct Sample4 : ISummable<Sample4>
     {

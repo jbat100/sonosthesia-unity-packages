@@ -3,7 +3,7 @@ using UnityEngine;
 using static Unity.Mathematics.math;
 using quaternion = Unity.Mathematics.quaternion;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Mesh
 {
     public struct GeoIcoSphere : IMeshGenerator
     {

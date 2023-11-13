@@ -1,7 +1,8 @@
 using System.Runtime.CompilerServices;
+using Sonosthesia.Noise;
 using Unity.Mathematics;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     public static class MathExtensions 
     {
@@ -52,7 +53,7 @@ namespace Sonosthesia.Builder
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Sample4 GetFractalNoise<N>(this float4x3 position, Noise.Settings settings, 
+        public static Sample4 GetFractalNoise<N>(this float4x3 position, FractalSettings settings, 
             TriNoise.NoisePhase phase, float3x3 derivativeMatrix)
             where N : struct, Noise.INoise
         {
@@ -60,7 +61,7 @@ namespace Sonosthesia.Builder
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Sample4 GetFractalNoise<N>(this float4x3 position, Noise.Settings settings, TriNoise.TriPhase triPhase, float3x3 derivativeMatrix)
+        public static Sample4 GetFractalNoise<N>(this float4x3 position, FractalSettings settings, TriNoise.TriPhase triPhase, float3x3 derivativeMatrix)
             where N : struct, Noise.INoise
         {
             Sample4 noise1 = position.GetFractalNoise<N>(settings, triPhase.C1, derivativeMatrix);
@@ -70,14 +71,14 @@ namespace Sonosthesia.Builder
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float4 GetSimpleFractalNoise<N>(this float4x3 position, Noise.Settings settings, 
+        public static float4 GetSimpleFractalNoise<N>(this float4x3 position, FractalSettings settings, 
             TriNoise.NoisePhase phase) where N : struct, Noise.ISimpleNoise
         {
             return position.GetSimpleFractalNoise<N>(settings, phase.Seed, phase.Displacement);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float4 GetSimpleFractalNoise<N>(this float4x3 position, Noise.Settings settings, 
+        public static float4 GetSimpleFractalNoise<N>(this float4x3 position, FractalSettings settings, 
             TriNoise.TriPhase triPhase) where N : struct, Noise.ISimpleNoise
         {
             float4 noise1 = position.GetSimpleFractalNoise<N>(settings, triPhase.C1);

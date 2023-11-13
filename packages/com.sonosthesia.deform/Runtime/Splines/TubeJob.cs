@@ -1,8 +1,9 @@
+using Sonosthesia.Mesh;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     
     [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]

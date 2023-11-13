@@ -1,6 +1,6 @@
 using Unity.Mathematics;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Noise
 {
     public readonly struct SmallXXHash 
     {

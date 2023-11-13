@@ -1,7 +1,8 @@
 using System;
+using Sonosthesia.Noise;
 using UnityEngine;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     #region inspector settings
         

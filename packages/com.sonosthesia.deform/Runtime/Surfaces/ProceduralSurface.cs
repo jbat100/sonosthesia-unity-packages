@@ -1,8 +1,10 @@
 using System;
+using Sonosthesia.Mesh;
+using Sonosthesia.Noise;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public class ProceduralSurface : MonoBehaviour
@@ -250,7 +252,7 @@ namespace Sonosthesia.Builder
 
         [SerializeField, Range(1, 3)] private int _dimensions = 1;
 
-        [SerializeField] private Noise.Settings _noiseSettings = Noise.Settings.Default;
+        [SerializeField] private FractalSettings _noiseSettings = FractalSettings.Default;
 
         [SerializeField] private int _seed;
 
@@ -270,7 +272,7 @@ namespace Sonosthesia.Builder
         [SerializeField] private FlowMode _flowMode;
         
         private ParticleSystem _flowSystem;
-        private Mesh _mesh;
+        private UnityEngine.Mesh _mesh;
 
         [NonSerialized] private Vector3[] _vertices, _normals;
         [NonSerialized] private Vector4[] _tangents;
@@ -279,7 +281,7 @@ namespace Sonosthesia.Builder
         protected void Awake () 
         {
             _materials[(int)MaterialMode.Displacement] = new Material(_materials[(int)MaterialMode.Displacement]);
-            _mesh = new Mesh { name = "Procedural Mesh" };
+            _mesh = new UnityEngine.Mesh { name = "Procedural Mesh" };
             _flowSystem = GetComponent<ParticleSystem>();
             GetComponent<MeshFilter>().mesh = _mesh;
         }
@@ -395,8 +397,8 @@ namespace Sonosthesia.Builder
         private void GenerateMesh()
         {
             Debug.Log($"{this} {nameof(GenerateMesh)} with {nameof(_resolution)} {_resolution}");
-            Mesh.MeshDataArray meshDataArray = Mesh.AllocateWritableMeshData(1);
-            Mesh.MeshData meshData = meshDataArray[0];
+            UnityEngine.Mesh.MeshDataArray meshDataArray = UnityEngine.Mesh.AllocateWritableMeshData(1);
+            UnityEngine.Mesh.MeshData meshData = meshDataArray[0];
             
             _surfaceJobs[(int)_noiseType, _dimensions - 1](
                 meshData, 
@@ -409,7 +411,7 @@ namespace Sonosthesia.Builder
                 _meshJobs[(int)_meshType](_mesh, meshData, _resolution, default, Vector3.one * Mathf.Abs(_displacement), true))
                 .Complete();
             
-            Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, _mesh);
+            UnityEngine.Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, _mesh);
 
             if (_recalculateNormals)
             {

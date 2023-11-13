@@ -1,7 +1,7 @@
 using Unity.Jobs;
 using UnityEngine;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     public abstract class CatlikeMeshNoiseController : MeshNoiseController
     {
@@ -20,13 +20,13 @@ namespace Sonosthesia.Builder
         
         [SerializeField] private int _seed;
 
-        protected sealed override JobHandle PerturbMesh(Mesh.MeshData meshData, int resolution, float displacement, JobHandle dependency)
+        protected sealed override JobHandle PerturbMesh(UnityEngine.Mesh.MeshData meshData, int resolution, float displacement, JobHandle dependency)
         {
             return PerturbMesh(meshData, resolution, displacement, _noiseType, _dimensions, _seed, dependency);
         }
         
         protected abstract JobHandle PerturbMesh(
-            Mesh.MeshData meshData, int resolution, float displacement,
+            UnityEngine.Mesh.MeshData meshData, int resolution, float displacement,
             NoiseType noiseType, int dimensions, int seed,
             JobHandle dependency);
     }

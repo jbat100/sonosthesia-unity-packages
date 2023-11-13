@@ -1,4 +1,6 @@
 using System.Runtime.CompilerServices;
+using Sonosthesia.Mesh;
+using Sonosthesia.Noise;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
@@ -7,7 +9,7 @@ using UnityEngine;
 
 using static Unity.Mathematics.math;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     public static class MultiNoise
     {
@@ -52,7 +54,7 @@ namespace Sonosthesia.Builder
         [SerializeField]
         public struct DynamicFractalSettings
         {
-            public Noise.Settings settings;
+            public FractalSettings settings;
             public int seed;
             public float lerp;
             public float displacement;
@@ -61,8 +63,8 @@ namespace Sonosthesia.Builder
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Sample4 GetFractalNoise<N>(float4x3 position, DynamicFractalSettings settings) where N : struct, Noise.INoise
         {
-            Sample4 noise1 = Noise.GetFractalNoise<N>(position, settings.settings, settings.seed);
-            Sample4 noise2 = Noise.GetFractalNoise<N>(position, settings.settings, settings.seed + 1);
+            Sample4 noise1 = Noise.Noise.GetFractalNoise<N>(position, settings.settings, settings.seed);
+            Sample4 noise2 = Noise.Noise.GetFractalNoise<N>(position, settings.settings, settings.seed + 1);
             return (noise1 * (1 - settings.lerp) + noise2 * settings.lerp) * settings.displacement;
         }
 
@@ -106,7 +108,7 @@ namespace Sonosthesia.Builder
                 vertices[i] = SurfaceUtils.SetVertices(v, noise1 + noise2 + noise3 + noise4, isPlane);
             }
         
-            public static JobHandle ScheduleParallel (Mesh.MeshData meshData, int resolution, 
+            public static JobHandle ScheduleParallel (UnityEngine.Mesh.MeshData meshData, int resolution, 
                 DynamicFractalSettings settings1,
                 DynamicFractalSettings settings2,
                 DynamicFractalSettings settings3,

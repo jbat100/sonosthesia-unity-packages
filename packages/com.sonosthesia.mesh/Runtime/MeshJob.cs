@@ -3,7 +3,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Mesh
 {
     [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
     public struct MeshJob<G, S> : IJobFor
@@ -16,11 +16,11 @@ namespace Sonosthesia.Builder
 
         public void Execute (int i) => _generator.Execute(i, _streams);
 
-        public static JobHandle ScheduleParallel(Mesh mesh, Mesh.MeshData meshData, int resolution, JobHandle dependency)
+        public static JobHandle ScheduleParallel(UnityEngine.Mesh mesh, UnityEngine.Mesh.MeshData meshData, int resolution, JobHandle dependency)
             => ScheduleParallel(mesh, meshData, resolution, dependency, Vector3.zero, false);
         
         public static JobHandle ScheduleParallel(
-            Mesh mesh, Mesh.MeshData meshData, int resolution, JobHandle dependency,
+            UnityEngine.Mesh mesh, UnityEngine.Mesh.MeshData meshData, int resolution, JobHandle dependency,
             Vector3 extraBoundsExtents, bool supportVectorization) 
         {
             MeshJob<G, S> job = new MeshJob<G, S>();
@@ -46,11 +46,11 @@ namespace Sonosthesia.Builder
     }
     
     public delegate JobHandle MeshJobScheduleDelegate (
-        Mesh mesh, Mesh.MeshData meshData, int resolution, JobHandle dependency
+        UnityEngine.Mesh mesh, UnityEngine.Mesh.MeshData meshData, int resolution, JobHandle dependency
     );
     
     public delegate JobHandle AdvancedMeshJobScheduleDelegate (
-        Mesh mesh, Mesh.MeshData meshData, int resolution, JobHandle dependency,
+        UnityEngine.Mesh mesh, UnityEngine.Mesh.MeshData meshData, int resolution, JobHandle dependency,
         Vector3 extraBoundsExtents, bool supportVectorization
     );
 }

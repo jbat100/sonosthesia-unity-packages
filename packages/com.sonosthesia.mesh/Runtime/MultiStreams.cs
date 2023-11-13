@@ -5,7 +5,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Mesh
 {
     public struct MultiStreams : IMeshStreams
     {
@@ -21,7 +21,7 @@ namespace Sonosthesia.Builder
         [NativeDisableContainerSafetyRestriction]
         private NativeArray<TriangleUInt16> _triangles;
 
-        public void Setup(Mesh.MeshData meshData, Bounds bounds, int vertexCount, int indexCount)
+        public void Setup(UnityEngine.Mesh.MeshData meshData, Bounds bounds, int vertexCount, int indexCount)
         {
             NativeArray<VertexAttributeDescriptor> descriptor = new NativeArray<VertexAttributeDescriptor>(
                 4, Allocator.Temp, NativeArrayOptions.UninitializedMemory

@@ -1,8 +1,10 @@
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
+using Sonosthesia.Noise;
+using Sonosthesia.Mesh;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     public class MeshDeformationController : MonoBehaviour
     {
@@ -91,7 +93,7 @@ namespace Sonosthesia.Builder
         private MeshType? _previousMeshType;
         private NativeArray<Sample4>[] _deformations;
         private NativeArray<Sample4> _totalDeformation;
-        private Mesh _mesh;
+        private UnityEngine.Mesh _mesh;
 
         private int _vertexCount = 0;
         private int VertexCount
@@ -124,7 +126,7 @@ namespace Sonosthesia.Builder
         protected void Awake()
         {
             _materials[(int)MaterialMode.Displacement] = new Material(_materials[(int)MaterialMode.Displacement]);
-            _mesh = new Mesh { name = "Procedural Mesh" };
+            _mesh = new UnityEngine.Mesh { name = "Procedural Mesh" };
             GetComponent<MeshFilter>().mesh = _mesh;
             _deformations = new NativeArray<Sample4>[_components.Length];
         }
@@ -149,8 +151,8 @@ namespace Sonosthesia.Builder
         private void GenerateMesh()
         {
             Debug.Log($"{this} {nameof(GenerateMesh)} with {nameof(_resolution)} {_resolution}");
-            Mesh.MeshDataArray meshDataArray = Mesh.AllocateWritableMeshData(1);
-            Mesh.MeshData meshData = meshDataArray[0];
+            UnityEngine.Mesh.MeshDataArray meshDataArray = UnityEngine.Mesh.AllocateWritableMeshData(1);
+            UnityEngine.Mesh.MeshData meshData = meshDataArray[0];
 
             JobHandle meshJob = _meshJobs[(int) _meshType](
                 _mesh, 
@@ -196,7 +198,7 @@ namespace Sonosthesia.Builder
             
             deformJob.Complete();
             
-            Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, _mesh);
+            UnityEngine.Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, _mesh);
 
             if (_recalculateNormals)
             {

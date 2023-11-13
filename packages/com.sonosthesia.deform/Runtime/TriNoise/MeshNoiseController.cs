@@ -1,9 +1,10 @@
 using System;
+using Sonosthesia.Mesh;
 using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace Sonosthesia.Builder
+namespace Sonosthesia.Deform
 {
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public abstract class MeshNoiseController : MonoBehaviour
@@ -88,7 +89,7 @@ namespace Sonosthesia.Builder
 
         [SerializeField] private bool _recalculateNormals, _recalculateTangents;
         
-        private Mesh _mesh;
+        private UnityEngine.Mesh _mesh;
         private Vector3[] _vertices, _normals;
         private Vector4[] _tangents;
         private int[] _triangles;
@@ -98,7 +99,7 @@ namespace Sonosthesia.Builder
         {
             _renderer = GetComponent<MeshRenderer>();
             _materials[(int)MaterialMode.Displacement] = new Material(_materials[(int)MaterialMode.Displacement]);
-            _mesh = new Mesh { name = "Procedural Mesh" };
+            _mesh = new UnityEngine.Mesh { name = "Procedural Mesh" };
             GetComponent<MeshFilter>().mesh = _mesh;
         }
         
@@ -193,19 +194,19 @@ namespace Sonosthesia.Builder
             }
         }
 
-        protected abstract JobHandle PerturbMesh(Mesh.MeshData meshData, int resolution, float displacement, JobHandle dependency);
+        protected abstract JobHandle PerturbMesh(UnityEngine.Mesh.MeshData meshData, int resolution, float displacement, JobHandle dependency);
 
         private void GenerateMesh()
         {
             //Debug.Log($"{this} {nameof(GenerateMesh)} with {nameof(_resolution)} {_resolution}");
-            Mesh.MeshDataArray meshDataArray = Mesh.AllocateWritableMeshData(1);
-            Mesh.MeshData meshData = meshDataArray[0];
+            UnityEngine.Mesh.MeshDataArray meshDataArray = UnityEngine.Mesh.AllocateWritableMeshData(1);
+            UnityEngine.Mesh.MeshData meshData = meshDataArray[0];
 
             JobHandle meshJob = _meshJobs[(int) _meshType](_mesh, meshData, _resolution, default, Vector3.one * Mathf.Abs(_displacement), true);
 
             PerturbMesh(meshData, _resolution, _displacement, meshJob).Complete();
 
-            Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, _mesh);
+            UnityEngine.Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, _mesh);
 
             if (_recalculateNormals)
             {
