@@ -34,20 +34,20 @@ namespace Sonosthesia.Noise
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Sample4 GetFractalNoise<N>(this float4x3 position, FractalSettings settings, 
+        public static Sample4 GetFractalNoise<N>(this float4x3 position, FractalNoiseSettings settings, 
             int seed, float displacement, float3x3 derivativeMatrix)
             where N : struct, INoise
         {
-            Sample4 result = Noise.GetFractalNoise<N>(position, settings, seed) * displacement;
+            Sample4 result = FractalNoise.GetFractalNoise<N>(position, settings, seed) * displacement;
             result.Derivatives = derivativeMatrix.TransformVectors(result.Derivatives);
             return result;
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float4 GetSimpleFractalNoise<N>(this float4x3 position, FractalSettings settings, 
+        public static float4 GetSimpleFractalNoise<N>(this float4x3 position, FractalNoiseSettings settings, 
             int seed, float displacement) where N : struct, ISimpleNoise
         {
-            return Noise.GetSimpleFractalNoise<N>(position, settings, seed) * displacement;
+            return FractalNoise.GetSimpleFractalNoise<N>(position, settings, seed) * displacement;
         }
     }
 }

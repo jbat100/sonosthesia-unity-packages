@@ -19,17 +19,17 @@ namespace Sonosthesia.Deform
         [SerializeField] private AnimationCurve _lerpCurve;
 
         private delegate JobHandle JobScheduleDelegate (
-            UnityEngine.Mesh.MeshData meshData, int resolution, FractalSettings settings, SpaceTRS domain,
-            TriNoise.TriPhase triPhase, bool isPlane, JobHandle dependency
+            UnityEngine.Mesh.MeshData meshData, int resolution, FractalNoiseSettings settings, SpaceTRS domain,
+            TriNoise.TriNoisePhase triPhase, bool isPlane, JobHandle dependency
         );
         
         [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
         private struct Job<N> : IJobFor where N : struct, INoise
         {
-            private FractalSettings settings;
+            private FractalNoiseSettings settings;
             private float3x4 domainTRS;
             private float3x3 derivativeMatrix;
-            private TriNoise.TriPhase triPhase;
+            private TriNoise.TriNoisePhase triPhase;
             private bool isPlane;
             private NativeArray<Vertex4> vertices;
 
@@ -47,7 +47,7 @@ namespace Sonosthesia.Deform
             }
         
             public static JobHandle ScheduleParallel (UnityEngine.Mesh.MeshData meshData, int resolution, 
-                FractalSettings settings, SpaceTRS domain, TriNoise.TriPhase triPhase, bool isPlane,
+                FractalNoiseSettings settings, SpaceTRS domain, TriNoise.TriNoisePhase triPhase, bool isPlane,
                 JobHandle dependency
             )
             {
@@ -151,7 +151,7 @@ namespace Sonosthesia.Deform
 
         private const float ONE_THIRD = 1f / 3f;
 
-        protected override JobHandle PerturbMesh(UnityEngine.Mesh.MeshData meshData, int resolution, float displacement, NoiseType noiseType, int dimensions, FractalSettings settings, int seed, SpaceTRS domain, JobHandle dependency)
+        protected override JobHandle PerturbMesh(UnityEngine.Mesh.MeshData meshData, int resolution, float displacement, NoiseType noiseType, int dimensions, FractalNoiseSettings settings, int seed, SpaceTRS domain, JobHandle dependency)
         {
             TriNoise.NoisePhase GetPhase(int index)
             {
@@ -160,9 +160,9 @@ namespace Sonosthesia.Deform
                 return new TriNoise.NoisePhase(seed + flooredTime + index, _lerpCurve.Evaluate((time - flooredTime) * 2) * displacement);
             }
 
-            TriNoise.TriPhase triPhase = new TriNoise.TriPhase(GetPhase(0), GetPhase(1), GetPhase(2));
+            TriNoise.TriNoisePhase triPhase = new TriNoise.TriNoisePhase(GetPhase(0), GetPhase(1), GetPhase(2));
 
-            Debug.Log($"Scheduling {nameof(TriNoise.TriPhase)} {triPhase}");
+            Debug.Log($"Scheduling {nameof(TriNoise.TriNoisePhase)} {triPhase}");
             
             return _jobs[(int) noiseType, dimensions - 1](
                 meshData,

@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.InteropServices;
 using Unity.Mathematics;
 using UnityEngine;
@@ -7,8 +6,6 @@ namespace Sonosthesia.Deform
 {
     public static class TriNoise
     {
-        #region job data
-        
         [StructLayout(LayoutKind.Sequential)]
         public readonly struct NoisePhase
         {
@@ -28,13 +25,13 @@ namespace Sonosthesia.Deform
         }
         
         [StructLayout(LayoutKind.Sequential)]
-        public readonly struct TriPhase
+        public readonly struct TriNoisePhase
         {
             public readonly NoisePhase C1;
             public readonly NoisePhase C2;
             public readonly NoisePhase C3;
 
-            public TriPhase(NoisePhase c1, NoisePhase c2, NoisePhase c3)
+            public TriNoisePhase(NoisePhase c1, NoisePhase c2, NoisePhase c3)
             {
                 C1 = c1;
                 C2 = c2;
@@ -48,12 +45,12 @@ namespace Sonosthesia.Deform
         }
         
         [StructLayout(LayoutKind.Sequential)]
-        public readonly struct NoiseComponent
+        public readonly struct TriNoiseComponent
         {
             public readonly int Frequency;
-            public readonly TriPhase TriPhase;
+            public readonly TriNoisePhase TriPhase;
 
-            public NoiseComponent(int frequency, TriPhase triPhase)
+            public TriNoiseComponent(int frequency, TriNoisePhase triPhase)
             {
                 Frequency = frequency;
                 TriPhase = triPhase;
@@ -68,23 +65,21 @@ namespace Sonosthesia.Deform
         [StructLayout(LayoutKind.Sequential)]
         public readonly struct DomainNoiseComponent
         {
-            public readonly TriNoise.NoiseComponent Component;
+            public readonly TriNoiseComponent Component;
             public readonly float3x4 DomainTRS;
             public readonly float3x3 DerivativeMatrix;
 
-            public DomainNoiseComponent(NoiseComponent component, float3x4 domainTRS, float3x3 derivativeMatrix)
+            public DomainNoiseComponent(TriNoiseComponent component, float3x4 domainTRS, float3x3 derivativeMatrix)
             {
                 Component = component;
                 DomainTRS = domainTRS;
                 DerivativeMatrix = derivativeMatrix;
             }
         }
-        
-        #endregion job data
-        
+
         private const float ONE_THIRD = 1f / 3f;
         
-        public static NoiseComponent GetNoiseComponent(DynamicSettings settings, int seed, float displacement, float localTime)
+        public static TriNoiseComponent GetNoiseComponent(DynamicNoiseSettings settings, int seed, float displacement, float localTime)
         {
             NoisePhase GetPhase(int index)
             {
@@ -95,7 +90,7 @@ namespace Sonosthesia.Deform
                     settings.LerpCurve.Evaluate((time - flooredTime) * 2) * displacement * settings.Displacement);
             }
 
-            return new NoiseComponent(settings.Frequency, new TriPhase(GetPhase(0), GetPhase(1), GetPhase(2)));
+            return new TriNoiseComponent(settings.Frequency, new TriNoisePhase(GetPhase(0), GetPhase(1), GetPhase(2)));
         }
     }
 }

@@ -4,22 +4,24 @@ using UnityEngine;
 
 namespace Sonosthesia.Deform
 {
-    public abstract class FractalMeshNoiseController : CatlikeMeshNoiseController
+    public abstract class FractalMeshNoiseController : MeshNoiseController
     {
-        [SerializeField] private FractalSettings _noiseSettings = FractalSettings.Default;
+        [SerializeField] private FractalNoiseSettings _noiseSettings = FractalNoiseSettings.Default;
         
         [SerializeField] private SpaceTRS _domain = new SpaceTRS { scale = 1f };
         
+        [SerializeField] private int _seed;
+        
         protected sealed override JobHandle PerturbMesh(UnityEngine.Mesh.MeshData meshData, int resolution, float displacement,
-            NoiseType noiseType, int dimensions, int seed,
+            NoiseType noiseType, int dimensions,
             JobHandle dependency)
         {
-            return PerturbMesh(meshData, resolution, displacement, noiseType, dimensions, _noiseSettings, seed, _domain, dependency);
+            return PerturbMesh(meshData, resolution, displacement, noiseType, dimensions, _noiseSettings, _seed, _domain, dependency);
         }
 
         protected abstract JobHandle PerturbMesh(
             UnityEngine.Mesh.MeshData meshData, int resolution, float displacement,
-            NoiseType noiseType, int dimensions, FractalSettings settings, int seed, SpaceTRS domain,
+            NoiseType noiseType, int dimensions, FractalNoiseSettings settings, int seed, SpaceTRS domain,
             JobHandle dependency);
         
     }

@@ -11,7 +11,7 @@ using static Unity.Mathematics.math;
 namespace Sonosthesia.Deform
 {
     public delegate JobHandle SurfaceJobScheduleDelegate (
-        UnityEngine.Mesh.MeshData meshData, int resolution, FractalSettings settings, int seed, SpaceTRS domain,
+        UnityEngine.Mesh.MeshData meshData, int resolution, FractalNoiseSettings settings, int seed, SpaceTRS domain,
         float displacement, bool isPlane, JobHandle dependency
     );
     
@@ -23,10 +23,10 @@ namespace Sonosthesia.Deform
     public static class Vertex4Extensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Sample4 GetFractalNoise<N>(this Vertex4 v, float3x4 domainTRS, FractalSettings settings, int seed) 
+        public static Sample4 GetFractalNoise<N>(this Vertex4 v, float3x4 domainTRS, FractalNoiseSettings settings, int seed) 
             where N : struct, INoise
         {
-            return Noise.Noise.GetFractalNoise<N>(
+            return FractalNoise.GetFractalNoise<N>(
                 domainTRS.TransformVectors(transpose(float3x4(
                     v.v0.position, v.v1.position, v.v2.position, v.v3.position
                 ))),
@@ -35,10 +35,10 @@ namespace Sonosthesia.Deform
         }   
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float4 GetSimpleFractalNoise<N>(this Vertex4 v, float3x4 domainTRS, FractalSettings settings, int seed) 
+        public static float4 GetSimpleFractalNoise<N>(this Vertex4 v, float3x4 domainTRS, FractalNoiseSettings settings, int seed) 
             where N : struct, ISimpleNoise
         {
-            return Noise.Noise.GetSimpleFractalNoise<N>(
+            return FractalNoise.GetSimpleFractalNoise<N>(
                 domainTRS.TransformVectors(transpose(float3x4(
                     v.v0.position, v.v1.position, v.v2.position, v.v3.position
                 ))),
@@ -50,7 +50,7 @@ namespace Sonosthesia.Deform
     [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
     public struct SurfaceJob<N> : IJobFor where N : struct, INoise
     {
-        private FractalSettings settings;
+        private FractalNoiseSettings settings;
         private int seed;
         private float3x4 domainTRS;
         private float3x3 derivativeMatrix;
@@ -67,7 +67,7 @@ namespace Sonosthesia.Deform
         }
         
         public static JobHandle ScheduleParallel (UnityEngine.Mesh.MeshData meshData, int resolution, 
-            FractalSettings settings, int seed, SpaceTRS domain, float displacement, bool isPlane, 
+            FractalNoiseSettings settings, int seed, SpaceTRS domain, float displacement, bool isPlane, 
             JobHandle dependency
             ) => 
             new SurfaceJob<N>

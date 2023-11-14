@@ -15,7 +15,7 @@ namespace Sonosthesia.Deform
     {
         int seed;
         
-        FractalSettings settings;
+        FractalNoiseSettings settings;
 
         float3x4 domainTRS;
 
@@ -60,7 +60,7 @@ namespace Sonosthesia.Deform
                 p = p.NormalizeRows();
             }
             
-            Sample4 noise = Noise.Noise.GetFractalNoise<N>(
+            Sample4 noise = Noise.FractalNoise.GetFractalNoise<N>(
                 domainTRS.TransformVectors(p), settings, seed
             ) * displacement;
 
@@ -115,7 +115,7 @@ namespace Sonosthesia.Deform
         
         public static JobHandle ScheduleParallel (
             ParticleSystem system,
-            FractalSettings settings, int seed, SpaceTRS domain, float displacement, bool isPlane, bool isCurl
+            FractalNoiseSettings settings, int seed, SpaceTRS domain, float displacement, bool isPlane, bool isCurl
         ) => new FlowJob<N>() {
             settings = settings,
             seed = seed,
@@ -129,6 +129,6 @@ namespace Sonosthesia.Deform
     
     public delegate JobHandle FlowJobScheduleDelegate (
         ParticleSystem system,
-        FractalSettings settings, int seed, SpaceTRS domain, float displacement, bool isPlane, bool isCurl
+        FractalNoiseSettings settings, int seed, SpaceTRS domain, float displacement, bool isPlane, bool isCurl
     );
 }

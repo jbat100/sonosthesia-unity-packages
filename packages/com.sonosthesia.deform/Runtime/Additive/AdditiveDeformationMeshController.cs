@@ -1,3 +1,4 @@
+using System;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
@@ -6,13 +7,14 @@ using Sonosthesia.Mesh;
 
 namespace Sonosthesia.Deform
 {
-    public class MeshDeformationController : MonoBehaviour
+    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
+    public class AdditiveDeformationMeshController : MonoBehaviour
     {
         private static int materialIsPlaneId = Shader.PropertyToID("_IsPlane");
         
         bool IsPlane => _meshType < MeshType.CubeSphere;
         
-        [System.Flags]
+        [Flags]
         public enum MeshOptimizationMode 
         {
             ReorderIndices = 1 << 0, 
@@ -21,19 +23,9 @@ namespace Sonosthesia.Deform
 
         [SerializeField] private MeshOptimizationMode _meshOptimization;
         
-        public enum MaterialMode
-        {
-            Displacement,
-            Flat,
-            LatLonMap,
-            CubeMap
-        }
-
-        [SerializeField] private MaterialMode _materialMode;
+        [SerializeField] private Material _material;
         
-        [SerializeField] private Material[] _materials;
-        
-        [System.Flags]
+        [Flags]
         public enum GizmoMode
         {
             Vertices = 1 << 1, 
@@ -82,18 +74,17 @@ namespace Sonosthesia.Deform
 
         [SerializeField] private GizmoMode _gizmoMode;
         
-        [SerializeField] private SpaceTRS _domain = new SpaceTRS { scale = 1f };
-        
         [SerializeField, Range(-1f, 1f)] private float _displacement = 0.5f;
         
         [SerializeField] private bool _recalculateNormals, _recalculateTangents;
         
-        [SerializeField] private DeformationComponent[] _components;
+        [SerializeField] private AdditiveDeformationComponent[] _components;
 
         private MeshType? _previousMeshType;
         private NativeArray<Sample4>[] _deformations;
         private NativeArray<Sample4> _totalDeformation;
         private UnityEngine.Mesh _mesh;
+        private bool _setIsPlane;
 
         private int _vertexCount = 0;
         private int VertexCount
@@ -123,24 +114,23 @@ namespace Sonosthesia.Deform
             }
         }
         
-        protected void Awake()
+        protected virtual void Awake()
         {
-            _materials[(int)MaterialMode.Displacement] = new Material(_materials[(int)MaterialMode.Displacement]);
+            _material = new Material(_material);
+            _setIsPlane = _material.HasFloat(materialIsPlaneId);
             _mesh = new UnityEngine.Mesh { name = "Procedural Mesh" };
             GetComponent<MeshFilter>().mesh = _mesh;
             _deformations = new NativeArray<Sample4>[_components.Length];
         }
 
-        protected void Update()
+        protected virtual void Update()
         {
             GenerateMesh();
-            if (_materialMode == MaterialMode.Displacement) 
+            if (_setIsPlane) 
             {
-                _materials[(int)MaterialMode.Displacement].SetFloat(
-                    materialIsPlaneId, IsPlane ? 1f : 0f
-                );
+                _material.SetFloat(materialIsPlaneId, IsPlane ? 1f : 0f);
             }
-            GetComponent<MeshRenderer>().material = _materials[(int)_materialMode];
+            GetComponent<MeshRenderer>().material = _material;
         }
 
         protected void OnDestroy()
@@ -164,6 +154,7 @@ namespace Sonosthesia.Deform
 
             // we could schedule the mesh job in parallel with the deformation jobs but only if the deformation
             // array has the right size (i.e. mesh size has not changed since last update)
+            
             meshJob.Complete();
 
             VertexCount = meshData.vertexCount;
@@ -177,7 +168,7 @@ namespace Sonosthesia.Deform
             NativeArray<JobHandle> deformationJobs = new NativeArray<JobHandle>(_deformations.Length, Allocator.Temp);
             for (int i = 0; i < _deformations.Length; i++)
             {
-                deformationJobs[i] = _components[i].GetDeformation(meshData, _deformations[i], _domain, Time.time, _resolution, default);
+                deformationJobs[i] = _components[i].GetDeformation(meshData, _deformations[i], _resolution, default);
             }
             JobHandle.CombineDependencies(deformationJobs).Complete();
 
@@ -193,8 +184,8 @@ namespace Sonosthesia.Deform
                 }.ScheduleParallel(_totalDeformation.Length, _resolution, sumDependency);
             }
 
-            JobHandle deformJob = DeformMeshJob.ScheduleParallel(meshData, 
-                _totalDeformation, _domain, _displacement, IsPlane, _resolution, sumDependency);
+            JobHandle deformJob = ApplyMeshDeformationJob.ScheduleParallel(meshData, 
+                _totalDeformation, _displacement, IsPlane, _resolution, sumDependency);
             
             deformJob.Complete();
             

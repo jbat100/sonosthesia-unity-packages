@@ -10,21 +10,21 @@ namespace Sonosthesia.Deform
 {
     public class FractalNoiseDeformableSplineExtrude : NoiseDeformableSplineExtrude
     {
-        [SerializeField] private FractalSettings _noiseSettings = FractalSettings.Default;
+        [SerializeField] private FractalNoiseSettings _noiseSettings = FractalNoiseSettings.Default;
         
         [SerializeField] private SpaceTRS _domain = new SpaceTRS { scale = 1f };
 
         [SerializeField] private float _displacement = 0.1f;
         
         private delegate JobHandle JobScheduleDelegate (
-            UnityEngine.Mesh.MeshData meshData, int innerloopBatchCount, FractalSettings settings, int seed, SpaceTRS domain, 
+            UnityEngine.Mesh.MeshData meshData, int innerloopBatchCount, FractalNoiseSettings settings, int seed, SpaceTRS domain, 
             float displacement, JobHandle dependency
         );
         
         [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
-        public struct Job<N> : IJobFor where N : struct, Noise.INoise
+        public struct Job<N> : IJobFor where N : struct, INoise
         {
-            private FractalSettings settings;
+            private FractalNoiseSettings settings;
             private int seed;
             private float3x4 domainTRS;
             private float3x3 derivativeMatrix;
@@ -40,7 +40,7 @@ namespace Sonosthesia.Deform
             }
         
             public static JobHandle ScheduleParallel (UnityEngine.Mesh.MeshData meshData, int innerloopBatchCount, 
-                FractalSettings settings, int seed, SpaceTRS domain, float displacement, 
+                FractalNoiseSettings settings, int seed, SpaceTRS domain, float displacement, 
                 JobHandle dependency
             ) => 
                 new Job<N>
@@ -56,79 +56,79 @@ namespace Sonosthesia.Deform
         
         private static JobScheduleDelegate[,] _jobs = {
             {
-                Job<Noise.Lattice1D<Noise.Perlin, Noise.LatticeNormal>>.ScheduleParallel,
-                Job<Noise.Lattice2D<Noise.Perlin, Noise.LatticeNormal>>.ScheduleParallel,
-                Job<Noise.Lattice3D<Noise.Perlin, Noise.LatticeNormal>>.ScheduleParallel
+                Job<Lattice1D<Perlin, LatticeNormal>>.ScheduleParallel,
+                Job<Lattice2D<Perlin, LatticeNormal>>.ScheduleParallel,
+                Job<Lattice3D<Perlin, LatticeNormal>>.ScheduleParallel
             },
             {
-                Job<Noise.Lattice1D<Noise.Smoothstep<Noise.Turbulence<Noise.Perlin>>, Noise.LatticeNormal>>.ScheduleParallel,
-                Job<Noise.Lattice2D<Noise.Smoothstep<Noise.Turbulence<Noise.Perlin>>, Noise.LatticeNormal>>.ScheduleParallel,
-                Job<Noise.Lattice3D<Noise.Smoothstep<Noise.Turbulence<Noise.Perlin>>, Noise.LatticeNormal>>.ScheduleParallel
+                Job<Lattice1D<Smoothstep<Turbulence<Perlin>>, LatticeNormal>>.ScheduleParallel,
+                Job<Lattice2D<Smoothstep<Turbulence<Perlin>>, LatticeNormal>>.ScheduleParallel,
+                Job<Lattice3D<Smoothstep<Turbulence<Perlin>>, LatticeNormal>>.ScheduleParallel
             },
             {
-                Job<Noise.Lattice1D<Noise.Value, Noise.LatticeNormal>>.ScheduleParallel,
-                Job<Noise.Lattice2D<Noise.Value, Noise.LatticeNormal>>.ScheduleParallel,
-                Job<Noise.Lattice3D<Noise.Value, Noise.LatticeNormal>>.ScheduleParallel
+                Job<Lattice1D<Value, LatticeNormal>>.ScheduleParallel,
+                Job<Lattice2D<Value, LatticeNormal>>.ScheduleParallel,
+                Job<Lattice3D<Value, LatticeNormal>>.ScheduleParallel
             },
             {
-                Job<Noise.Simplex1D<Noise.Simplex>>.ScheduleParallel,
-                Job<Noise.Simplex2D<Noise.Simplex>>.ScheduleParallel,
-                Job<Noise.Simplex3D<Noise.Simplex>>.ScheduleParallel
+                Job<Simplex1D<Simplex>>.ScheduleParallel,
+                Job<Simplex2D<Simplex>>.ScheduleParallel,
+                Job<Simplex3D<Simplex>>.ScheduleParallel
             },
             {
-                Job<Noise.Simplex1D<Noise.Turbulence<Noise.Simplex>>>.ScheduleParallel,
-                Job<Noise.Simplex2D<Noise.Turbulence<Noise.Simplex>>>.ScheduleParallel,
-                Job<Noise.Simplex3D<Noise.Turbulence<Noise.Simplex>>>.ScheduleParallel
+                Job<Simplex1D<Turbulence<Simplex>>>.ScheduleParallel,
+                Job<Simplex2D<Turbulence<Simplex>>>.ScheduleParallel,
+                Job<Simplex3D<Turbulence<Simplex>>>.ScheduleParallel
             },
             {
-                Job<Noise.Simplex1D<Noise.Smoothstep<Noise.Turbulence<Noise.Simplex>>>>.ScheduleParallel,
-                Job<Noise.Simplex2D<Noise.Smoothstep<Noise.Turbulence<Noise.Simplex>>>>.ScheduleParallel,
-                Job<Noise.Simplex3D<Noise.Smoothstep<Noise.Turbulence<Noise.Simplex>>>>.ScheduleParallel
+                Job<Simplex1D<Smoothstep<Turbulence<Simplex>>>>.ScheduleParallel,
+                Job<Simplex2D<Smoothstep<Turbulence<Simplex>>>>.ScheduleParallel,
+                Job<Simplex3D<Smoothstep<Turbulence<Simplex>>>>.ScheduleParallel
             },
             {
-                Job<Noise.Simplex1D<Noise.Value>>.ScheduleParallel,
-                Job<Noise.Simplex2D<Noise.Value>>.ScheduleParallel,
-                Job<Noise.Simplex3D<Noise.Value>>.ScheduleParallel
+                Job<Simplex1D<Value>>.ScheduleParallel,
+                Job<Simplex2D<Value>>.ScheduleParallel,
+                Job<Simplex3D<Value>>.ScheduleParallel
             },
             {
-                Job<Noise.Voronoi1D<Noise.LatticeNormal, Noise.Worley, Noise.F1>>.ScheduleParallel,
-                Job<Noise.Voronoi2D<Noise.LatticeNormal, Noise.Worley, Noise.F1>>.ScheduleParallel,
-                Job<Noise.Voronoi3D<Noise.LatticeNormal, Noise.Worley, Noise.F1>>.ScheduleParallel
+                Job<Voronoi1D<LatticeNormal, Worley, F1>>.ScheduleParallel,
+                Job<Voronoi2D<LatticeNormal, Worley, F1>>.ScheduleParallel,
+                Job<Voronoi3D<LatticeNormal, Worley, F1>>.ScheduleParallel
             },
             {
-                Job<Noise.Voronoi1D<Noise.LatticeNormal, Noise.Worley, Noise.F2>>.ScheduleParallel,
-                Job<Noise.Voronoi2D<Noise.LatticeNormal, Noise.Worley, Noise.F2>>.ScheduleParallel,
-                Job<Noise.Voronoi3D<Noise.LatticeNormal, Noise.Worley, Noise.F2>>.ScheduleParallel
+                Job<Voronoi1D<LatticeNormal, Worley, F2>>.ScheduleParallel,
+                Job<Voronoi2D<LatticeNormal, Worley, F2>>.ScheduleParallel,
+                Job<Voronoi3D<LatticeNormal, Worley, F2>>.ScheduleParallel
             },
             {
-                Job<Noise.Voronoi1D<Noise.LatticeNormal, Noise.Worley, Noise.F2MinusF1>>.ScheduleParallel,
-                Job<Noise.Voronoi2D<Noise.LatticeNormal, Noise.Worley, Noise.F2MinusF1>>.ScheduleParallel,
-                Job<Noise.Voronoi3D<Noise.LatticeNormal, Noise.Worley, Noise.F2MinusF1>>.ScheduleParallel
+                Job<Voronoi1D<LatticeNormal, Worley, F2MinusF1>>.ScheduleParallel,
+                Job<Voronoi2D<LatticeNormal, Worley, F2MinusF1>>.ScheduleParallel,
+                Job<Voronoi3D<LatticeNormal, Worley, F2MinusF1>>.ScheduleParallel
             },
             {
-                Job<Noise.Voronoi1D<Noise.LatticeNormal, Noise.SmoothWorley, Noise.F1>>.ScheduleParallel,
-                Job<Noise.Voronoi2D<Noise.LatticeNormal, Noise.SmoothWorley, Noise.F1>>.ScheduleParallel,
-                Job<Noise.Voronoi3D<Noise.LatticeNormal, Noise.SmoothWorley, Noise.F1>>.ScheduleParallel
+                Job<Voronoi1D<LatticeNormal, SmoothWorley, F1>>.ScheduleParallel,
+                Job<Voronoi2D<LatticeNormal, SmoothWorley, F1>>.ScheduleParallel,
+                Job<Voronoi3D<LatticeNormal, SmoothWorley, F1>>.ScheduleParallel
             },
             {
-                Job<Noise.Voronoi1D<Noise.LatticeNormal, Noise.SmoothWorley, Noise.F2>>.ScheduleParallel,
-                Job<Noise.Voronoi2D<Noise.LatticeNormal, Noise.SmoothWorley, Noise.F2>>.ScheduleParallel,
-                Job<Noise.Voronoi3D<Noise.LatticeNormal, Noise.SmoothWorley, Noise.F2>>.ScheduleParallel
+                Job<Voronoi1D<LatticeNormal, SmoothWorley, F2>>.ScheduleParallel,
+                Job<Voronoi2D<LatticeNormal, SmoothWorley, F2>>.ScheduleParallel,
+                Job<Voronoi3D<LatticeNormal, SmoothWorley, F2>>.ScheduleParallel
             },
             {
-                Job<Noise.Voronoi1D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F1>>.ScheduleParallel,
-                Job<Noise.Voronoi2D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F1>>.ScheduleParallel,
-                Job<Noise.Voronoi3D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F1>>.ScheduleParallel
+                Job<Voronoi1D<LatticeNormal, Chebyshev, F1>>.ScheduleParallel,
+                Job<Voronoi2D<LatticeNormal, Chebyshev, F1>>.ScheduleParallel,
+                Job<Voronoi3D<LatticeNormal, Chebyshev, F1>>.ScheduleParallel
             },
             {
-                Job<Noise.Voronoi1D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F2>>.ScheduleParallel,
-                Job<Noise.Voronoi2D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F2>>.ScheduleParallel,
-                Job<Noise.Voronoi3D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F2>>.ScheduleParallel
+                Job<Voronoi1D<LatticeNormal, Chebyshev, F2>>.ScheduleParallel,
+                Job<Voronoi2D<LatticeNormal, Chebyshev, F2>>.ScheduleParallel,
+                Job<Voronoi3D<LatticeNormal, Chebyshev, F2>>.ScheduleParallel
             },
             {
-                Job<Noise.Voronoi1D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F2MinusF1>>.ScheduleParallel,
-                Job<Noise.Voronoi2D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F2MinusF1>>.ScheduleParallel,
-                Job<Noise.Voronoi3D<Noise.LatticeNormal, Noise.Chebyshev, Noise.F2MinusF1>>.ScheduleParallel
+                Job<Voronoi1D<LatticeNormal, Chebyshev, F2MinusF1>>.ScheduleParallel,
+                Job<Voronoi2D<LatticeNormal, Chebyshev, F2MinusF1>>.ScheduleParallel,
+                Job<Voronoi3D<LatticeNormal, Chebyshev, F2MinusF1>>.ScheduleParallel
             }
         };
         

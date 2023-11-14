@@ -4,7 +4,7 @@ using Sonosthesia.Target;
 
 namespace Sonosthesia.Deform
 {
-    public class DynamicMeshNoiseSettingTarget : DynamicMeshNoiseTarget<float, FloatBlender>
+    public class DynamicNoiseSettingTarget : DynamicNoiseTarget<float, FloatBlender>
     {
         private enum TargetType
         {
@@ -16,8 +16,8 @@ namespace Sonosthesia.Deform
 
         protected override float Reference => _targetType switch
         {
-            TargetType.Velocity => DynamicSettings.Velocity,
-            TargetType.Displacement => DynamicSettings.Displacement,
+            TargetType.Velocity => DynamicNoiseSettings.Velocity,
+            TargetType.Displacement => DynamicNoiseSettings.Displacement,
             _ => throw new ArgumentOutOfRangeException()
         };
 
@@ -26,10 +26,10 @@ namespace Sonosthesia.Deform
             switch (_targetType)
             {
                 case TargetType.Velocity:
-                    DynamicSettings.Velocity = value;
+                    DynamicNoiseSettings.Velocity = value;
                     break;
                 case TargetType.Displacement:
-                    DynamicSettings.Displacement = value;
+                    DynamicNoiseSettings.Displacement = value;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

@@ -12,6 +12,16 @@ namespace Sonosthesia.Utils
 
     public static class SafeIndexListExtensions
     {
+        public static T GetIndexOrDefault<T>(this IList<T> list, int index)
+        {
+            if (index >= 0 && index < list.Count)
+            {
+                return list[index];
+            }
+
+            return default;
+        }
+        
         public static bool TryGetIndex<T>(this IList<T> list, float index, SafeIndex safeIndex, out T result)
         {
             return list.TryGetIndex(Mathf.RoundToInt(index), safeIndex, out result);

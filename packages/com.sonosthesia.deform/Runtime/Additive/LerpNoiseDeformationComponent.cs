@@ -1,63 +1,81 @@
-using System.Collections.Generic;
-using Sonosthesia.Mesh;
-using Sonosthesia.Noise;
-using Unity.Burst;
-using Unity.Collections;
 using Unity.Jobs;
+using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
+using Unity.Burst;
+using Sonosthesia.Mesh;
+using Sonosthesia.Noise;
 
 using static Unity.Mathematics.math;
 
 namespace Sonosthesia.Deform
 {
-    public class TriAdvancedMeshNoiseController : CatlikeMeshNoiseController
+    public class LerpNoiseDeformationComponent : AdditiveDeformationComponent
     {
-        private delegate JobHandle JobScheduleDelegate (
-            UnityEngine.Mesh.MeshData meshData, int innerloopBatchCount, NativeArray<TriNoise.NoiseComponent> configs, SpaceTRS domain,
-            bool isPlane, JobHandle dependency
-        );
+        [SerializeField] private NoiseType _noiseType;
+
+        [SerializeField] private int _seedOffset;
+	
+        [SerializeField, Range(1, 3)] int _dimensions = 3;
+        
+        [SerializeField] private FractalNoiseSettings _settings = FractalNoiseSettings.Default;
+
+        [SerializeField] private float _displacement = 1f;
+
+        [SerializeField] private SpaceTRS _domain;
+        
         
         [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
         private struct Job<N> : IJobFor where N : struct, INoise
         {
-            [ReadOnly] private NativeArray<TriNoise.NoiseComponent> configs;
-            
-            private float3x4 domainTRS;
-            private float3x3 derivativeMatrix;
-            private bool isPlane;
-            private NativeArray<Vertex4> vertices;
+            [ReadOnly] private NativeArray<Vertex4> vertices;
 
-            public void Execute(int i)
+            [WriteOnly] private NativeArray<Sample4> deformations;
+
+            private FractalNoiseSettings settings;
+
+            private float3x4 domainTRS;
+
+            private int seed;
+        
+            private float lerp;
+            
+            private float displacement;
+
+            public void Execute (int i)
             {
                 Vertex4 v = vertices[i];
                 float4x3 position = domainTRS.TransformVectors(transpose(float3x4(
                     v.v0.position, v.v1.position, v.v2.position, v.v3.position
                 )));
-                Sample4 noise = default;
-                for (int c = 0; c < configs.Length; c++)
-                {
-                    noise += position.GetNoise<N>(configs[c], derivativeMatrix);
-                }
-                vertices[i] = SurfaceUtils.SetVertices(v, noise, isPlane);
+                Sample4 d0 = FractalNoise.GetFractalNoise<N>(position, settings, seed);
+                Sample4 d1 = FractalNoise.GetFractalNoise<N>(position, settings, seed + 1);
+                deformations[i] = (d0 * (1 - lerp) + d1 * lerp) * displacement;
             }
-        
-            public static JobHandle ScheduleParallel (UnityEngine.Mesh.MeshData meshData, int innerloopBatchCount, 
-                NativeArray<TriNoise.NoiseComponent> configs, SpaceTRS domain, bool isPlane, JobHandle dependency
-            )
-            {
-                return new Job<N>
-                {
-                    vertices = meshData.GetVertexData<SingleStreams.Stream0>().Reinterpret<Vertex4>(12 * 4),
-                    domainTRS = domain.Matrix,
-                    derivativeMatrix = domain.DerivativeMatrix,
-                    configs = configs,
-                    isPlane = isPlane
-                }.ScheduleParallel(meshData.vertexCount / 4, innerloopBatchCount, dependency);
-            }
-        }   
-        
-        private static JobScheduleDelegate[,] _jobs = {
+
+            public static JobHandle ScheduleParallel (
+                UnityEngine.Mesh.MeshData meshData, NativeArray<Sample4> deformations,
+                FractalNoiseSettings settings, int seed, SpaceTRS domainTRS, float lerp, float displacement,
+                int innerloopBatchCount, JobHandle dependency
+            ) => new Job<N> {
+                vertices = meshData.GetVertexData<SingleStreams.Stream0>().Reinterpret<Vertex4>(12 * 4),
+                deformations = deformations,
+                settings = settings,
+                domainTRS = domainTRS.Matrix,
+                seed = seed,
+                lerp = lerp,
+                displacement = displacement
+            }.ScheduleParallel(meshData.vertexCount / 4, innerloopBatchCount, dependency);
+
+        }
+    
+        private delegate JobHandle JobScheduleDelegate (
+            UnityEngine.Mesh.MeshData meshData, NativeArray<Sample4> deformations,
+            FractalNoiseSettings settings, int seed, SpaceTRS domainTRS, float lerp, float displacement, 
+            int innerloopBatchCount, JobHandle dependency
+        );
+
+        private static readonly JobScheduleDelegate[,] _jobs = {
             {
                 Job<Lattice1D<Perlin, LatticeNormal>>.ScheduleParallel,
                 Job<Lattice2D<Perlin, LatticeNormal>>.ScheduleParallel,
@@ -135,64 +153,33 @@ namespace Sonosthesia.Deform
             }
         };
 
-        [SerializeField] private SpaceTRS _domain = new () { scale = 1f };
-        
-        public DynamicSettings GetSettings(int index) => _settings[index];
-
-        public SpaceTRS Domain
+        public enum NoiseType 
         {
-            get => _domain;
-            set => _domain = value;
-        }
-
-        [SerializeField] private List<DynamicSettings> _settings;
-        private NativeArray<TriNoise.NoiseComponent> _noiseConfigs;
-        private float[] _localTimes;
-
-        protected override bool IsDynamic => true;
-
-        protected override void Update()
-        {
-            for (int i = 0; i < _settings.Count; i++)
-            {
-                _localTimes[i] += Time.deltaTime * _settings[i].Velocity;
-            }
-            Debug.Log($"Local times is {string.Join(", ", _localTimes)}");
-            base.Update();
+            Perlin, PerlinSmoothTurbulence, PerlinValue, 
+            Simplex, SimplexTurbulence, SimplexSmoothTurbulence, SimplexValue,
+            VoronoiWorleyF1, VoronoiWorleyF2, VoronoiWorleyF2MinusF1, 
+            VoronoiWorleySmoothLSE, VoronoiWorleySmoothPoly,
+            VoronoiChebyshevF1, VoronoiChebyshevF2, VoronoiChebyshevF2MinusF1
         }
         
-        protected override void OnValidate()
+        public override bool IsDynamic => true;
+        
+        public override JobHandle GetDeformation(UnityEngine.Mesh.MeshData meshData, 
+            NativeArray<Sample4> deformations, int innerloopBatchCount, JobHandle dependency)
         {
-            if (_noiseConfigs.Length != _settings.Count)
-            {
-                _noiseConfigs.Dispose();
-                _noiseConfigs = new NativeArray<TriNoise.NoiseComponent>(_settings.Count, Allocator.Persistent);
-            }
+            float time = Time.time;
+            int seed = Mathf.FloorToInt(time);
+            float lerp = time - seed;
 
-            if (_localTimes == null || _localTimes.Length != _settings.Count)
-            {
-                _localTimes = new float[_settings.Count];
-                Debug.Log("Init _localTimes");
-            }
-            
-            base.OnValidate();
-        }
-
-        protected override JobHandle PerturbMesh(UnityEngine.Mesh.MeshData meshData, int resolution, float displacement, NoiseType noiseType, int dimensions, int seed, JobHandle dependency)
-        {
-            for (int i = 0; i < _settings.Count; i++)
-            {
-                _noiseConfigs[i] = TriNoise.GetNoiseComponent(_settings[i], seed, displacement, _localTimes[i]);
-            }
-            
-            //Debug.Log($"Scheduling with configs {string.Join(",", _noiseConfigs)}");
-            
-            return _jobs[(int) noiseType, dimensions - 1](
+            return _jobs[(int) _noiseType, _dimensions - 1](
                 meshData,
-                resolution,
-                _noiseConfigs,
+                deformations,
+                _settings,
+                seed + _seedOffset,
                 _domain,
-                IsPlane,
+                lerp,
+                _displacement,
+                innerloopBatchCount, 
                 dependency);
         }
     }
