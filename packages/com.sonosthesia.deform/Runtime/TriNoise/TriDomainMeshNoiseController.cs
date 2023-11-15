@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Sonosthesia.Mesh;
 using Sonosthesia.Noise;
 using Unity.Burst;

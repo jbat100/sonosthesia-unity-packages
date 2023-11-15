@@ -15,7 +15,7 @@ namespace Sonosthesia.Deform
 
         protected virtual bool IsDynamic => false;
         
-        [System.Flags]
+        [Flags]
         public enum MeshOptimizationMode 
         {
             ReorderIndices = 1 << 0, 
@@ -23,19 +23,7 @@ namespace Sonosthesia.Deform
         }
 
         [SerializeField] private MeshOptimizationMode _meshOptimization;
-        
-        public enum MaterialMode
-        {
-            Displacement,
-            Flat,
-            LatLonMap,
-            CubeMap
-        }
 
-        [SerializeField] private MaterialMode _materialMode;
-        
-        [SerializeField] private Material[] _materials;
-        
         [Flags]
         private enum GizmoMode
         {
@@ -89,18 +77,20 @@ namespace Sonosthesia.Deform
 
         [SerializeField] private bool _recalculateNormals, _recalculateTangents;
         
+        
         private UnityEngine.Mesh _mesh;
         private Vector3[] _vertices, _normals;
         private Vector4[] _tangents;
         private int[] _triangles;
-        private MeshRenderer _renderer;
+        private bool _setIsPlane;
+        private Material _material;
 
-        protected void Awake ()
+        protected virtual void Awake ()
         {
-            _renderer = GetComponent<MeshRenderer>();
-            _materials[(int)MaterialMode.Displacement] = new Material(_materials[(int)MaterialMode.Displacement]);
             _mesh = new UnityEngine.Mesh { name = "Procedural Mesh" };
             GetComponent<MeshFilter>().mesh = _mesh;
+            _material = GetComponent<MeshRenderer>().material;
+            _setIsPlane = _material.HasFloat(materialIsPlaneId);
         }
         
         protected virtual void OnValidate () => enabled = true;
@@ -113,19 +103,15 @@ namespace Sonosthesia.Deform
             _tangents = null;
             _triangles = null;
 
+            if (_setIsPlane) 
+            {
+                _material.SetFloat(materialIsPlaneId, IsPlane ? 1f : 0f);
+            }
+            
             if (!IsDynamic)
             {
                 enabled = false;   
             }
-
-            if (_materialMode == MaterialMode.Displacement) 
-            {
-                _materials[(int)MaterialMode.Displacement].SetFloat(
-                    materialIsPlaneId, IsPlane ? 1f : 0f
-                );
-            }
-            
-            _renderer.material = _materials[(int)_materialMode];
         }
         
         protected void OnDrawGizmos () 

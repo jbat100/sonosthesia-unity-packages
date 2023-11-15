@@ -9,9 +9,9 @@ namespace Sonosthesia.Deform
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Sample4 GetFractalNoise<N>(SplineVertexData4 v, float3x4 domainTRS, FractalNoiseSettings settings, int seed) 
-            where N : struct, Noise.INoise
+            where N : struct, INoise
         {
-            return Noise.FractalNoise.GetFractalNoise<N>(
+            return FractalNoise.GetFractalNoise<N>(
                 domainTRS.TransformVectors(transpose(float3x4(
                     v.v0.position, v.v1.position, v.v2.position, v.v3.position
                 ))),

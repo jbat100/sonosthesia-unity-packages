@@ -17,7 +17,7 @@ namespace Sonosthesia.Deform
         
         [SerializeField] private NoiseType _noiseType;
 
-        [SerializeField, Range(1, 3)] private int _dimensions = 1;
+        [SerializeField, Range(1, 3)] private int _dimensions = 3;
         
         [SerializeField] private int _seed;
 

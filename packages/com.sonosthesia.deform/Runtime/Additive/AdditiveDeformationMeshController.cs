@@ -22,9 +22,7 @@ namespace Sonosthesia.Deform
         }
 
         [SerializeField] private MeshOptimizationMode _meshOptimization;
-        
-        [SerializeField] private Material _material;
-        
+
         [Flags]
         public enum GizmoMode
         {
@@ -84,6 +82,7 @@ namespace Sonosthesia.Deform
         private NativeArray<Sample4>[] _deformations;
         private NativeArray<Sample4> _totalDeformation;
         private UnityEngine.Mesh _mesh;
+        private Material _material;
         private bool _setIsPlane;
 
         private int _vertexCount = 0;
@@ -116,10 +115,10 @@ namespace Sonosthesia.Deform
         
         protected virtual void Awake()
         {
-            _material = new Material(_material);
-            _setIsPlane = _material.HasFloat(materialIsPlaneId);
-            _mesh = new UnityEngine.Mesh { name = "Procedural Mesh" };
+            _mesh = new UnityEngine.Mesh { name = "AdditiveMesh" };
             GetComponent<MeshFilter>().mesh = _mesh;
+            _material = GetComponent<MeshRenderer>().material;
+            _setIsPlane = _material.HasFloat(materialIsPlaneId);
             _deformations = new NativeArray<Sample4>[_components.Length];
         }
 
@@ -130,7 +129,6 @@ namespace Sonosthesia.Deform
             {
                 _material.SetFloat(materialIsPlaneId, IsPlane ? 1f : 0f);
             }
-            GetComponent<MeshRenderer>().material = _material;
         }
 
         protected void OnDestroy()
@@ -140,7 +138,7 @@ namespace Sonosthesia.Deform
 
         private void GenerateMesh()
         {
-            Debug.Log($"{this} {nameof(GenerateMesh)} with {nameof(_resolution)} {_resolution}");
+            //Debug.Log($"{this} {nameof(GenerateMesh)} with {nameof(_resolution)} {_resolution}");
             UnityEngine.Mesh.MeshDataArray meshDataArray = UnityEngine.Mesh.AllocateWritableMeshData(1);
             UnityEngine.Mesh.MeshData meshData = meshDataArray[0];
 

@@ -60,6 +60,8 @@ namespace Sonosthesia.Deform
         [SerializeField] 
         bool m_RecalculateNormals;
         
+        // Note : for some reason recalculating tangents seems to crash Unity editor
+        
         [SerializeField] 
         bool m_RecalculateTangents;
         
@@ -153,7 +155,7 @@ namespace Sonosthesia.Deform
             get => m_Container.Splines;
         }
 
-        protected void Reset()
+        protected virtual void Reset()
         {
             TryGetComponent(out m_Container);
 
@@ -169,7 +171,13 @@ namespace Sonosthesia.Deform
             m_RebuildRequested = true;
         }
 
-        protected void Start()
+        protected virtual void Awake()
+        {
+            m_Mesh = new UnityEngine.Mesh {name = "SplineExtrude"};
+            GetComponent<MeshFilter>().mesh = m_Mesh;
+        }
+
+        protected virtual void Start()
         {
             if (m_Container == null || m_Container.Spline == null)
             {
@@ -216,10 +224,7 @@ namespace Sonosthesia.Deform
         {
             _vertices = null;
             _normals = null;
-            
-            if((m_Mesh = GetComponent<MeshFilter>().sharedMesh) == null)
-                return;
-            
+
             m_Mesh.Clear();
             UnityEngine.Mesh.MeshDataArray meshDataArray = UnityEngine.Mesh.AllocateWritableMeshData(1);
             UnityEngine.Mesh.MeshData data = meshDataArray[0];
