@@ -1,1 +1,1 @@
-Basic Signal Targets for the sonosthesia project
+Targets for Sonosthesia [signals](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.signal).

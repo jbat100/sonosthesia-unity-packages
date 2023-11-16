@@ -1,1 +1,2 @@
-Dynamic processing chains for Sonosthesia Signals.
+Dynamic processing chains for Sonosthesia [signals](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.signal).
+
