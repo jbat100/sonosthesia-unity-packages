@@ -1,4 +1,4 @@
-Audio descriptors for the sonosthesia project. Provides spectral energy ```Signal<float>``` for Unity `AudioSource` and `AudioListener`.
+Audio descriptors for the sonosthesia project. Provides spectral energy [signals](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.signal) for Unity `AudioSource` and `AudioListener`.
 
 ## Spectral Energy Signals
 
