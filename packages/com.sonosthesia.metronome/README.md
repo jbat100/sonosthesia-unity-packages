@@ -1,0 +1,1 @@
+Metronome for the Sonosthesia project, with MIDI sync connectivity.
