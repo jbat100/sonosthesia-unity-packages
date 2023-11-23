@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using UnityEngine;
 
 namespace Sonosthesia.AdaptiveMIDI
@@ -25,5 +27,7 @@ namespace Sonosthesia.AdaptiveMIDI
         {
             return Mathf.Clamp(value, 0, 127);
         }
+
+        public static TimeSpan TimestampNow => TimeSpan.FromTicks(Stopwatch.GetTimestamp());
     }
 }

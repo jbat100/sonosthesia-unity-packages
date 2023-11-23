@@ -1,5 +1,7 @@
 using System;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using UniRx;
 using UnityEngine;
 using Sonosthesia.AdaptiveMIDI;
@@ -8,13 +10,134 @@ namespace Sonosthesia.RtMIDI
 {
     public class RtMIDIInput : MIDIInput
     {
+        public enum PollMode
+        {
+            Update,
+            IntervalThread
+        }
+        
         [SerializeField] private string _portName = "IAC Driver Unity";
 
         [SerializeField] private float _retryInterval = 1;
 
+        [SerializeField] private PollMode _pollMode;
+        
+        [SerializeField] private float _pollInterval;
+
         private RtMIDIInputProbe _probe;
         private RtMIDIInputPort _port;
         private IDisposable _subscription;
+
+        private abstract class Poller : IDisposable
+        {
+            public Poller(RtMIDIInputPort port) { }
+
+            public abstract void Dispose();
+        }
+
+        private class UpdatePoller : Poller
+        {
+            private readonly IDisposable _subscription;
+            private readonly RtMIDIInputPort _port;
+            
+            public UpdatePoller(float interval, RtMIDIInputPort port) : base(port)
+            {
+                _port = port;
+                _subscription = Observable.EveryUpdate().Subscribe(_ =>
+                {
+                    _port?.ProcessMessageQueue();
+                });
+            }
+
+            public override void Dispose()
+            {
+                _subscription?.Dispose();
+                _port?.Dispose();
+            }
+        }
+
+        private class TaskPoller : Poller
+        {
+            private RtMIDIInputPort _port;
+            
+            private readonly CancellationTokenSource _cancellationTokenSource = new();
+            private readonly Task _pollingTask;
+            private readonly object _lock = new ();
+            
+            public TaskPoller(TimeSpan interval, RtMIDIInputPort port) : base(port)
+            {
+                _port = port;
+                _pollingTask = Task.Run(() => Poll(interval, _cancellationTokenSource.Token)); 
+            }
+            
+            private async Task Poll(TimeSpan interval, CancellationToken token)
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    try
+                    {
+                        lock (_lock)
+                        {
+                            _port?.ProcessMessageQueue();
+                        }
+                        await Task.Delay(interval, token);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // Handle the cancellation
+                        break;
+                    }
+                }
+            }
+
+            public override void Dispose()
+            {
+                _cancellationTokenSource?.Cancel();
+                _cancellationTokenSource?.Dispose();
+                lock (_lock)
+                {
+                    _port?.Dispose();
+                    _port = null;
+                }
+            }
+        }
+
+        private class ThreadPoller : Poller
+        {
+            private RtMIDIInputPort _port;
+            
+            private readonly CancellationTokenSource _cancellationTokenSource = new();
+            private readonly Thread _pollingThread;
+            private readonly object _lock = new ();
+            
+            public ThreadPoller(TimeSpan interval, RtMIDIInputPort port) : base(port)
+            {
+                _port = port;
+                CancellationToken token = _cancellationTokenSource.Token;
+                _pollingThread = new Thread(() =>
+                {
+                    while (!token.IsCancellationRequested)
+                    {
+                        lock (_lock)
+                        {
+                            _port.ProcessMessageQueue();
+                        }
+                        Thread.Sleep(interval); 
+                    }
+                });
+            }
+            
+            public override void Dispose()
+            {
+                _cancellationTokenSource?.Cancel();
+                _cancellationTokenSource?.Dispose();
+                lock (_lock)
+                {
+                    _port?.Dispose();
+                    _port = null;
+                }
+            }
+        }
 
         private string Description()
         {
@@ -67,19 +190,19 @@ namespace Sonosthesia.RtMIDI
             });
         }
         
-        protected void Awake()
+        protected virtual void Awake()
         {
             _probe = new RtMIDIInputProbe();
             Scan();
         }
 
-        protected void Update()
+        protected virtual void Update()
         {
             //Debug.Log($"{nameof(MIDIInput)} port count {_probe.PortCount}");
             _port?.ProcessMessageQueue();
         }
 
-        protected void OnDestroy()
+        protected virtual void OnDestroy()
         {
             _probe?.Dispose();
             _port?.Dispose();

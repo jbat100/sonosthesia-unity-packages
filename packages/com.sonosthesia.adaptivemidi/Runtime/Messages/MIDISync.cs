@@ -1,3 +1,5 @@
+using System;
+
 namespace Sonosthesia.AdaptiveMIDI.Messages
 {
     public enum MIDISyncType
@@ -9,10 +11,18 @@ namespace Sonosthesia.AdaptiveMIDI.Messages
     
     public readonly struct MIDISync
     {
+        public readonly TimeSpan Timestamp;
         public readonly MIDISyncType Type;
 
+        public MIDISync(TimeSpan timestamp, MIDISyncType type)
+        {
+            Timestamp = timestamp;
+            Type = type;
+        }
+        
         public MIDISync(MIDISyncType type)
         {
+            Timestamp = MIDIUtils.TimestampNow;
             Type = type;
         }
         

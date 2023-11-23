@@ -57,10 +57,11 @@ namespace Sonosthesia.RtMIDI
 
             if (_rtmidi == null || !_rtmidi->ok)
             {
-                UnityEngine.Debug.LogWarning("Failed to create an RtMidi device object.");
+                Debug.LogWarning("Failed to create an RtMidi device object.");
                 return;
             }
 
+            RtMidiDll.InIgnoreTypes(_rtmidi, false, false, false);
             RtMidiDll.OpenPort(_rtmidi, (uint)portNumber, portName);
         }
 
@@ -100,16 +101,18 @@ namespace Sonosthesia.RtMIDI
                 return;
             }
 
-            var size = 4ul;
-            var message = stackalloc byte [(int)size];
+            ulong size = 4ul;
+            Byte* message = stackalloc byte [(int)size];
             
             while (true)
             {
-                var stamp = RtMidiDll.InGetMessage(_rtmidi, message, ref size);
-                
+                double stamp = RtMidiDll.InGetMessage(_rtmidi, message, ref size);
+
                 if (stamp < 0 || size == 0) break;
                 
-                //Debug.Log($"{nameof(ProcessMessageQueue)} iteration with stamp {stamp} {size} status {message[0]:X}");
+                TimeSpan timestamp = TimeSpan.FromSeconds(stamp);
+                
+                Debug.Log($"{nameof(ProcessMessageQueue)} iteration with stamp {stamp} {size} status {message[0]:X}");
                 
                 if (size == 1)
                 {
@@ -118,16 +121,19 @@ namespace Sonosthesia.RtMIDI
                     {
                         case 0xf8:
                             _clockCount++;
-                            _clockSubject.OnNext(new MIDIClock(_clockCount));
+                            _clockSubject.OnNext(new MIDIClock(timestamp, _clockCount));
                             break;
                         case 0xfa:
-                            _syncSubject.OnNext(new MIDISync(MIDISyncType.Start));
+                            _clockCount = 0;
+                            _syncSubject.OnNext(new MIDISync(timestamp, MIDISyncType.Start));
                             break;
                         case 0xfb:
-                            _syncSubject.OnNext(new MIDISync(MIDISyncType.Continue));
+                            _clockCount = 0;
+                            _syncSubject.OnNext(new MIDISync(timestamp, MIDISyncType.Continue));
                             break;
                         case 0xfc:
-                            _syncSubject.OnNext(new MIDISync(MIDISyncType.Stop));
+                            _clockCount = 0;
+                            _syncSubject.OnNext(new MIDISync(timestamp, MIDISyncType.Stop));
                             break;
                     }
                 }
@@ -142,7 +148,7 @@ namespace Sonosthesia.RtMIDI
                     switch (status)
                     {
                         case 0xd:
-                            _channelAftertouchSubject.OnNext(new MIDIChannelAftertouch(channel, data1));
+                            _channelAftertouchSubject.OnNext(new MIDIChannelAftertouch(timestamp, channel, data1));
                             break;
                     }
                 }
@@ -157,7 +163,7 @@ namespace Sonosthesia.RtMIDI
                         if (message[0] == 0xf2)
                         {
                             _clockCount = 0;
-                            _songPositionPointerSubject.OnNext(new MIDISongPositionPointer(MIDIUtils.To14BitInt(data2, data1, false)));
+                            _songPositionPointerSubject.OnNext(new MIDISongPositionPointer(timestamp, MIDIUtils.To14BitInt(data2, data1, false)));
                         }
                     }
 
@@ -169,22 +175,32 @@ namespace Sonosthesia.RtMIDI
                     switch (status)
                     {
                         case 0x9:
-                            _noteOnSubject.OnNext(new MIDINote(channel, data1, data2));
+                            _noteOnSubject.OnNext(new MIDINote(timestamp, channel, data1, data2));
                             break;
                         case 0x8:
-                            _noteOffSubject.OnNext(new MIDINote(channel, data1, data2));
+                            _noteOffSubject.OnNext(new MIDINote(timestamp, channel, data1, data2));
                             break;
                         case 0xb:
-                            _controlSubject.OnNext(new MIDIControl(channel, data1, data2));
+                            _controlSubject.OnNext(new MIDIControl(timestamp, channel, data1, data2));
                             break;
                         case 0xa:
-                            _polyphonicAftertouchSubject.OnNext(new MIDIPolyphonicAftertouch(channel, data1, data2));
+                            _polyphonicAftertouchSubject.OnNext(new MIDIPolyphonicAftertouch(timestamp, channel, data1, data2));
                             break;
                         case 0xe:
-                            _pitchBendSubject.OnNext(new MIDIPitchBend(channel, MIDIUtils.To14BitInt(data2, data1, true)));
+                            _pitchBendSubject.OnNext(new MIDIPitchBend(timestamp, channel, MIDIUtils.To14BitInt(data2, data1, true)));
                             break;
                     }
                 }
+            }
+
+            if (currentClockCount != _clockCount)
+            {
+                int gap = _clockCount - currentClockCount;
+                if (gap > 1)
+                {
+                    Debug.LogWarning($"Skipped {gap} MIDI clocks");
+                }
+                _clockSubject.OnNext(new MIDIClock(timestamp, _clockCount));
             }
         }
 
