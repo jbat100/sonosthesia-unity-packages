@@ -31,8 +31,8 @@ namespace Sonosthesia.Pack
         private void Process(PackedMIDIRawSourceSingle data)
         {
             TimeSpan timestamp = TimeSpan.FromSeconds(data.CumulativeTime);
-            byte status = data.B0;
-            switch (status)
+            byte data0 = data.B0;
+            switch (data0)
             {
                 case 0xf8:
                     _clockCount++;

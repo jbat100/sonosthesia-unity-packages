@@ -1,9 +1,23 @@
 using System;
 using System.Diagnostics;
 using UnityEngine;
+using Sonosthesia.AdaptiveMIDI.Messages;
 
 namespace Sonosthesia.AdaptiveMIDI
 {
+    public interface IMIDIBroadcaster
+    {
+        void BroadcastNoteOn(MIDINote note);
+        void BroadcastNoteOff(MIDINote note);
+        void BroadcastControl(MIDIControl control);
+        void BroadcastChannelAftertouch(MIDIChannelAftertouch aftertouch);
+        void BroadcastPolyphonicAftertouch(MIDIPolyphonicAftertouch aftertouch);
+        void BroadcastPitchBend(MIDIPitchBend pitchBend);
+        void BroadcastClock(MIDIClock clock);
+        void BroadcastPositionPointer(MIDISongPositionPointer pointer);
+        void BroadcastSync(MIDISync sync);
+    }
+    
     public static class MIDIUtils
     {
         public static int To14BitInt(byte msb, byte lsb, bool signed)
@@ -29,5 +43,20 @@ namespace Sonosthesia.AdaptiveMIDI
         }
 
         public static TimeSpan TimestampNow => TimeSpan.FromTicks(Stopwatch.GetTimestamp());
+
+        public static void Decode(IMIDIBroadcaster broadcaster, TimeSpan timestamp, byte data0)
+        {
+            
+        }
+        
+        public static void Decode(IMIDIBroadcaster broadcaster, TimeSpan timestamp, byte data0, byte data1)
+        {
+            
+        }
+        
+        public static void Decode(IMIDIBroadcaster broadcaster, TimeSpan timestamp, byte data0, byte data1, byte data2)
+        {
+            
+        }
     }
 }

@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
+using Sonosthesia.AdaptiveMIDI;
 using Sonosthesia.AdaptiveMIDI.Messages;
 using Sonosthesia.Channel;
 using UniRx;
 using UnityEngine;
 
-namespace Sonosthesia.Pack
+namespace Sonosthesia.MIDI
 {
-    public class PackMPENoteChannelDriver : ChannelDriver<MPENote>
+    public class MPENoteChannelDriver : ChannelDriver<MPENote>
     {
-        [SerializeField] private PackMIDIReceiver _receiver;
+        [SerializeField] private MIDIInput _input;
 
         [SerializeField] private string _track;
         
@@ -28,7 +29,7 @@ namespace Sonosthesia.Pack
 
             public bool OngoingNote => CurrentNote.HasValue;
 
-            public MPENote Begin(PackedMIDINote note)
+            public MPENote Begin(MIDINote note)
             {
                 MPENote mpeNote = new MPENote(note.Note, note.Velocity, Slide, Pressure, Bend * BEND_SEMITONES);
                 CurrentNote = mpeNote;
@@ -50,9 +51,9 @@ namespace Sonosthesia.Pack
             }
         }
 
-        private Dictionary<int, ChannelState> _states = new();
+        private readonly Dictionary<int, ChannelState> _states = new();
 
-        private CompositeDisposable _mpeSubscriptions = new();
+        private readonly CompositeDisposable _mpeSubscriptions = new();
 
         private ChannelState GetState(int channel)
         {
@@ -70,30 +71,30 @@ namespace Sonosthesia.Pack
             _mpeSubscriptions.Clear();
             _states.Clear();
             
-            _mpeSubscriptions.Add(_receiver.NoteOnObservable.Where(note => note.Track == _track).Subscribe(note =>
+            _mpeSubscriptions.Add(_input.NoteOnObservable.Subscribe(note =>
             {
                 ChannelState state = GetState(note.Channel);
                 if (state.CurrentNote.HasValue)
                 {
-                    Debug.LogWarning($"{nameof(PackMPENoteChannelDriver)} unexpected note on {note}");
+                    Debug.LogWarning($"{nameof(MPENoteChannelDriver)} unexpected note on {note}");
                     return;
                 }
                 state.EventId = BeginEvent(state.Begin(note));
             }));
             
-            _mpeSubscriptions.Add(_receiver.NoteOffObservable.Where(note => note.Track == _track).Subscribe(note =>
+            _mpeSubscriptions.Add(_input.NoteOffObservable.Subscribe(note =>
             {
                 ChannelState state = GetState(note.Channel);
                 if (!state.CurrentNote.HasValue)
                 {
-                    Debug.LogWarning($"{nameof(PackMPENoteChannelDriver)} expected note {note}");
+                    Debug.LogWarning($"{nameof(MPENoteChannelDriver)} expected note {note}");
                     return;
                 }
                 EndEvent(state.EventId.Value);
                 state.End();
             }));
             
-            _mpeSubscriptions.Add(_receiver.ChannelAftertouchObservable.Where(aftertouch => aftertouch.Track == _track).Subscribe(aftertouch =>
+            _mpeSubscriptions.Add(_input.ChannelAftertouchObservable.Subscribe(aftertouch =>
             {
                 ChannelState state = GetState(aftertouch.Channel);
                 state.Pressure = aftertouch.Value;
@@ -104,12 +105,12 @@ namespace Sonosthesia.Pack
                 }
             }));
             
-            _mpeSubscriptions.Add(_receiver.ControlObservable.Where(control => control.Track == _track).Subscribe(control =>
+            _mpeSubscriptions.Add(_input.ControlObservable.Subscribe(control =>
             {
                 ChannelState state = GetState(control.Channel);
                 if (control.Number != 74)
                 {
-                    Debug.LogWarning($"{nameof(PackMPENoteChannelDriver)} unexpected control number {control}");
+                    Debug.LogWarning($"{nameof(MPENoteChannelDriver)} unexpected control number {control}");
                     return;
                 }
                 state.Slide = control.Value;
@@ -120,7 +121,7 @@ namespace Sonosthesia.Pack
                 }
             }));
             
-            _mpeSubscriptions.Add(_receiver.PitchBendObservable.Where(bend => bend.Track == _track).Subscribe(bend =>
+            _mpeSubscriptions.Add(_input.PitchBendObservable.Subscribe(bend =>
             {
                 ChannelState state = GetState(bend.Channel);
                 state.Bend = bend.Value;

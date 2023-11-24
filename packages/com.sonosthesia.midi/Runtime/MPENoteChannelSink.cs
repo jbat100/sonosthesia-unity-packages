@@ -75,11 +75,11 @@ namespace Sonosthesia.MIDI
                     {
                         if (!_muteSlide && note.Slide != previous.Value.Slide)
                         {
-                            _output.BroadcastChannelControl(note.GetSlideControl(channel));
+                            _output.BroadcastControl(note.GetSlideControl(channel));
                         }
                         if (!_mutePressure && note.Pressure != previous.Value.Pressure)
                         {
-                            _output.BrodcatstChannelAftertouch(note.GetChannelAftertouch(channel));
+                            _output.BroadcastChannelAftertouch(note.GetChannelAftertouch(channel));
                         }
                         if (!_muteBend && Math.Abs(note.Bend - previous.Value.Bend) > 1e-4)
                         {
@@ -91,11 +91,11 @@ namespace Sonosthesia.MIDI
                         // send slide, pressure, bend before note
                         if (!_muteSlide)
                         {
-                            _output.BroadcastChannelControl(note.GetSlideControl(channel));    
+                            _output.BroadcastControl(note.GetSlideControl(channel));    
                         }
                         if (!_mutePressure)
                         {
-                            _output.BrodcatstChannelAftertouch(note.GetChannelAftertouch(channel));    
+                            _output.BroadcastChannelAftertouch(note.GetChannelAftertouch(channel));    
                         }
                         if (!_muteBend)
                         {

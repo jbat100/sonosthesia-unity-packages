@@ -30,7 +30,7 @@ namespace Sonosthesia.Pack
             _connection.QueueOutgoingContent(PackMIDIAddress.NOTE_OFF, packed);
         }
 
-        public override void BroadcastChannelControl(MIDIControl control)
+        public override void BroadcastControl(MIDIControl control)
         {
             PackedMIDIControl packed = control.Pack(_port);
             _connection.QueueOutgoingContent(PackMIDIAddress.CONTROL, packed);
@@ -42,7 +42,7 @@ namespace Sonosthesia.Pack
             _connection.QueueOutgoingContent(PackMIDIAddress.POLYPHONIC_AFTERTOUCH, packed);
         }
 
-        public override void BrodcatstChannelAftertouch(MIDIChannelAftertouch aftertouch)
+        public override void BroadcastChannelAftertouch(MIDIChannelAftertouch aftertouch)
         {
             PackedMIDIChannelAftertouch packed = aftertouch.Pack(_port);
             _connection.QueueOutgoingContent(PackMIDIAddress.CHANNEL_AFTERTOUCH, packed);
@@ -52,6 +52,21 @@ namespace Sonosthesia.Pack
         {
             PackedMIDIPitchBend packed = pitchBend.Pack(_port);
             _connection.QueueOutgoingContent(PackMIDIAddress.PITCH_BEND, packed);
+        }
+
+        public override void BroadcastClock(MIDIClock clock)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void BroadcastPositionPointer(MIDISongPositionPointer pointer)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void BroadcastSync(MIDISync sync)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

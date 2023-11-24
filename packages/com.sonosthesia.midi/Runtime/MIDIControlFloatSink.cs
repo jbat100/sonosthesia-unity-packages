@@ -15,7 +15,7 @@ namespace Sonosthesia.MIDI
 
         protected override void Apply(float value)
         {
-            _output.BroadcastChannelControl(new MIDIControl(_channel, _number, (int) value));
+            _output.BroadcastControl(new MIDIControl(_channel, _number, (int) value));
         }
     }
 }

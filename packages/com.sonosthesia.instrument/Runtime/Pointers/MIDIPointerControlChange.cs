@@ -74,7 +74,7 @@ namespace Sonosthesia.Instrument
                 if (force || midiValue != _lastSent)
                 {
                     _lastSent = midiValue;
-                    output.BroadcastChannelControl(new MIDIControl(settings.Channel, settings.Controller, midiValue));
+                    output.BroadcastControl(new MIDIControl(settings.Channel, settings.Controller, midiValue));
                 }
             }
 
