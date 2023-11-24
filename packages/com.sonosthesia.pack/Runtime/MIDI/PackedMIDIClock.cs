@@ -1,6 +1,5 @@
 using MessagePack;
 using Sonosthesia.AdaptiveMIDI.Messages;
-using UnityEngine;
 
 namespace Sonosthesia.Pack
 {
@@ -23,7 +22,7 @@ namespace Sonosthesia.Pack
     {
         public static MIDIClock Unpack(this PackedMIDIClock clock)
         {
-            return new MIDIClock(clock.Count, Time.time);
+            return new MIDIClock(clock.Count);
         }
     }
 }

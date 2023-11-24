@@ -13,7 +13,8 @@ namespace Sonosthesia.RtMIDI
         public enum PollMode
         {
             Update,
-            IntervalThread
+            IntervalThread,
+            IntervalTask
         }
         
         [SerializeField] private string _portName = "IAC Driver Unity";
@@ -22,10 +23,12 @@ namespace Sonosthesia.RtMIDI
 
         [SerializeField] private PollMode _pollMode;
         
-        [SerializeField] private float _pollInterval;
+        [SerializeField] private float _pollInterval = 0.005f;
 
+        private float PollInterval => Mathf.Max(_pollInterval, 0.001f);
+        
         private RtMIDIInputProbe _probe;
-        private RtMIDIInputPort _port;
+        private Poller _poller;
         private IDisposable _subscription;
 
         private abstract class Poller : IDisposable
@@ -40,7 +43,7 @@ namespace Sonosthesia.RtMIDI
             private readonly IDisposable _subscription;
             private readonly RtMIDIInputPort _port;
             
-            public UpdatePoller(float interval, RtMIDIInputPort port) : base(port)
+            public UpdatePoller(RtMIDIInputPort port) : base(port)
             {
                 _port = port;
                 _subscription = Observable.EveryUpdate().Subscribe(_ =>
@@ -82,10 +85,9 @@ namespace Sonosthesia.RtMIDI
                         }
                         await Task.Delay(interval, token);
                     }
-                    catch (OperationCanceledException)
+                    catch (Exception)
                     {
                         // Handle the cancellation
-                        break;
                     }
                 }
             }
@@ -120,9 +122,17 @@ namespace Sonosthesia.RtMIDI
                     {
                         lock (_lock)
                         {
-                            _port.ProcessMessageQueue();
+                            try
+                            {
+                                _port.ProcessMessageQueue();
+                            }
+                            catch (Exception e)
+                            {
+                                // silent
+                            }
+                            
                         }
-                        Thread.Sleep(interval); 
+                        Thread.Sleep(interval);
                     }
                 });
             }
@@ -165,23 +175,36 @@ namespace Sonosthesia.RtMIDI
                     {
                         found = true;
                         _subscription?.Dispose();
-                        _port?.Dispose();
-                        _port = new RtMIDIInputPort(i, portName);
-                        _port.NoteOnObservable.Subscribe(BroadcastNoteOn);
-                        _port.NoteOffObservable.Subscribe(BroadcastNoteOff);
-                        _port.ControlObservable.Subscribe(BroadcastControl);
-                        _port.ChannelAftertouchObservable.Subscribe(BroadcastChannelAftertouch);
-                        _port.PolyphonicAftertouchObservable.Subscribe(BroadcastPolyphonicAftertouch);
-                        _port.PitchBendObservable.Subscribe(BroadcastPitchBend);
-                        _port.SongPositionPointerObservable.Subscribe(BroadcastPositionPointer);
-                        _port.SyncObservable.Subscribe(BroadcastSync);
-                        _port.ClockObservable.Subscribe(BroadcastClock);
+                        _poller?.Dispose();
+                        
+                        RtMIDIInputPort port = new RtMIDIInputPort(i, portName);
+                        port.NoteOnObservable.ObserveOnMainThread().Subscribe(BroadcastNoteOn);
+                        port.NoteOffObservable.ObserveOnMainThread().Subscribe(BroadcastNoteOff);
+                        port.ControlObservable.ObserveOnMainThread().Subscribe(BroadcastControl);
+                        port.ChannelAftertouchObservable.ObserveOnMainThread().Subscribe(BroadcastChannelAftertouch);
+                        port.PolyphonicAftertouchObservable.ObserveOnMainThread().Subscribe(BroadcastPolyphonicAftertouch);
+                        port.PitchBendObservable.ObserveOnMainThread().Subscribe(BroadcastPitchBend);
+                        port.SongPositionPointerObservable.ObserveOnMainThread().Subscribe(BroadcastPositionPointer);
+                        port.SyncObservable.ObserveOnMainThread().Subscribe(BroadcastSync);
+                        port.ClockObservable.ObserveOnMainThread().Subscribe(BroadcastClock);
+
+                        // NOTE: now that we have the timestamps comming directly from RtMidi, it is debatable
+                        // whether the thread polling is actually useful, check performance
+                        
+                        _poller = _pollMode switch
+                        {
+                            PollMode.Update => new UpdatePoller(port),
+                            PollMode.IntervalThread => new ThreadPoller(TimeSpan.FromSeconds(PollInterval), port),
+                            PollMode.IntervalTask => new TaskPoller(TimeSpan.FromSeconds(PollInterval), port),
+                            _ => throw new ArgumentOutOfRangeException()
+                        };
+                        
                         break;
                     }
                 }
                 if (!found)
                 {
-                    Debug.LogWarning($"Could not find MIDI port {_portName} from {count} available {_port}");
+                    Debug.LogWarning($"Could not find MIDI port {_portName} from {count} available");
                 }
                 else
                 {
@@ -196,17 +219,16 @@ namespace Sonosthesia.RtMIDI
             Scan();
         }
 
-        protected virtual void Update()
-        {
-            //Debug.Log($"{nameof(MIDIInput)} port count {_probe.PortCount}");
-            _port?.ProcessMessageQueue();
-        }
-
         protected virtual void OnDestroy()
         {
             _probe?.Dispose();
-            _port?.Dispose();
+            _probe = null;
+            
+            _poller?.Dispose();
+            _poller = null;
+            
             _subscription?.Dispose();
+            _subscription = null;
         }
     }
 }

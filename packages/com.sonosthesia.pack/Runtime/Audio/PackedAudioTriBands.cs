@@ -23,6 +23,7 @@ namespace Sonosthesia.Pack
             return $"{nameof(PackedAudioTriBands)} {Track} {B1} {B2} {B3}";
         }
 
+        [IgnoreMember]
         public int BandCount => 3;
         
         public float GetBand(int index)

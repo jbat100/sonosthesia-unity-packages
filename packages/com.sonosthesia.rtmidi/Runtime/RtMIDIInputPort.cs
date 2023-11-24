@@ -52,8 +52,8 @@ namespace Sonosthesia.RtMIDI
         public RtMIDIInputPort(int portNumber, string portName)
         {
             _portName = portName;
-
             _rtmidi = RtMidiDll.InCreateDefault();
+            _startTime = Time.time;
 
             if (_rtmidi == null || !_rtmidi->ok)
             {
@@ -91,7 +91,13 @@ namespace Sonosthesia.RtMIDI
             System.GC.SuppressFinalize(this);
         }
 
-        private int _clockCount = 0;
+        private int _clockCount;
+        private double _cummulativeTimestamp;
+        private double? _startTime;
+        
+        // NOTE (jb.keijiro.rtmidi): The RtMidi callback API is intentionally omitted because it doesn't
+        // work well under the unmanaged-to-managed invocation. It'll be broken when
+        // the callback is called from an unattached MIDI driver thread.
         
         public void ProcessMessageQueue()
         {
@@ -107,16 +113,28 @@ namespace Sonosthesia.RtMIDI
             while (true)
             {
                 double stamp = RtMidiDll.InGetMessage(_rtmidi, message, ref size);
-
-                if (stamp < 0 || size == 0) break;
                 
-                TimeSpan timestamp = TimeSpan.FromSeconds(stamp);
+                if (size == 0)
+                { 
+                    break;
+                }
+                
+                if (stamp < 0)
+                {
+                    Debug.LogWarning($"{nameof(ProcessMessageQueue)} iteration with stamp {stamp} {size} status {message[0]:X}");
+                    break;
+                }
+                
+                _startTime ??= Time.time;
+                _cummulativeTimestamp += stamp;
+                
+                TimeSpan timestamp = TimeSpan.FromSeconds(_startTime.Value + _cummulativeTimestamp);
                 
                 Debug.Log($"{nameof(ProcessMessageQueue)} iteration with stamp {stamp} {size} status {message[0]:X}");
                 
                 if (size == 1)
                 {
-                    var status = message[0];
+                    byte status = message[0];
                     switch (status)
                     {
                         case 0xf8:
@@ -139,9 +157,9 @@ namespace Sonosthesia.RtMIDI
                 }
                 else if (size == 2)
                 {
-                    var status = message[0] >> 4;
-                    var channel = message[0] & 0xf;
-                    var data1 = message[1];
+                    int status = message[0] >> 4;
+                    int channel = message[0] & 0xf;
+                    byte data1 = message[1];
                     
                     if (data1 > 0x7f) continue; // Invalid data
                     
@@ -154,8 +172,8 @@ namespace Sonosthesia.RtMIDI
                 }
                 else if (size == 3)
                 {
-                    var data1 = message[1];
-                    var data2 = message[2];
+                    byte data1 = message[1];
+                    byte data2 = message[2];
                     
                     // handle system messages separately
                     if ((message[0] & 0xf0) == 0xf0)
@@ -167,8 +185,8 @@ namespace Sonosthesia.RtMIDI
                         }
                     }
 
-                    var status = message[0] >> 4;
-                    var channel = message[0] & 0xf;
+                    int status = message[0] >> 4;
+                    int channel = message[0] & 0xf;
 
                     if (data1 > 0x7f || data2 > 0x7f) continue; // Invalid data
 
@@ -191,16 +209,6 @@ namespace Sonosthesia.RtMIDI
                             break;
                     }
                 }
-            }
-
-            if (currentClockCount != _clockCount)
-            {
-                int gap = _clockCount - currentClockCount;
-                if (gap > 1)
-                {
-                    Debug.LogWarning($"Skipped {gap} MIDI clocks");
-                }
-                _clockSubject.OnNext(new MIDIClock(timestamp, _clockCount));
             }
         }
 

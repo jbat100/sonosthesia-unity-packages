@@ -21,7 +21,7 @@ namespace Sonosthesia.AdaptiveMIDI.Messages
         
         public override string ToString()
         {
-            return $"{nameof(MIDIClock)} <{nameof(Count)} {Count}, {nameof(Timestamp)} {Timestamp}>";
+            return $"{nameof(MIDIClock)} <{nameof(Count)} {Count}, {nameof(Timestamp)} {Timestamp.TotalSeconds}>";
         }
     }
 }

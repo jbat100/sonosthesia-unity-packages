@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Sonosthesia.AdaptiveMIDI;
 using Sonosthesia.AdaptiveMIDI.Messages;
@@ -43,7 +44,7 @@ namespace Sonosthesia.Metronome
             MIDIClock newest = _clockHistory.Front();
 
             int gap = newest.Count - oldest.Count;
-            float interval = newest.Timestamp - oldest.Timestamp;
+            double interval = (newest.Timestamp - oldest.Timestamp).TotalSeconds;
 
             if (gap < 1 || interval < 1e-4)
             {
@@ -52,7 +53,7 @@ namespace Sonosthesia.Metronome
             
             Debug.Log($"{this} {nameof(EstimateMIDIBeatLength)} with {newest} {oldest}");
             
-            return interval / gap * CLOCKS_PER_BEAT;
+            return (float)(interval / gap * CLOCKS_PER_BEAT);
         }
 
         protected virtual void OnEnable()
@@ -116,18 +117,18 @@ namespace Sonosthesia.Metronome
             MIDIClock clock = _clockHistory.Front();
             float? beatLength = EstimateMIDIBeatLength();
             float clockBeats = (clock.Count - 1) / CLOCKS_PER_BEAT;
+            float? bpm = 60f / beatLength;
 
             // in update mode, try to lerp smoothly by best guessing the bpm and moving the play head forward 
             if (beatLength.HasValue && _driverMode == DriverMode.Update)
             {
-                float timeSinceClock = Time.time - clock.Timestamp;
+                float timeSinceClock = (float)(MIDIUtils.TimestampNow - clock.Timestamp).TotalSeconds;
                 float beatsSinceClock = Mathf.Min(timeSinceClock / beatLength.Value, 1f / CLOCKS_PER_BEAT);
-                float bpm = 60f / beatLength.Value;
                 _signal.Broadcast(Beat.Play(_pointer.Value.Position + clockBeats + beatsSinceClock, bpm));
             }
             else 
             {
-                _signal.Broadcast(Beat.Play(_pointer.Value.Position + clockBeats, null));
+                _signal.Broadcast(Beat.Play(_pointer.Value.Position + clockBeats, bpm));
             }
         }
 

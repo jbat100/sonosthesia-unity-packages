@@ -27,7 +27,7 @@ namespace Sonosthesia.AdaptiveMIDI.Messages
 
         public override string ToString()
         {
-            return $"{nameof(MIDIControl)} <{nameof(Channel)} {Channel} {nameof(Number)} {Number} {nameof(Value)} {Value} {nameof(Timestamp)} {Timestamp}>";
+            return $"{nameof(MIDIControl)} <{nameof(Channel)} {Channel} {nameof(Number)} {Number} {nameof(Value)} {Value} {nameof(Timestamp)} {Timestamp.TotalSeconds}>";
         }
     }
 }

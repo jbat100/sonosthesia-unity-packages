@@ -5,8 +5,8 @@ namespace Sonosthesia.Metronome
     public readonly struct Beat
     {
         public readonly bool Playing;
-        public readonly float Position; // 1/16 notes
-        public readonly float? BPM; // 1/16 notes
+        public readonly float Position; // 1/16 note beats
+        public readonly float? BPM; // 1/16 note beats
 
         private Beat(bool playing, float position, float? bpm)
         {
@@ -14,6 +14,9 @@ namespace Sonosthesia.Metronome
             Position = position;
             BPM = bpm;
         }
+
+        // BPM for 1/4 note beats as generally meant by DAWs
+        public float? QuaterBPM => BPM / 4f;
 
         public static Beat Stop()
         {
@@ -27,7 +30,8 @@ namespace Sonosthesia.Metronome
 
         public override string ToString()
         {
-            return $"{nameof(Beat)} {(Playing ? "Playing" : "Stopped")} {Position} {(BPM.HasValue ? $"{nameof(BPM)} {BPM.Value}" : "")}";
+            float? bpm = QuaterBPM;
+            return $"{nameof(Beat)} {(Playing ? "Playing" : "Stopped")} {Position} {(bpm.HasValue ? $"{nameof(QuaterBPM)} {bpm.Value}" : "")}";
             //return $"{nameof(Beat)} {Position}";
         }
     

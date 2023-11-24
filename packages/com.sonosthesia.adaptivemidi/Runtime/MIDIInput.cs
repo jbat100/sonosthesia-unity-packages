@@ -38,15 +38,15 @@ namespace Sonosthesia.AdaptiveMIDI
 
         #endregion
 
-        public void BroadcastNoteOn(MIDINote note) => _noteOnSubject.OnNext(note);
-        public void BroadcastNoteOff(MIDINote note) => _noteOffSubject.OnNext(note);
-        public void BroadcastControl(MIDIControl control) => _controlSubject.OnNext(control);
-        public void BroadcastChannelAftertouch(MIDIChannelAftertouch aftertouch) => _channelAftertouchSubject.OnNext(aftertouch);
-        public void BroadcastPolyphonicAftertouch(MIDIPolyphonicAftertouch aftertouch) => _polyphonicAftertouchSubject.OnNext(aftertouch);
-        public void BroadcastPitchBend(MIDIPitchBend pitchBend) => _pitchBendSubject.OnNext(pitchBend);
-        public void BroadcastClock(MIDIClock clock) => _clockSubject.OnNext(clock);
-        public void BroadcastPositionPointer(MIDISongPositionPointer pointer) => _songPositionPointerSubject.OnNext(pointer);
-        public void BroadcastSync(MIDISync sync) => _syncSubject.OnNext(sync);
+        protected void BroadcastNoteOn(MIDINote note) => _noteOnSubject.OnNext(note);
+        protected void BroadcastNoteOff(MIDINote note) => _noteOffSubject.OnNext(note);
+        protected void BroadcastControl(MIDIControl control) => _controlSubject.OnNext(control);
+        protected void BroadcastChannelAftertouch(MIDIChannelAftertouch aftertouch) => _channelAftertouchSubject.OnNext(aftertouch);
+        protected void BroadcastPolyphonicAftertouch(MIDIPolyphonicAftertouch aftertouch) => _polyphonicAftertouchSubject.OnNext(aftertouch);
+        protected void BroadcastPitchBend(MIDIPitchBend pitchBend) => _pitchBendSubject.OnNext(pitchBend);
+        protected void BroadcastClock(MIDIClock clock) => _clockSubject.OnNext(clock);
+        protected void BroadcastPositionPointer(MIDISongPositionPointer pointer) => _songPositionPointerSubject.OnNext(pointer);
+        protected void BroadcastSync(MIDISync sync) => _syncSubject.OnNext(sync);
 
     }
 }
