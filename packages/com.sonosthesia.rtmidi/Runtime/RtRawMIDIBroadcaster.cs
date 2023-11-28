@@ -1,24 +1,24 @@
 using System;
 using System.Text;
+using Sonosthesia.AdaptiveMIDI;
 using UniRx;
 using UnityEngine;
-using Sonosthesia.AdaptiveMIDI;
 
 namespace Sonosthesia.RtMIDI
 {
-    public class RtMIDIInput : MIDIInput
+    public class RtRawMIDIBroadcaster : RawMIDIBroadcaster
     {
         [SerializeField] private string _portName = "IAC Driver Unity";
 
         [SerializeField] private float _retryInterval = 1;
 
-        private RtMIDIInputProbe _probe;
-        private RtMIDIInputPort _port;
+        private RtMIDIOutputProbe _probe;
+        private RtMIDIOutputPort _port;
         private IDisposable _subscription;
-
+        
         private string Description()
         {
-            StringBuilder builder = new StringBuilder("MIDIInput scan : ");
+            StringBuilder builder = new StringBuilder("Rt MIDI output scan : ");
             int count = _probe.PortCount;
             for (int i = 0; i < count; i++)
             {
@@ -43,7 +43,7 @@ namespace Sonosthesia.RtMIDI
                         found = true;
                         _subscription?.Dispose();
                         _port?.Dispose();
-                        _port = new RtMIDIInputPort(i, portName);
+                        _port = new RtMIDIOutputPort(i, portName);
                         break;
                     }
                 }
@@ -60,15 +60,10 @@ namespace Sonosthesia.RtMIDI
         
         protected virtual void Awake()
         {
-            _probe = new RtMIDIInputProbe();
+            _probe = new RtMIDIOutputProbe();
             Scan();
         }
 
-        protected virtual void Update()
-        {
-            _port?.ProcessMessageQueue(this);
-        }
-        
         protected virtual void OnDestroy()
         {
             _probe?.Dispose();
@@ -79,6 +74,21 @@ namespace Sonosthesia.RtMIDI
             
             _subscription?.Dispose();
             _subscription = null;
+        }
+
+        public override void Broadcast(byte data0)
+        {
+            _port?.Broadcast(data0);
+        }
+
+        public override void Broadcast(byte data0, byte data1)
+        {
+            _port?.Broadcast(data0, data1);
+        }
+
+        public override void Broadcast(byte data0, byte data1, byte data2)
+        {
+            _port?.Broadcast(data0, data1, data2);
         }
     }
 }

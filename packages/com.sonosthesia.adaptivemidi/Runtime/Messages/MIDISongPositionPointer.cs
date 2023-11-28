@@ -5,7 +5,7 @@ namespace Sonosthesia.AdaptiveMIDI.Messages
     public readonly struct MIDISongPositionPointer
     {
         // http://midi.teragonaudio.com/tech/midispec/ssp.htm
-        // Position is the number of MIDI beats (16th notes)
+        // Position is the number of MIDI beats (16th notes) 7 bit [0-16383]
         
         public readonly TimeSpan Timestamp;
         public readonly int Position; 

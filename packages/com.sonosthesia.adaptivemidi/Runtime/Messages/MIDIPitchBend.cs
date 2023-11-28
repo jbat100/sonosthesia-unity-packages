@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Sonosthesia.AdaptiveMIDI.Messages
 {
@@ -20,6 +21,13 @@ namespace Sonosthesia.AdaptiveMIDI.Messages
             Timestamp = MIDIUtils.TimestampNow;
             Channel = channel;
             Value = value;
+        }
+
+        public MIDIPitchBend(int channel, float semitones, float range)
+        {
+            Timestamp = MIDIUtils.TimestampNow;
+            Channel = channel;
+            Value = Mathf.RoundToInt(Mathf.Min(semitones, range) * 8191 / range);
         }
         
         public override string ToString()

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.AdaptiveMIDI
 {
-    public abstract class MIDIOutput : MonoBehaviour, IMIDIBroadcaster
+    public abstract class MIDIOutput : MonoBehaviour, IMIDIMessageBroadcaster
     {
         public abstract void BroadcastNoteOn(MIDINote note);
         public abstract void BroadcastNoteOff(MIDINote note);

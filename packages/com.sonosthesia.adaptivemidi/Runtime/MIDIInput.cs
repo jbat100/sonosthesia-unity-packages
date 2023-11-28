@@ -5,7 +5,7 @@ using Sonosthesia.AdaptiveMIDI.Messages;
 
 namespace Sonosthesia.AdaptiveMIDI
 {
-    public class MIDIInput : MonoBehaviour, IMIDIBroadcaster
+    public class MIDIInput : MonoBehaviour, IMIDIMessageBroadcaster
     {
         #region Observables
         

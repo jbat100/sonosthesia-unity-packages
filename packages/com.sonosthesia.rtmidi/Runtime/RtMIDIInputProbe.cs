@@ -3,11 +3,6 @@ using RtMidiDll = RtMidi.Unmanaged;
 
 namespace Sonosthesia.RtMIDI
 {
-    //
-    // MIDI probe class used for enumerating MIDI ports
-    //
-    // This is actually an RtMidi input object without any input functionality.
-    //
     sealed unsafe class RtMIDIInputProbe : System.IDisposable
     {
         RtMidiDll.Wrapper* _rtmidi;
@@ -36,8 +31,10 @@ namespace Sonosthesia.RtMIDI
             System.GC.SuppressFinalize(this);
         }
 
-        public int PortCount {
-            get {
+        public int PortCount 
+        {
+            get 
+            {
                 if (_rtmidi == null || !_rtmidi->ok) return 0;
                 return (int)RtMidiDll.GetPortCount(_rtmidi);
             }

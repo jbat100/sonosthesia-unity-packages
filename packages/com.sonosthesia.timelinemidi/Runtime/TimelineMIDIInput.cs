@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Playables;
-using Sonosthesia.MIDI;
 using Sonosthesia.AdaptiveMIDI;
 using Sonosthesia.AdaptiveMIDI.Messages;
 

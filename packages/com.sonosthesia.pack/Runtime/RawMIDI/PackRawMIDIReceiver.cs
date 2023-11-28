@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Pack
 {
-    public class PackMIDIRawReceiver : MonoBehaviour
+    public class PackRawMIDIReceiver : MonoBehaviour
     {
         [SerializeField] private AddressedPackConnection _connection;
 
