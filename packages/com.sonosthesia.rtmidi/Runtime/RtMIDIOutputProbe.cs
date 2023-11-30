@@ -3,7 +3,7 @@ using RtMidiDll = RtMidi.Unmanaged;
 
 namespace Sonosthesia.RtMIDI
 {
-    sealed unsafe class RtMIDIOutputProbe : System.IDisposable
+    internal sealed unsafe class RtMIDIOutputProbe : System.IDisposable
     {
         RtMidiDll.Wrapper* _rtmidi;
 

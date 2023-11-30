@@ -9,7 +9,6 @@ namespace Sonosthesia.RtMIDI
     {
         private RtMidiDll.Wrapper* _rtmidi;
         private string _portName;
-        private readonly MIDIDecoder _decoder = new();
         
         public RtMIDIInputPort(int portNumber, string portName)
         {
@@ -53,7 +52,7 @@ namespace Sonosthesia.RtMIDI
         // work well under the unmanaged-to-managed invocation. It'll be broken when
         // the callback is called from an unattached MIDI driver thread.
         
-        public void ProcessMessageQueue(IMIDIMessageBroadcaster broadcaster)
+        public void ProcessMessageQueue(IRawTimestampedMIDIBroadcaster broadcaster)
         {
             if (_rtmidi == null || !_rtmidi->ok)
             {
@@ -75,7 +74,7 @@ namespace Sonosthesia.RtMIDI
                 
                 if (stamp < 0)
                 {
-                    Debug.LogWarning($"{nameof(ProcessMessageQueue)} iteration with stamp {stamp} {size} status {message[0]:X}");
+                    //Debug.LogWarning($"{nameof(ProcessMessageQueue)} iteration with stamp {stamp} {size} status {message[0]:X}");
                     break;
                 }
                 
@@ -83,18 +82,18 @@ namespace Sonosthesia.RtMIDI
                 
                 TimeSpan timestamp = TimeSpan.FromSeconds(_cummulativeTimestamp);
                 
-                Debug.Log($"{nameof(ProcessMessageQueue)} iteration with stamp {stamp} {size} status {message[0]:X}");
+                //Debug.Log($"{nameof(ProcessMessageQueue)} iteration with stamp {stamp} {size} status {message[0]:X}");
 
                 switch (size)
                 {
                     case 1:
-                        _decoder.Decode(broadcaster, timestamp, message[0]);
+                        broadcaster.Broadcast(timestamp, message[0]);
                         break;
                     case 2:
-                        _decoder.Decode(broadcaster, timestamp, message[0], message[1]);
+                        broadcaster.Broadcast(timestamp, message[0], message[1]);
                         break;
                     case 3:
-                        _decoder.Decode(broadcaster, timestamp, message[0], message[1], message[2]);
+                        broadcaster.Broadcast(timestamp, message[0], message[1], message[2]);
                         break;
                 }
             }

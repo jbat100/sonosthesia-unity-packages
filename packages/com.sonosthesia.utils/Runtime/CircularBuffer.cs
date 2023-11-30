@@ -236,6 +236,11 @@ namespace Sonosthesia.Utils
 
         public IEnumerator<T> GetEnumerator()
         {
+            if (m_Size == 0)
+            {
+                yield break;
+            }
+            
             var segments = new[] { ArrayOne(), ArrayTwo() };
             foreach (ArraySegment<T> segment in segments)
             {
@@ -603,6 +608,11 @@ namespace Sonosthesia.Utils
 
         public IEnumerator<T> GetEnumerator()
         {
+            if (m_Size == 0)
+            {
+                yield break;
+            }
+            
             var segments = new[] { ArrayOne(), ArrayTwo() };
             foreach (ArraySegment<T> segment in segments)
             {

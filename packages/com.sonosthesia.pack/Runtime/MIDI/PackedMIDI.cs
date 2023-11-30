@@ -232,6 +232,14 @@ namespace Sonosthesia.Pack
         {
             return new MIDIClock(clock.Count);
         }
+
+        public static PackedMIDIClock Pack(this MIDIClock clock, string port)
+        {
+            return new PackedMIDIClock()
+            {
+                Count = clock.Count
+            };
+        }
         
         public static MIDIChannelAftertouch Unpack(this PackedMIDIChannelAftertouch note)
         {

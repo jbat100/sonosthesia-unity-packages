@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Pack
 {
-    public class PackRawMIDIBroadcaster : RawMIDIBroadcaster
+    public class PackRawMIDIOutputStream : RawMIDIOutputStream
     {
         [SerializeField] private AddressedPackConnection _connection;
         

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Sonosthesia.RtMIDI
 {
-    public class RtRawMIDIBroadcaster : RawMIDIBroadcaster
+    public class RtMIDIOutputStream : RawMIDIOutputStream
     {
         [SerializeField] private string _portName = "IAC Driver Unity";
 

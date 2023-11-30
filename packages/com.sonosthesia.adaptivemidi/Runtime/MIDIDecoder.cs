@@ -5,6 +5,16 @@ namespace Sonosthesia.AdaptiveMIDI
 {
     public interface IMIDIMessageBroadcaster
     {
+        public IObservable<MIDINote> NoteOnObservable { get; }
+        public IObservable<MIDINote> NoteOffObservable { get; }
+        public IObservable<MIDIControl> ControlObservable { get; }
+        public IObservable<MIDIChannelAftertouch> ChannelAftertouchObservable { get; }
+        public IObservable<MIDIPolyphonicAftertouch> PolyphonicAftertouchObservable { get; }
+        public IObservable<MIDIPitchBend> PitchBendObservable { get; }
+        public IObservable<MIDIClock> ClockObservable { get; }
+        public IObservable<MIDISongPositionPointer> SongPositionPointerObservable { get; }
+        public IObservable<MIDISync> SyncObservable { get; }
+        
         void BroadcastNoteOn(MIDINote note);
         void BroadcastNoteOff(MIDINote note);
         void BroadcastControl(MIDIControl control);

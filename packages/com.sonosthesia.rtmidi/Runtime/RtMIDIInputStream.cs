@@ -6,14 +6,14 @@ using Sonosthesia.AdaptiveMIDI;
 
 namespace Sonosthesia.RtMIDI
 {
-    public class RtMIDIInput : MIDIInput
+    public class RtMIDIInputStream : RawMIDIInputStream
     {
-        [SerializeField] private string _portName = "IAC Driver Unity";
+        [SerializeField] private string _port = "IAC Driver Unity";
 
         [SerializeField] private float _retryInterval = 1;
 
         private RtMIDIInputProbe _probe;
-        private RtMIDIInputPort _port;
+        private RtMIDIInputPort _inputPort;
         private IDisposable _subscription;
 
         private string Description()
@@ -38,22 +38,22 @@ namespace Sonosthesia.RtMIDI
                 for (int i = 0; i < count; i++)
                 {
                     string portName = _probe.GetPortName(i);
-                    if (portName == _portName)
+                    if (portName == _port)
                     {
                         found = true;
                         _subscription?.Dispose();
-                        _port?.Dispose();
-                        _port = new RtMIDIInputPort(i, portName);
+                        _inputPort?.Dispose();
+                        _inputPort = new RtMIDIInputPort(i, portName);
                         break;
                     }
                 }
                 if (!found)
                 {
-                    Debug.LogWarning($"Could not find MIDI port {_portName} from {count} available");
+                    Debug.LogWarning($"Could not find MIDI port {_port} from {count} available");
                 }
                 else
                 {
-                    Debug.Log($"Found MIDI port {_portName}");
+                    Debug.Log($"Found MIDI port {_port}");
                 }
             });
         }
@@ -66,7 +66,7 @@ namespace Sonosthesia.RtMIDI
 
         protected virtual void Update()
         {
-            _port?.ProcessMessageQueue(this);
+            _inputPort?.ProcessMessageQueue(this);
         }
         
         protected virtual void OnDestroy()
@@ -74,8 +74,8 @@ namespace Sonosthesia.RtMIDI
             _probe?.Dispose();
             _probe = null;
             
-            _port?.Dispose();
-            _port = null;
+            _inputPort?.Dispose();
+            _inputPort = null;
             
             _subscription?.Dispose();
             _subscription = null;

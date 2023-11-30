@@ -10,6 +10,13 @@ namespace Sonosthesia.AdaptiveMIDI
         void Broadcast(byte data0, byte data1, byte data2);
     }
     
+    public interface IRawTimestampedMIDIBroadcaster
+    {
+        void Broadcast(TimeSpan timestamp, byte data0);
+        void Broadcast(TimeSpan timestamp, byte data0, byte data1);
+        void Broadcast(TimeSpan timestamp, byte data0, byte data1, byte data2);
+    }
+    
     public class MIDIEncoder
     {
         private bool Try7Bit(int value, out byte data)
@@ -38,8 +45,8 @@ namespace Sonosthesia.AdaptiveMIDI
                 return false;
             }
             
-            lsb = (byte) (value & 0x7);
-            msb = (byte) ((value << 7) & 0x7);
+            lsb = (byte) (value & 0x7f);
+            msb = (byte) ((value >> 7) & 0x7f);
             return true;
         }
 
@@ -47,7 +54,7 @@ namespace Sonosthesia.AdaptiveMIDI
         {
             if (Try7Bit(channel, out byte channelByte))
             {
-                result = (byte)((status << 4) & channelByte);
+                result = (byte)((status << 4) | channelByte);
                 return true;
             }
             result = default;
@@ -105,7 +112,7 @@ namespace Sonosthesia.AdaptiveMIDI
 
         public void EncodePitchBend(IRawMIDIBroadcaster broadcaster, MIDIPitchBend pitchBend)
         {
-            if (TryStatusChannel(0xa, pitchBend.Channel, out byte data0) && 
+            if (TryStatusChannel(0xe, pitchBend.Channel, out byte data0) && 
                 Try14Bit(pitchBend.Value, true, out byte data1, out byte data2))
             {
                 broadcaster.Broadcast(data0, data1, data2);
