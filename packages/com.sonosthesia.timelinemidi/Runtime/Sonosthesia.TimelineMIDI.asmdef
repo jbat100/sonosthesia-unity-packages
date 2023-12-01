@@ -1,14 +1,13 @@
 {
-    "name": "Sonosthesia.Timeline.Midi.Editor",
+    "name": "Sonosthesia.TimelineMIDI",
     "rootNamespace": "",
     "references": [
         "GUID:f06555f75b070af458a003d92f9efb00",
-        "GUID:02f771204943f4a40949438e873e3eff",
-        "GUID:fde955cc44fb74813822452ba8e4f028"
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:38486b356fe2649a3abdb6285911b25d",
+        "GUID:6c6dc842e821b4881bee7a84bbd34b94"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
