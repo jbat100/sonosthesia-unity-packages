@@ -1,17 +1,17 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Sonosthesia.Timeline.Midi
+namespace Sonosthesia.Timeline.MIDI
 {
     // Object pool class for MIDI signals
-    sealed class MidiSignalPool
+    sealed class MIDISignalPool
     {
-        Stack<MidiSignal> _usedSignals = new Stack<MidiSignal>();
-        Stack<MidiSignal> _freeSignals = new Stack<MidiSignal>();
+        Stack<MIDISignal> _usedSignals = new Stack<MIDISignal>();
+        Stack<MIDISignal> _freeSignals = new Stack<MIDISignal>();
 
-        public MidiSignal Allocate(in MidiEvent data)
+        public MIDISignal Allocate(in MIDIEvent data)
         {
-            var signal = _freeSignals.Count > 0 ?  _freeSignals.Pop() : new MidiSignal();
+            var signal = _freeSignals.Count > 0 ?  _freeSignals.Pop() : new MIDISignal();
             signal.Event = data;
             _usedSignals.Push(signal);
             return signal;

@@ -1,10 +1,10 @@
 using UnityEngine;
 
-namespace Sonosthesia.Timeline.Midi
+namespace Sonosthesia.Timeline.MIDI
 {
     // ScriptableObject class used for storing a MIDI file asset
-    sealed public class MidiFileAsset : ScriptableObject
+    sealed public class MIDIFileAsset : ScriptableObject
     {
-        public MidiAnimationAsset [] tracks;
+        public MIDIAnimationAsset [] tracks;
     }
 }

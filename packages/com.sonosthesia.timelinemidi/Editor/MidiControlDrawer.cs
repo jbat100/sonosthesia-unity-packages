@@ -6,14 +6,14 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
-namespace Sonosthesia.Timeline.Midi
+namespace Sonosthesia.Timeline.MIDI
 {
     // Property drawer implementation for MidiControl
-    sealed class MidiControlInternalDrawer
+    sealed class MIDIControlInternalDrawer
     {
         #region Public properties and methods
 
-        public MidiControlInternalDrawer(SerializedProperty property)
+        public MIDIControlInternalDrawer(SerializedProperty property)
         {
             _mode       = property.FindPropertyRelative("mode");
             _noteFilter = property.FindPropertyRelative("noteFilter");
@@ -55,17 +55,17 @@ namespace Sonosthesia.Timeline.Midi
             EditorGUI.PropertyField(_rect, _mode, _labelControlMode);
             MoveRectToNextLine();
 
-            if (_mode.enumValueIndex == (int)MidiControl.Mode.NoteEnvelope)
+            if (_mode.enumValueIndex == (int)MIDITimelineControl.Mode.NoteEnvelope)
             {
                 EditorGUI.PropertyField(_rect, _noteFilter, _labelNoteOctave);
                 MoveRectToNextLine();
 
                 var r = _rect;
-                r.height = MidiEnvelopeDrawer.GetHeight();
+                r.height = MIDIEnvelopeDrawer.GetHeight();
                 EditorGUI.PropertyField(r, _envelope);
                 _rect.y += r.height;
             }
-            else if (_mode.enumValueIndex == (int)MidiControl.Mode.NoteCurve)
+            else if (_mode.enumValueIndex == (int)MIDITimelineControl.Mode.NoteCurve)
             {
                 EditorGUI.PropertyField(_rect, _noteFilter, _labelNoteOctave);
                 MoveRectToNextLine();
@@ -297,10 +297,10 @@ namespace Sonosthesia.Timeline.Midi
                 while (true)
                 {
                     var type = itr.propertyType;
-                    if (MidiEditorUtility.IsPropertyTypeSupported(type))
+                    if (MIDIEditorUtility.IsPropertyTypeSupported(type))
                     {
                         // Check if the field has a corresponding property.
-                        var pname = MidiEditorUtility.GuessPropertyNameFromFieldName(itr.name);
+                        var pname = MIDIEditorUtility.GuessPropertyNameFromFieldName(itr.name);
                         if (componentType.GetProperty(pname) != null)
                         {
                             // Append this field.
@@ -334,15 +334,15 @@ namespace Sonosthesia.Timeline.Midi
 
     // Custom property drawer for MidiControl
     // Provides a cache for instances of the drawer implementation.
-    [CustomPropertyDrawer(typeof(MidiControl), true)]
-    sealed class MidiControlDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(MIDITimelineControl), true)]
+    sealed class MIDIControlDrawer : PropertyDrawer
     {
-        Dictionary<string, MidiControlInternalDrawer>
-            _drawers = new Dictionary<string, MidiControlInternalDrawer>();
+        Dictionary<string, MIDIControlInternalDrawer>
+            _drawers = new Dictionary<string, MIDIControlInternalDrawer>();
 
-        MidiControlInternalDrawer GetCachedDrawer(SerializedProperty property)
+        MIDIControlInternalDrawer GetCachedDrawer(SerializedProperty property)
         {
-            MidiControlInternalDrawer drawer;
+            MIDIControlInternalDrawer drawer;
 
             var path = property.propertyPath;
             _drawers.TryGetValue(path, out drawer);
@@ -351,7 +351,7 @@ namespace Sonosthesia.Timeline.Midi
             {
                 // No instance was found witht the given path,
                 // so create a new instance for it.
-                drawer = new MidiControlInternalDrawer(property);
+                drawer = new MIDIControlInternalDrawer(property);
                 _drawers[path] = drawer;
             }
 

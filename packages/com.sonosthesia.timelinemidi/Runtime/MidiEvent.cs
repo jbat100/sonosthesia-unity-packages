@@ -1,8 +1,8 @@
-namespace Sonosthesia.Timeline.Midi
+namespace Sonosthesia.Timeline.MIDI
 {
     // MIDI event raw data struct
     [System.Serializable]
-    public struct MidiEvent
+    public struct MIDIEvent
     {
         public uint time;
         public byte status;

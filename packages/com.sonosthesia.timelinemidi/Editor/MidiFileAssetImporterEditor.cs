@@ -1,15 +1,11 @@
 using UnityEditor;
-#if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
-#else
-using UnityEditor.Experimental.AssetImporters;
-#endif
 
-namespace Sonosthesia.Timeline.Midi
+namespace Sonosthesia.Timeline.MIDI
 {
     // Custom inspector for MIDI file assets
-    [CustomEditor(typeof(MidiFileAssetImporter)), CanEditMultipleObjects]
-    sealed class MidiFileAssetImporterEditor : ScriptedImporterEditor
+    [CustomEditor(typeof(MIDIFileAssetImporter)), CanEditMultipleObjects]
+    sealed class MIDIFileAssetImporterEditor : ScriptedImporterEditor
     {
         SerializedProperty _tempo;
 

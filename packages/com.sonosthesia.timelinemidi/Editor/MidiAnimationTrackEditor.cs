@@ -2,12 +2,12 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Timeline;
 
-namespace Sonosthesia.Timeline.Midi
+namespace Sonosthesia.Timeline.MIDI
 {
     // Custom inspector for MIDI animation tracks
     // It provides a UI for editing track controls.
-    [CustomEditor(typeof(MidiAnimationTrack))]
-    class MidiAnimationTrackEditor : Editor
+    [CustomEditor(typeof(MIDIAnimationTrack))]
+    class MIDIAnimationTrackEditor : Editor
     {
         #region Editor implementation
 
@@ -75,13 +75,13 @@ namespace Sonosthesia.Timeline.Midi
             serializedObject.ApplyModifiedProperties();
 
             // Set a new control instance.
-            var track = (MidiAnimationTrack)target;
+            var track = (MIDIAnimationTrack)target;
             var controls = track.template.controls;
             Undo.RecordObject(track, "Add MIDI Control");
-            controls[controls.Length - 1] = new MidiControl();
+            controls[controls.Length - 1] = new MIDITimelineControl();
         }
 
-        void CopyControl(MidiControl src, MidiControl dst, bool updateGuid)
+        void CopyControl(MIDITimelineControl src, MIDITimelineControl dst, bool updateGuid)
         {
             // Copy MidiControl members.
             // Is there any smarter way to do this?
@@ -123,7 +123,7 @@ namespace Sonosthesia.Timeline.Midi
             public static readonly GUIContent Paste = new GUIContent("Paste");
         }
 
-        static MidiControl _clipboard = new MidiControl();
+        static MIDITimelineControl _clipboard = new MIDITimelineControl();
 
         void OnContextClick(Vector2 pos, int index)
         {
@@ -166,9 +166,9 @@ namespace Sonosthesia.Timeline.Midi
 
         void OnResetControl(int index)
         {
-            var track = (MidiAnimationTrack)target;
+            var track = (MIDIAnimationTrack)target;
             Undo.RecordObject(track, "Reset MIDI Control");
-            track.template.controls[index] = new MidiControl();
+            track.template.controls[index] = new MIDITimelineControl();
             TimelineEditor.Refresh(RefreshReason.ContentsModified);
         }
 
@@ -182,14 +182,14 @@ namespace Sonosthesia.Timeline.Midi
 
         void OnCopyControl(int index)
         {
-            var track = (MidiAnimationTrack)target;
+            var track = (MIDIAnimationTrack)target;
             Undo.RecordObject(track, "Copy MIDI Control");
             CopyControl(track.template.controls[index], _clipboard, false);
         }
 
         void OnPasteControl(int index)
         {
-            var track = (MidiAnimationTrack)target;
+            var track = (MIDIAnimationTrack)target;
             Undo.RecordObject(track, "Paste MIDI Control");
             CopyControl(_clipboard, track.template.controls[index], true);
             TimelineEditor.Refresh(RefreshReason.ContentsModified);

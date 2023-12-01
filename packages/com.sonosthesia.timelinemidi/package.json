@@ -5,7 +5,7 @@
     "com.sonosthesia.midi": "1.2.0"
   },
   "description": "Custom timeline/playables package that provides callbacks based on sequence data contained in a standard MIDI file",
-  "displayName": "Sonosthesia Timeline Midi",
+  "displayName": "Sonosthesia Timeline MIDI",
   "keywords": [
     "unity"
   ],

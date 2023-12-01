@@ -1,11 +1,11 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Sonosthesia.Timeline.Midi
+namespace Sonosthesia.Timeline.MIDI
 {
     // Custom property drawer for ADSR envelope parameters
     [CustomPropertyDrawer(typeof(MidiEnvelope), true)]
-    sealed class MidiEnvelopeDrawer : PropertyDrawer
+    sealed class MIDIEnvelopeDrawer : PropertyDrawer
     {
         #region Public method
 

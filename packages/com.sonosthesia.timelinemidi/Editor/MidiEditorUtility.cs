@@ -1,8 +1,8 @@
 using UnityEditor;
 
-namespace Sonosthesia.Timeline.Midi
+namespace Sonosthesia.Timeline.MIDI
 {
-    static class MidiEditorUtility
+    static class MIDIEditorUtility
     {
         //
         // Guess a property name from a given field name.

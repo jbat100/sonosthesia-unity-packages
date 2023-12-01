@@ -1,30 +1,30 @@
 using UnityEngine;
 
-namespace Sonosthesia.Timeline.Midi
+namespace Sonosthesia.Timeline.MIDI
 {
     // MIDI control class and related structs and enums
 
     #region Control parameter types
 
-    public enum MidiNote {
+    public enum MIDINoteName {
         All, C, CSharp, D, DSharp, E, F, FSharp, G, GSharp, A, ASharp, B
     }
 
-    public enum MidiOctave {
+    public enum MIDIOctaveName {
         All, Minus2, Minus1, Zero, Plus1, Plus2, Plus3, Plus4, Plus5, Plus6, Plus7, Plus8
     }
 
     [System.Serializable]
-    public struct MidiNoteFilter
+    public struct MIDINoteFilter
     {
-        public MidiNote note;
-        public MidiOctave octave;
+        public MIDINoteName noteName;
+        public MIDIOctaveName octaveName;
 
-        public bool Check(in MidiEvent e)
+        public bool Check(in MIDIEvent e)
         {
             return e.IsNote &&
-                (octave == MidiOctave.All || e.data1 / 12 == (int)octave - 1) &&
-                (note   == MidiNote  .All || e.data1 % 12 == (int)note   - 1);
+                (octaveName == MIDIOctaveName.All || e.data1 / 12 == (int)octaveName - 1) &&
+                (noteName   == MIDINoteName  .All || e.data1 % 12 == (int)noteName   - 1);
         }
     }
 
@@ -51,7 +51,7 @@ namespace Sonosthesia.Timeline.Midi
     #region Serializable MIDI control class
 
     [System.Serializable]
-    public sealed class MidiControl
+    public sealed class MIDITimelineControl
     {
         // Is this control enabled?
         public bool enabled = true;
@@ -61,8 +61,8 @@ namespace Sonosthesia.Timeline.Midi
         public Mode mode = Mode.NoteEnvelope;
 
         // (Note mode) Note filter
-        public MidiNoteFilter noteFilter = new MidiNoteFilter {
-            note = MidiNote.All, octave = MidiOctave.All
+        public MIDINoteFilter noteFilter = new MIDINoteFilter {
+            noteName = MIDINoteName.All, octaveName = MIDIOctaveName.All
         };
 
         // (Note Envelope mode) Envelope parameters

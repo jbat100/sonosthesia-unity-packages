@@ -1,15 +1,15 @@
 using UnityEngine;
 using UnityEngine.Playables;
 
-namespace Sonosthesia.Timeline.Midi
+namespace Sonosthesia.Timeline.MIDI
 {
     // Payload for MIDI event notifications
-    public sealed class MidiSignal : INotification
+    public sealed class MIDISignal : INotification
     {
         // Notification ID (not in use)
         PropertyName INotification.id { get { return default(PropertyName);} }
 
         // MIDI event
-        public MidiEvent Event { get; set; }
+        public MIDIEvent Event { get; set; }
     }
 }

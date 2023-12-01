@@ -3,16 +3,15 @@ using UnityEngine.Playables;
 using Sonosthesia.AdaptiveMIDI;
 using Sonosthesia.AdaptiveMIDI.Messages;
 
-namespace Sonosthesia.Timeline.Midi
+namespace Sonosthesia.Timeline.MIDI
 {
-    // Receives MIDI signals (MIDI event notifications) from a timeline and
-    // invokes assigned events.
+    // Receives MIDI signals (MIDI event notifications) from a timeline and invokes assigned events.
     [ExecuteInEditMode]
     public sealed class TimelineMIDIInput : MIDIInput, INotificationReceiver
     {
         public void OnNotify(Playable origin, INotification notification, object context)
         {
-            MidiEvent midiEvent = ((MidiSignal)notification).Event;
+            MIDIEvent midiEvent = ((MIDISignal)notification).Event;
             Debug.Log($"Received event {midiEvent} note {midiEvent.IsNote} cc {midiEvent.IsCC} pressure {midiEvent.IsPolyphonicAftertouch}");
 
             if (midiEvent.IsNoteOn)

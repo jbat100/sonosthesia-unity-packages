@@ -1,18 +1,18 @@
 using UnityEngine;
 using UnityEngine.Playables;
 
-namespace Sonosthesia.Timeline.Midi
+namespace Sonosthesia.Timeline.MIDI
 {
     // Runtime playable class that calculates MIDI based animation
     [System.Serializable]
-    public sealed class MidiAnimation : PlayableBehaviour
+    public sealed class MIDIAnimation : PlayableBehaviour
     {
         #region Serialized variables
 
         public float tempo = 120;
         public uint duration;
         public uint ticksPerQuarterNote = 96;
-        public MidiEvent [] events;
+        public MIDIEvent [] events;
 
         #endregion
 
@@ -22,13 +22,13 @@ namespace Sonosthesia.Timeline.Midi
             get { return duration / tempo * 60 / ticksPerQuarterNote; }
         }
 
-        public float GetValue(Playable playable, MidiControl control)
+        public float GetValue(Playable playable, MIDITimelineControl control)
         {
             if (events == null) return 0;
             var t = (float)playable.GetTime() % DurationInSecond;
-            if (control.mode == MidiControl.Mode.NoteEnvelope)
+            if (control.mode == MIDITimelineControl.Mode.NoteEnvelope)
                 return GetNoteEnvelopeValue(control, t);
-            else if (control.mode == MidiControl.Mode.NoteCurve)
+            else if (control.mode == MIDITimelineControl.Mode.NoteCurve)
                 return GetNoteCurveValue(control, t);
             else // CC
                 return GetCCValue(control, t);
@@ -92,7 +92,7 @@ namespace Sonosthesia.Timeline.Midi
 
         #region MIDI signal emission
 
-        MidiSignalPool _signalPool = new MidiSignalPool();
+        MIDISignalPool _signalPool = new MIDISignalPool();
 
         void TriggerSignals
             (Playable playable, PlayableOutput output, float previous, float current)
@@ -155,7 +155,7 @@ namespace Sonosthesia.Timeline.Midi
             return (last, last);
         }
 
-        (int iOn, int iOff) GetNoteEventsBeforeTick(uint tick, MidiNoteFilter note)
+        (int iOn, int iOff) GetNoteEventsBeforeTick(uint tick, MIDINoteFilter note)
         {
             var iOn = -1;
             var iOff = -1;
@@ -213,7 +213,7 @@ namespace Sonosthesia.Timeline.Midi
 
         #region Value calculation methods
 
-        float GetNoteEnvelopeValue(MidiControl control, float time)
+        float GetNoteEnvelopeValue(MIDITimelineControl control, float time)
         {
             var tick = ConvertSecondToTicks(time);
             var pair = GetNoteEventsBeforeTick(tick, control.noteFilter);
@@ -239,7 +239,7 @@ namespace Sonosthesia.Timeline.Midi
             return envelope * velocity;
         }
 
-        float GetNoteCurveValue(MidiControl control, float time)
+        float GetNoteCurveValue(MIDITimelineControl control, float time)
         {
             var tick = ConvertSecondToTicks(time);
             var pair = GetNoteEventsBeforeTick(tick, control.noteFilter);
@@ -256,7 +256,7 @@ namespace Sonosthesia.Timeline.Midi
             return curve * velocity;
         }
 
-        float GetCCValue(MidiControl control, float time)
+        float GetCCValue(MIDITimelineControl control, float time)
         {
             var tick = ConvertSecondToTicks(time);
             var pair = GetCCEventIndexAroundTick(tick, control.ccNumber);

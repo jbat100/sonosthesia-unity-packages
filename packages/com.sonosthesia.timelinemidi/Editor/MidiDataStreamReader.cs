@@ -1,7 +1,7 @@
-namespace Sonosthesia.Timeline.Midi
+namespace Sonosthesia.Timeline.MIDI
 {
     // MIDI binary data stream reader
-    sealed class MidiDataStreamReader
+    sealed class MIDIDataStreamReader
     {
         #region Internal members
 
@@ -12,7 +12,7 @@ namespace Sonosthesia.Timeline.Midi
 
         #region Constructor
 
-        public MidiDataStreamReader(byte [] data)
+        public MIDIDataStreamReader(byte [] data)
         {
             _data = data;
             _stringBuilder = new System.Text.StringBuilder();
