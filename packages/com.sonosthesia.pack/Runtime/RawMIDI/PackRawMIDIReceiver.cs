@@ -8,34 +8,37 @@ namespace Sonosthesia.Pack
     {
         [SerializeField] private AddressedPackConnection _connection;
 
+        [SerializeField] private string _portFilter;
+
         private IDisposable _subscription;
         
-        private readonly Subject<PackedMIDIRawSourceSingle> _singleSubject = new ();
-        internal IObservable<PackedMIDIRawSourceSingle> SingleObservable 
+        private readonly Subject<PackedRawMIDISourceSingle> _singleSubject = new ();
+        internal IObservable<PackedRawMIDISourceSingle> SingleObservable 
             => _singleSubject.AsObservable();
         
-        private readonly Subject<PackedMIDIRawSourceDouble> _doubleSubject = new ();
-        internal IObservable<PackedMIDIRawSourceDouble> DoubleObservable 
+        private readonly Subject<PackedRawMIDISourceDouble> _doubleSubject = new ();
+        internal IObservable<PackedRawMIDISourceDouble> DoubleObservable 
             => _doubleSubject.AsObservable();
         
-        private readonly Subject<PackedMIDIRawSourceTripple> _trippleSubject = new ();
-        internal IObservable<PackedMIDIRawSourceTripple> TrippleObservable 
+        private readonly Subject<PackedRawMIDISourceTripple> _trippleSubject = new ();
+        internal IObservable<PackedRawMIDISourceTripple> TrippleObservable 
             => _trippleSubject.AsObservable();
         
         private protected virtual IDisposable Setup(AddressedPackConnection connection)
         {
             CompositeDisposable subscriptions = new();
 
-            void Connect<T>(string address, IObserver<T> observer)
+            void Connect<T>(string address, IObserver<T> observer) where T : IPackedRawMIDISourceData
             {
                 subscriptions.Add(connection.IncomingContentObservable<T>(address)
+                    .Where(data => string.IsNullOrEmpty(_portFilter) || data.Port == _portFilter)
                     .ObserveOnMainThread()
                     .Subscribe(observer));
             }
             
-            Connect(PackMIDIRawSourceAddress.SINGLE, _singleSubject);
-            Connect(PackMIDIRawSourceAddress.DOUBLE, _doubleSubject);
-            Connect(PackMIDIRawSourceAddress.TRIPPLE, _trippleSubject);
+            Connect(PackRawMIDISourceAddress.SINGLE, _singleSubject);
+            Connect(PackRawMIDISourceAddress.DOUBLE, _doubleSubject);
+            Connect(PackRawMIDISourceAddress.TRIPPLE, _trippleSubject);
             
             return subscriptions;
         }
@@ -50,6 +53,6 @@ namespace Sonosthesia.Pack
         {
             _subscription?.Dispose();
             _subscription = null;
-        } 
+        }
     }
 }

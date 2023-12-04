@@ -11,35 +11,35 @@ namespace Sonosthesia.Pack
 
         public override void Broadcast(byte data0)
         {
-            PackedMIDIRawSinkSingle data = new PackedMIDIRawSinkSingle
+            PackedRawMIDISinkSingle data = new PackedRawMIDISinkSingle
             {
                 Port = _port,
                 B0 = data0
             };
-            _connection.QueueOutgoingContent(PackMIDIRawSinkAddress.SINGLE, data);
+            _connection.QueueOutgoingContent(PackRawMIDISinkAddress.SINGLE, data);
         }
 
         public override void Broadcast(byte data0, byte data1)
         {
-            PackedMIDIRawSinkDouble data = new PackedMIDIRawSinkDouble
+            PackedRawMIDISinkDouble data = new PackedRawMIDISinkDouble
             {
                 Port = _port,
                 B0 = data0,
                 B1 = data1
             };
-            _connection.QueueOutgoingContent(PackMIDIRawSinkAddress.DOUBLE, data);
+            _connection.QueueOutgoingContent(PackRawMIDISinkAddress.DOUBLE, data);
         }
 
         public override void Broadcast(byte data0, byte data1, byte data2)
         {
-            PackedMIDIRawSinkTripple data = new PackedMIDIRawSinkTripple
+            PackedRawMIDISinkTripple data = new PackedRawMIDISinkTripple
             {
                 Port = _port,
                 B0 = data0,
                 B1 = data1,
                 B2 = data2
             };
-            _connection.QueueOutgoingContent(PackMIDIRawSinkAddress.TRIPPLE, data);
+            _connection.QueueOutgoingContent(PackRawMIDISinkAddress.TRIPPLE, data);
         }
     }
 }

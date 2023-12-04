@@ -5,9 +5,9 @@ using Sonosthesia.AdaptiveMIDI;
 
 namespace Sonosthesia.Pack
 {
-    public class PackMIDIInput : MIDIInput
+    public class PackLiveMIDIInput : MIDIInput
     {
-        [SerializeField] private PackMIDIReceiver _receiver;
+        [SerializeField] private PackLiveMIDIReceiver _receiver;
 
         [SerializeField] private string _portFilter;
 
@@ -15,11 +15,11 @@ namespace Sonosthesia.Pack
 
         private IDisposable _subscription;
 
-        protected virtual IDisposable Setup(PackMIDIReceiver receiver)
+        protected virtual IDisposable Setup(PackLiveMIDIReceiver receiver)
         {
             CompositeDisposable subscriptions = new();
 
-            void Connect<T>(IObservable<T> observable, Action<T> processor) where T : IPackedAddressedMIDIMessage
+            void Connect<T>(IObservable<T> observable, Action<T> processor) where T : IPackedLiveMIDIMessage
             {
                 subscriptions.Add(observable
                     .Where(item => item.Check(_portFilter, _trackFilter))

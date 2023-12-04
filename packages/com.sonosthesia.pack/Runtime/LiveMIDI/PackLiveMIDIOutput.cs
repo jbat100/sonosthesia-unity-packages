@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Pack
 {
-    public class PackMIDIMessageBroadcaster : MIDIMessageBroadcaster
+    public class PackLiveMIDIOutput : MIDIOutput
     {
         [SerializeField] private AddressedPackConnection _connection;
         
@@ -21,50 +21,50 @@ namespace Sonosthesia.Pack
         public override void BroadcastNoteOn(MIDINote note)
         {
             base.BroadcastNoteOn(note);
-            PackedMIDINote packed = note.Pack(_port);
-            _connection.QueueOutgoingContent(PackMIDIAddress.NOTE_ON, packed);
+            PackedLiveMIDINote packedLive = note.Pack(_port);
+            _connection.QueueOutgoingContent(PackLiveMIDIAddress.NOTE_ON, packedLive);
         }
 
         public override void BroadcastNoteOff(MIDINote note)
         {
             base.BroadcastNoteOff(note);
-            PackedMIDINote packed = note.Pack(_port);
-            _connection.QueueOutgoingContent(PackMIDIAddress.NOTE_OFF, packed);
+            PackedLiveMIDINote packedLive = note.Pack(_port);
+            _connection.QueueOutgoingContent(PackLiveMIDIAddress.NOTE_OFF, packedLive);
         }
 
         public override void BroadcastControl(MIDIControl control)
         {
             base.BroadcastControl(control);
-            PackedMIDIControl packed = control.Pack(_port);
-            _connection.QueueOutgoingContent(PackMIDIAddress.CONTROL, packed);
+            PackedLiveMIDIControl packed = control.Pack(_port);
+            _connection.QueueOutgoingContent(PackLiveMIDIAddress.CONTROL, packed);
         }
 
         public override void BroadcastPolyphonicAftertouch(MIDIPolyphonicAftertouch aftertouch)
         {
             base.BroadcastPolyphonicAftertouch(aftertouch);
-            PackedMIDIPolyphonicAftertouch packed = aftertouch.Pack(_port);
-            _connection.QueueOutgoingContent(PackMIDIAddress.POLYPHONIC_AFTERTOUCH, packed);
+            PackedLiveMIDIPolyphonicAftertouch packed = aftertouch.Pack(_port);
+            _connection.QueueOutgoingContent(PackLiveMIDIAddress.POLYPHONIC_AFTERTOUCH, packed);
         }
 
         public override void BroadcastChannelAftertouch(MIDIChannelAftertouch aftertouch)
         {
             base.BroadcastChannelAftertouch(aftertouch);
-            PackedMIDIChannelAftertouch packed = aftertouch.Pack(_port);
-            _connection.QueueOutgoingContent(PackMIDIAddress.CHANNEL_AFTERTOUCH, packed);
+            PackedLiveMIDIChannelAftertouch packed = aftertouch.Pack(_port);
+            _connection.QueueOutgoingContent(PackLiveMIDIAddress.CHANNEL_AFTERTOUCH, packed);
         }
 
         public override void BroadcastPitchBend(MIDIPitchBend pitchBend)
         {
             base.BroadcastPitchBend(pitchBend);
-            PackedMIDIPitchBend packed = pitchBend.Pack(_port);
-            _connection.QueueOutgoingContent(PackMIDIAddress.PITCH_BEND, packed);
+            PackedLiveMIDIPitchBend packed = pitchBend.Pack(_port);
+            _connection.QueueOutgoingContent(PackLiveMIDIAddress.PITCH_BEND, packed);
         }
 
         public override void BroadcastClock(MIDIClock clock)
         {
             base.BroadcastClock(clock);
-            PackedMIDIClock packed = clock.Pack(_port);
-            _connection.QueueOutgoingContent(PackMIDIAddress.CLOCK, packed);
+            PackedLiveMIDIClock packed = clock.Pack(_port);
+            _connection.QueueOutgoingContent(PackLiveMIDIAddress.CLOCK, packed);
         }
 
         public override void BroadcastPositionPointer(MIDISongPositionPointer pointer)

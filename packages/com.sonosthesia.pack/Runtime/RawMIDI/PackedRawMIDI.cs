@@ -3,21 +3,21 @@ using MessagePack;
 
 namespace Sonosthesia.Pack
 {
-    internal static class PackMIDIRawSourceAddress
+    internal static class PackRawMIDISourceAddress
     {
         public const string SINGLE                  = "/midi/source/single";
         public const string DOUBLE                  = "/midi/source/double";
         public const string TRIPPLE                 = "/midi/source/tripple";
     }
     
-    internal static class PackMIDIRawSinkAddress
+    internal static class PackRawMIDISinkAddress
     {
         public const string SINGLE                  = "/midi/sink/single";
         public const string DOUBLE                  = "/midi/sink/double";
         public const string TRIPPLE                 = "/midi/sink/tripple";
     }
     
-    public interface IPackedMIDIRawSourceData
+    public interface IPackedRawMIDISourceData
     {
         string Port { get; }
         
@@ -26,21 +26,21 @@ namespace Sonosthesia.Pack
         double CumulativeTime { get; }
     }
 
-    public static class PackedMIDIRawSourceDataExtensions
+    public static class PackedRawMIDISourceDataExtensions
     {
-        public static TimeSpan Timestamp(this IPackedMIDIRawSourceData data)
+        public static TimeSpan Timestamp(this IPackedRawMIDISourceData data)
         {
             return TimeSpan.FromSeconds(data.CumulativeTime);
         }
     }
     
-    public interface IPackedMIDIRawSinkData
+    public interface IPackedRawMIDISinkData
     {
         string Port { get; }
     }
 
     [MessagePackObject]
-    public class PackedMIDIRawSinkSingle : IPackedMIDIRawSinkData
+    public class PackedRawMIDISinkSingle : IPackedRawMIDISinkData
     {
         [Key("port")]
         public string Port { get; set; }
@@ -50,7 +50,7 @@ namespace Sonosthesia.Pack
     }
     
     [MessagePackObject]
-    public class PackedMIDIRawSinkDouble : IPackedMIDIRawSinkData
+    public class PackedRawMIDISinkDouble : IPackedRawMIDISinkData
     {
         [Key("port")]
         public string Port { get; set; }
@@ -63,7 +63,7 @@ namespace Sonosthesia.Pack
     }
     
     [MessagePackObject]
-    public class PackedMIDIRawSinkTripple : IPackedMIDIRawSinkData
+    public class PackedRawMIDISinkTripple : IPackedRawMIDISinkData
     {
         [Key("port")]
         public string Port { get; set; }
@@ -79,7 +79,7 @@ namespace Sonosthesia.Pack
     }
     
     [MessagePackObject]
-    public class PackedMIDIRawSourceSingle : IPackedMIDIRawSourceData
+    public class PackedRawMIDISourceSingle : IPackedRawMIDISourceData
     {
         [Key("port")]
         public string Port { get; set; }
@@ -95,7 +95,7 @@ namespace Sonosthesia.Pack
     }
     
     [MessagePackObject]
-    public class PackedMIDIRawSourceDouble : IPackedMIDIRawSourceData
+    public class PackedRawMIDISourceDouble : IPackedRawMIDISourceData
     {
         [Key("port")]
         public string Port { get; set; }
@@ -114,7 +114,7 @@ namespace Sonosthesia.Pack
     }
     
     [MessagePackObject]
-    public class PackedMIDIRawSourceTripple : IPackedMIDIRawSourceData
+    public class PackedRawMIDISourceTripple : IPackedRawMIDISourceData
     {
         [Key("port")]
         public string Port { get; set; }
