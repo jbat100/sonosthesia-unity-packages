@@ -12,33 +12,38 @@ const blacklist = new Set([
 ]);
 
 function publish(package, dry) {
-    try {
-        const packagePath = getPackagePath(package);
-        if (dry) {
-            console.log(`Dry publish : ${package}...`);
-        } else {
-            console.log(`Publishing ${package}...`);
-            execSync('npm publish', { cwd: packagePath, stdio: 'inherit' });
-            console.log('Succeeded');
-        }
-
-    } catch (error) {
-        console.error(`Failed to publish ${package}.`, error);
+    const packagePath = getPackagePath(package);
+    if (dry) {
+        console.log(`Dry publish : ${package}...`);
+    } else {
+        console.log(`Publishing ${package}...`);
+        execSync('npm publish', { cwd: packagePath, stdio: 'inherit' });
+        console.log('Succeeded');
     }
 }
 
 function run() {
-    let args = parser(process.argv)
+    let args = parser(process.argv);
     const packages = orderedDependencies();
     
+    const errors = {};
+
     for (const package of packages) {
         if (blacklist.has(package)) {
             console.log(`Ignoring blacklisted package : ${package}.`);
             continue;
         }
-        publish(package, args.dry);
+        try {
+            publish(package, args.dry);
+        } catch (error) {
+            console.error(`Failed to publish ${package}.`, error);
+            errors[package] = error;
+        }
     }
 
+    for (let package in errors) {
+        console.error(`Error publishing package : ${package}\n${errors[package]}`);
+    }
 }
 
 run()

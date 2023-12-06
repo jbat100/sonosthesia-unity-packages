@@ -9,8 +9,6 @@ namespace Sonosthesia.Pack
     {
         [SerializeField] private PackLiveMIDIReceiver _receiver;
 
-        [SerializeField] private string _portFilter;
-
         [SerializeField] private string _trackFilter;
 
         private IDisposable _subscription;
@@ -21,17 +19,15 @@ namespace Sonosthesia.Pack
 
             void Connect<T>(IObservable<T> observable, Action<T> processor) where T : IPackedLiveMIDIMessage
             {
-                subscriptions.Add(observable
-                    .Where(item => item.Check(_portFilter, _trackFilter))
-                    .Subscribe(processor));
+                subscriptions.Add(observable.Where(item => item.Check(_trackFilter)).Subscribe(processor));
             }
             
-            Connect(_receiver.NoteOnObservable, note => BroadcastNoteOn(note.Unpack()));
-            Connect(_receiver.NoteOffObservable, note => BroadcastNoteOff(note.Unpack()));
-            Connect(_receiver.ControlObservable, control => BroadcastControl(control.Unpack()));
-            Connect(_receiver.PolyphonicAftertouchObservable, aftertouch => BroadcastPolyphonicAftertouch(aftertouch.Unpack()));
-            Connect(_receiver.ChannelAftertouchObservable, aftertouch => BroadcastChannelAftertouch(aftertouch.Unpack()));
-            Connect(_receiver.PitchBendObservable, bend => BroadcastPitchBend(bend.Unpack()));
+            Connect(receiver.NoteOnObservable, note => BroadcastNoteOn(note.Unpack()));
+            Connect(receiver.NoteOffObservable, note => BroadcastNoteOff(note.Unpack()));
+            Connect(receiver.ControlObservable, control => BroadcastControl(control.Unpack()));
+            Connect(receiver.PolyphonicAftertouchObservable, aftertouch => BroadcastPolyphonicAftertouch(aftertouch.Unpack()));
+            Connect(receiver.ChannelAftertouchObservable, aftertouch => BroadcastChannelAftertouch(aftertouch.Unpack()));
+            Connect(receiver.PitchBendObservable, bend => BroadcastPitchBend(bend.Unpack()));
 
             return subscriptions;
         }

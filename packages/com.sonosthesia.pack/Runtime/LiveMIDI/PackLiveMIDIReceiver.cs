@@ -37,10 +37,6 @@ namespace Sonosthesia.Pack
         internal IObservable<PackedLiveMIDIPitchBend> PitchBendObservable 
             => _pitchBendSubject.AsObservable();
         
-        private readonly Subject<PackedLiveMIDIClock> _clockSubject = new ();
-        internal IObservable<PackedLiveMIDIClock> ClockObservable 
-            => _clockSubject.AsObservable();
-
         private protected virtual IDisposable Setup(AddressedPackConnection connection)
         {
             CompositeDisposable subscriptions = new();
@@ -61,7 +57,6 @@ namespace Sonosthesia.Pack
             Connect(PackLiveMIDIAddress.POLYPHONIC_AFTERTOUCH, _polyphonicAftertouchSubject);
             Connect(PackLiveMIDIAddress.CHANNEL_AFTERTOUCH, _channelAftertouchSubject);
             Connect(PackLiveMIDIAddress.PITCH_BEND, _pitchBendSubject);
-            Connect(PackLiveMIDIAddress.CLOCK, _clockSubject);
             
             return subscriptions;
         }

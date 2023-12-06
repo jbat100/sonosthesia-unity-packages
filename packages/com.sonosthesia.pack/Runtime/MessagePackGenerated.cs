@@ -47,7 +47,7 @@ namespace MessagePack.Resolvers
 
         static GeneratedResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(21)
+            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(20)
             {
                 { typeof(global::Sonosthesia.Pack.AddressedEnvelope[]), 0 },
                 { typeof(global::Sonosthesia.Pack.AddressedEnvelope), 1 },
@@ -57,19 +57,18 @@ namespace MessagePack.Resolvers
                 { typeof(global::Sonosthesia.Pack.PackedAudioQuintBands), 5 },
                 { typeof(global::Sonosthesia.Pack.PackedAudioTriBands), 6 },
                 { typeof(global::Sonosthesia.Pack.PackedLiveMIDIChannelAftertouch), 7 },
-                { typeof(global::Sonosthesia.Pack.PackedLiveMIDIClock), 8 },
-                { typeof(global::Sonosthesia.Pack.PackedLiveMIDIControl), 9 },
-                { typeof(global::Sonosthesia.Pack.PackedLiveMIDINote), 10 },
-                { typeof(global::Sonosthesia.Pack.PackedLiveMIDIPitchBend), 11 },
-                { typeof(global::Sonosthesia.Pack.PackedLiveMIDIPolyphonicAftertouch), 12 },
-                { typeof(global::Sonosthesia.Pack.PackedRawMIDISinkDouble), 13 },
-                { typeof(global::Sonosthesia.Pack.PackedRawMIDISinkSingle), 14 },
-                { typeof(global::Sonosthesia.Pack.PackedRawMIDISinkTripple), 15 },
-                { typeof(global::Sonosthesia.Pack.PackedRawMIDISourceDouble), 16 },
-                { typeof(global::Sonosthesia.Pack.PackedRawMIDISourceSingle), 17 },
-                { typeof(global::Sonosthesia.Pack.PackedRawMIDISourceTripple), 18 },
-                { typeof(global::Sonosthesia.Pack.Point), 19 },
-                { typeof(global::Sonosthesia.Pack.TypedEnvelope), 20 },
+                { typeof(global::Sonosthesia.Pack.PackedLiveMIDIControl), 8 },
+                { typeof(global::Sonosthesia.Pack.PackedLiveMIDINote), 9 },
+                { typeof(global::Sonosthesia.Pack.PackedLiveMIDIPitchBend), 10 },
+                { typeof(global::Sonosthesia.Pack.PackedLiveMIDIPolyphonicAftertouch), 11 },
+                { typeof(global::Sonosthesia.Pack.PackedRawMIDISinkDouble), 12 },
+                { typeof(global::Sonosthesia.Pack.PackedRawMIDISinkSingle), 13 },
+                { typeof(global::Sonosthesia.Pack.PackedRawMIDISinkTripple), 14 },
+                { typeof(global::Sonosthesia.Pack.PackedRawMIDISourceDouble), 15 },
+                { typeof(global::Sonosthesia.Pack.PackedRawMIDISourceSingle), 16 },
+                { typeof(global::Sonosthesia.Pack.PackedRawMIDISourceTripple), 17 },
+                { typeof(global::Sonosthesia.Pack.Point), 18 },
+                { typeof(global::Sonosthesia.Pack.TypedEnvelope), 19 },
             };
         }
 
@@ -91,19 +90,18 @@ namespace MessagePack.Resolvers
                 case 5: return new MessagePack.Formatters.Sonosthesia.Pack.PackedAudioQuintBandsFormatter();
                 case 6: return new MessagePack.Formatters.Sonosthesia.Pack.PackedAudioTriBandsFormatter();
                 case 7: return new MessagePack.Formatters.Sonosthesia.Pack.PackedLiveMIDIChannelAftertouchFormatter();
-                case 8: return new MessagePack.Formatters.Sonosthesia.Pack.PackedLiveMIDIClockFormatter();
-                case 9: return new MessagePack.Formatters.Sonosthesia.Pack.PackedLiveMIDIControlFormatter();
-                case 10: return new MessagePack.Formatters.Sonosthesia.Pack.PackedLiveMIDINoteFormatter();
-                case 11: return new MessagePack.Formatters.Sonosthesia.Pack.PackedLiveMIDIPitchBendFormatter();
-                case 12: return new MessagePack.Formatters.Sonosthesia.Pack.PackedLiveMIDIPolyphonicAftertouchFormatter();
-                case 13: return new MessagePack.Formatters.Sonosthesia.Pack.PackedRawMIDISinkDoubleFormatter();
-                case 14: return new MessagePack.Formatters.Sonosthesia.Pack.PackedRawMIDISinkSingleFormatter();
-                case 15: return new MessagePack.Formatters.Sonosthesia.Pack.PackedRawMIDISinkTrippleFormatter();
-                case 16: return new MessagePack.Formatters.Sonosthesia.Pack.PackedRawMIDISourceDoubleFormatter();
-                case 17: return new MessagePack.Formatters.Sonosthesia.Pack.PackedRawMIDISourceSingleFormatter();
-                case 18: return new MessagePack.Formatters.Sonosthesia.Pack.PackedRawMIDISourceTrippleFormatter();
-                case 19: return new MessagePack.Formatters.Sonosthesia.Pack.PointFormatter();
-                case 20: return new MessagePack.Formatters.Sonosthesia.Pack.TypedEnvelopeFormatter();
+                case 8: return new MessagePack.Formatters.Sonosthesia.Pack.PackedLiveMIDIControlFormatter();
+                case 9: return new MessagePack.Formatters.Sonosthesia.Pack.PackedLiveMIDINoteFormatter();
+                case 10: return new MessagePack.Formatters.Sonosthesia.Pack.PackedLiveMIDIPitchBendFormatter();
+                case 11: return new MessagePack.Formatters.Sonosthesia.Pack.PackedLiveMIDIPolyphonicAftertouchFormatter();
+                case 12: return new MessagePack.Formatters.Sonosthesia.Pack.PackedRawMIDISinkDoubleFormatter();
+                case 13: return new MessagePack.Formatters.Sonosthesia.Pack.PackedRawMIDISinkSingleFormatter();
+                case 14: return new MessagePack.Formatters.Sonosthesia.Pack.PackedRawMIDISinkTrippleFormatter();
+                case 15: return new MessagePack.Formatters.Sonosthesia.Pack.PackedRawMIDISourceDoubleFormatter();
+                case 16: return new MessagePack.Formatters.Sonosthesia.Pack.PackedRawMIDISourceSingleFormatter();
+                case 17: return new MessagePack.Formatters.Sonosthesia.Pack.PackedRawMIDISourceTrippleFormatter();
+                case 18: return new MessagePack.Formatters.Sonosthesia.Pack.PointFormatter();
+                case 19: return new MessagePack.Formatters.Sonosthesia.Pack.TypedEnvelopeFormatter();
                 default: return null;
             }
         }
@@ -875,8 +873,6 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
 
     public sealed class PackedLiveMIDIChannelAftertouchFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Sonosthesia.Pack.PackedLiveMIDIChannelAftertouch>
     {
-        // port
-        private static global::System.ReadOnlySpan<byte> GetSpan_Port() => new byte[1 + 4] { 164, 112, 111, 114, 116 };
         // track
         private static global::System.ReadOnlySpan<byte> GetSpan_Track() => new byte[1 + 5] { 165, 116, 114, 97, 99, 107 };
         // channel
@@ -893,9 +889,7 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
             }
 
             var formatterResolver = options.Resolver;
-            writer.WriteMapHeader(4);
-            writer.WriteRaw(GetSpan_Port());
-            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Serialize(ref writer, value.Port, options);
+            writer.WriteMapHeader(3);
             writer.WriteRaw(GetSpan_Track());
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Serialize(ref writer, value.Track, options);
             writer.WriteRaw(GetSpan_Channel());
@@ -925,11 +919,6 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
                     FAIL:
                       reader.Skip();
                       continue;
-                    case 4:
-                        if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 1953656688UL) { goto FAIL; }
-
-                        ____result.Port = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Deserialize(ref reader, options);
-                        continue;
                     case 5:
                         switch (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey))
                         {
@@ -955,73 +944,8 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
         }
     }
 
-    public sealed class PackedLiveMIDIClockFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Sonosthesia.Pack.PackedLiveMIDIClock>
-    {
-        // port
-        private static global::System.ReadOnlySpan<byte> GetSpan_Port() => new byte[1 + 4] { 164, 112, 111, 114, 116 };
-        // count
-        private static global::System.ReadOnlySpan<byte> GetSpan_Count() => new byte[1 + 5] { 165, 99, 111, 117, 110, 116 };
-
-        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Sonosthesia.Pack.PackedLiveMIDIClock value, global::MessagePack.MessagePackSerializerOptions options)
-        {
-            if (value is null)
-            {
-                writer.WriteNil();
-                return;
-            }
-
-            var formatterResolver = options.Resolver;
-            writer.WriteMapHeader(2);
-            writer.WriteRaw(GetSpan_Port());
-            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Serialize(ref writer, value.Port, options);
-            writer.WriteRaw(GetSpan_Count());
-            writer.Write(value.Count);
-        }
-
-        public global::Sonosthesia.Pack.PackedLiveMIDIClock Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
-        {
-            if (reader.TryReadNil())
-            {
-                return null;
-            }
-
-            options.Security.DepthStep(ref reader);
-            var formatterResolver = options.Resolver;
-            var length = reader.ReadMapHeader();
-            var ____result = new global::Sonosthesia.Pack.PackedLiveMIDIClock();
-
-            for (int i = 0; i < length; i++)
-            {
-                var stringKey = global::MessagePack.Internal.CodeGenHelpers.ReadStringSpan(ref reader);
-                switch (stringKey.Length)
-                {
-                    default:
-                    FAIL:
-                      reader.Skip();
-                      continue;
-                    case 4:
-                        if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 1953656688UL) { goto FAIL; }
-
-                        ____result.Port = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Deserialize(ref reader, options);
-                        continue;
-                    case 5:
-                        if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 500069396323UL) { goto FAIL; }
-
-                        ____result.Count = reader.ReadInt32();
-                        continue;
-
-                }
-            }
-
-            reader.Depth--;
-            return ____result;
-        }
-    }
-
     public sealed class PackedLiveMIDIControlFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Sonosthesia.Pack.PackedLiveMIDIControl>
     {
-        // port
-        private static global::System.ReadOnlySpan<byte> GetSpan_Port() => new byte[1 + 4] { 164, 112, 111, 114, 116 };
         // track
         private static global::System.ReadOnlySpan<byte> GetSpan_Track() => new byte[1 + 5] { 165, 116, 114, 97, 99, 107 };
         // channel
@@ -1040,9 +964,7 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
             }
 
             var formatterResolver = options.Resolver;
-            writer.WriteMapHeader(5);
-            writer.WriteRaw(GetSpan_Port());
-            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Serialize(ref writer, value.Port, options);
+            writer.WriteMapHeader(4);
             writer.WriteRaw(GetSpan_Track());
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Serialize(ref writer, value.Track, options);
             writer.WriteRaw(GetSpan_Channel());
@@ -1074,11 +996,6 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
                     FAIL:
                       reader.Skip();
                       continue;
-                    case 4:
-                        if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 1953656688UL) { goto FAIL; }
-
-                        ____result.Port = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Deserialize(ref reader, options);
-                        continue;
                     case 5:
                         switch (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey))
                         {
@@ -1111,8 +1028,6 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
 
     public sealed class PackedLiveMIDINoteFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Sonosthesia.Pack.PackedLiveMIDINote>
     {
-        // port
-        private static global::System.ReadOnlySpan<byte> GetSpan_Port() => new byte[1 + 4] { 164, 112, 111, 114, 116 };
         // track
         private static global::System.ReadOnlySpan<byte> GetSpan_Track() => new byte[1 + 5] { 165, 116, 114, 97, 99, 107 };
         // channel
@@ -1131,9 +1046,7 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
             }
 
             var formatterResolver = options.Resolver;
-            writer.WriteMapHeader(5);
-            writer.WriteRaw(GetSpan_Port());
-            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Serialize(ref writer, value.Port, options);
+            writer.WriteMapHeader(4);
             writer.WriteRaw(GetSpan_Track());
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Serialize(ref writer, value.Track, options);
             writer.WriteRaw(GetSpan_Channel());
@@ -1165,17 +1078,6 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
                     FAIL:
                       reader.Skip();
                       continue;
-                    case 4:
-                        switch (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey))
-                        {
-                            default: goto FAIL;
-                            case 1953656688UL:
-                                ____result.Port = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Deserialize(ref reader, options);
-                                continue;
-                            case 1702129518UL:
-                                ____result.Note = reader.ReadInt32();
-                                continue;
-                        }
                     case 5:
                         if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 461228831348UL) { goto FAIL; }
 
@@ -1185,6 +1087,11 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
                         if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 30510822457436259UL) { goto FAIL; }
 
                         ____result.Channel = reader.ReadInt32();
+                        continue;
+                    case 4:
+                        if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 1702129518UL) { goto FAIL; }
+
+                        ____result.Note = reader.ReadInt32();
                         continue;
                     case 8:
                         if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 8751735851679769974UL) { goto FAIL; }
@@ -1202,8 +1109,6 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
 
     public sealed class PackedLiveMIDIPitchBendFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Sonosthesia.Pack.PackedLiveMIDIPitchBend>
     {
-        // port
-        private static global::System.ReadOnlySpan<byte> GetSpan_Port() => new byte[1 + 4] { 164, 112, 111, 114, 116 };
         // track
         private static global::System.ReadOnlySpan<byte> GetSpan_Track() => new byte[1 + 5] { 165, 116, 114, 97, 99, 107 };
         // channel
@@ -1220,9 +1125,7 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
             }
 
             var formatterResolver = options.Resolver;
-            writer.WriteMapHeader(4);
-            writer.WriteRaw(GetSpan_Port());
-            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Serialize(ref writer, value.Port, options);
+            writer.WriteMapHeader(3);
             writer.WriteRaw(GetSpan_Track());
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Serialize(ref writer, value.Track, options);
             writer.WriteRaw(GetSpan_Channel());
@@ -1252,11 +1155,6 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
                     FAIL:
                       reader.Skip();
                       continue;
-                    case 4:
-                        if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 1953656688UL) { goto FAIL; }
-
-                        ____result.Port = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Deserialize(ref reader, options);
-                        continue;
                     case 5:
                         switch (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey))
                         {
@@ -1284,8 +1182,6 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
 
     public sealed class PackedLiveMIDIPolyphonicAftertouchFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Sonosthesia.Pack.PackedLiveMIDIPolyphonicAftertouch>
     {
-        // port
-        private static global::System.ReadOnlySpan<byte> GetSpan_Port() => new byte[1 + 4] { 164, 112, 111, 114, 116 };
         // track
         private static global::System.ReadOnlySpan<byte> GetSpan_Track() => new byte[1 + 5] { 165, 116, 114, 97, 99, 107 };
         // channel
@@ -1304,9 +1200,7 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
             }
 
             var formatterResolver = options.Resolver;
-            writer.WriteMapHeader(5);
-            writer.WriteRaw(GetSpan_Port());
-            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Serialize(ref writer, value.Port, options);
+            writer.WriteMapHeader(4);
             writer.WriteRaw(GetSpan_Track());
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Serialize(ref writer, value.Track, options);
             writer.WriteRaw(GetSpan_Channel());
@@ -1338,17 +1232,6 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
                     FAIL:
                       reader.Skip();
                       continue;
-                    case 4:
-                        switch (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey))
-                        {
-                            default: goto FAIL;
-                            case 1953656688UL:
-                                ____result.Port = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Deserialize(ref reader, options);
-                                continue;
-                            case 1702129518UL:
-                                ____result.Note = reader.ReadInt32();
-                                continue;
-                        }
                     case 5:
                         switch (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey))
                         {
@@ -1364,6 +1247,11 @@ namespace MessagePack.Formatters.Sonosthesia.Pack
                         if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 30510822457436259UL) { goto FAIL; }
 
                         ____result.Channel = reader.ReadInt32();
+                        continue;
+                    case 4:
+                        if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 1702129518UL) { goto FAIL; }
+
+                        ____result.Note = reader.ReadInt32();
                         continue;
 
                 }

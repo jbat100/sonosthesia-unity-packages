@@ -1,0 +1,17 @@
+{
+    "name": "Sonosthesia.ChannelUI",
+    "rootNamespace": "Sonosthesia.ChannelUI",
+    "references": [
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:a1f2098685b1a4c7aa2fbde4ae7ae275"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

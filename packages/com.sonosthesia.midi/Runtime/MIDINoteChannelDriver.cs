@@ -8,7 +8,7 @@ using Sonosthesia.Channel;
 
 namespace Sonosthesia.MIDI
 {
-    public class MIDIInputNoteChannelDriver : ChannelDriver<MIDINote>
+    public class MIDINoteChannelDriver : ChannelDriver<MIDINote>
     {
         [SerializeField] private MIDIInput _input;
 
