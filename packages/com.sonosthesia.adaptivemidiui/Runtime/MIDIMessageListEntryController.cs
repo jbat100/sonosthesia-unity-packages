@@ -1,8 +1,9 @@
+using Sonosthesia.UI;
 using UnityEngine.UIElements;
 
 namespace Sonosthesia.AdaptiveMIDIUI
 {
-    public class MIDIMessageListEntryController
+    public class MIDIMessageListEntryController : ISimpleListEntryController<MIDIMessageUIData>
     {
         private Label _countLabel;
         private Label _typeLabel;

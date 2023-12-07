@@ -1,7 +1,6 @@
-using System;
 using System.Linq;
 using Sonosthesia.AdaptiveMIDI;
-using Sonosthesia.AdaptiveMIDI.Messages;
+using Sonosthesia.UI;
 using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
@@ -28,7 +27,7 @@ namespace Sonosthesia.AdaptiveMIDIUI
         private bool _dirty;
         private int _messageCount;
         private CircularBuffer<MIDIMessageUIData> _messageBuffer;
-        private MIDIMessageListContoller _listController;
+        private SimpleListController<MIDIMessageUIData, MIDIMessageListEntryController> _listController;
 
         private readonly CompositeDisposable _subscriptions = new();
 
@@ -43,12 +42,16 @@ namespace Sonosthesia.AdaptiveMIDIUI
         
         protected virtual void OnEnable()
         {
+            _clockToggle.value = true;
+            _syncToggle.value = true;
+            _channelToggle.value = true;
+            
             VisualElement rootElement = _document.rootVisualElement;
             
-            _listController = new MIDIMessageListContoller();
+            _listController = new SimpleListController<MIDIMessageUIData, MIDIMessageListEntryController>();
             ListView listView = rootElement.Q<ListView>("MessageList");
             _listController.InitializeList(listView, _listEntryTemplate);
-            _listController.Apply(Enumerable.Empty<MIDIMessageUIData>());
+            _listController.ImportData(Enumerable.Empty<MIDIMessageUIData>());
             
             void BindReloadToggle(VisualElement rootElement, string name, out Toggle toggle)
             {
@@ -91,7 +94,7 @@ namespace Sonosthesia.AdaptiveMIDIUI
         {
             if (_dirty)
             {
-                _listController.Apply(_messageBuffer ?? Enumerable.Empty<MIDIMessageUIData>());
+                _listController.ImportData(_messageBuffer ?? Enumerable.Empty<MIDIMessageUIData>());
                 _dirty = false;
             }
         }

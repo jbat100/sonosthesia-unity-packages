@@ -1,7 +1,11 @@
 {
   "author": "Jonathan Thorpe",
   "dependencies": {
-    "com.neuecc.unirx": "7.1.0"
+    "com.neuecc.unirx": "7.1.0",
+    "com.sonosthesia.adaptivemidi": "1.2.0",
+    "com.sonosthesia.midi": "1.2.0",
+    "com.sonosthesia.ui": "1.2.0",
+    "com.sonosthesia.channelui": "1.2.0"
   },
   "description": "Sonosthesia unity midi ui",
   "displayName": "Sonosthesia MIDI UI",

@@ -3,7 +3,8 @@
     "rootNamespace": "Sonosthesia.ChannelUI",
     "references": [
         "GUID:560b04d1a97f54a4e82edc0cbbb69285",
-        "GUID:a1f2098685b1a4c7aa2fbde4ae7ae275"
+        "GUID:a1f2098685b1a4c7aa2fbde4ae7ae275",
+        "GUID:319f02148647a4150b5487ff70ad53bc"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,7 +1,7 @@
 using UnityEngine.UIElements;
 using Sonosthesia.UI;
 
-namespace Sonothesia.ChannelUI
+namespace Sonosthesia.ChannelUI
 {
     public class ChannelStreamListEntryController : ISimpleListEntryController<ChannelStreamUIData>
     {

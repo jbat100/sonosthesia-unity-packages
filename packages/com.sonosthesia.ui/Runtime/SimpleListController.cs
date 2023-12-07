@@ -12,6 +12,8 @@ namespace Sonosthesia.UI
         void SetData(TEntryData? data);
     }
     
+    // just data display, no selection or other interaction
+    
     public class SimpleListController<TEntryData, TEntryController> 
         where TEntryData : struct
         where TEntryController : class, ISimpleListEntryController<TEntryData>, new()
@@ -45,7 +47,7 @@ namespace Sonosthesia.UI
 
         private readonly List<TEntryData> _data = new ();
 
-        public void Apply(IEnumerable<TEntryData> data)
+        public void ImportData(IEnumerable<TEntryData> data)
         {
             _data.Clear();
             _data.AddRange(data);

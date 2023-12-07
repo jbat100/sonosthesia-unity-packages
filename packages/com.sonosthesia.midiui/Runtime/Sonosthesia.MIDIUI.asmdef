@@ -1,16 +1,20 @@
 {
-  "name": "Sonosthesia.MIDIUI",
-  "rootNamespace": "Sonosthesia.MIDIUI",
-  "references": [
-    "GUID:560b04d1a97f54a4e82edc0cbbb69285"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": true,
-  "overrideReferences": false,
-  "precompiledReferences": [],
-  "autoReferenced": true,
-  "defineConstraints": [],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "Sonosthesia.MIDIUI",
+    "rootNamespace": "Sonosthesia.MIDIUI",
+    "references": [
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:6c6dc842e821b4881bee7a84bbd34b94",
+        "GUID:38486b356fe2649a3abdb6285911b25d",
+        "GUID:a1f2098685b1a4c7aa2fbde4ae7ae275",
+        "GUID:024e282e9371f4247b9dbafdf2146c8b"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

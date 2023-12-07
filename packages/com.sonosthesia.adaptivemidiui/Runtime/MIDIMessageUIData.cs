@@ -38,32 +38,32 @@ namespace Sonosthesia.AdaptiveMIDIUI
         
         public static MIDIMessageUIData UIData(this MIDISongPositionPointer pointer, int count)
         {
-            return new MIDIMessageUIData(count, "position", $"<beats {pointer.Position}>", pointer.Timestamp);
+            return new MIDIMessageUIData(count, "position", $"<beats {pointer.Position:D4}>", pointer.Timestamp);
         }
         
         public static MIDIMessageUIData UIData(this MIDINote note, bool on, int count)
         {
-            return new MIDIMessageUIData(count, $"note-{(on ? "on" : "off")}", $"<chan {note.Channel} pitch {note.Note} vel {note.Velocity}>", note.Timestamp);
+            return new MIDIMessageUIData(count, $"note-{(on ? "on" : "off")}", $"<chan {note.Channel:D2} pitch {note.Note:D3} vel {note.Velocity:D3}>", note.Timestamp);
         }
         
         public static MIDIMessageUIData UIData(this MIDIPolyphonicAftertouch aftertouch, int count)
         {
-            return new MIDIMessageUIData(count, "poly-aftertouch", $"<chan {aftertouch.Channel} pitch {aftertouch.Note} val {aftertouch.Value}>", aftertouch.Timestamp);
+            return new MIDIMessageUIData(count, "poly-aftertouch", $"<chan {aftertouch.Channel:D2} pitch {aftertouch.Note:D3} val {aftertouch.Value:D3}>", aftertouch.Timestamp);
         }
         
         public static MIDIMessageUIData UIData(this MIDIControl control, int count)
         {
-            return new MIDIMessageUIData(count, "control", $"<chan {control.Channel} num {control.Number} val {control.Value}>", control.Timestamp);
+            return new MIDIMessageUIData(count, "control", $"<chan {control.Channel:D2} num {control.Number:D3} val {control.Value:D3}>", control.Timestamp);
         }
         
         public static MIDIMessageUIData UIData(this MIDIChannelAftertouch aftertouch, int count)
         {
-            return new MIDIMessageUIData(count, "chan-aftertouch", $"<chan {aftertouch.Channel} val {aftertouch.Value}>", aftertouch.Timestamp);
+            return new MIDIMessageUIData(count, "chan-aftertouch", $"<chan {aftertouch.Channel:D2} val {aftertouch.Value:D3}>", aftertouch.Timestamp);
         }
         
         public static MIDIMessageUIData UIData(this MIDIPitchBend bend, int count)
         {
-            return new MIDIMessageUIData(count, "pitch-bend", $"<chan {bend.Channel} val {bend.Value}>", bend.Timestamp);
+            return new MIDIMessageUIData(count, "pitch-bend", $"<chan {bend.Channel:D2} val {bend.Value,2:F2}>", bend.Timestamp);
         }
     }
 }

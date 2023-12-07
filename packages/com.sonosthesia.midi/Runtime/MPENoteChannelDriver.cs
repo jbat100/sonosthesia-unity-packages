@@ -11,8 +11,6 @@ namespace Sonosthesia.MIDI
     public class MPENoteChannelDriver : ChannelDriver<MPENote>
     {
         [SerializeField] private MIDIInput _input;
-
-        [SerializeField] private string _track;
         
         // typically these parameters will be sent on the channel by the DAW before note so need to cache it
         private class ChannelState

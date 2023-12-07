@@ -1,6 +1,6 @@
 using System;
 
-namespace Sonothesia.ChannelUI
+namespace Sonosthesia.ChannelUI
 {
     public readonly struct ChannelStreamUIData
     {
