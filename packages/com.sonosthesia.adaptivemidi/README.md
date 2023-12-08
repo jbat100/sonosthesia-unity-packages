@@ -18,18 +18,14 @@ Using this approach the concrete implementation can be switched without affectin
 - Channel Pitch Bend
 - Song Pointer Position
 - Clock
-- Start
-- Stop
-- Continue
+- Start/Stop/Continue
 
 ## MIDI Messages Representation
 
-MIDI messages are represented using human readable value types rather than raw bytes for better usability. `MIDIEncoder` and `MIDIDecoder` are used to convert to and from raw bytes when needed.
+MIDI messages are represented using human readable [value types](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.adaptivemidi/Runtime/Messages) rather than raw bytes for better usability. `MIDIEncoder` and `MIDIDecoder` are used to convert to and from raw bytes when needed.
 
-## MIDIOutput
+Input API makes use of [UniRx](https://github.com/neuecc/UniRx) to present incoming messages as data streams.
 
-See example usage here.
+## Examples
 
-### MIDIInput API
-
-See example usage here.
+See [examples](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.adaptivemidi/Runtime/Messages) and [demo application](https://github.com/jbat100/sonosthesia-unity-demo-midi/tree/main)

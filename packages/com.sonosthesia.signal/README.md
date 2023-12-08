@@ -1,3 +1,5 @@
+# com.sonosthesia.signal
+
 Signals for the Sonosthesia project. Signals are the main building blocks of the Sonosthesia framework architecture. They are based on [UniRx](https://github.com/neuecc/UniRx) data streams and used to generate, modify, map, receive and transfer data between different components. Signals are templated to allow for use with any value type.
 
 ## Signals API
