@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.AdaptiveMIDI
 {
-    public class MIDIInput : MIDIMessageBroadcaster
+    public class MIDIInput : MIDIMessageNode
     {
         
 

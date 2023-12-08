@@ -1,5 +1,5 @@
-using Sonosthesia.AdaptiveMIDI.Messages;
 using Sonosthesia.ChannelUI;
+using Sonosthesia.MIDI;
 
 namespace Sonosthesia.MIDIUI
 {

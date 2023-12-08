@@ -3,7 +3,7 @@ using Sonosthesia.AdaptiveMIDI.Messages;
 
 namespace Sonosthesia.AdaptiveMIDI
 {
-    public class MIDIOutput : MIDIMessageBroadcaster
+    public class MIDIOutput : MIDIMessageNode
     {
         private readonly struct NoteKey
         {
@@ -16,7 +16,13 @@ namespace Sonosthesia.AdaptiveMIDI
                 Note = note;
             }
 
-            public NoteKey(MIDINote note)
+            public NoteKey(MIDINoteOn note)
+            {
+                Channel = note.Channel;
+                Note = note.Note;
+            }
+            
+            public NoteKey(MIDINoteOff note)
             {
                 Channel = note.Channel;
                 Note = note.Note;
@@ -29,20 +35,20 @@ namespace Sonosthesia.AdaptiveMIDI
         {
             foreach (NoteKey noteKey in _ongoingNotes)
             {
-                BroadcastNoteOff(new MIDINote(noteKey.Channel, noteKey.Note, 0));
+                Broadcast(new MIDINoteOff(noteKey.Channel, noteKey.Note, 0));
             }
         }
 
-        public override void BroadcastNoteOn(MIDINote note)
+        public override void Broadcast(MIDINoteOn note)
         {
-            base.BroadcastNoteOn(note);
+            base.Broadcast(note);
             _ongoingNotes.Add(new NoteKey(note));
         }
 
-        public override void BroadcastNoteOff(MIDINote note)
+        public override void Broadcast(MIDINoteOff note)
         {
-            base.BroadcastNoteOff(note);
-            _ongoingNotes.Add(new NoteKey(note));
+            base.Broadcast(note);
+            _ongoingNotes.Remove(new NoteKey(note));
         }
     }    
 }

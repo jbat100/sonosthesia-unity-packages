@@ -141,9 +141,14 @@ namespace Sonosthesia.Pack
             return new MIDIPitchBend(note.Channel, note.Value);
         }
 
-        public static MIDINote Unpack(this PackedLiveMIDINote note)
+        public static MIDINoteOn UnpackNoteOn(this PackedLiveMIDINote note)
         {
-            return new MIDINote(note.Channel, note.Note, note.Velocity);
+            return new MIDINoteOn(note.Channel, note.Note, note.Velocity);
+        }
+        
+        public static MIDINoteOff UnpackNoteOff(this PackedLiveMIDINote note)
+        {
+            return new MIDINoteOff(note.Channel, note.Note, note.Velocity);
         }
 
         public static MIDIControl Unpack(this PackedLiveMIDIControl control)

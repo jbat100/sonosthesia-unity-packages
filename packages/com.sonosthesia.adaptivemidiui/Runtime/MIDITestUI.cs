@@ -9,7 +9,7 @@ namespace Sonosthesia.AdaptiveMIDIUI
     {
         private const float PITCH_BEND_SEMITONE_RANGE = 48f;
         
-        [SerializeField] private MIDIMessageBroadcaster _broadcaster;
+        [SerializeField] private MIDIMessageNode _broadcaster;
         
         [SerializeField] private UIDocument _document;
 
@@ -92,33 +92,33 @@ namespace Sonosthesia.AdaptiveMIDIUI
         
         private void OnNoteOnClicked()
         {
-            _broadcaster.BroadcastNoteOn(new MIDINote(_noteOnChannel.value, _noteOnPitch.value, _noteOnVelocity.value));
+            _broadcaster.Broadcast(new MIDINoteOn(_noteOnChannel.value, _noteOnPitch.value, _noteOnVelocity.value));
         }
         
         private void OnNoteOffClicked()
         {
-            _broadcaster.BroadcastNoteOff(new MIDINote(_noteOffChannel.value, _noteOffPitch.value, _noteOffVelocity.value));
+            _broadcaster.Broadcast(new MIDINoteOff(_noteOffChannel.value, _noteOffPitch.value, _noteOffVelocity.value));
         }
         
         private void OnControlClicked()
         {
-            _broadcaster.BroadcastControl(new MIDIControl(_controlChannel.value, _controlNumber.value, _controlValue.value));
+            _broadcaster.Broadcast(new MIDIControl(_controlChannel.value, _controlNumber.value, _controlValue.value));
         }
         
         private void OnPolyAftertouchClicked()
         {
-            _broadcaster.BroadcastPolyphonicAftertouch(new MIDIPolyphonicAftertouch(
+            _broadcaster.Broadcast(new MIDIPolyphonicAftertouch(
                 _polyAftertouchChannel.value, _polyAftertouchPitch.value, _polyAftertouchValue.value));
         }
         
         private void OnPitchBendClicked()
         {
-            _broadcaster.BroadcastPitchBend(new MIDIPitchBend(_pitchBendChannel.value, _pitchBendSemitones.value, PITCH_BEND_SEMITONE_RANGE));
+            _broadcaster.Broadcast(new MIDIPitchBend(_pitchBendChannel.value, _pitchBendSemitones.value, PITCH_BEND_SEMITONE_RANGE));
         }
         
         private void OnChannelAftertouchClicked()
         {
-            _broadcaster.BroadcastChannelAftertouch(new MIDIChannelAftertouch(_channelAftertouchChannel.value, _channelAftertouchValue.value));
+            _broadcaster.Broadcast(new MIDIChannelAftertouch(_channelAftertouchChannel.value, _channelAftertouchValue.value));
         }
     }    
 }

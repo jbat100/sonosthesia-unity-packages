@@ -33,7 +33,13 @@ namespace Sonosthesia.MIDI
             public int Channel;
             public int Note;
 
-            public Key(MIDINote note)
+            public Key(MIDINoteOn note)
+            {
+                Channel = note.Channel;
+                Note = note.Note;
+            }
+            
+            public Key(MIDINoteOff note)
             {
                 Channel = note.Channel;
                 Note = note.Note;
@@ -63,7 +69,7 @@ namespace Sonosthesia.MIDI
             }
             _subscriptions.Add(_input.NoteOnObservable.Subscribe(note =>
             {
-                if (ShouldFilterNote(note))
+                if (ShouldFilterNote(note.Channel, note.Note))
                 {
                     return;
                 }
@@ -73,22 +79,22 @@ namespace Sonosthesia.MIDI
                     if (_endOnZeroVelocity && note.Velocity == 0)
                     {
                         _notes.Remove(key);
-                        EndEvent(id, note);
+                        EndEvent(id, new MIDINote(note));
                     }
                     else
                     {
-                        UpdateEvent(id, note);
+                        UpdateEvent(id, new MIDINote(note));
                     }
                 }
                 else
                 {
-                    id = BeginEvent(note);
+                    id = BeginEvent(new MIDINote(note));
                     _notes[key] = id;   
                 }
             }));
             _subscriptions.Add(_input.NoteOffObservable.Subscribe(note =>
             {
-                if (ShouldFilterNote(note))
+                if (ShouldFilterNote(note.Channel, note.Note))
                 {
                     return;
                 }
@@ -96,7 +102,7 @@ namespace Sonosthesia.MIDI
                 if (_notes.TryGetValue(key, out Guid id))
                 {
                     _notes.Remove(key);
-                    EndEvent(id, note);
+                    EndEvent(id, new MIDINote(note));
                 }
             }));
             _subscriptions.Add(_input.PolyphonicAftertouchObservable.Subscribe(aftertouch =>
@@ -114,17 +120,17 @@ namespace Sonosthesia.MIDI
             _subscriptions.Clear();
         }
         
-        protected virtual bool ShouldFilterNote(MIDINote note)
+        protected virtual bool ShouldFilterNote(int channel, int note)
         {
             if (!_filter)
             {
                 return false;
             }
-            if (_channelFilter >= 0 && note.Channel != _channelFilter)
+            if (_channelFilter >= 0 && channel != _channelFilter)
             {
                 return true;
             }
-            if (note.Note < _lowerPitch || note.Note > _upperPitch)
+            if (note < _lowerPitch || note > _upperPitch)
             {
                 return true;
             }

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Sonosthesia.AdaptiveMIDI.Messages;
-using Sonosthesia.Channel;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Sonosthesia.Channel;
+using Sonosthesia.MIDI;
 
 namespace Sonosthesia.Instrument
 {

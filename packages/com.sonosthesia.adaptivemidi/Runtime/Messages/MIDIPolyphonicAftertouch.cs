@@ -28,14 +28,6 @@ namespace Sonosthesia.AdaptiveMIDI.Messages
             Value = value;
         }
 
-        public MIDIPolyphonicAftertouch(MIDINote note)
-        {
-            Timestamp = MIDIUtils.TimestampNow;
-            Channel = note.Channel;
-            Note = note.Note;
-            Value = note.Pressure;
-        }
-
         public override string ToString()
         {
             return $"{nameof(MIDIPolyphonicAftertouch)} <{nameof(Channel)} {Channel} {nameof(Note)} {Note} {nameof(Value)} {Value}>";

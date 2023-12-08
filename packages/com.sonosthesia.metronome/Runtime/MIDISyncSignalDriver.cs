@@ -8,7 +8,7 @@ using UniRx;
 
 namespace Sonosthesia.Metronome
 {
-    public class MIDIBeatSignalDriver : MonoBehaviour
+    public class MIDISyncSignalDriver : MonoBehaviour
     {
         public enum DriverMode
         {
@@ -16,7 +16,7 @@ namespace Sonosthesia.Metronome
             Update
         }
         
-        [SerializeField] private Signal<Beat> _signal;
+        [SerializeField] private Signal<Sync> _signal;
 
         [SerializeField] private MIDIInput _input;
 
@@ -124,11 +124,11 @@ namespace Sonosthesia.Metronome
             {
                 float timeSinceClock = (float)(MIDIUtils.TimestampNow - clock.Timestamp).TotalSeconds;
                 float beatsSinceClock = Mathf.Min(timeSinceClock / beatLength.Value, 1f / CLOCKS_PER_BEAT);
-                _signal.Broadcast(Beat.Play(_pointer.Value.Position + clockBeats + beatsSinceClock, bpm));
+                _signal.Broadcast(Sync.Play(_pointer.Value.Position + clockBeats + beatsSinceClock, bpm));
             }
             else 
             {
-                _signal.Broadcast(Beat.Play(_pointer.Value.Position + clockBeats, bpm));
+                _signal.Broadcast(Sync.Play(_pointer.Value.Position + clockBeats, bpm));
             }
         }
 
@@ -140,7 +140,7 @@ namespace Sonosthesia.Metronome
             // (ie, its stopped "Song Position"), in the anticipation that a MIDI Continue might be received next. 
             
             _clockHistory.Clear();
-            _signal.Broadcast(Beat.Stop());
+            _signal.Broadcast(Sync.Stop());
         }
 
     }

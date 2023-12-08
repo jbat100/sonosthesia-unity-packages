@@ -1,7 +1,7 @@
 using System;
-using Sonosthesia.AdaptiveMIDI.Messages;
-using Sonosthesia.Touch;
 using UnityEngine;
+using Sonosthesia.MIDI;
+using Sonosthesia.Touch;
 
 namespace Sonosthesia.Link
 {

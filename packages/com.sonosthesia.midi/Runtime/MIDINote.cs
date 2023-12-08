@@ -1,33 +1,38 @@
-using System;
+using Sonosthesia.AdaptiveMIDI.Messages;
 
-namespace Sonosthesia.AdaptiveMIDI.Messages
+namespace Sonosthesia.MIDI
 {
     public readonly struct MIDINote
     {
-        public readonly TimeSpan Timestamp;
         public readonly int Channel;
         public readonly int Note;
         public readonly int Velocity;
-        public readonly int Pressure; // set with polyphonic aftertouch messages
+        public readonly int Pressure;
 
-        public MIDINote(TimeSpan timestamp, int channel, int note, int velocity, int pressure = 0)
-        {
-            Timestamp = timestamp;
-            Channel = channel;
-            Note = note;
-            Velocity = velocity;
-            Pressure = pressure;
-        }
-        
         public MIDINote(int channel, int note, int velocity, int pressure = 0)
         {
-            Timestamp = MIDIUtils.TimestampNow;
             Channel = channel;
             Note = note;
             Velocity = velocity;
             Pressure = pressure;
         }
+
+        public MIDINote(MIDINoteOn note, int pressure = 0)
+        {
+            Channel = note.Channel;
+            Note = note.Note;
+            Velocity = note.Velocity;
+            Pressure = pressure;
+        }
         
+        public MIDINote(MIDINoteOff note, int pressure = 0)
+        {
+            Channel = note.Channel;
+            Note = note.Note;
+            Velocity = note.Velocity;
+            Pressure = pressure;
+        }
+
         public MIDINote WithPressure(int pressure)
         {
             return new MIDINote(Channel, Note, Velocity, pressure);

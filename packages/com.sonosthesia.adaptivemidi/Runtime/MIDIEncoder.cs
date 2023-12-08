@@ -61,7 +61,7 @@ namespace Sonosthesia.AdaptiveMIDI
             return false;
         }
         
-        public void EncodeNoteOn(IRawMIDIBroadcaster broadcaster, MIDINote note)
+        public void EncodeNoteOn(IRawMIDIBroadcaster broadcaster, MIDINoteOn note)
         {
             if (TryStatusChannel(0x9, note.Channel, out byte data0) && 
                 Try7Bit(note.Note, out byte data1) &&
@@ -71,7 +71,7 @@ namespace Sonosthesia.AdaptiveMIDI
             }
         }
 
-        public void EncodeNoteOff(IRawMIDIBroadcaster broadcaster, MIDINote note)
+        public void EncodeNoteOff(IRawMIDIBroadcaster broadcaster, MIDINoteOff note)
         {
             if (TryStatusChannel(0x8, note.Channel, out byte data0) && 
                 Try7Bit(note.Note, out byte data1) &&

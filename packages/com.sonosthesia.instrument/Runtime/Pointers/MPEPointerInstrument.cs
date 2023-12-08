@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Sonosthesia.AdaptiveMIDI.Messages;
 using Sonosthesia.Channel;
+using Sonosthesia.MIDI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 

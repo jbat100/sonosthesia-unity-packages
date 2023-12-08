@@ -10,7 +10,7 @@ namespace Sonosthesia.AdaptiveMIDIUI
 {
     public class MIDIMonitorUI : MonoBehaviour
     {
-        [SerializeField] private MIDIMessageBroadcaster _broadcaster;
+        [SerializeField] private MIDIMessageNode _broadcaster;
         
         [SerializeField] private UIDocument _document;
 
@@ -42,10 +42,6 @@ namespace Sonosthesia.AdaptiveMIDIUI
         
         protected virtual void OnEnable()
         {
-            _clockToggle.value = true;
-            _syncToggle.value = true;
-            _channelToggle.value = true;
-            
             VisualElement rootElement = _document.rootVisualElement;
             
             _listController = new SimpleListController<MIDIMessageUIData, MIDIMessageListEntryController>();
@@ -64,6 +60,10 @@ namespace Sonosthesia.AdaptiveMIDIUI
             BindReloadToggle(rootElement, "ClockToggle", out _clockToggle);
             BindReloadToggle(rootElement, "SyncToggle", out _syncToggle);
             BindReloadToggle(rootElement, "ChannelToggle", out _channelToggle);
+            
+            _clockToggle.value = true;
+            _syncToggle.value = true;
+            _channelToggle.value = true;
             
             _clearButton = rootElement.Q<Button>("ClearButton");
             _clearButton.clickable.clicked += OnClearButtonClicked;
@@ -132,9 +132,9 @@ namespace Sonosthesia.AdaptiveMIDIUI
             if (_channelToggle.value)
             {
                 _subscriptions.Add(_broadcaster.NoteOnObservable.Subscribe(m 
-                    => Push(m.UIData(true, _messageCount++))));
+                    => Push(m.UIData(_messageCount++))));
                 _subscriptions.Add(_broadcaster.NoteOffObservable.Subscribe(m 
-                    => Push(m.UIData(false, _messageCount++))));
+                    => Push(m.UIData(_messageCount++))));
                 _subscriptions.Add(_broadcaster.ControlObservable.Subscribe(m 
                     => Push(m.UIData(_messageCount++))));
                 _subscriptions.Add(_broadcaster.PolyphonicAftertouchObservable.Subscribe(m 

@@ -16,57 +16,57 @@ namespace Sonosthesia.AdaptiveMIDI
             }
         }
         
-        public override void BroadcastNoteOn(MIDINote note)
+        public override void Broadcast(MIDINoteOn note)
         {
-            base.BroadcastNoteOn(note);
+            base.Broadcast(note);
             _encoder.EncodeNoteOn(_rawOutput, note);
         }
 
-        public override void BroadcastNoteOff(MIDINote note)
+        public override void Broadcast(MIDINoteOff note)
         {
-            base.BroadcastNoteOff(note);
+            base.Broadcast(note);
             _encoder.EncodeNoteOff(_rawOutput, note);
         }
 
-        public override void BroadcastControl(MIDIControl control)
+        public override void Broadcast(MIDIControl control)
         {
-            base.BroadcastControl(control);
+            base.Broadcast(control);
             _encoder.EncodeControl(_rawOutput, control);
         }
 
-        public override void BroadcastPolyphonicAftertouch(MIDIPolyphonicAftertouch aftertouch)
+        public override void Broadcast(MIDIPolyphonicAftertouch aftertouch)
         {
-            base.BroadcastPolyphonicAftertouch(aftertouch);
+            base.Broadcast(aftertouch);
             _encoder.EncodePolyphonicAftertouch(_rawOutput, aftertouch);
         }
 
-        public override void BroadcastPitchBend(MIDIPitchBend pitchBend)
+        public override void Broadcast(MIDIPitchBend pitchBend)
         {
-            base.BroadcastPitchBend(pitchBend);
+            base.Broadcast(pitchBend);
             _encoder.EncodePitchBend(_rawOutput, pitchBend);
         }
 
-        public override void BroadcastClock(MIDIClock clock)
+        public override void Broadcast(MIDIClock clock)
         {
-            base.BroadcastClock(clock);
+            base.Broadcast(clock);
             _encoder.EncodeClock(_rawOutput, clock);
         }
 
-        public override void BroadcastPositionPointer(MIDISongPositionPointer pointer)
+        public override void Broadcast(MIDISongPositionPointer pointer)
         {
-            base.BroadcastPositionPointer(pointer);
+            base.Broadcast(pointer);
             _encoder.EncodePositionPointer(_rawOutput, pointer);
         }
 
-        public override void BroadcastSync(MIDISync sync)
+        public override void Broadcast(MIDISync sync)
         {
-            base.BroadcastSync(sync);
+            base.Broadcast(sync);
             _encoder.EncodeSync(_rawOutput, sync);
         }
 
-        public override void BroadcastChannelAftertouch(MIDIChannelAftertouch aftertouch)
+        public override void Broadcast(MIDIChannelAftertouch aftertouch)
         {
-            base.BroadcastChannelAftertouch(aftertouch);
+            base.Broadcast(aftertouch);
             _encoder.EncodeChannelAftertouch(_rawOutput, aftertouch);
         }
     }

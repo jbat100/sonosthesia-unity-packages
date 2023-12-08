@@ -28,6 +28,7 @@ namespace Sonosthesia.AdaptiveMIDI
         private void ReloadPipe()
         {
             _subscription?.Dispose();
+            ClearOngoingNotes();
             if (_output)
             {
                 _subscription = _output.Pipe(this);

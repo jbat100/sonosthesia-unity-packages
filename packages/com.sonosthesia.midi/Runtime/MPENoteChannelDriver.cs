@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Sonosthesia.AdaptiveMIDI;
-using Sonosthesia.AdaptiveMIDI.Messages;
 using Sonosthesia.Channel;
 using UniRx;
 using UnityEngine;
@@ -77,7 +76,7 @@ namespace Sonosthesia.MIDI
                     Debug.LogWarning($"{nameof(MPENoteChannelDriver)} unexpected note on {note}");
                     return;
                 }
-                state.EventId = BeginEvent(state.Begin(note));
+                state.EventId = BeginEvent(state.Begin(new MIDINote(note)));
             }));
             
             _mpeSubscriptions.Add(_input.NoteOffObservable.Subscribe(note =>

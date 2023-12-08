@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Sonosthesia.AdaptiveMIDI;
-using Sonosthesia.AdaptiveMIDI.Messages;
+using Sonosthesia.AdaptiveMIDI.Extensions;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -74,7 +74,7 @@ namespace Sonosthesia.Instrument
                 if (force || midiValue != _lastSent)
                 {
                     _lastSent = midiValue;
-                    output.BroadcastControl(new MIDIControl(settings.Channel, settings.Controller, midiValue));
+                    output.BroadcastControl(settings.Channel, settings.Controller, midiValue);
                 }
             }
 

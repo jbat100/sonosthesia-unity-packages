@@ -22,12 +22,12 @@ namespace Sonosthesia.Pack
                 subscriptions.Add(observable.Where(item => item.Check(_trackFilter)).Subscribe(processor));
             }
             
-            Connect(receiver.NoteOnObservable, note => BroadcastNoteOn(note.Unpack()));
-            Connect(receiver.NoteOffObservable, note => BroadcastNoteOff(note.Unpack()));
-            Connect(receiver.ControlObservable, control => BroadcastControl(control.Unpack()));
-            Connect(receiver.PolyphonicAftertouchObservable, aftertouch => BroadcastPolyphonicAftertouch(aftertouch.Unpack()));
-            Connect(receiver.ChannelAftertouchObservable, aftertouch => BroadcastChannelAftertouch(aftertouch.Unpack()));
-            Connect(receiver.PitchBendObservable, bend => BroadcastPitchBend(bend.Unpack()));
+            Connect(receiver.NoteOnObservable, note => Broadcast(note.UnpackNoteOn()));
+            Connect(receiver.NoteOffObservable, note => Broadcast(note.UnpackNoteOff()));
+            Connect(receiver.ControlObservable, control => Broadcast(control.Unpack()));
+            Connect(receiver.PolyphonicAftertouchObservable, aftertouch => Broadcast(aftertouch.Unpack()));
+            Connect(receiver.ChannelAftertouchObservable, aftertouch => Broadcast(aftertouch.Unpack()));
+            Connect(receiver.PitchBendObservable, bend => Broadcast(bend.Unpack()));
 
             return subscriptions;
         }

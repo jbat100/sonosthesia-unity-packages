@@ -25,7 +25,7 @@ namespace Sonosthesia.AdaptiveMIDIUI
                 _countLabel.text = $"{data.Value.Count}";
                 _typeLabel.text = data.Value.Type;
                 _dataLabel.text = data.Value.Data;
-                _timestampLabel.text = $"{data.Value.Timestamp.TotalMilliseconds:0.##}";    
+                _timestampLabel.text = $"{data.Value.Timestamp.TotalMilliseconds:0.##} ms";    
             }
         }
     }

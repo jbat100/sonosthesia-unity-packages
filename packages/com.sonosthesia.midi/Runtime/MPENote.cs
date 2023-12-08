@@ -1,6 +1,7 @@
+using Sonosthesia.AdaptiveMIDI.Messages;
 using UnityEngine;
 
-namespace Sonosthesia.AdaptiveMIDI.Messages
+namespace Sonosthesia.MIDI
 {
     public readonly struct MPENote
     {
@@ -20,6 +21,15 @@ namespace Sonosthesia.AdaptiveMIDI.Messages
             Slide = slide;
             Pressure = pressure;
             Bend = bend;
+        }
+
+        public MPENote(MIDINoteOn note)
+        {
+            Note = note.Note;
+            Velocity = note.Velocity;
+            Slide = 0;
+            Pressure = 0;
+            Bend = 0;
         }
 
         public MPENote ChangeSlide(int diff)
@@ -46,14 +56,14 @@ namespace Sonosthesia.AdaptiveMIDI.Messages
 
     public static class MPENoteExtensions
     {
-        public static MIDINote GetMIDINoteOn(this MPENote mpeNote, int channel)
+        public static MIDINoteOn GetMIDINoteOn(this MPENote mpeNote, int channel)
         {
-            return new MIDINote(channel, mpeNote.Note, mpeNote.Velocity, mpeNote.Pressure);
+            return new MIDINoteOn(channel, mpeNote.Note, mpeNote.Velocity);
         }
         
-        public static MIDINote GetMIDINoteOff(this MPENote mpeNote, int channel)
+        public static MIDINoteOff GetMIDINoteOff(this MPENote mpeNote, int channel)
         {
-            return new MIDINote(channel, mpeNote.Note, mpeNote.Velocity, mpeNote.Pressure);
+            return new MIDINoteOff(channel, mpeNote.Note, mpeNote.Velocity);
         }
 
         public static MIDIControl GetSlideControl(this MPENote mpeNote, int channel)

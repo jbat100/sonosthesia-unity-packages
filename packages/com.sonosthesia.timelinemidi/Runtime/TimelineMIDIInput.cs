@@ -16,19 +16,19 @@ namespace Sonosthesia.Timeline.MIDI
 
             if (midiEvent.IsNoteOn)
             {
-                BroadcastNoteOn(new MIDINote(midiEvent.status & 0x0f, midiEvent.data1, midiEvent.data2));
+                Broadcast(new MIDINoteOn(midiEvent.status & 0x0f, midiEvent.data1, midiEvent.data2));
             }
             else if (midiEvent.IsNoteOff)
             {
-                BroadcastNoteOff(new MIDINote(midiEvent.status & 0x0f, midiEvent.data1, 0));
+                Broadcast(new MIDINoteOff(midiEvent.status & 0x0f, midiEvent.data1, 0));
             }
             else if (midiEvent.IsCC)
             {
-                BroadcastControl(new MIDIControl(midiEvent.status & 0x0f, midiEvent.data1, midiEvent.data2));
+                Broadcast(new MIDIControl(midiEvent.status & 0x0f, midiEvent.data1, midiEvent.data2));
             }
             else if (midiEvent.IsPolyphonicAftertouch)
             {
-                BroadcastPolyphonicAftertouch(new MIDIPolyphonicAftertouch(midiEvent.status & 0x0f, midiEvent.data1, midiEvent.data2));
+                Broadcast(new MIDIPolyphonicAftertouch(midiEvent.status & 0x0f, midiEvent.data1, midiEvent.data2));
             }
         }
     }

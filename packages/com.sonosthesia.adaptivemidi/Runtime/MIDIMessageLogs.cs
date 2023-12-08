@@ -1,13 +1,12 @@
 using UniRx;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace Sonosthesia.AdaptiveMIDI
 {
     [RequireComponent(typeof(MIDIInput))]
     public class MIDIMessageLogs : MonoBehaviour
     {
-        private MIDIMessageBroadcaster _broadcaster;
+        private MIDIMessageNode _broadcaster;
         private CompositeDisposable _subscriptions = new ();
         
         protected void Awake()
@@ -20,10 +19,7 @@ namespace Sonosthesia.AdaptiveMIDI
             _subscriptions = new CompositeDisposable
             {
                 _broadcaster.ClockObservable.Subscribe(m => Debug.Log(m)),
-                _broadcaster.NoteOnObservable.Subscribe(m =>
-                {
-                    Debug.Log($"NoteOn {m}");
-                }),
+                _broadcaster.NoteOnObservable.Subscribe(m => Debug.Log($"NoteOn {m}")),
                 _broadcaster.NoteOffObservable.Subscribe(m => Debug.Log($"NoteOff {m}")),
                 _broadcaster.ControlObservable.Subscribe(m => Debug.Log(m)),
                 _broadcaster.ChannelAftertouchObservable.Subscribe(m => Debug.Log(m)),

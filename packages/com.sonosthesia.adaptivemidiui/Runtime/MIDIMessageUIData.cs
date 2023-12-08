@@ -41,9 +41,14 @@ namespace Sonosthesia.AdaptiveMIDIUI
             return new MIDIMessageUIData(count, "position", $"<beats {pointer.Position:D4}>", pointer.Timestamp);
         }
         
-        public static MIDIMessageUIData UIData(this MIDINote note, bool on, int count)
+        public static MIDIMessageUIData UIData(this MIDINoteOn note, int count)
         {
-            return new MIDIMessageUIData(count, $"note-{(on ? "on" : "off")}", $"<chan {note.Channel:D2} pitch {note.Note:D3} vel {note.Velocity:D3}>", note.Timestamp);
+            return new MIDIMessageUIData(count, $"note-on", $"<chan {note.Channel:D2} pitch {note.Note:D3} vel {note.Velocity:D3}>", note.Timestamp);
+        }
+        
+        public static MIDIMessageUIData UIData(this MIDINoteOff note, int count)
+        {
+            return new MIDIMessageUIData(count, $"note-off", $"<chan {note.Channel:D2} pitch {note.Note:D3} vel {note.Velocity:D3}>", note.Timestamp);
         }
         
         public static MIDIMessageUIData UIData(this MIDIPolyphonicAftertouch aftertouch, int count)
