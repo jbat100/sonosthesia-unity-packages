@@ -51,7 +51,7 @@ namespace Sonosthesia.Metronome
                 return null;
             }
             
-            Debug.Log($"{this} {nameof(EstimateMIDIBeatLength)} with {newest} {oldest}");
+            // Debug.Log($"{this} {nameof(EstimateMIDIBeatLength)} with {newest} {oldest}");
             
             return (float)(interval / gap * CLOCKS_PER_BEAT);
         }
