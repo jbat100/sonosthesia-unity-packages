@@ -12,11 +12,12 @@ const blacklist = new Set([
 ]);
 
 // Publish sequence:
-// - Ensure no build errors on Unity project
 // - Run node version.js to bump and align versions
+// - Run publish.js to publish all the packages to npm and check for errors
+// - Ensure no build errors on Unity project
 // - Push dev, merge to main 
 // - Create release on github with vx.x.x tag
-// - Run publish.js to publish all the packages to npm and check for errors
+
 
 function publish(package, dry) {
     const packagePath = getPackagePath(package);
