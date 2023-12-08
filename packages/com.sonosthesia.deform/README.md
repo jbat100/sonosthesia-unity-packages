@@ -1,9 +1,11 @@
+# com.sonosthesia.deform
+
 Dynamic mesh deformations for the sonosthesia project. Implemented using 
 
 - [com.sonosthesia.noise](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.noise)
 - [com.sonosthesia.mesh](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.mesh)
 
-This is an extension of the work documented by [Catlike coding](https://catlikecoding.com/unity/tutorials). 
+This is an extension of the work documented by [Catlike coding](https://catlikecoding.com/unity/tutorials). See example usage in [demo app](https://github.com/jbat100/sonosthesia-unity-demo-deform).
 
 ## Dynamic deformations 
 
