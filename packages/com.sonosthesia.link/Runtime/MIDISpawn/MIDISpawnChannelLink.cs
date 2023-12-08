@@ -1,5 +1,4 @@
-using Sonosthesia.AdaptiveMIDI.Messages;
-using Sonosthesia.Mapping;
+using Sonosthesia.MIDI;
 using Sonosthesia.Spawn;
 using Unity.Mathematics;
 using UnityEngine;

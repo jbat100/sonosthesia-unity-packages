@@ -1,6 +1,5 @@
-using Sonosthesia.AdaptiveMIDI.Messages;
-using Sonosthesia.Mapping;
 using UnityEngine;
+using Sonosthesia.MIDI;
 
 namespace Sonosthesia.Link
 {

@@ -1,4 +1,4 @@
-using Sonosthesia.AdaptiveMIDI.Messages;
+using Sonosthesia.MIDI;
 using Sonosthesia.Touch;
 using Sonosthesia.Touch.Providers;
 using Sonosthesia.Utils;

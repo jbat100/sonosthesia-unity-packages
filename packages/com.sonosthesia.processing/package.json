@@ -2,7 +2,7 @@
   "author": "Jonathan Thorpe",
   "dependencies": {
     "com.unity.mathematics": "1.2.6",
-    "com.sonosthesia.utils": "1.2.0"
+    "com.sonosthesia.utils": "1.3.0"
   },
   "description": "Sonosthesia processing",
   "displayName": "Sonosthesia Processing",
@@ -13,5 +13,5 @@
   "name": "com.sonosthesia.processing",
   "repository": "github:jbat100/sonosthesia-unity-packages",
   "unity": "2022.3",
-  "version": "1.2.0"
+  "version": "1.3.0"
 }

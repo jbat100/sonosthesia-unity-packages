@@ -2,15 +2,15 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
-namespace Sonosthesia.Timeline.Midi
+namespace Sonosthesia.Timeline.MIDI
 {
     // Playable asset class that contains a MIDI animation clip
     [System.Serializable]
-    public sealed class MidiAnimationAsset : PlayableAsset, ITimelineClipAsset
+    public sealed class MIDIAnimationAsset : PlayableAsset, ITimelineClipAsset
     {
         #region Serialized variables
 
-        public MidiAnimation template = new MidiAnimation();
+        public MIDIAnimation template = new MIDIAnimation();
 
         #endregion
 
@@ -38,7 +38,7 @@ namespace Sonosthesia.Timeline.Midi
 
         public override Playable CreatePlayable(PlayableGraph graph, GameObject go)
         {
-            return ScriptPlayable<MidiAnimation>.Create(graph, template);
+            return ScriptPlayable<MIDIAnimation>.Create(graph, template);
         }
 
         #endregion

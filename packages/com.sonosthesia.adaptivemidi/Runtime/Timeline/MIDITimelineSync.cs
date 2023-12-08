@@ -5,6 +5,8 @@ using Sonosthesia.AdaptiveMIDI.Messages;
 
 namespace Sonosthesia.AdaptiveMIDI.Timeline
 {
+    // TODO : use metronome
+    
     public class MIDITimelineSync : MonoBehaviour
     {
         [SerializeField] private float _tempo = 120;

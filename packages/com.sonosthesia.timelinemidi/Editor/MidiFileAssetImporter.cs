@@ -1,16 +1,12 @@
 using System.IO;
 using UnityEngine;
-#if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
-#else
-using UnityEditor.Experimental.AssetImporters;
-#endif
 
-namespace Sonosthesia.Timeline.Midi
+namespace Sonosthesia.Timeline.MIDI
 {
     // Custom importer for .mid files
     [ScriptedImporter(1, "mid")]
-    sealed class MidiFileAssetImporter : ScriptedImporter
+    sealed class MIDIFileAssetImporter : ScriptedImporter
     {
         [SerializeField] float _tempo = 120;
 
@@ -20,7 +16,7 @@ namespace Sonosthesia.Timeline.Midi
 
             // Main MIDI file asset
             var buffer = File.ReadAllBytes(context.assetPath);
-            var asset = MidiFileDeserializer.Load(buffer);
+            var asset = MIDIFileDeserializer.Load(buffer);
             asset.name = name;
             context.AddObjectToAsset("MidiFileAsset", asset);
             context.SetMainObject(asset);

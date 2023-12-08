@@ -2,16 +2,16 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sonosthesia.Timeline.Midi
+namespace Sonosthesia.Timeline.MIDI
 {
     // SMF file deserializer implementation
-    static class MidiFileDeserializer
+    static class MIDIFileDeserializer
     {
         #region Public members
 
-        public static MidiFileAsset Load(byte [] data)
+        public static MIDIFileAsset Load(byte [] data)
         {
-            var reader = new MidiDataStreamReader(data);
+            var reader = new MIDIDataStreamReader(data);
 
             // Chunk type
             if (reader.ReadChars(4) != "MThd")
@@ -33,12 +33,12 @@ namespace Sonosthesia.Timeline.Midi
                 throw new FormatException ("SMPTE time code is not supported.");
 
             // Tracks
-            var tracks = new MidiAnimationAsset [trackCount];
+            var tracks = new MIDIAnimationAsset [trackCount];
             for (var i = 0; i < trackCount; i++)
                 tracks[i] = ReadTrack(reader, tpqn);
 
             // Asset instantiation
-            var asset = ScriptableObject.CreateInstance<MidiFileAsset>();
+            var asset = ScriptableObject.CreateInstance<MIDIFileAsset>();
             asset.tracks = tracks;
             return asset;
         }
@@ -47,7 +47,7 @@ namespace Sonosthesia.Timeline.Midi
 
         #region Private members
         
-        static MidiAnimationAsset ReadTrack(MidiDataStreamReader reader, uint tpqn)
+        static MIDIAnimationAsset ReadTrack(MIDIDataStreamReader reader, uint tpqn)
         {
             // Chunk type
             if (reader.ReadChars(4) != "MTrk")
@@ -58,7 +58,7 @@ namespace Sonosthesia.Timeline.Midi
             chunkEnd += reader.Position;
 
             // MIDI event sequence
-            var events = new List<MidiEvent>();
+            var events = new List<MIDIEvent>();
             var ticks = 0u;
             var stat = (byte)0;
 
@@ -87,7 +87,7 @@ namespace Sonosthesia.Timeline.Midi
                     // MIDI event
                     var b1 = reader.ReadByte();
                     var b2 = (stat & 0xe0u) == 0xc0u ? (byte)0 : reader.ReadByte();
-                    events.Add(new MidiEvent {
+                    events.Add(new MIDIEvent {
                         time = ticks, status = stat, data1 = b1, data2 = b2
                     });
                 }
@@ -97,7 +97,7 @@ namespace Sonosthesia.Timeline.Midi
             var bars = (ticks + tpqn * 4 - 1) / (tpqn * 4);
 
             // Asset instantiation
-            var asset = ScriptableObject.CreateInstance<MidiAnimationAsset>();
+            var asset = ScriptableObject.CreateInstance<MIDIAnimationAsset>();
             asset.template.tempo = 120;
             asset.template.duration = bars * tpqn * 4;
             asset.template.ticksPerQuarterNote = tpqn;

@@ -3,12 +3,12 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Sonosthesia.Timeline.Midi
+namespace Sonosthesia.Timeline.MIDI
 {
     // Custom inspector for MIDI assets
     // There is no editable property; It just shows some infomation.
-    [CustomEditor(typeof(MidiAnimationAsset))]
-    class MidiAnimationAssetEditor : Editor
+    [CustomEditor(typeof(MIDIAnimationAsset))]
+    class MIDIAnimationAssetEditor : Editor
     {
         string _tempoText;
         string _durationText;
@@ -18,7 +18,7 @@ namespace Sonosthesia.Timeline.Midi
 
         void OnEnable()
         {
-            var asset = ((MidiAnimationAsset)target).template;
+            var asset = ((MIDIAnimationAsset)target).template;
 
             _tempoText = asset.tempo.ToString();
 

@@ -1,6 +1,6 @@
 using System;
 using Sonosthesia.AdaptiveMIDI;
-using Sonosthesia.AdaptiveMIDI.Messages;
+using Sonosthesia.AdaptiveMIDI.Extensions;
 using Sonosthesia.Channel;
 using UniRx;
 using UnityEngine;
@@ -45,20 +45,20 @@ namespace Sonosthesia.MIDI
                         }
                         if (_aftertouch && initial.Value.Pressure != note.Pressure)
                         {
-                            _output.BroadcastPolyphonicAftertouch(new MIDIPolyphonicAftertouch(note));   
+                            _output.BroadcastPolyphonicAftertouch(note.Channel, note.Note, note.Pressure);   
                         }
                     }
                     else
                     {
                         initial = note;
-                        _output.BroadcastNoteOn(note);
+                        _output.BroadcastNoteOn(note.Channel, note.Note, note.Velocity);
                     }
                     previous = note;
                 }, () =>
                 {
                     if (previous.HasValue)
                     {
-                        _output.BroadcastNoteOff(previous.Value);   
+                        _output.BroadcastNoteOff(previous.Value.Channel, previous.Value.Note, previous.Value.Velocity);   
                     }
                 });
             });

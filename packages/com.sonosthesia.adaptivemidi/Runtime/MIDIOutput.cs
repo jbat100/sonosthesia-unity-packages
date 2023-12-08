@@ -1,16 +1,55 @@
+using System.Collections.Generic;
 using Sonosthesia.AdaptiveMIDI.Messages;
-using UnityEngine;
 
 namespace Sonosthesia.AdaptiveMIDI
 {
-    public abstract class MIDIOutput : MonoBehaviour
+    public class MIDIOutput : MIDIMessageNode
     {
-        public abstract void BroadcastNoteOn(MIDINote note);
-        public abstract void BroadcastNoteOff(MIDINote note);
-        public abstract void BroadcastChannelControl(MIDIControl control);
-        public abstract void BroadcastPolyphonicAftertouch(MIDIPolyphonicAftertouch aftertouch);
-        public abstract void BrodcatstChannelAftertouch(MIDIChannelAftertouch aftertouch);
-        public abstract void BroadcastPitchBend(MIDIPitchBend pitchBend);
+        private readonly struct NoteKey
+        {
+            public readonly int Channel;
+            public readonly int Note;
+
+            public NoteKey(int channel, int note)
+            {
+                Channel = channel;
+                Note = note;
+            }
+
+            public NoteKey(MIDINoteOn note)
+            {
+                Channel = note.Channel;
+                Note = note.Note;
+            }
+            
+            public NoteKey(MIDINoteOff note)
+            {
+                Channel = note.Channel;
+                Note = note.Note;
+            }
+        }
+
+        private readonly HashSet<NoteKey> _ongoingNotes = new();
+
+        public void ClearOngoingNotes()
+        {
+            foreach (NoteKey noteKey in _ongoingNotes)
+            {
+                Broadcast(new MIDINoteOff(noteKey.Channel, noteKey.Note, 0));
+            }
+        }
+
+        public override void Broadcast(MIDINoteOn note)
+        {
+            base.Broadcast(note);
+            _ongoingNotes.Add(new NoteKey(note));
+        }
+
+        public override void Broadcast(MIDINoteOff note)
+        {
+            base.Broadcast(note);
+            _ongoingNotes.Remove(new NoteKey(note));
+        }
     }    
 }
 

@@ -1,3 +1,5 @@
+using System;
+
 namespace Sonosthesia.AdaptiveMIDI.Messages
 {
     // polyphonic aftertouch and channel aftertouch are different kinds of messages 
@@ -5,18 +7,27 @@ namespace Sonosthesia.AdaptiveMIDI.Messages
     
     public readonly struct MIDIChannelAftertouch
     {
+        public readonly TimeSpan Timestamp;
         public readonly int Channel;
         public readonly int Value;
         
         public MIDIChannelAftertouch(int channel, int value)
         {
+            Timestamp = MIDIUtils.TimestampNow;
+            Channel = channel;
+            Value = value;
+        }
+        
+        public MIDIChannelAftertouch(TimeSpan timestamp, int channel, int value)
+        {
+            Timestamp = timestamp;
             Channel = channel;
             Value = value;
         }
         
         public override string ToString()
         {
-            return $"{nameof(MIDIChannelAftertouch)} <{nameof(Channel)} {Channel} {nameof(Channel)} {Channel}>";
+            return $"{nameof(MIDIChannelAftertouch)} <{nameof(Channel)} {Channel} {nameof(Value)} {Value} {nameof(Timestamp)} {Timestamp.TotalSeconds}>";
         }
     }
 }

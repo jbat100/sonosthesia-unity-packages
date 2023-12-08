@@ -1,16 +1,16 @@
 using UnityEngine;
 using UnityEngine.Playables;
 
-namespace Sonosthesia.Timeline.Midi
+namespace Sonosthesia.Timeline.MIDI
 {
     // Runtime playable class that manages a MIDI animation track (clips and
     // its assigned controls)
     [System.Serializable]
-    public sealed class MidiAnimationMixer : PlayableBehaviour
+    public sealed class MIDIAnimationMixer : PlayableBehaviour
     {
         #region Serialized variables
 
-        public MidiControl [] controls = new MidiControl [0];
+        public MIDITimelineControl [] controls = new MIDITimelineControl [0];
 
         #endregion
 
@@ -44,7 +44,7 @@ namespace Sonosthesia.Timeline.Midi
 
                 for (var i = 0; i < playable.GetInputCount(); i++)
                 {
-                    var clip = (ScriptPlayable<MidiAnimation>)playable.GetInput(i);
+                    var clip = (ScriptPlayable<MIDIAnimation>)playable.GetInput(i);
                     acc += playable.GetInputWeight(i) *
                         clip.GetBehaviour().GetValue(clip, ctrl);
                 }

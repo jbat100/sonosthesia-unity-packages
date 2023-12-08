@@ -2,18 +2,18 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
-namespace Sonosthesia.Timeline.Midi
+namespace Sonosthesia.Timeline.MIDI
 {
     // Track asset class that contains a MIDI animation track (clips and its
     // assigned controls)
     [TrackColor(0.4f, 0.4f, 0.4f)]
-    [TrackClipType(typeof(MidiAnimationAsset))]
+    [TrackClipType(typeof(MIDIAnimationAsset))]
     [TrackBindingType(typeof(GameObject))]
-    public sealed class MidiAnimationTrack : TrackAsset
+    public sealed class MIDIAnimationTrack : TrackAsset
     {
         #region Serialized object
 
-        public MidiAnimationMixer template = new MidiAnimationMixer();
+        public MIDIAnimationMixer template = new MIDIAnimationMixer();
 
         #endregion
 
@@ -21,7 +21,7 @@ namespace Sonosthesia.Timeline.Midi
 
         public override Playable CreateTrackMixer(PlayableGraph graph, GameObject go, int inputCount)
         {
-            return ScriptPlayable<MidiAnimationMixer>.Create(graph, template, inputCount);
+            return ScriptPlayable<MIDIAnimationMixer>.Create(graph, template, inputCount);
         }
 
         #endregion
