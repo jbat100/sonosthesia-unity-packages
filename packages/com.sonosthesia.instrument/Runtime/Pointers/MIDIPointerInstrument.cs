@@ -7,8 +7,10 @@ using Sonosthesia.MIDI;
 
 namespace Sonosthesia.Instrument
 {
-    public class MIDIPointerInstrument : ChannelDriver<MIDINote>, IPointerDownHandler, IPointerUpHandler
+    public class MIDIPointerInstrument : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
+        [SerializeField] private ChannelDriver<MIDINote> _driver;
+        
         [SerializeField] private int _channel;
         
         [SerializeField] private int _note;
@@ -21,18 +23,18 @@ namespace Sonosthesia.Instrument
         {
             if (_pointerEvents.TryGetValue(eventData.pointerId, out Guid eventId))
             {
-                EndEvent(eventId);
+                _driver.EndEvent(eventId);
                 _pointerEvents.Remove(eventData.pointerId);
             }
 
-            _pointerEvents[eventData.pointerId] = BeginEvent(new MIDINote(_channel, _note, _velocity));
+            _pointerEvents[eventData.pointerId] = _driver.BeginEvent(new MIDINote(_channel, _note, _velocity));
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
             if (_pointerEvents.TryGetValue(eventData.pointerId, out Guid eventId))
             {
-                EndEvent(eventId);
+                _driver.EndEvent(eventId);
                 _pointerEvents.Remove(eventData.pointerId);
             }
         }

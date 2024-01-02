@@ -1,11 +1,10 @@
-using Sonosthesia.AdaptiveMIDI.Messages;
 using Sonosthesia.MIDI;
 using Sonosthesia.Touch;
 using UnityEngine;
 
 namespace Sonosthesia.Instrument
 {
-    public class MPETriggerInstrument : TriggerChannelDriver<MPENote>
+    public class MPETriggerInstrument : TriggerChannelSource<MPENote>
     {
         [SerializeField] private TriggerValueGenerator<float> _note;
         

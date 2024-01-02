@@ -11,12 +11,12 @@ namespace Sonosthesia.Touch
     {
         public readonly struct ValueState
         {
-            public readonly TriggerChannelDriver<TValue> Driver;
+            public readonly TriggerChannelSource<TValue> Driver;
             public readonly Collider Actor;
             public readonly TValue Value;
             public readonly bool Colliding;
 
-            public ValueState(TriggerChannelDriver<TValue> driver, Collider actor, TValue value, bool colliding)
+            public ValueState(TriggerChannelSource<TValue> driver, Collider actor, TValue value, bool colliding)
             {
                 Driver = driver;
                 Actor = actor;
@@ -58,7 +58,7 @@ namespace Sonosthesia.Touch
             return !_parent || _parent.IsAvailable(actor);
         }
         
-        public void OnTriggerStarted(Guid eventId, TriggerChannelDriver<TValue> driver, Collider actor, TValue value, bool colliding)
+        public void OnTriggerStarted(Guid eventId, TriggerChannelSource<TValue> driver, Collider actor, TValue value, bool colliding)
         {
             //Debug.Log($"{this} {nameof(OnTriggerStarted)} {eventId} {value}");
 
@@ -71,7 +71,7 @@ namespace Sonosthesia.Touch
             OnStarted(eventId, actor, colliding);
         }
         
-        public void OnTriggerUpdated(Guid eventId, TriggerChannelDriver<TValue> driver, Collider actor, TValue value, bool colliding)
+        public void OnTriggerUpdated(Guid eventId, TriggerChannelSource<TValue> driver, Collider actor, TValue value, bool colliding)
         {
             //Debug.Log($"{this} {nameof(OnTriggerUpdated)} {eventId} {value}");
             
@@ -84,7 +84,7 @@ namespace Sonosthesia.Touch
             OnUpdated(eventId, actor, colliding);
         }
         
-        public void OnTriggerEnded(Guid eventId, TriggerChannelDriver<TValue> driver, Collider actor, bool colliding)
+        public void OnTriggerEnded(Guid eventId, TriggerChannelSource<TValue> driver, Collider actor, bool colliding)
         {
             //Debug.Log($"{this} {nameof(OnTriggerEnded)} {eventId}");
             

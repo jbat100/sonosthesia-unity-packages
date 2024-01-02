@@ -4,7 +4,7 @@ using Sonosthesia.Touch;
 
 namespace Sonosthesia.Instrument
 {
-    public class MIDITriggerInstrument : TriggerChannelDriver<MIDINote>
+    public class MIDITriggerInstrument : TriggerChannelSource<MIDINote>
     {
         [SerializeField] private TriggerValueGenerator<float> _channel;
         

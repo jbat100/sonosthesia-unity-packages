@@ -5,8 +5,10 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public abstract class TriggerChannelDriver<TValue> : ChannelDriver<TValue> where TValue : struct
+    public abstract class TriggerChannelSource<TValue> : MonoBehaviour where TValue : struct
     {
+        [SerializeField] private ChannelDriver<TValue> _driver;
+    
         [SerializeField] private bool _endOnExit = true;
         
         [SerializeField] private bool _restartOnEnter = true;
@@ -70,7 +72,7 @@ namespace Sonosthesia.Touch
             
             if (Extract(true, other, out TValue value))
             {
-                Guid evendId = BeginEvent(value);
+                Guid evendId = _driver.BeginEvent(value);
                 _triggers[other] = new Trigger(evendId, actor);
                 if (actor)
                 {
@@ -105,7 +107,7 @@ namespace Sonosthesia.Touch
         {
             if (Extract(false, other, out TValue value))
             {
-                UpdateEvent(trigger.EventId, value);
+                _driver.UpdateEvent(trigger.EventId, value);
                 if (trigger.Actor)
                 {
                     trigger.Actor.OnTriggerUpdated(trigger.EventId, this, other, value, colliding);
@@ -118,7 +120,7 @@ namespace Sonosthesia.Touch
             if (_triggers.TryGetValue(other, out Trigger trigger))
             {
                 _triggers.Remove(other);
-                EndEvent(trigger.EventId);
+                _driver.EndEvent(trigger.EventId);
                 if (trigger.Actor)
                 {
                     trigger.Actor.OnTriggerEnded(trigger.EventId, this, other, colliding);
