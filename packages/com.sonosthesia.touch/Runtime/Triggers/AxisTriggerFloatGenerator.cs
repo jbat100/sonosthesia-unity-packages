@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class AxisDragTriggerFloatGenerator : StatefulTriggerValueGenerator<AxisDragTriggerFloatGenerator.State, float>
+    public class AxisTriggerFloatGenerator : StatefulTriggerValueGenerator<AxisTriggerFloatGenerator.State, float>
     {
         public class State
         {

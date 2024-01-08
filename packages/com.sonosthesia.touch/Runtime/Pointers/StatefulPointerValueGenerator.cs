@@ -4,37 +4,35 @@ using UnityEngine.EventSystems;
 
 namespace Sonosthesia.Touch
 {
-    public class EmptyPointerState { }
-    
-    public abstract class StatefulPointerValueGenerator<TState, TValue> : PointerValueGenerator<TValue>
-        where TState : class, new() where TValue : struct
+    public abstract class StatefulPointerValueGenerator<TValue> : PointerValueGenerator<TValue> where TValue : struct
     {
         private class History
         {
-            public TValue InitialValue { get; set; }
+            public TValue InitialValue { get; }
             public TValue PreviousValue { get; set; }
-            public TState State { get; }
 
-            public History(TValue initial, TState state)
+            public History(TValue initial)
             {
                 InitialValue = initial;
                 PreviousValue = initial;
-                State = state;
             }
         }
 
         [SerializeField] private bool _track;
         
+        [SerializeField] private bool _relative;
+        
         private readonly Dictionary<int, History> _history = new ();
 
         public sealed override bool OnPointerDown(PointerEventData eventData, out TValue value)
         {
-            TState state = new TState();
-            if (OnPointerDown(eventData, state, out value))
+            if (Extract(eventData, out TValue extracted))
             {
-                _history[eventData.pointerId] = new History(value, state);
+                _history[eventData.pointerId] = new History(extracted);
+                value = _relative ? Relative(extracted, extracted) : extracted;
                 return true;
             }
+            value = default;
             return false;
         }
 
@@ -47,9 +45,10 @@ namespace Sonosthesia.Touch
                     value = history.InitialValue;
                     return true;
                 }
-                if (OnPointerMove(eventData, history.State, history.InitialValue, history.PreviousValue, out value))
+                if (Extract(eventData, out TValue extracted))
                 {
-                    history.PreviousValue = value;
+                    history.PreviousValue = extracted;
+                    value = _relative ? Relative(history.InitialValue, extracted) : extracted;
                     return true;
                 }
             }
@@ -62,8 +61,8 @@ namespace Sonosthesia.Touch
             _history.Remove(eventData.pointerId);
         }
 
-        protected abstract bool OnPointerDown(PointerEventData eventData, TState state, out TValue value);
-
-        protected abstract bool OnPointerMove(PointerEventData eventData, TState state, TValue initial, TValue previous, out TValue value);
+        protected abstract TValue Relative(TValue initial, TValue current);
+        
+        protected abstract bool Extract(PointerEventData eventData, out TValue value);
     }
 }

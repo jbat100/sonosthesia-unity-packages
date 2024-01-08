@@ -5,7 +5,7 @@ using Sonosthesia.Touch;
 
 namespace Sonosthesia.Instrument
 {
-    public class GeneratorMIDIPointerInstrument : GeneratorPointerInstrument<MIDINote>
+    public class GeneratorMIDIPointerInstrument : PointerDriverSource<MIDINote>
     {
         [SerializeField] private PointerValueGenerator<float> _channel;
         
