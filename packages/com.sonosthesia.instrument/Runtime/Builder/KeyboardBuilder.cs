@@ -62,10 +62,13 @@ namespace Sonosthesia.Instrument
                 offset += isWhite && NoteIsWhite(note - 1) ? 1f : 0.5f;
                 
                 KeyProperties properties = isWhite ? _white : _black;
-                Transform t = instance.transform;
-                t.localScale = properties.Scale;
-                t.localPosition = properties.Offset + offset * _spacing;
+                
+                Transform positionTarget = instance.transform;
+                positionTarget.localPosition = properties.Offset + offset * _spacing;
 
+                Transform scaleTarget = instance.ScaleTarget ? instance.ScaleTarget : transform;
+                scaleTarget.localScale = properties.Scale;
+                
                 instance.Renderer.sharedMaterial = properties.Material;
             }
         }

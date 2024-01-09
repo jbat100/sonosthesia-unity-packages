@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class DragPointerDriverAffordance<TValue> : PointerDriverAffordance<TValue> where TValue : struct
+    public class DragPointerDriverAffordance : AgnosticPointerDriverAffordance
     {
         // TODO : use pools 
 
@@ -15,9 +15,9 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private float _offset = 0.1f;
 
-        protected class Controller : IPointerDriverAffordanceController<TValue>
+        protected class Controller : IAgnosticPointerDriverAffordanceController
         {
-            private readonly DragPointerDriverAffordance<TValue> _affordance;
+            private readonly DragPointerDriverAffordance _affordance;
 
             private bool _initialized;
             private Guid _eventId;
@@ -30,7 +30,7 @@ namespace Sonosthesia.Touch
             private Camera _camera;
             private readonly Vector3[] _lineRendererPositions = new Vector3[2];
 
-            private void CheckInitialized(PointerDriverSource<TValue>.SourceEvent value)
+            private void CheckInitialized(BasePointerDriverSource.SourceEvent value)
             {
                 if (_initialized)
                 {
@@ -62,7 +62,7 @@ namespace Sonosthesia.Touch
                 _originPosition = cameraPosition + look * (offsetDistance / distance);
             }
             
-            public Controller(DragPointerDriverAffordance<TValue> affordance)
+            public Controller(DragPointerDriverAffordance affordance)
             {
                 _affordance = affordance;
             }
@@ -85,13 +85,16 @@ namespace Sonosthesia.Touch
                 }
             }
 
-            public void OnNext(PointerDriverSource<TValue>.SourceEvent value)
+            public void OnNext(BasePointerDriverSource.SourceEvent value)
             {
                 CheckInitialized(value);
 
                 Vector3 direction = _camera.transform.position - _originPosition;
 
-                Plane plane = new Plane(direction.normalized, _originPosition);
+                //Plane plane = new Plane(direction.normalized, _originPosition);
+                
+                Plane plane = new Plane(-_affordance.transform.forward, _originPosition);
+                
                 Ray ray = _camera.ScreenPointToRay(value.Data.position);
 
                 if (!plane.Raycast(ray, out float enter))
@@ -120,7 +123,7 @@ namespace Sonosthesia.Touch
             }
         }
 
-        protected override IPointerDriverAffordanceController<TValue> MakeController()
+        protected override IAgnosticPointerDriverAffordanceController MakeController()
         {
             return new Controller(this);
         }

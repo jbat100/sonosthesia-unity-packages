@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using Sonosthesia.Channel;
 using UniRx;
 using UnityEngine;
@@ -8,7 +7,7 @@ using UnityEngine.EventSystems;
 
 namespace Sonosthesia.Touch
 {
-    public abstract class PointerDriverSource<TValue> : MonoBehaviour, 
+    public abstract class PointerDriverSource<TValue> : BasePointerDriverSource, 
         IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler, IPointerExitHandler,
         IDragHandler, IInitializePotentialDragHandler
         where TValue : struct
@@ -28,13 +27,13 @@ namespace Sonosthesia.Touch
         private readonly Dictionary<int, Guid> _pointerEvents = new();
 
         // used for affordances
-        public readonly struct SourceEvent
+        public readonly struct ValueEvent
         {
             public readonly Guid Id;
             public readonly TValue Value;
             public readonly PointerEventData Data;
 
-            public SourceEvent(Guid id, TValue value, PointerEventData data)
+            public ValueEvent(Guid id, TValue value, PointerEventData data)
             {
                 Id = id;
                 Value = value;
@@ -42,13 +41,10 @@ namespace Sonosthesia.Touch
             }
         }
 
-        private readonly Dictionary<Guid, BehaviorSubject<SourceEvent>> _eventSubjects = new();
-        private readonly Subject<IObservable<SourceEvent>> _eventStreamSubject = new();
+        private readonly Dictionary<Guid, BehaviorSubject<ValueEvent>> _valueEventSubjects = new();
+        private readonly Subject<IObservable<ValueEvent>> _valueStreamSubject = new();
 
-        private readonly ReactiveCollection<Guid> _ongoingEvents = new();
-        public IReadOnlyReactiveCollection<Guid> OngoingEvents => _ongoingEvents; 
-
-        public IObservable<IObservable<SourceEvent>> StreamObservable => _eventStreamSubject.AsObservable();
+        public IObservable<IObservable<ValueEvent>> ValueStreamObservable => _valueStreamSubject.AsObservable();
 
         private void BeginEvent(PointerEventData eventData)
         {
@@ -60,11 +56,13 @@ namespace Sonosthesia.Touch
             Guid eventId = _driver.BeginEvent(value);
             _pointerEvents[eventData.pointerId] = eventId; 
 
-            BehaviorSubject<SourceEvent> subject = new BehaviorSubject<SourceEvent>(new SourceEvent(eventId, value, eventData));
-            _eventSubjects[eventId] = subject;
-            _eventStreamSubject.OnNext(subject);
+            BehaviorSubject<ValueEvent> subject = new BehaviorSubject<ValueEvent>(new ValueEvent(eventId, value, eventData));
+            _valueEventSubjects[eventId] = subject;
+            _valueStreamSubject.OnNext(subject);
             
-            _ongoingEvents.Add(eventId);
+            Pipe(subject.Select(valueEvent => new SourceEvent(valueEvent.Id, eventData)));
+            
+            RegisterEvent(eventId);
         }
 
         private void UpdateEvent(PointerEventData eventData)
@@ -81,12 +79,12 @@ namespace Sonosthesia.Touch
             
             _driver.UpdateEvent(eventId, value);
             
-            if (!_eventSubjects.TryGetValue(eventId, out BehaviorSubject<SourceEvent> subject))
+            if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<ValueEvent> subject))
             {
                 return;
             }
             
-            subject.OnNext(new SourceEvent(eventId, value, eventData));
+            subject.OnNext(new ValueEvent(eventId, value, eventData));
         }
         
         private void EndEvent(PointerEventData eventData)
@@ -99,16 +97,16 @@ namespace Sonosthesia.Touch
             _driver.EndEvent(eventId);
             _pointerEvents.Remove(eventData.pointerId);
 
-            if (!_eventSubjects.TryGetValue(eventId, out BehaviorSubject<SourceEvent> subject))
+            if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<ValueEvent> subject))
             {
                 return;
             }
             
             subject.OnCompleted();
             subject.Dispose();
-            _eventSubjects.Remove(eventId);
+            _valueEventSubjects.Remove(eventId);
 
-            _ongoingEvents.Remove(eventId);
+            UnregisterEvent(eventId);
         }
 
         public void OnPointerDown(PointerEventData eventData)
