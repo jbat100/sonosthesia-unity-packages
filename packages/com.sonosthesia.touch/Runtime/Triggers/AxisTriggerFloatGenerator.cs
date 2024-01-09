@@ -18,14 +18,14 @@ namespace Sonosthesia.Touch
         {
             Vector3 position = ComputeOtherLocalPosition(other);
             state.Initial = position;
-            value = _extractor.Process(_relative ? Vector3.zero : position);
+            value = _extractor.ExtractFloat(_relative ? Vector3.zero : position);
             return true;
         }
 
         protected override bool ProcessTriggerStay(Collider other, State state, float initial, float previous, out float value)
         {
             Vector3 position = ComputeOtherLocalPosition(other);
-            value = _extractor.Process(_relative ? position - state.Initial : position);
+            value = _extractor.ExtractFloat(_relative ? position - state.Initial : position);
             return true;
         }
 

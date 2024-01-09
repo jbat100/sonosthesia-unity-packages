@@ -21,8 +21,13 @@ namespace Sonosthesia.Touch
         [SerializeField] private bool _track;
         
         [SerializeField] private bool _relative;
-        
+
         private readonly Dictionary<int, History> _history = new ();
+
+        protected virtual TValue PostProcessValue(TValue value)
+        {
+            return value;
+        }
 
         public sealed override bool OnPointerDown(PointerEventData eventData, out TValue value)
         {
@@ -30,6 +35,7 @@ namespace Sonosthesia.Touch
             {
                 _history[eventData.pointerId] = new History(extracted);
                 value = _relative ? Relative(extracted, extracted) : extracted;
+                value = PostProcessValue(value);
                 return true;
             }
             value = default;
@@ -49,6 +55,7 @@ namespace Sonosthesia.Touch
                 {
                     history.PreviousValue = extracted;
                     value = _relative ? Relative(history.InitialValue, extracted) : extracted;
+                    value = PostProcessValue(value);
                     return true;
                 }
             }

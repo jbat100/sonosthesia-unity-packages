@@ -39,7 +39,7 @@ namespace Sonosthesia.Touch
         {
             Vector3 v = monitor.Select(_order).Select(_domain);
             Vector3 local = transform.InverseTransformDirection(v);
-            return _extractor.Process(v);
+            return _extractor.ExtractFloat(v);
         }
     }
 }

@@ -16,6 +16,12 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private AxisType _axisType;
 
+        [SerializeField] private bool _applyTransferCurve;
+        
+        [SerializeField] private AnimationCurve _transferCurve;
+
+        [SerializeField] private FloatProcessor _postProcessor;
+
         private abstract class Implementation
         {
             public abstract bool Extract(Transform transform, PointerEventData eventData, out Vector3 value);
@@ -68,11 +74,20 @@ namespace Sonosthesia.Touch
         {
             if (_implementation != null && _implementation.Extract(transform, eventData, out Vector3 axis))
             {
-                value = _extractor.Process(axis);
+                value = _extractor.ExtractFloat(axis);
+                if (_applyTransferCurve)
+                {
+                    value = _transferCurve.Evaluate(value);
+                }
                 return true;
             }
             value = default;
             return false;
+        }
+
+        protected override float PostProcessValue(float value)
+        {
+            return _postProcessor.Process(value);
         }
     }
 }
