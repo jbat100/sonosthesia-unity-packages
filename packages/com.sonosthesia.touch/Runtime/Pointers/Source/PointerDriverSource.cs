@@ -1,12 +1,29 @@
 using System;
 using System.Collections.Generic;
 using Sonosthesia.Channel;
+using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Sonosthesia.Touch
 {
+    
+    // used for affordances
+    public readonly struct PointerValueEvent<TValue> where TValue : struct
+    {
+        public readonly Guid Id;
+        public readonly TValue Value;
+        public readonly PointerEventData Data;
+
+        public PointerValueEvent(Guid id, TValue value, PointerEventData data)
+        {
+            Id = id;
+            Value = value;
+            Data = data;
+        }
+    }
+    
     public abstract class PointerDriverSource<TValue> : BasePointerDriverSource, 
         IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler, IPointerExitHandler,
         IDragHandler, IInitializePotentialDragHandler
@@ -25,26 +42,18 @@ namespace Sonosthesia.Touch
         [SerializeField] private bool _endOnExit;
         
         private readonly Dictionary<int, Guid> _pointerEvents = new();
+        
 
-        // used for affordances
-        public readonly struct ValueEvent
+        private readonly Dictionary<Guid, BehaviorSubject<PointerValueEvent<TValue>>> _valueEventSubjects = new();
+        
+        private StreamNode<PointerValueEvent<TValue>> _valueStreamNode;
+        public StreamNode<PointerValueEvent<TValue>> ValueStreamNode => _valueStreamNode ??= new StreamNode<PointerValueEvent<TValue>>(this);
+
+        protected override void OnDestroy()
         {
-            public readonly Guid Id;
-            public readonly TValue Value;
-            public readonly PointerEventData Data;
-
-            public ValueEvent(Guid id, TValue value, PointerEventData data)
-            {
-                Id = id;
-                Value = value;
-                Data = data;
-            }
+            base.OnDestroy();
+            _valueStreamNode?.Dispose();
         }
-
-        private readonly Dictionary<Guid, BehaviorSubject<ValueEvent>> _valueEventSubjects = new();
-        private readonly Subject<IObservable<ValueEvent>> _valueStreamSubject = new();
-
-        public IObservable<IObservable<ValueEvent>> ValueStreamObservable => _valueStreamSubject.AsObservable();
 
         private void BeginEvent(PointerEventData eventData)
         {
@@ -56,13 +65,11 @@ namespace Sonosthesia.Touch
             Guid eventId = _driver.BeginEvent(value);
             _pointerEvents[eventData.pointerId] = eventId; 
 
-            BehaviorSubject<ValueEvent> subject = new BehaviorSubject<ValueEvent>(new ValueEvent(eventId, value, eventData));
+            BehaviorSubject<PointerValueEvent<TValue>> subject = new BehaviorSubject<PointerValueEvent<TValue>>(new PointerValueEvent<TValue>(eventId, value, eventData));
             _valueEventSubjects[eventId] = subject;
-            _valueStreamSubject.OnNext(subject);
-            
-            Pipe(subject.Select(valueEvent => new SourceEvent(valueEvent.Id, eventData)));
-            
-            RegisterEvent(eventId);
+
+            ValueStreamNode.Pipe(eventId, subject.AsObservable());
+            SourceStreamNode.Pipe(eventId, subject.Select(valueEvent => new PointerSourceEvent(valueEvent.Id, eventData)));
         }
 
         private void UpdateEvent(PointerEventData eventData)
@@ -79,12 +86,12 @@ namespace Sonosthesia.Touch
             
             _driver.UpdateEvent(eventId, value);
             
-            if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<ValueEvent> subject))
+            if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<PointerValueEvent<TValue>> subject))
             {
                 return;
             }
             
-            subject.OnNext(new ValueEvent(eventId, value, eventData));
+            subject.OnNext(new PointerValueEvent<TValue>(eventId, value, eventData));
         }
         
         private void EndEvent(PointerEventData eventData)
@@ -97,7 +104,7 @@ namespace Sonosthesia.Touch
             _driver.EndEvent(eventId);
             _pointerEvents.Remove(eventData.pointerId);
 
-            if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<ValueEvent> subject))
+            if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<PointerValueEvent<TValue>> subject))
             {
                 return;
             }
@@ -105,8 +112,6 @@ namespace Sonosthesia.Touch
             subject.OnCompleted();
             subject.Dispose();
             _valueEventSubjects.Remove(eventId);
-
-            UnregisterEvent(eventId);
         }
 
         public void OnPointerDown(PointerEventData eventData)

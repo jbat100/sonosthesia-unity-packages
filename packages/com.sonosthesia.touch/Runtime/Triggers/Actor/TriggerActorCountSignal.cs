@@ -7,14 +7,14 @@ namespace Sonosthesia.Touch
 {
     public class TriggerActorCountSignal : Signal<float>
     {
-        [SerializeField] private TriggerActorBase _triggerActor;
+        [SerializeField] private BaseTriggerActor _triggerActor;
 
         private IDisposable _subscription;
 
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = _triggerActor.States.ObserveCountChanged(true)
+            _subscription = _triggerActor.SourceStreamNode.Values.ObserveCountChanged(true)
                 .Subscribe(count =>Broadcast((float)count));
         }
 

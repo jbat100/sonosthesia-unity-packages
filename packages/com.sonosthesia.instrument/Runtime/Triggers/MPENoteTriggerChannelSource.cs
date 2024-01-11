@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Instrument
 {
-    public class MPETriggerInstrument : TriggerChannelSource<MPENote>
+    public class MPENoteTriggerChannelSource : TriggerChannelSource<MPENote>
     {
         [SerializeField] private TriggerValueGenerator<float> _note;
         
@@ -16,31 +16,41 @@ namespace Sonosthesia.Instrument
         
         [SerializeField] private TriggerValueGenerator<float> _bend;
         
-        protected override bool Extract(bool initial, Collider collider, out MPENote mpeNote)
+        protected override bool Extract(bool initial, ITriggerData triggerData, out MPENote mpeNote)
         {
             mpeNote = default;
-            if (!_note.ProcessTrigger(initial, collider, out float note))
+            if (!_note.ProcessTrigger(initial, triggerData, out float note))
             {
                 return false;
             }
-            if (!_velocity.ProcessTrigger(initial, collider, out float velocity))
+            if (!_velocity.ProcessTrigger(initial, triggerData, out float velocity))
             {
                 return false;
             }
-            if (!_slide.ProcessTrigger(initial, collider, out float slide))
+            if (!_slide.ProcessTrigger(initial, triggerData, out float slide))
             {
                 return false;
             }
-            if (!_pressure.ProcessTrigger(initial, collider, out float pressure))
+            if (!_pressure.ProcessTrigger(initial, triggerData, out float pressure))
             {
                 return false;
             }
-            if (!_bend.ProcessTrigger(initial, collider, out float bend))
+            if (!_bend.ProcessTrigger(initial, triggerData, out float bend))
             {
                 return false;
             }
             mpeNote = new MPENote((int)note, (int)velocity, (int)slide, (int)pressure, bend);
             return true;
+        }
+        
+        protected override void Clean(ITriggerData triggerData)
+        {
+            base.Clean(triggerData);
+            _note.EndTrigger(triggerData);
+            _velocity.EndTrigger(triggerData);
+            _pressure.EndTrigger(triggerData);
+            _slide.EndTrigger(triggerData);
+            _bend.EndTrigger(triggerData);
         }
     }
 }

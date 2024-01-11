@@ -7,6 +7,10 @@ using UniRx;
 
 namespace Sonosthesia.Touch
 {
+    /// <summary>
+    /// Possible uses, connect an input device control channels to an instrument's MIDI CC output channels
+    /// </summary>
+    /// <typeparam name="TValue"></typeparam>
     public class TriggerMapperConnector<TValue> : MonoBehaviour where TValue : struct
     {
         [SerializeField] private MapperConnection<TValue> _target;

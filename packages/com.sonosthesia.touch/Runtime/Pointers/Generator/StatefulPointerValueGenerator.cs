@@ -24,10 +24,7 @@ namespace Sonosthesia.Touch
 
         private readonly Dictionary<int, History> _history = new ();
 
-        protected virtual TValue PostProcessValue(TValue value)
-        {
-            return value;
-        }
+        protected virtual TValue PostProcessValue(TValue value) => value;
 
         public sealed override bool OnPointerDown(PointerEventData eventData, out TValue value)
         {

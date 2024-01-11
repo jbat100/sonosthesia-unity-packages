@@ -24,17 +24,17 @@ namespace Sonosthesia.Instrument
             return false;
         }
 
-        public override bool ProcessTriggerEnter(Collider other, out float value)
+        public override bool BeginTrigger(ITriggerData triggerData, out float value)
         {
             return GetMIDIPitch(out value);
         }
 
-        public override bool ProcessTriggerStay(Collider other, out float value)
+        public override bool UpdateTrigger(ITriggerData triggerData, out float value)
         {
             return GetMIDIPitch(out value);
         }
 
-        public override void ProcessTriggerExit(Collider other)
+        public override void EndTrigger(ITriggerData triggerData)
         {
             
         }

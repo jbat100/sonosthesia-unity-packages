@@ -14,9 +14,9 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private TransformDynamics.Domain _domain;
 
-        protected override bool ProcessTriggerEnter(Collider other, State state, out Vector3 value)
+        protected override bool BeginTrigger(ITriggerData triggerData, State state, out Vector3 value)
         {
-            TransformDynamicsMonitor monitor = other.GetComponentInParent<TransformDynamicsMonitor>();
+            TransformDynamicsMonitor monitor = triggerData.Actor.GetComponentInParent<TransformDynamicsMonitor>();
             if (monitor)
             {
                 state.Monitor = monitor;
@@ -27,10 +27,12 @@ namespace Sonosthesia.Touch
             return false;;
         }
 
-        protected override bool ProcessTriggerStay(Collider other, State state, Vector3 initial, Vector3 previous, out Vector3 value)
+        protected override bool UpdateTrigger(ITriggerData triggerData, State state, Vector3 initial, Vector3 previous, out Vector3 value)
         {
             value = state.Monitor.Select(_order).Select(_domain);
             return true;
         }
+
+        protected override Vector3 Relative(Vector3 initial, Vector3 current) => current - initial;
     }
 }

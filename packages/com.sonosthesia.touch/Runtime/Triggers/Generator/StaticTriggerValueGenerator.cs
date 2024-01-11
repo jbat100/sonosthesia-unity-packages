@@ -6,19 +6,19 @@ namespace Sonosthesia.Touch
     {
         [SerializeField] private TValue _value;
         
-        public override bool ProcessTriggerEnter(Collider other, out TValue value)
+        public override bool BeginTrigger(ITriggerData triggerData, out TValue value)
         {
             value = _value;
             return true;
         }
 
-        public override bool ProcessTriggerStay(Collider other, out TValue value)
+        public override bool UpdateTrigger(ITriggerData triggerData, out TValue value)
         {
             value = _value;
             return true;
         }
 
-        public override void ProcessTriggerExit(Collider other)
+        public override void EndTrigger(ITriggerData triggerData)
         {
             
         }

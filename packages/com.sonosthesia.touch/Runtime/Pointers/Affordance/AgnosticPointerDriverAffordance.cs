@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public interface IAgnosticPointerDriverAffordanceController : IObserver<BasePointerDriverSource.SourceEvent>
+    public interface IAgnosticPointerDriverAffordanceController : IObserver<PointerSourceEvent>
     {
         
     }
@@ -22,7 +22,7 @@ namespace Sonosthesia.Touch
 
         protected virtual IAgnosticPointerDriverAffordanceController MakeController() => null;
         
-        private void HandleStream(IObservable<BasePointerDriverSource.SourceEvent> stream)
+        private void HandleStream(IObservable<PointerSourceEvent> stream)
         {
             IAgnosticPointerDriverAffordanceController controller = MakeController();
             if (controller != null)
@@ -33,8 +33,8 @@ namespace Sonosthesia.Touch
 
         protected virtual void OnEnable()
         {
-            _subscriptions.Add(_source.OngoingEvents.ObserveCountChanged().Subscribe(OnEventCountChanged));
-            _subscriptions.Add(_source.SourceStreamObservable.Subscribe(stream =>
+            _subscriptions.Add(_source.SourceStreamNode.Values.ObserveCountChanged().Subscribe(OnEventCountChanged));
+            _subscriptions.Add(_source.SourceStreamNode.StreamObservable.Subscribe(stream =>
             {
                 HandleStream(stream.TakeUntilDisable(this));    
             }));

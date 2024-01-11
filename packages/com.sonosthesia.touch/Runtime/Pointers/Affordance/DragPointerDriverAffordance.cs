@@ -30,7 +30,7 @@ namespace Sonosthesia.Touch
             private Camera _camera;
             private readonly Vector3[] _lineRendererPositions = new Vector3[2];
 
-            private void CheckInitialized(BasePointerDriverSource.SourceEvent value)
+            private void CheckInitialized(PointerSourceEvent value)
             {
                 if (_initialized)
                 {
@@ -85,7 +85,7 @@ namespace Sonosthesia.Touch
                 }
             }
 
-            public void OnNext(BasePointerDriverSource.SourceEvent value)
+            public void OnNext(PointerSourceEvent value)
             {
                 CheckInitialized(value);
 
