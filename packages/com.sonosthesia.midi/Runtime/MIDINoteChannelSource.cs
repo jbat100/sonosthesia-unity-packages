@@ -81,16 +81,16 @@ namespace Sonosthesia.MIDI
                     if (_endOnZeroVelocity && note.Velocity == 0)
                     {
                         _notes.Remove(key);
-                        _driver.EndEvent(id, new MIDINote(note));
+                        _driver.EndStream(id, new MIDINote(note));
                     }
                     else
                     {
-                        _driver.UpdateEvent(id, new MIDINote(note));
+                        _driver.UpdateStream(id, new MIDINote(note));
                     }
                 }
                 else
                 {
-                    id = _driver.BeginEvent(new MIDINote(note));
+                    id = _driver.BeginStream(new MIDINote(note));
                     _notes[key] = id;   
                 }
             }));
@@ -104,14 +104,14 @@ namespace Sonosthesia.MIDI
                 if (_notes.TryGetValue(key, out Guid id))
                 {
                     _notes.Remove(key);
-                    _driver.EndEvent(id, new MIDINote(note));
+                    _driver.EndStream(id, new MIDINote(note));
                 }
             }));
             _subscriptions.Add(_input.PolyphonicAftertouchObservable.Subscribe(aftertouch =>
             {
                 if (_notes.TryGetValue(new Key(aftertouch), out Guid evendId))
                 {
-                    _driver.UpdateEvent(evendId, midiNote => midiNote.WithPressure(aftertouch.Value));
+                    _driver.UpdateStream(evendId, midiNote => midiNote.WithPressure(aftertouch.Value));
                 }
             }));
         }

@@ -23,18 +23,18 @@ namespace Sonosthesia.Instrument
         {
             if (_pointerEvents.TryGetValue(eventData.pointerId, out Guid eventId))
             {
-                _driver.EndEvent(eventId);
+                _driver.EndStream(eventId);
                 _pointerEvents.Remove(eventData.pointerId);
             }
 
-            _pointerEvents[eventData.pointerId] = _driver.BeginEvent(new MIDINote(_channel, _note, _velocity));
+            _pointerEvents[eventData.pointerId] = _driver.BeginStream(new MIDINote(_channel, _note, _velocity));
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
             if (_pointerEvents.TryGetValue(eventData.pointerId, out Guid eventId))
             {
-                _driver.EndEvent(eventId);
+                _driver.EndStream(eventId);
                 _pointerEvents.Remove(eventData.pointerId);
             }
         }

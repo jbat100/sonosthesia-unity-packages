@@ -87,11 +87,11 @@ namespace Sonosthesia.Instrument
             {
                 Debug.LogWarning($"{this} unexpected existing note {pointerNote} for pointer {pointerNote.EventId}");
                 _pointerNotes.Remove(eventData.pointerId);
-                _driver.EndEvent(pointerNote.EventId);
+                _driver.EndStream(pointerNote.EventId);
             }
 
             MPENote mpeNote = new MPENote(_note, _velocity, _slide, _pressure, _bend);
-            Guid eventId = _driver.BeginEvent(mpeNote);
+            Guid eventId = _driver.BeginStream(mpeNote);
             _pointerNotes[eventData.pointerId] = new PointerNote(eventId, mpeNote);
         }
 
@@ -108,7 +108,7 @@ namespace Sonosthesia.Instrument
             }
             
             _pointerNotes.Remove(eventData.pointerId);
-            _driver.EndEvent(pointerNote.EventId);
+            _driver.EndStream(pointerNote.EventId);
         }
 
         public void OnPointerMove(PointerEventData eventData)
@@ -132,7 +132,7 @@ namespace Sonosthesia.Instrument
             mpeNote = mpeNote.ApplyDiff(drag.y, _y);
             mpeNote = mpeNote.ApplyDiff(drag.z, _z);
             
-            _driver.UpdateEvent(pointerNote.EventId, mpeNote);
+            _driver.UpdateStream(pointerNote.EventId, mpeNote);
         }
     }
 }

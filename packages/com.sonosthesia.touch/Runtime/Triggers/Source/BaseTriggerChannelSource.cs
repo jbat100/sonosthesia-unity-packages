@@ -1,5 +1,5 @@
 ﻿using System;
-using UniRx;
+using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
@@ -29,20 +29,18 @@ namespace Sonosthesia.Touch
         }
     }
     
-    public class BaseTriggerChannelSource : MonoBehaviour
+    public abstract class BaseTriggerChannelSource : MonoBehaviour
     {
-        private readonly ReactiveCollection<Guid> _ongoingEvents = new();
-        public IReadOnlyReactiveCollection<Guid> OngoingEvents => _ongoingEvents;
+        private StreamNode<TriggerSourceEvent> _sourceStreamNode;
+        public StreamNode<TriggerSourceEvent> SourceStreamNode => _sourceStreamNode ??= new StreamNode<TriggerSourceEvent>(this);
 
-        private readonly Subject<IObservable<TriggerSourceEvent>> _sourceStreamSubject = new();
-        public IObservable<IObservable<TriggerSourceEvent>> SourceStreamObservable => _sourceStreamSubject.AsObservable();
+        public abstract void EndAllStreams();
+
+        public abstract void EndStream(Guid id);
         
-        protected void Pipe(IObservable<TriggerSourceEvent> observable)
+        protected virtual void OnDestroy()
         {
-            _sourceStreamSubject.OnNext(observable);
+            _sourceStreamNode?.Dispose();
         }
-
-        protected void RegisterEvent(Guid eventId) => _ongoingEvents.Add(eventId);
-        protected void UnregisterEvent(Guid eventId) => _ongoingEvents.Remove(eventId);
     }
 }

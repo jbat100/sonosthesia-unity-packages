@@ -78,7 +78,7 @@ namespace Sonosthesia.MIDI
                     Debug.LogWarning($"{nameof(MPENoteChannelSource)} unexpected note on {note}");
                     return;
                 }
-                state.EventId = _driver.BeginEvent(state.Begin(new MIDINote(note)));
+                state.EventId = _driver.BeginStream(state.Begin(new MIDINote(note)));
             }));
             
             _mpeSubscriptions.Add(_input.NoteOffObservable.Subscribe(note =>
@@ -89,7 +89,7 @@ namespace Sonosthesia.MIDI
                     Debug.LogWarning($"{nameof(MPENoteChannelSource)} expected note {note}");
                     return;
                 }
-                _driver.EndEvent(state.EventId.Value);
+                _driver.EndStream(state.EventId.Value);
                 state.End();
             }));
             
@@ -100,7 +100,7 @@ namespace Sonosthesia.MIDI
                 if (state.OngoingNote)
                 {
                     MPENote note = state.Update();
-                    _driver.UpdateEvent(state.EventId.Value, note);
+                    _driver.UpdateStream(state.EventId.Value, note);
                 }
             }));
             
@@ -116,7 +116,7 @@ namespace Sonosthesia.MIDI
                 if (state.OngoingNote)
                 {
                     MPENote note = state.Update();
-                    _driver.UpdateEvent(state.EventId.Value, note);
+                    _driver.UpdateStream(state.EventId.Value, note);
                 }
             }));
             
@@ -127,7 +127,7 @@ namespace Sonosthesia.MIDI
                 if (state.OngoingNote)
                 {
                     MPENote note = state.Update();
-                    _driver.UpdateEvent(state.EventId.Value, note);
+                    _driver.UpdateStream(state.EventId.Value, note);
                 }
             }));
         }

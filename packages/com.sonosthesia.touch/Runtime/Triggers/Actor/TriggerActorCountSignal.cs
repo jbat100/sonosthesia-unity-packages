@@ -5,6 +5,9 @@ using Sonosthesia.Signal;
 
 namespace Sonosthesia.Touch
 {
+    /// <summary>
+    /// Monitors the number of active events for a given actor and emits count as float signal
+    /// </summary>
     public class TriggerActorCountSignal : Signal<float>
     {
         [SerializeField] private BaseTriggerActor _triggerActor;

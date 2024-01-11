@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Sonosthesia.Channel;
+using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 
@@ -44,9 +45,15 @@ namespace Sonosthesia.Touch
 
         private readonly Dictionary<Guid, BehaviorSubject<TriggerValueEvent<TValue>>> _valueEventSubjects = new();
 
-        private readonly Subject<IObservable<TriggerValueEvent<TValue>>> _valueStreamSubject = new();
-        public IObservable<IObservable<TriggerValueEvent<TValue>>> ValueStreamObservable => _valueStreamSubject.AsObservable();
+        private StreamNode<TriggerValueEvent<TValue>> _valueStreamNode;
+        public StreamNode<TriggerValueEvent<TValue>> ValueStreamNode => _valueStreamNode ??= new StreamNode<TriggerValueEvent<TValue>>(this);
 
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            _valueStreamNode?.Dispose();
+        }
+        
         protected virtual void FixedUpdate()
         {
             foreach (KeyValuePair<Collider, Guid> pair in _triggerEvents)
@@ -55,13 +62,13 @@ namespace Sonosthesia.Touch
                 {
                     continue;
                 }
-                UpdateEvent(pair.Value, triggerData);
+                UpdateStream(pair.Value, triggerData);
             }
         }
 
         protected virtual void OnTriggerEnter(Collider other)
         {
-            //Debug.Log($"{this} {nameof(OnTriggerEnter)} {other}");
+            Debug.Log($"{this} {nameof(OnTriggerEnter)} {other}");
 
             TriggerData triggerData;
 
@@ -71,12 +78,12 @@ namespace Sonosthesia.Touch
                 {
                     if (_restartOnEnter)
                     {
-                        EndEvent(eventId, triggerData);
+                        EndStream(eventId, triggerData);
                     }
                     else
                     {
                         triggerData.Colliding = true;
-                        UpdateEvent(eventId, triggerData);
+                        UpdateStream(eventId, triggerData);
                         return;
                     }
                 }
@@ -96,12 +103,12 @@ namespace Sonosthesia.Touch
                 Source = this
             };
 
-            BeginEvent(triggerData);
+            BeginStream(triggerData);
         }
 
         protected virtual void OnTriggerStay(Collider other)
         {
-            //Debug.Log($"{this} {nameof(OnTriggerStay)} {other}");
+            Debug.Log($"{this} {nameof(OnTriggerStay)} {other.gameObject.name}");
 
             if (!_triggerEvents.TryGetValue(other, out Guid eventId))
             {
@@ -110,13 +117,13 @@ namespace Sonosthesia.Touch
 
             if (_triggerData.TryGetValue(eventId, out TriggerData triggerData))
             {
-                UpdateEvent(eventId, triggerData);
+                UpdateStream(eventId, triggerData);
             }
         }
 
         protected virtual void OnTriggerExit(Collider other)
         {
-            //Debug.Log($"{this} {nameof(OnTriggerExit)} {other}");
+            Debug.Log($"{this} {nameof(OnTriggerExit)} {other}");
 
             if (!_triggerEvents.TryGetValue(other, out Guid eventId))
             {
@@ -132,18 +139,35 @@ namespace Sonosthesia.Touch
 
             if (!_endOnExit)
             {
-                EndEvent(eventId, triggerData);
+                EndStream(eventId, triggerData);
             }
         }
 
-        private void BeginEvent(TriggerData triggerData)
+        public override void EndAllStreams()
+        {
+            Dictionary<Guid, TriggerData> copy = new Dictionary<Guid, TriggerData>(_triggerData);
+            foreach (KeyValuePair<Guid, TriggerData> pair in copy)
+            {
+                EndStream(pair.Key, pair.Value);
+            }
+        }
+
+        public override void EndStream(Guid id)
+        {
+            if (_triggerData.TryGetValue(id, out TriggerData triggerData))
+            {
+                EndStream(id, triggerData);
+            }
+        }
+
+        private void BeginStream(TriggerData triggerData)
         {
             if (!Extract(true, triggerData, out TValue value))
             {
                 return;
             }
             
-            Guid eventId = _driver.BeginEvent(value);
+            Guid eventId = _driver.BeginStream(value);
 
             _triggerEvents[triggerData.Collider] = eventId;
             _triggerData[eventId] = triggerData;
@@ -151,20 +175,18 @@ namespace Sonosthesia.Touch
             BehaviorSubject<TriggerValueEvent<TValue>> subject = new BehaviorSubject<TriggerValueEvent<TValue>>(new TriggerValueEvent<TValue>(eventId, triggerData, value));
             _valueEventSubjects[eventId] = subject;
             
-            RegisterEvent(eventId);
-            
-            Pipe(subject.Select(valueEvent => new TriggerSourceEvent(eventId, triggerData)));
-            
+            SourceStreamNode.Pipe(eventId, subject.Select(valueEvent => new TriggerSourceEvent(eventId, triggerData)));
+            ValueStreamNode.Pipe(eventId, subject.AsObservable());
         }
 
-        private void UpdateEvent(Guid eventId, TriggerData triggerData)
+        private void UpdateStream(Guid eventId, TriggerData triggerData)
         {
             if (!Extract(false, triggerData, out TValue value))
             {
                 return;
             }
             
-            _driver.UpdateEvent(eventId, value);
+            _driver.UpdateStream(eventId, value);
 
             if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<TriggerValueEvent<TValue>> subject))
             {
@@ -174,12 +196,10 @@ namespace Sonosthesia.Touch
             subject.OnNext(new TriggerValueEvent<TValue>(eventId, triggerData, value));
         }
 
-        private void EndEvent(Guid eventId, TriggerData triggerData)
+        private void EndStream(Guid eventId, TriggerData triggerData)
         {
-            _driver.EndEvent(eventId);
+            _driver.EndStream(eventId);
             
-            UnregisterEvent(eventId);
-
             _triggerEvents.Remove(triggerData.Collider);
             _triggerData.Remove(eventId);
             

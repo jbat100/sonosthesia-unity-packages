@@ -21,7 +21,7 @@ namespace Sonosthesia.Channel
             _ongoingSubjects.Clear();
         }
         
-        public Guid BeginEvent(T value)
+        public Guid BeginStream(T value)
         {
             Guid id = Guid.NewGuid();
             BehaviorSubject<T> subject = new BehaviorSubject<T>(value);
@@ -30,7 +30,7 @@ namespace Sonosthesia.Channel
             return id;
         }
 
-        public void UpdateEvent(Guid id, Func<T, T> update)
+        public void UpdateStream(Guid id, Func<T, T> update)
         {
             if (!_ongoingSubjects.TryGetValue(id, out BehaviorSubject<T> subject))
             {
@@ -39,7 +39,7 @@ namespace Sonosthesia.Channel
             subject.OnNext(update(subject.Value));
         }
         
-        public void EndEvent(Guid id, Func<T, T> end)
+        public void EndStream(Guid id, Func<T, T> end)
         {
             if (!_ongoingSubjects.TryGetValue(id, out BehaviorSubject<T> subject))
             {
@@ -51,7 +51,7 @@ namespace Sonosthesia.Channel
             subject.Dispose();
         }
         
-        public void UpdateEvent(Guid id, T updated)
+        public void UpdateStream(Guid id, T updated)
         {
             if (!_ongoingSubjects.TryGetValue(id, out BehaviorSubject<T> subject))
             {
@@ -60,7 +60,7 @@ namespace Sonosthesia.Channel
             subject.OnNext(updated);
         }
         
-        public void EndEvent(Guid id, T end)
+        public void EndStream(Guid id, T end)
         {
             if (!_ongoingSubjects.TryGetValue(id, out BehaviorSubject<T> subject))
             {
@@ -72,7 +72,7 @@ namespace Sonosthesia.Channel
             subject.Dispose();
         }
         
-        public void EndEvent(Guid id)
+        public void EndStream(Guid id)
         {
             if (!_ongoingSubjects.TryGetValue(id, out BehaviorSubject<T> subject))
             {
@@ -83,7 +83,7 @@ namespace Sonosthesia.Channel
             subject.Dispose();
         }
 
-        public void EndAllEvents()
+        public void EndAllStreams()
         {
             foreach (BehaviorSubject<T> behaviorSubject in _ongoingSubjects.Values)
             {

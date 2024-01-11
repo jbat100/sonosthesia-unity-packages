@@ -62,7 +62,7 @@ namespace Sonosthesia.Touch
                 return;
             }
             
-            Guid eventId = _driver.BeginEvent(value);
+            Guid eventId = _driver.BeginStream(value);
             _pointerEvents[eventData.pointerId] = eventId; 
 
             BehaviorSubject<PointerValueEvent<TValue>> subject = new BehaviorSubject<PointerValueEvent<TValue>>(new PointerValueEvent<TValue>(eventId, value, eventData));
@@ -84,7 +84,7 @@ namespace Sonosthesia.Touch
                 return;
             }
             
-            _driver.UpdateEvent(eventId, value);
+            _driver.UpdateStream(eventId, value);
             
             if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<PointerValueEvent<TValue>> subject))
             {
@@ -101,7 +101,7 @@ namespace Sonosthesia.Touch
                 return;
             }
             
-            _driver.EndEvent(eventId);
+            _driver.EndStream(eventId);
             _pointerEvents.Remove(eventData.pointerId);
 
             if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<PointerValueEvent<TValue>> subject))
