@@ -21,11 +21,18 @@ namespace Sonosthesia.Touch
     {
         public readonly Guid Id;
         public readonly ITriggerData TriggerData;
+        public readonly TimeSpan StartTime;
 
-        public TriggerSourceEvent(Guid id, ITriggerData triggerData)
+        public TriggerSourceEvent(Guid id, ITriggerData triggerData, TimeSpan startTime)
         {
             Id = id;
             TriggerData = triggerData;
+            StartTime = startTime;
+        }
+
+        public void EndStream()
+        {
+            TriggerData.Source.EndStream(Id);
         }
     }
     

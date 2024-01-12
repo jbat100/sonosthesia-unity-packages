@@ -68,8 +68,8 @@ namespace Sonosthesia.Touch
             BehaviorSubject<PointerValueEvent<TValue>> subject = new BehaviorSubject<PointerValueEvent<TValue>>(new PointerValueEvent<TValue>(eventId, value, eventData));
             _valueEventSubjects[eventId] = subject;
 
-            ValueStreamNode.Pipe(eventId, subject.AsObservable());
-            SourceStreamNode.Pipe(eventId, subject.Select(valueEvent => new PointerSourceEvent(valueEvent.Id, eventData)));
+            ValueStreamNode.Push(eventId, subject.AsObservable());
+            SourceStreamNode.Push(eventId, subject.Select(valueEvent => new PointerSourceEvent(valueEvent.Id, eventData)));
         }
 
         private void UpdateEvent(PointerEventData eventData)

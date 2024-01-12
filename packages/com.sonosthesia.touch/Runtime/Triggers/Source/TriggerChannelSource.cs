@@ -12,12 +12,24 @@ namespace Sonosthesia.Touch
         public readonly Guid Id;
         public readonly ITriggerData TriggerData;
         public readonly TValue Value;
+        public readonly TimeSpan StartTime;
 
-        public TriggerValueEvent(Guid id, ITriggerData triggerData, TValue value)
+        public TriggerValueEvent(Guid id, ITriggerData triggerData, TValue value, TimeSpan startTime)
         {
             Id = id;
             TriggerData = triggerData;
             Value = value;
+            StartTime = startTime;
+        }
+
+        public TriggerValueEvent<TValue> Update(TValue value)
+        {
+            return new TriggerValueEvent<TValue>(Id, TriggerData, value, StartTime);
+        }
+        
+        public void EndStream()
+        {
+            TriggerData.Source.EndStream(Id);
         }
     }
 
@@ -27,7 +39,7 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private bool _endOnExit = true;
 
-        [SerializeField] private bool _restartOnEnter = true;
+        [SerializeField] private bool _endOnReEnter = true;
 
         private class TriggerData : ITriggerData
         {
@@ -76,7 +88,7 @@ namespace Sonosthesia.Touch
             {
                 if (_triggerData.TryGetValue(eventId, out triggerData))
                 {
-                    if (_restartOnEnter)
+                    if (_endOnReEnter)
                     {
                         EndStream(eventId, triggerData);
                     }
@@ -90,7 +102,7 @@ namespace Sonosthesia.Touch
             }
 
             TriggerActor<TValue> actor = other.GetComponentInParent<TriggerActor<TValue>>();
-            if (!actor || !actor.IsAvailable(other))
+            if (!actor || !actor.RequestPermission(other))
             {
                 return;
             }
@@ -172,11 +184,15 @@ namespace Sonosthesia.Touch
             _triggerEvents[triggerData.Collider] = eventId;
             _triggerData[eventId] = triggerData;
 
-            BehaviorSubject<TriggerValueEvent<TValue>> subject = new BehaviorSubject<TriggerValueEvent<TValue>>(new TriggerValueEvent<TValue>(eventId, triggerData, value));
-            _valueEventSubjects[eventId] = subject;
+            TimeSpan startTime = TimeSpan.FromSeconds(Time.time);
             
-            SourceStreamNode.Pipe(eventId, subject.Select(valueEvent => new TriggerSourceEvent(eventId, triggerData)));
-            ValueStreamNode.Pipe(eventId, subject.AsObservable());
+            BehaviorSubject<TriggerValueEvent<TValue>> subject = new BehaviorSubject<TriggerValueEvent<TValue>>(new TriggerValueEvent<TValue>(eventId, triggerData, value, startTime));
+            _valueEventSubjects[eventId] = subject;
+
+            TriggerSourceEvent sourceEvent = new TriggerSourceEvent(eventId, triggerData, startTime);
+            
+            SourceStreamNode.Push(eventId, subject.Select(_ => sourceEvent));
+            ValueStreamNode.Push(eventId, subject.AsObservable());
         }
 
         private void UpdateStream(Guid eventId, TriggerData triggerData)
@@ -193,7 +209,7 @@ namespace Sonosthesia.Touch
                 return;
             }
             
-            subject.OnNext(new TriggerValueEvent<TValue>(eventId, triggerData, value));
+            subject.OnNext(subject.Value.Update(value));
         }
 
         private void EndStream(Guid eventId, TriggerData triggerData)

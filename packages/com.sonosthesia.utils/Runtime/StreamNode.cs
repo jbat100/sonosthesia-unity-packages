@@ -31,7 +31,7 @@ namespace Sonosthesia.Utils
             _component = null;
         }
 
-        public void Pipe(Guid id, IObservable<TValue> stream)
+        public void Push(Guid id, IObservable<TValue> stream)
         {
             if (_component)
             {
