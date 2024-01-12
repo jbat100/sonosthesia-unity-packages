@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public interface IPointerDriverAffordanceController<TValue> : IObserver<PointerValueEvent<TValue>> where TValue : struct
+    public interface IPointerAffordanceController<TValue> : IObserver<PointerValueEvent<TValue>> where TValue : struct
     {
         
     }
     
-    public class PointerDriverAffordance<TValue> : MonoBehaviour where TValue : struct
+    public class PointerAffordance<TValue> : MonoBehaviour where TValue : struct
     {
-        [SerializeField] private PointerDriverSource<TValue> _source;
+        [SerializeField] private PointerSource<TValue> _source;
 
         private readonly CompositeDisposable _subscriptions = new();
 
@@ -20,11 +20,11 @@ namespace Sonosthesia.Touch
             
         }
 
-        protected virtual IPointerDriverAffordanceController<TValue> MakeController() => null;
+        protected virtual IPointerAffordanceController<TValue> MakeController() => null;
         
         private void HandleStream(IObservable<PointerValueEvent<TValue>> stream)
         {
-            IPointerDriverAffordanceController<TValue> controller = MakeController();
+            IPointerAffordanceController<TValue> controller = MakeController();
             if (controller != null)
             {
                 stream.Subscribe(controller);
@@ -34,9 +34,9 @@ namespace Sonosthesia.Touch
         protected virtual void OnEnable()
         {
             _subscriptions.Add(_source.ValueStreamNode.Values.ObserveCountChanged().Subscribe(OnEventCountChanged));
-            _subscriptions.Add(_source.ValueStreamNode.StreamObservable.Subscribe(stream =>
+            _subscriptions.Add(_source.ValueStreamNode.StreamObservable.Subscribe(pair =>
             {
-                HandleStream(stream.TakeUntilDisable(this));    
+                HandleStream(pair.Value.TakeUntilDisable(this));    
             }));
         }
 

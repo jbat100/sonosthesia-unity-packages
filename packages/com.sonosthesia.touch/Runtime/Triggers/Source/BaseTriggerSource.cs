@@ -12,7 +12,7 @@ namespace Sonosthesia.Touch
     {
         Collider Collider { get; }
         bool Colliding { get; }
-        BaseTriggerChannelSource Source { get; }
+        BaseTriggerSource Source { get; }
         BaseTriggerActor Actor { get; }
     }
     
@@ -21,9 +21,9 @@ namespace Sonosthesia.Touch
     {
         public readonly Guid Id;
         public readonly ITriggerData TriggerData;
-        public readonly TimeSpan StartTime;
+        public readonly float StartTime;
 
-        public TriggerSourceEvent(Guid id, ITriggerData triggerData, TimeSpan startTime)
+        public TriggerSourceEvent(Guid id, ITriggerData triggerData, float startTime)
         {
             Id = id;
             TriggerData = triggerData;
@@ -36,7 +36,7 @@ namespace Sonosthesia.Touch
         }
     }
     
-    public abstract class BaseTriggerChannelSource : MonoBehaviour
+    public abstract class BaseTriggerSource : MonoBehaviour, IStreamSource<TriggerSourceEvent>
     {
         private StreamNode<TriggerSourceEvent> _sourceStreamNode;
         public StreamNode<TriggerSourceEvent> SourceStreamNode => _sourceStreamNode ??= new StreamNode<TriggerSourceEvent>(this);

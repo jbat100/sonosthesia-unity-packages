@@ -12,9 +12,9 @@ namespace Sonosthesia.Touch
         public readonly Guid Id;
         public readonly ITriggerData TriggerData;
         public readonly TValue Value;
-        public readonly TimeSpan StartTime;
+        public readonly float StartTime;
 
-        public TriggerValueEvent(Guid id, ITriggerData triggerData, TValue value, TimeSpan startTime)
+        public TriggerValueEvent(Guid id, ITriggerData triggerData, TValue value, float startTime)
         {
             Id = id;
             TriggerData = triggerData;
@@ -33,7 +33,7 @@ namespace Sonosthesia.Touch
         }
     }
 
-    public abstract class TriggerChannelSource<TValue> : BaseTriggerChannelSource where TValue : struct
+    public abstract class TriggerSource<TValue> : BaseTriggerSource where TValue : struct
     {
         [SerializeField] private ChannelDriver<TValue> _driver;
 
@@ -45,7 +45,7 @@ namespace Sonosthesia.Touch
         {
             public Collider Collider { get; set; }
             public bool Colliding { get; set; }
-            public BaseTriggerChannelSource Source { get; set; }
+            public BaseTriggerSource Source { get; set; }
             public BaseTriggerActor Actor { get; set; }
         }
 
@@ -184,7 +184,7 @@ namespace Sonosthesia.Touch
             _triggerEvents[triggerData.Collider] = eventId;
             _triggerData[eventId] = triggerData;
 
-            TimeSpan startTime = TimeSpan.FromSeconds(Time.time);
+            float startTime = Time.time;
             
             BehaviorSubject<TriggerValueEvent<TValue>> subject = new BehaviorSubject<TriggerValueEvent<TValue>>(new TriggerValueEvent<TValue>(eventId, triggerData, value, startTime));
             _valueEventSubjects[eventId] = subject;

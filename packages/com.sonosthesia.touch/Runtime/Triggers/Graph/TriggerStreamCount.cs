@@ -8,9 +8,9 @@ namespace Sonosthesia.Touch
     /// <summary>
     /// Monitors the number of active events for a given actor and emits count as float signal
     /// </summary>
-    public class TriggerStreamCountSignal : Signal<float>
+    public class TriggerStreamCount : Signal<float>
     {
-        [SerializeField] private BaseTriggerStream _stream;
+        [SerializeField] private TriggerStream _stream;
 
         private IDisposable _subscription;
 

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class DragPointerDriverAffordance : AgnosticPointerDriverAffordance
+    public class DragPointerAffordance : AgnosticPointerAffordance
     {
         // TODO : use pools 
 
@@ -15,9 +15,9 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private float _offset = 0.1f;
 
-        protected class Controller : IAgnosticPointerDriverAffordanceController
+        protected class Controller : IObserver<PointerSourceEvent>
         {
-            private readonly DragPointerDriverAffordance _affordance;
+            private readonly DragPointerAffordance _affordance;
 
             private bool _initialized;
             private Guid _eventId;
@@ -62,7 +62,7 @@ namespace Sonosthesia.Touch
                 _originPosition = cameraPosition + look * (offsetDistance / distance);
             }
             
-            public Controller(DragPointerDriverAffordance affordance)
+            public Controller(DragPointerAffordance affordance)
             {
                 _affordance = affordance;
             }
@@ -123,7 +123,7 @@ namespace Sonosthesia.Touch
             }
         }
 
-        protected override IAgnosticPointerDriverAffordanceController MakeController()
+        protected override IObserver<PointerSourceEvent> MakeController()
         {
             return new Controller(this);
         }

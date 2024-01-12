@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 namespace Sonosthesia.Instrument
 {
-    public class GeneratorMPEPointerInstrument : PointerDriverSource<MPENote>
+    public class GeneratorMPEPointerInstrument : PointerSource<MPENote>
     {
         [SerializeField] private PointerValueGenerator<float> _note;
         

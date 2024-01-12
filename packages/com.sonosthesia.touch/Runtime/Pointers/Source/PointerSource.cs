@@ -24,7 +24,7 @@ namespace Sonosthesia.Touch
         }
     }
     
-    public abstract class PointerDriverSource<TValue> : BasePointerDriverSource, 
+    public abstract class PointerSource<TValue> : BasePointerSource, 
         IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler, IPointerExitHandler,
         IDragHandler, IInitializePotentialDragHandler
         where TValue : struct

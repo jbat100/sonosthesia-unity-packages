@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Instrument
 {
-    public class MPENoteTriggerChannelSource : TriggerChannelSource<MPENote>
+    public class MPENoteTriggerSource : TriggerSource<MPENote>
     {
         [SerializeField] private TriggerValueGenerator<float> _note;
         

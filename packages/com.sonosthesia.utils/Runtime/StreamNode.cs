@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
@@ -15,8 +16,8 @@ namespace Sonosthesia.Utils
         private readonly ReactiveDictionary<Guid, TValue> _values = new();
         public IReadOnlyReactiveDictionary<Guid, TValue> Values => _values;
 
-        private readonly Subject<IObservable<TValue>> _streamSubject = new();
-        public IObservable<IObservable<TValue>> StreamObservable => _streamSubject.AsObservable();
+        private readonly Subject<KeyValuePair<Guid, IObservable<TValue>>> _streamSubject = new();
+        public IObservable<KeyValuePair<Guid, IObservable<TValue>>> StreamObservable => _streamSubject.AsObservable();
 
         private readonly IDisposable _disableSubscription;
         private Component _component;
@@ -44,7 +45,12 @@ namespace Sonosthesia.Utils
                 () => _values.Remove(id)
             );
             
-            _streamSubject.OnNext(stream);
+            _streamSubject.OnNext(new KeyValuePair<Guid, IObservable<TValue>>(id, stream));
+        }
+
+        public IDisposable Pipe(StreamNode<TValue> other)
+        {
+            return other.StreamObservable.Subscribe(pair => Push(pair.Key, pair.Value));
         }
 
         public void Dispose()

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class BaseTriggerGraphNode : BaseTriggerStream
+    public class TriggerNode : TriggerStream
     {
         [Tooltip("Maximum concurrent streams for this node and descendents")]
         [SerializeField] private int _maxConcurrent;
@@ -15,46 +15,71 @@ namespace Sonosthesia.Touch
         [SerializeField] private bool _allowSwitching;
         public bool AllowSwitching => _allowSwitching;
         
-        [SerializeField] private BaseTriggerGraphNode _parent;
-        public BaseTriggerGraphNode Parent => _parent;
+        [SerializeField] private TriggerNode _parent;
+        public TriggerNode Parent => _parent;
         
-        private readonly HashSet<BaseTriggerGraphNode> _children = new();
+        private readonly HashSet<TriggerNode> _children = new();
 
-        // notification for changes upstream
+        private CompositeDisposable _parentSubscriptions = new();
         
-        private IDisposable _upstreamSubscription;
         private Subject<Unit> _upstreamSubject;
         public IObservable<Unit> UpstreamObservable => _upstreamSubject.AsObservable();
 
         protected virtual void OnEnable()
         {
+            _parentSubscriptions.Clear();
             if (_parent)
             {
                 _parent.RegisterChildNode(this);
-                _upstreamSubscription = _parent
+                
+                // used to relay streams up the node hierarchy
+                _parentSubscriptions.Add(_parent.SourceStreamNode.Pipe(SourceStreamNode));
+                
+                // used to send events when something changed updstream
+                _parentSubscriptions.Add(_parent
                     .SourceStreamNode.Values.ObserveCountChanged().AsUnitObservable()
                     .Merge(_parent.UpstreamObservable)
-                    .Subscribe();
+                    .Subscribe(_upstreamSubject));
             }
         }
 
         protected virtual void OnDisable()
         {
+            _parentSubscriptions.Clear();
             if (_parent)
             {
                 _parent.UnregisterChildNode(this);   
-                _upstreamSubscription?.Dispose();
             }
         }
         
-        private void RegisterChildNode(BaseTriggerGraphNode node)
+        private void RegisterChildNode(TriggerNode node)
         {
             _children.Add(node);
         }
         
-        private void UnregisterChildNode(BaseTriggerGraphNode node)
+        private void UnregisterChildNode(TriggerNode node)
         {
             _children.Remove(node);
+        }
+
+        public void EndOldestStream()
+        {
+            float lowestStartTime = float.MaxValue;
+            TriggerSourceEvent? oldest = null;
+            foreach (KeyValuePair<Guid, TriggerSourceEvent> pair in SourceStreamNode.Values)
+            {
+                float startTime = pair.Value.StartTime;
+                if (startTime < lowestStartTime)
+                {
+                    oldest = pair.Value;
+                    lowestStartTime = startTime;
+                }
+            }
+
+            if (oldest.HasValue)
+            {
+                oldest.Value.EndStream();
+            }
         }
         
         public virtual bool RequestPermission(Collider other)
@@ -64,8 +89,7 @@ namespace Sonosthesia.Touch
                 return false;
             }
             
-       
-            BaseTriggerGraphNode current = this;
+            TriggerNode current = this;
             bool maxReached = false;
             while (current)
             {
@@ -84,7 +108,8 @@ namespace Sonosthesia.Touch
 
             if (current.AllowSwitching)
             {
-                
+                current.EndOldestStream();
+                return true;
             }
 
             return false;
