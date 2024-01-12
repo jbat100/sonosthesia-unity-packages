@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public readonly struct TriggerValueEvent<TValue> where TValue : struct
+    public readonly struct TriggerValueEvent<TValue> : IEventValue<TValue> where TValue : struct
     {
         public readonly Guid Id;
         public readonly ITriggerData TriggerData;
@@ -31,9 +31,13 @@ namespace Sonosthesia.Touch
         {
             TriggerData.Source.EndStream(Id);
         }
+
+        public TValue GetValue() => Value;
     }
 
-    public abstract class TriggerSource<TValue> : BaseTriggerSource where TValue : struct
+    public abstract class TriggerSource<TValue> : BaseTriggerSource,
+        IValueStreamSource<TValue, TriggerValueEvent<TValue>>
+        where TValue : struct
     {
         [SerializeField] private ChannelDriver<TValue> _driver;
 

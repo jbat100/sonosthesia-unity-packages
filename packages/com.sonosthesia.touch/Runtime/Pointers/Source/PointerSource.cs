@@ -10,7 +10,7 @@ namespace Sonosthesia.Touch
 {
     
     // used for affordances
-    public readonly struct PointerValueEvent<TValue> where TValue : struct
+    public readonly struct PointerValueEvent<TValue> : IEventValue<TValue> where TValue : struct
     {
         public readonly Guid Id;
         public readonly TValue Value;
@@ -22,9 +22,12 @@ namespace Sonosthesia.Touch
             Value = value;
             Data = data;
         }
+
+        public TValue GetValue() => Value;
     }
     
     public abstract class PointerSource<TValue> : BasePointerSource, 
+        IValueStreamSource<TValue, PointerValueEvent<TValue>>,
         IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler, IPointerExitHandler,
         IDragHandler, IInitializePotentialDragHandler
         where TValue : struct
