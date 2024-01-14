@@ -15,11 +15,11 @@ namespace Sonosthesia.Touch
             
         }
 
-        protected virtual IObserver<TEvent> MakeController() => null;
+        protected virtual IObserver<TEvent> MakeController(Guid id) => null;
         
-        private void HandleStream(IObservable<TEvent> stream)
+        private void HandleStream(Guid id, IObservable<TEvent> stream)
         {
-            IObserver<TEvent> controller = MakeController();
+            IObserver<TEvent> controller = MakeController(id);
             if (controller != null)
             {
                 stream.Subscribe(controller);
@@ -31,7 +31,7 @@ namespace Sonosthesia.Touch
             _subscriptions.Add(_source.SourceStreamNode.Values.ObserveCountChanged().Subscribe(OnEventCountChanged));
             _subscriptions.Add(_source.SourceStreamNode.StreamObservable.Subscribe(pair =>
             {
-                HandleStream(pair.Value.TakeUntilDisable(this));    
+                HandleStream(pair.Key, pair.Value.TakeUntilDisable(this));    
             }));
         }
 

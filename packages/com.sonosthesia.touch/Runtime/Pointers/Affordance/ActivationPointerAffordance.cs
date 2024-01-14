@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class ActivationPointerAffordance : AgnosticPointerAffordance
+    public class ActivationPointerAffordance : PointerAgnosticAffordance
     {
         [SerializeField] private List<GameObject> _targets;
         

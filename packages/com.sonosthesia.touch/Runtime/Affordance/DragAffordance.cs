@@ -1,23 +1,25 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class DragPointerAffordance : AgnosticPointerAffordance
+    public class DragAffordance<TEvent, TSource, TAffordance> : AgnosticAffordance<TEvent, TSource> 
+        where TEvent : struct 
+        where TSource : MonoBehaviour, IStreamSource<TEvent>
+        where TAffordance : DragAffordance<TEvent, TSource, TAffordance> 
     {
         // TODO : use pools 
 
         [SerializeField] private Transform _originPrefab;
         
         [SerializeField] private Transform _targetPrefab;
-            
-        [SerializeField] private LineRenderer _lineRendererPrefab;   
+        
+        [SerializeField] private LineRenderer _lineRendererPrefab; 
 
-        [SerializeField] private float _offset = 0.1f;
-
-        protected class Controller : IObserver<PointerSourceEvent>
+        protected abstract class Controller : IObserver<TEvent>
         {
-            private readonly DragPointerAffordance _affordance;
+            private readonly TAffordance _affordance;
+            protected TAffordance Affordance => _affordance;
 
             private bool _initialized;
             private Guid _eventId;
@@ -27,17 +29,22 @@ namespace Sonosthesia.Touch
             private LineRenderer _lineRenderer;
 
             private Vector3 _originPosition;
+            private Vector3 _targetPosition;
+            
             private Camera _camera;
             private readonly Vector3[] _lineRendererPositions = new Vector3[2];
 
-            private void CheckInitialized(PointerSourceEvent value)
+            protected abstract bool GetOriginPosition(bool initial, TEvent value, ref Vector3 origin);
+            
+            protected abstract bool GetTargetPosition(bool initial, TEvent value, Vector3 origin, ref Vector3 target);
+
+            private void CheckInitialized(TEvent value)
             {
                 if (_initialized)
                 {
                     return;
                 }
                 _initialized = true;
-                _eventId = value.Id;
                 _root = new GameObject(_eventId.ToString());
                 _root.transform.SetParent(_affordance.transform);
                 if (_affordance._originPrefab)
@@ -53,16 +60,13 @@ namespace Sonosthesia.Touch
                     _lineRenderer = Instantiate(_affordance._lineRendererPrefab, _root.transform);
                 }
 
-                _camera = Camera.main;
-                Vector3 cameraPosition = _camera.transform.position;
-                Vector3 look = value.Data.pointerCurrentRaycast.worldPosition - cameraPosition;
-                float distance = look.magnitude;
-                float offsetDistance = Mathf.Max(_camera.nearClipPlane, distance - _affordance._offset);
-                
-                _originPosition = cameraPosition + look * (offsetDistance / distance);
+                if (GetOriginPosition(true, value, ref _originPosition))
+                {
+                    _origin.transform.position = _originPosition;
+                }
             }
             
-            public Controller(DragPointerAffordance affordance)
+            public Controller(Guid id, TAffordance affordance)
             {
                 _affordance = affordance;
             }
@@ -85,49 +89,30 @@ namespace Sonosthesia.Touch
                 }
             }
 
-            public void OnNext(PointerSourceEvent value)
+            public void OnNext(TEvent value)
             {
                 CheckInitialized(value);
 
-                Vector3 direction = _camera.transform.position - _originPosition;
-
-                //Plane plane = new Plane(direction.normalized, _originPosition);
+                bool gotOrigin = GetOriginPosition(false, value, ref _originPosition);
+                bool gotTarget = GetTargetPosition(false, value, _originPosition, ref _targetPosition);
                 
-                Plane plane = new Plane(-_affordance.transform.forward, _originPosition);
-                
-                Ray ray = _camera.ScreenPointToRay(value.Data.position);
-
-                if (!plane.Raycast(ray, out float enter))
-                {
-                    return;
-                }
-                
-                Vector3 targetPosition = ray.GetPoint(enter);
-
-                if (_origin)
+                if (_origin && gotOrigin)
                 {
                     _origin.transform.position = _originPosition;
                 }
 
-                if (_target)
+                if (_target && gotTarget)
                 {
-                    _target.transform.position = targetPosition;
+                    _target.transform.position = _targetPosition;
                 }
 
-                if (_lineRenderer)
+                if (_lineRenderer && (gotOrigin || gotTarget))
                 {
                     _lineRendererPositions[0] = _originPosition;
-                    _lineRendererPositions[1] = targetPosition;
+                    _lineRendererPositions[1] = _targetPosition;
                     _lineRenderer.SetPositions(_lineRendererPositions);
                 }
             }
         }
-
-        protected override IObserver<PointerSourceEvent> MakeController()
-        {
-            return new Controller(this);
-        }
-
-        
     }
 }
