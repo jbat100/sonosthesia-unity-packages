@@ -4,7 +4,9 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class AgnosticAffordance<TEvent, TSource> : MonoBehaviour where TEvent : struct where TSource : MonoBehaviour, IStreamSource<TEvent>
+    public class AgnosticAffordance<TEvent, TSource> : MonoBehaviour 
+        where TEvent : struct 
+        where TSource : MonoBehaviour, IStreamSource<TEvent>
     {
         [SerializeField] private TSource _source;
 

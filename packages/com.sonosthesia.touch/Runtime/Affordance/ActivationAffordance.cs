@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class ActivationPointerAffordance : PointerAgnosticAffordance
+    public class ActivationAffordance<TEvent, TSource> : AgnosticAffordance<TEvent, TSource> 
+        where TEvent : struct where TSource : MonoBehaviour, IStreamSource<TEvent>
     {
         [SerializeField] private List<GameObject> _targets;
         
