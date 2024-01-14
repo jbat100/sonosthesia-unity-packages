@@ -22,7 +22,7 @@ namespace Sonosthesia.Touch
 
         private CompositeDisposable _parentSubscriptions = new();
         
-        private Subject<Unit> _upstreamSubject;
+        private readonly Subject<Unit> _upstreamSubject = new();
         public IObservable<Unit> UpstreamObservable => _upstreamSubject.AsObservable();
 
         protected virtual void OnEnable()
@@ -51,7 +51,14 @@ namespace Sonosthesia.Touch
                 _parent.UnregisterChildNode(this);   
             }
         }
-        
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            _upstreamSubject.OnCompleted();
+            _upstreamSubject.Dispose();
+        }
+
         private void RegisterChildNode(TriggerNode node)
         {
             _children.Add(node);

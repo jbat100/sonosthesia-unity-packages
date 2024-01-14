@@ -194,9 +194,22 @@ namespace Sonosthesia.Touch
             _valueEventSubjects[eventId] = subject;
 
             TriggerSourceEvent sourceEvent = new TriggerSourceEvent(eventId, triggerData, startTime);
+
+            IObservable<TriggerSourceEvent> sourceObservable = subject.Select(_ => sourceEvent);
+            IObservable<TriggerValueEvent<TValue>> valueObservable = subject.AsObservable();
             
-            SourceStreamNode.Push(eventId, subject.Select(_ => sourceEvent));
-            ValueStreamNode.Push(eventId, subject.AsObservable());
+            SourceStreamNode.Push(eventId, sourceObservable);
+            ValueStreamNode.Push(eventId, valueObservable);
+
+            // push the stream to the actor
+            if (triggerData.Actor)
+            {
+                triggerData.Actor.SourceStreamNode.Push(eventId, sourceObservable);
+            }
+            if (triggerData.Actor is TriggerActor<TValue> actor)
+            {
+                actor.ValueStreamNode.Push(eventId, valueObservable);
+            }
         }
 
         private void UpdateStream(Guid eventId, TriggerData triggerData)

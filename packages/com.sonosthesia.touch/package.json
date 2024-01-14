@@ -5,7 +5,9 @@
     "com.neuecc.unirx": "7.1.0",
     "com.sonosthesia.signal": "1.3.0",
     "com.sonosthesia.channel": "1.3.0",
-    "com.sonosthesia.mapping": "1.3.0"
+    "com.sonosthesia.mapping": "1.3.0",
+    "com.sonosthesia.utils": "1.3.0",
+    "com.sonosthesia.flow": "1.3.0"
   },
   "description": "Sonosthesia unity touch",
   "displayName": "Sonosthesia Touch",

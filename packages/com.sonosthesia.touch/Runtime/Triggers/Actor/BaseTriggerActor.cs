@@ -10,6 +10,11 @@ namespace Sonosthesia.Touch
         [SerializeField] private TriggerNode _node;
         public TriggerNode Node => _node;
 
+        protected virtual void Awake()
+        {
+            _node.SourceStreamNode.Pipe(SourceStreamNode);
+        }
+        
         public virtual bool RequestPermission(Collider other)
         {
             if (!isActiveAndEnabled)
