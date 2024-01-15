@@ -28,4 +28,4 @@ Input API makes use of [UniRx](https://github.com/neuecc/UniRx) to present incom
 
 ## Examples
 
-See [examples](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.adaptivemidi/Runtime/Messages) and [demo application](https://github.com/jbat100/sonosthesia-unity-demo-midi/tree/main)
+See example API usage for MIDI [input](https://github.com/jbat100/sonosthesia-unity-packages/blob/main/packages/com.sonosthesia.adaptivemidi/Runtime/Examples/MIDIInputExample.cs) and [output](https://github.com/jbat100/sonosthesia-unity-packages/blob/main/packages/com.sonosthesia.adaptivemidi/Runtime/Examples/MIDIOutputExample.cs) and [demo application](https://github.com/jbat100/sonosthesia-unity-demo-midi/tree/main)
