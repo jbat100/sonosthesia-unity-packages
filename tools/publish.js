@@ -12,11 +12,13 @@ const blacklist = new Set([
 ]);
 
 // Publish sequence:
-// - Run node version.js to bump and align versions
-// - Run publish.js to publish all the packages to npm and check for errors
+// - Ensure no errors in unity project
+// - Run node version.js to bump and align versions (all or changed since specific tag)
+// - Run dependencies.js check to detect potential dependency/reference issues
+// - Run publish.js to publish all the packages to npm and check for errors (specify tag if not all)
 // - Ensure no build errors on Unity project
 // - Push dev, merge to main 
-// - Create release on github with vx.x.x tag
+// - Create release on github with vx.x.x tag corresponding to the highest package version
 
 
 function publish(package, dry) {

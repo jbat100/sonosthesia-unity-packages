@@ -1,58 +1,69 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Sonosthesia.Touch
 {
-    public abstract class StatefulPointerValueGenerator<TValue> : PointerValueGenerator<TValue> where TValue : struct
+    public abstract class StatefulPointerValueGenerator<TValue, TState> : PointerValueGenerator<TValue> 
+        where TValue : struct where TState : class, new()
     {
         private class History
         {
-            public TValue InitialValue { get; }
+            public TValue InitialValue { get; set; }
             public TValue PreviousValue { get; set; }
+            public TState State { get; }
 
-            public History(TValue initial)
+            public History(TValue initial, TState state)
             {
                 InitialValue = initial;
                 PreviousValue = initial;
+                State = state;
             }
         }
 
         [SerializeField] private bool _track;
         
         [SerializeField] private bool _relative;
-
+        
         private readonly Dictionary<int, History> _history = new ();
 
-        protected virtual TValue PostProcessValue(TValue value) => value;
+        protected abstract bool BeginPointer(PointerEventData eventData, TState state, out TValue value);
 
-        public sealed override bool OnPointerDown(PointerEventData eventData, out TValue value)
+        protected abstract bool UpdatePointer(PointerEventData eventData, TState state, TValue initial, TValue previous, out TValue value);
+        
+        protected abstract TValue Relative(TValue initial, TValue current);
+        
+        protected virtual TValue PostProcess(TValue value) => value;
+        
+        public override bool OnPointerDown(PointerEventData eventData, out TValue value)
         {
-            if (Extract(eventData, out TValue extracted))
+            TState state = new TState();
+            if (!BeginPointer(eventData, state, out value))
             {
-                _history[eventData.pointerId] = new History(extracted);
-                value = _relative ? Relative(extracted, extracted) : extracted;
-                value = PostProcessValue(value);
-                return true;
+                return false;
             }
-            value = default;
-            return false;
+            _history[eventData.pointerId] = new History(value, state);
+            value = _relative ? Relative(value, value) : value;
+            value = PostProcess(value);
+            return true;
         }
 
-        public sealed override bool OnPointerMove(PointerEventData eventData, out TValue value)
+        public override bool OnPointerMove(PointerEventData eventData, out TValue value)
         {
             if (_history.TryGetValue(eventData.pointerId, out History history))
             {
                 if (!_track)
                 {
                     value = history.InitialValue;
+                    value = _relative ? Relative(value, value) : value;
+                    value = PostProcess(value);
                     return true;
                 }
-                if (Extract(eventData, out TValue extracted))
+                if (UpdatePointer(eventData, history.State, history.InitialValue, history.PreviousValue, out value))
                 {
-                    history.PreviousValue = extracted;
-                    value = _relative ? Relative(history.InitialValue, extracted) : extracted;
-                    value = PostProcessValue(value);
+                    history.PreviousValue = value;
+                    value = _relative ? Relative(history.InitialValue, value) : value;
+                    value = PostProcess(value);
                     return true;
                 }
             }
@@ -60,13 +71,9 @@ namespace Sonosthesia.Touch
             return false;
         }
 
-        public sealed override void OnPointerEnd(PointerEventData eventData)
+        public override void OnPointerEnd(PointerEventData eventData)
         {
             _history.Remove(eventData.pointerId);
         }
-
-        protected abstract TValue Relative(TValue initial, TValue current);
-        
-        protected abstract bool Extract(PointerEventData eventData, out TValue value);
     }
 }

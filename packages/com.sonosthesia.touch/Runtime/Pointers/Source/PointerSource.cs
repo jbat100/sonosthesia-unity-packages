@@ -29,6 +29,7 @@ namespace Sonosthesia.Touch
     public abstract class PointerSource<TValue> : BasePointerSource, 
         IValueStreamSource<TValue, PointerValueEvent<TValue>>,
         IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler, IPointerExitHandler,
+        IScrollHandler,
         IDragHandler, IInitializePotentialDragHandler
         where TValue : struct
     {
@@ -37,16 +38,15 @@ namespace Sonosthesia.Touch
             Move,
             Drag
         }
-        
+
         [SerializeField] private ChannelDriver<TValue> _driver;
 
         [SerializeField] private TrackingMode _trackingMode;
-        
+
         [SerializeField] private bool _endOnExit;
         
         private readonly Dictionary<int, Guid> _pointerEvents = new();
         
-
         private readonly Dictionary<Guid, BehaviorSubject<PointerValueEvent<TValue>>> _valueEventSubjects = new();
         
         private StreamNode<PointerValueEvent<TValue>> _valueStreamNode;
@@ -99,6 +99,8 @@ namespace Sonosthesia.Touch
         
         private void EndEvent(PointerEventData eventData)
         {
+            End(eventData);
+            
             if (!_pointerEvents.TryGetValue(eventData.pointerId, out Guid eventId))
             {
                 return;
@@ -117,6 +119,13 @@ namespace Sonosthesia.Touch
             _valueEventSubjects.Remove(eventId);
         }
 
+        protected abstract bool Extract(bool initial, PointerEventData eventData, out TValue value);
+
+        protected virtual void End(PointerEventData eventData)
+        {
+            
+        }
+        
         public void OnPointerDown(PointerEventData eventData)
         {
             EndEvent(eventData);
@@ -145,9 +154,12 @@ namespace Sonosthesia.Touch
                 EndEvent(eventData);
             }
         }
-
-        protected abstract bool Extract(bool initial, PointerEventData eventData, out TValue value);
         
+        public void OnScroll(PointerEventData eventData)
+        {
+            UpdateEvent(eventData);
+        }
+
         public void OnDrag(PointerEventData eventData)
         {
             if (_trackingMode != TrackingMode.Drag)

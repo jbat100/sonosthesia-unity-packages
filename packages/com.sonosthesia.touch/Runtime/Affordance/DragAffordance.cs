@@ -35,9 +35,12 @@ namespace Sonosthesia.Touch
             private readonly Vector3[] _lineRendererPositions = new Vector3[2];
 
             protected abstract bool GetOriginPosition(bool initial, TEvent value, ref Vector3 origin);
-            
             protected abstract bool GetTargetPosition(bool initial, TEvent value, Vector3 origin, ref Vector3 target);
 
+            protected abstract bool GetOriginScale(bool initial, TEvent value, ref Vector3 origin);
+            
+            protected abstract bool GetTargetScale(bool initial, TEvent value, Vector3 origin, ref Vector3 target);
+            
             private void CheckInitialized(TEvent value)
             {
                 if (_initialized)
@@ -64,6 +67,11 @@ namespace Sonosthesia.Touch
                 {
                     _origin.transform.position = _originPosition;
                 }
+            }
+
+            protected virtual void Update(TEvent updatedEvent)
+            {
+                
             }
             
             public Controller(Guid id, TAffordance affordance)
@@ -92,6 +100,8 @@ namespace Sonosthesia.Touch
             public void OnNext(TEvent value)
             {
                 CheckInitialized(value);
+                
+                Update(value);
 
                 bool gotOrigin = GetOriginPosition(false, value, ref _originPosition);
                 bool gotTarget = GetTargetPosition(false, value, _originPosition, ref _targetPosition);

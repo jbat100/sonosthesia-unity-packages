@@ -6,6 +6,9 @@ namespace Sonosthesia.Touch
     public class PointerDragAffordance : DragAffordance<PointerSourceEvent, BasePointerSource, PointerDragAffordance>
     {
         [SerializeField] private float _offset = 0.1f;
+
+        [SerializeField] private bool _applyScrollScale;
+        [SerializeField] private float _targetScrollScale = 0.1f;
         
         protected new class Controller : DragAffordance<PointerSourceEvent, BasePointerSource, PointerDragAffordance>.Controller
         {
@@ -15,7 +18,18 @@ namespace Sonosthesia.Touch
             }
             
             private Camera _camera;
-            
+            private Vector2 _cumulativeScroll;
+            private Vector3 _targetScale;
+
+            protected override void Update(PointerSourceEvent updatedEvent)
+            {
+                base.Update(updatedEvent);
+                if (updatedEvent.Data.IsScrolling())
+                {
+                    _cumulativeScroll += updatedEvent.Data.scrollDelta;   
+                }
+            }
+
             protected override bool GetOriginPosition(bool initial, PointerSourceEvent value, ref Vector3 origin)
             {
                 if (!initial)
@@ -50,6 +64,28 @@ namespace Sonosthesia.Touch
                 
                 target = ray.GetPoint(enter);
                 return true;
+            }
+
+            protected override bool GetOriginScale(bool initial, PointerSourceEvent value, ref Vector3 origin)
+            {
+                return false;
+            }
+
+            protected override bool GetTargetScale(bool initial, PointerSourceEvent value, Vector3 origin, ref Vector3 target)
+            {
+                if (initial)
+                {
+                    _targetScale = target;
+                    return false;
+                }
+
+                if (Affordance._applyScrollScale)
+                {
+                    target = _targetScale * _cumulativeScroll.y ;
+                    return true;    
+                }
+
+                return false;
             }
         }
 

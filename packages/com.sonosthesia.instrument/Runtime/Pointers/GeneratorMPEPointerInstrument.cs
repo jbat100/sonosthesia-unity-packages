@@ -45,5 +45,15 @@ namespace Sonosthesia.Instrument
             mpeNote = new MPENote((int)note, (int)velocity, (int)slide, (int)pressure, bend);
             return true;
         }
+        
+        protected override void End(PointerEventData eventData)
+        {
+            base.End(eventData);
+            _note.OnPointerEnd(eventData);
+            _velocity.OnPointerEnd(eventData);
+            _bend.OnPointerEnd(eventData);
+            _pressure.OnPointerEnd(eventData);
+            _slide.OnPointerEnd(eventData);
+        }
     }
 }

@@ -12,6 +12,16 @@ namespace Sonosthesia.Touch
                 
             }
 
+            protected override bool GetOriginScale(bool initial, TriggerSourceEvent value, ref Vector3 origin)
+            {
+                return false;
+            }
+
+            protected override bool GetTargetScale(bool initial, TriggerSourceEvent value, Vector3 origin, ref Vector3 target)
+            {
+                return false;
+            }
+            
             protected override bool GetOriginPosition(bool initial, TriggerSourceEvent value, ref Vector3 origin)
             {
                 origin = value.TriggerData.Source.transform.position;

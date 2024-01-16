@@ -41,5 +41,14 @@ namespace Sonosthesia.Instrument
             midiNote = new MIDINote((int)channel, (int)note, (int)velocity, (int)pressure);
             return true;
         }
+
+        protected override void End(PointerEventData eventData)
+        {
+            base.End(eventData);
+            _channel.OnPointerEnd(eventData);
+            _note.OnPointerEnd(eventData);
+            _velocity.OnPointerEnd(eventData);
+            _pressure.OnPointerEnd(eventData);
+        }
     }
 }

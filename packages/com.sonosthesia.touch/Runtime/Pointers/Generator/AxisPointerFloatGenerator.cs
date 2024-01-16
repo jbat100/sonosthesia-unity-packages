@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 namespace Sonosthesia.Touch
 {
-    public class AxisPointerFloatGenerator : StatefulPointerValueGenerator<float>
+    public class AxisPointerFloatGenerator : RelativePointerValueGenerator<float>
     {
         private enum AxisType
         {
