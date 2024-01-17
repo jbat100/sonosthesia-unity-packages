@@ -5,10 +5,18 @@ namespace Sonosthesia.Touch
 {
     public class PointerDragAffordance : DragAffordance<PointerSourceEvent, BasePointerSource, PointerDragAffordance>
     {
+        public enum ScaleDriver
+        {
+            None,
+            Scroll,
+            Pressure
+        }
+        
         [SerializeField] private float _offset = 0.1f;
-
-        [SerializeField] private bool _applyScrollScale;
-        [SerializeField] private float _targetScrollScale = 0.1f;
+        
+        [SerializeField] private ScaleDriver _scaleDriver;
+        
+        [SerializeField] private float _scaleSensitivity = 0.1f;
         
         protected new class Controller : DragAffordance<PointerSourceEvent, BasePointerSource, PointerDragAffordance>.Controller
         {
@@ -18,8 +26,9 @@ namespace Sonosthesia.Touch
             }
             
             private Camera _camera;
+            private float _initialPressure;
             private Vector2 _cumulativeScroll;
-            private Vector3 _targetScale;
+            private Vector3 _initialTargetScale;
 
             protected override void Update(PointerSourceEvent updatedEvent)
             {
@@ -75,14 +84,19 @@ namespace Sonosthesia.Touch
             {
                 if (initial)
                 {
-                    _targetScale = target;
+                    _initialPressure = value.Data.pressure;
+                    _initialTargetScale = target;
                     return false;
                 }
 
-                if (Affordance._applyScrollScale)
+                switch (Affordance._scaleDriver)
                 {
-                    target = _targetScale * _cumulativeScroll.y ;
-                    return true;    
+                    case ScaleDriver.Pressure:
+                        target = _initialTargetScale * Affordance._scaleSensitivity * (value.Data.pressure - _initialPressure);
+                        return true;
+                    case ScaleDriver.Scroll:
+                        target = _initialTargetScale * Affordance._scaleSensitivity * _cumulativeScroll.y;
+                        return true;
                 }
 
                 return false;
