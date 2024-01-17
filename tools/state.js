@@ -1,18 +1,17 @@
 const path = require('path');
-const fs = require('fs');
-const semver = require('semver');
+const memoizee = require('memoizee');
 const parser = require('args-parser');
 const { execSync } = require('child_process');
 
-function listChangedFiles(tag) {
+const listChangedFiles = memoizee((tag) => {
     // Run the git diff command synchronously
     const stdout = execSync(`git diff --name-only ${tag}`, { encoding: 'utf-8' });
     // Split the stdout into an array of file names
     const files = stdout.trim().split('\n');
     return files;
-}
+});
 
-function listChangedPackages(tag) {
+const listChangedPackages = memoizee((tag) => {
     let files = listChangedFiles(tag);
     let packages = new Set();
     for (const file of files) {
@@ -28,7 +27,7 @@ function listChangedPackages(tag) {
         packages.add(package);
     }
     return packages;
-}
+});
 
 function run() {
     let args = parser(process.argv);
@@ -39,6 +38,6 @@ function run() {
 // run()
 
 module.exports = {
-    listChangedPackages,
+    listChangedFiles,
     listChangedPackages
 };

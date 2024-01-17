@@ -4,6 +4,35 @@ const glob = require('glob');
 const YAML = require('yaml');
 const memoizee = require('memoizee');
 
+// gives the dependencies in resolution order (lowest first) 
+const orderedDependencies = memoizee(() => {
+    let packageNames = getPackageNames()
+    const packageDependencies = {}
+    for (const package of packageNames) {
+        packageDependencies[package] = Array.from(getPackageDependencies(package));
+    }
+    const resolved = [];
+    const resolvedSet = new Set();
+    const unresolved = new Set(packageNames);
+    while (true) {
+        const resolvedSize = resolved.length;
+        const unresolvedCopy = [...unresolved];;
+        for (const package of unresolvedCopy) {
+            const dependencies = packageDependencies[package];
+            const isResolved = dependencies.every(dependency => resolvedSet.has(dependency));
+            if (isResolved) {
+                resolvedSet.add(package);
+                resolved.push(package);
+                unresolved.delete(package);
+            }
+        }
+        if (resolved.length == resolvedSize) {
+            break;
+        }
+    } 
+    return resolved;
+});
+
 // returns all sonosthesia dependencies for a package (including descendents)
 const getPackageDependencyTree = memoizee((package) => {
     let dependencies = new Set();
@@ -90,6 +119,7 @@ function getPackageAsmdefDescriptions(package) {
 
 
 module.exports = {
+    orderedDependencies,
     getPackageDependencyTree,
     getPackageDescription,
     getPackageVersion,
