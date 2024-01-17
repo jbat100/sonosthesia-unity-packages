@@ -1,8 +1,12 @@
 const execSync = require('child_process').execSync;
+const chalk = require('chalk');
 const parser = require('args-parser');
 
-const { orderedDependencies } = require('./dependencies');
-const { getPackagePath } = require('./packages');
+const { 
+    orderedDependencies,
+    getPackagePath } = require('./packages');
+
+const { listChangedPackages } = require('./state');
 
 const blacklist = new Set([
     "com.sonosthesia.fractal",
@@ -24,11 +28,11 @@ const blacklist = new Set([
 function publish(package, dry) {
     const packagePath = getPackagePath(package);
     if (dry) {
-        console.log(`Dry publish : ${package}...`);
+        console.log(chalk.yellow(`Dry publish : ${package}...`));
     } else {
-        console.log(`Publishing ${package}...`);
+        console.log(chalk.yellow(`Publishing ${package}...`));
         execSync('npm publish', { cwd: packagePath, stdio: 'inherit' });
-        console.log('Succeeded');
+        console.log(chalk.green('Succeeded'));
     }
 }
 
@@ -38,21 +42,45 @@ function run() {
     
     const errors = {};
 
-    for (const package of packages) {
-        if (blacklist.has(package)) {
-            console.log(`Ignoring blacklisted package : ${package}.`);
-            continue;
+    if (args.all) {
+        for (const package of packages) {
+            if (blacklist.has(package)) {
+                console.log(chalk.gray(`Ignoring blacklisted package : ${package}.`));
+                continue;
+            }
+            try {
+                publish(package, args.dry);
+            } catch (error) {
+                console.error(chalk.red(`Failed to publish ${package}.`, error));
+                errors[package] = error;
+            }
         }
-        try {
-            publish(package, args.dry);
-        } catch (error) {
-            console.error(`Failed to publish ${package}.`, error);
-            errors[package] = error;
+        for (let package in errors) {
+            console.error(chalk.red(`Error publishing package : ${package}\n${errors[package]}`));
         }
     }
 
-    for (let package in errors) {
-        console.error(`Error publishing package : ${package}\n${errors[package]}`);
+    if (args.tag) {
+        const changed = listChangedPackages(args.tag);
+        for (const package of packages) {
+            if (blacklist.has(package)) {
+                console.log(chalk.gray(`Ignoring blacklisted package : ${package}.`));
+                continue;
+            }
+            if (!changed.has(package)) {
+                console.log(chalk.gray(`Ignoring unchanged package : ${package}.`));
+                continue;
+            }
+            try {
+                publish(package, args.dry);
+            } catch (error) {
+                console.error(chalk.red(`Failed to publish ${package}.`, error));
+                errors[package] = error;
+            }
+        }
+        for (let package in errors) {
+            console.error(chalk.red(`Error publishing package : ${package}\n${errors[package]}`));
+        }
     }
 }
 
