@@ -33,21 +33,13 @@ function updatePackageDependencies(package, updated) {
 function run() {
     let args = parser(process.argv);
     let packageNames = getPackageNames();
-    //console.log(packageNames);
-    let packageVersions = packageNames.map(name => getPackageVersion(name));
-    //console.log(packageVersions);
-    
-
-    // for (const package of packageNames) {
-    //     const dependencies = getPackageDependencies(package);
-    //     console.log("Package : " + package + ", version " + getPackageVersion(package) + ", " + dependencies.size + " dependencies " + [...dependencies].join(", ") );
-    // }
 
     // args.update can be major, minor, patch
 
     if (args.update) {
-        
+
         if (args.all) {
+            let packageVersions = packageNames.map(name => getPackageVersion(name));
             let highestVersion = packageVersions.sort(semver.rcompare)[0];
             console.log(highestVersion);
             let updatedVersion = semver.inc(highestVersion, args.update);
@@ -81,7 +73,7 @@ function run() {
                     }
                 }
                 let packagePath = path.join(getPackagePath(changedPackage), "package.json");
-                fs.writeFileSync(packagePath, JSON.stringify(changedDependencyDescription, null, 2));
+                fs.writeFileSync(packagePath, JSON.stringify(changedPackageDescription, null, 2));
             }
             // console.log(prettyjson.render(changedPackageDescriptions));
 

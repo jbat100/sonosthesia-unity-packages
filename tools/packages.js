@@ -57,7 +57,8 @@ const getPackageDescription = memoizee((package) => {
 
 // returns a set of package dependencies for a local package
 function getPackageVersion(package) {
-    return getPackageDescription(package).version
+    const description = getPackageDescription(package);
+    return description.version
 }
 
 function extractDependencies(description) {
