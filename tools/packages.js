@@ -76,11 +76,6 @@ function getPackageDependencies(package) {
     return extractDependencies(getPackageDescription(package))
 }
 
-function getPackageNames(rootPath) {
-    return path.join(__dirname, "..", "packages")
-}
-
-
 function getPackagePath(package) {
     return path.join(__dirname, "..", "packages", package)
 }

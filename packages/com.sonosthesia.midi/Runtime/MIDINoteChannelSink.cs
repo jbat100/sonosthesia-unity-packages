@@ -52,6 +52,10 @@ namespace Sonosthesia.MIDI
                     {
                         initial = note;
                         _output.BroadcastNoteOn(note.Channel, note.Note, note.Velocity);
+                        if (_aftertouch)
+                        {
+                            _output.BroadcastPolyphonicAftertouch(note.Channel, note.Note, note.Pressure);   
+                        }
                     }
                     previous = note;
                 }, () =>

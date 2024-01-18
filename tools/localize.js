@@ -1,33 +1,11 @@
 const path = require('path');
 const fs = require('fs');
 const parser = require('args-parser');
-const { getPackageVersion } = require('./packages');
 
-// memoize
-let packageDependencyCache = {}
-
-// returns a set of package dependencies for a local package
-function getPackageDependencies(package) {
-    if (package in packageDependencyCache) {
-        return packageDependencyCache[package]
-    }
-    let dependencies = new Set()
-    let packagePath = path.join(getPackagePath(package), "package.json")
-    if (fs.existsSync(packagePath)) {
-        let packageJSON = JSON.parse(fs.readFileSync(packagePath));
-        for (const [dependency, version] of Object.entries(packageJSON.dependencies)) {
-            if (!dependency.startsWith("com.sonosthesia")) {
-                continue
-            }
-            dependencies.add(dependency)
-            for (const child of getPackageDependencies(dependency)) {
-                dependencies.add(child)
-            }
-        }
-    }
-    packageDependencyCache[package] = Array.from(dependencies)
-    return packageDependencyCache[package]
-}
+const { 
+    getPackageDependencyTree,
+    getPackageVersion, 
+    getPackagePath } = require('./packages');
 
 // returns a set of local paths to dependencies for a unity project manifest as object
 function getManifestDependencies(unityJSON) {
@@ -37,7 +15,7 @@ function getManifestDependencies(unityJSON) {
             continue
         }
         dependencies.add(dependency)
-        for (const subdependency of getPackageDependencies(dependency)) {
+        for (const subdependency of getPackageDependencyTree(dependency)) {
             dependencies.add(subdependency)
         }
     }
@@ -88,17 +66,6 @@ function getManifestPath(projectPath) {
 
 function getDefaultProjectPath() {
     return path.join(__dirname, "..", "unity", "UnityProject")
-}
-
-function getPackagePath(package) {
-    return path.join(__dirname, "..", "packages", package)
-}
-
-function getPackages() {
-    let packagesPath = path.join(__dirname, "..", "packages")
-    return readdirSync(packagesPath, { withFileTypes: true })
-        .filter(dirent => dirent.isDirectory())
-        .map(dirent => dirent.name)
 }
 
 function run() {

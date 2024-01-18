@@ -45,5 +45,30 @@ namespace Sonosthesia.RtMIDI
             if (_rtmidi == null || !_rtmidi->ok) return null;
             return Marshal.PtrToStringAnsi(RtMidiDll.GetPortName(_rtmidi, (uint)portNumber));
         }
+        
+        public bool TryGet(string requestedPortName, out string portName, out int portNumber)
+        {
+            portName = default;
+            portNumber = default;
+            if (_rtmidi == null || !_rtmidi->ok)
+            {
+                return false;
+            }
+            RtMidiDll.Api api = RtMidiDll.InGetCurrentApi(_rtmidi);
+            int portCount = PortCount;
+            for (int i = 0; i < portCount; i++)
+            {
+                string candidate = GetPortName(i);
+                // for some reason the port name on windows includes the port number in the port name string
+                string check = api == RtMidiDll.Api.WindowsMM ? (requestedPortName + $" {i}") : requestedPortName;
+                if (check == candidate)
+                {
+                    portName = candidate;
+                    portNumber = i;
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

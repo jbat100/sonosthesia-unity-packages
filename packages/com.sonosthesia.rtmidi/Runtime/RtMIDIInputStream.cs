@@ -8,7 +8,7 @@ namespace Sonosthesia.RtMIDI
 {
     public class RtMIDIInputStream : RawMIDIInputStream
     {
-        [SerializeField] private string _port = "IAC Driver Unity";
+        [SerializeField] private string _portName = "IAC Driver Unity";
 
         [SerializeField] private float _retryInterval = 1;
 
@@ -33,27 +33,16 @@ namespace Sonosthesia.RtMIDI
             _subscription = Observable.Interval(TimeSpan.FromSeconds(Mathf.Max(1f, _retryInterval))).Subscribe(_ =>
             {
                 Debug.Log(Description());
-                int count = _probe.PortCount;
-                bool found = false;
-                for (int i = 0; i < count; i++)
+                if (_probe.TryGet(_portName, out string actualPortName, out int actualPortNumber))
                 {
-                    string portName = _probe.GetPortName(i);
-                    if (portName == _port)
-                    {
-                        found = true;
-                        _subscription?.Dispose();
-                        _inputPort?.Dispose();
-                        _inputPort = new RtMIDIInputPort(i, portName);
-                        break;
-                    }
-                }
-                if (!found)
-                {
-                    Debug.LogWarning($"Could not find MIDI port {_port} from {count} available");
+                    _subscription?.Dispose();
+                    _inputPort?.Dispose();
+                    _inputPort = new RtMIDIInputPort(actualPortNumber, actualPortName);
+                    Debug.Log($"Found MIDI input port {actualPortName} (number {actualPortNumber}) for requested : {_portName}");
                 }
                 else
                 {
-                    Debug.Log($"Found MIDI port {_port}");
+                    Debug.LogWarning($"Could not find MIDI input port for requested {_portName} from {_probe.PortCount} available");
                 }
             });
         }
