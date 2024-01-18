@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Sonosthesia.AdaptiveMIDI.Messages;
-using Sonosthesia.Channel;
-using Sonosthesia.MIDI;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Sonosthesia.MIDI;
+using Sonosthesia.Channel;
 
 namespace Sonosthesia.Instrument
 {
@@ -24,7 +23,7 @@ namespace Sonosthesia.Instrument
         }
     }
     
-    public class MPEPointerInstrument : ChannelDriver<MPENote>, IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler
+    public class MPEPointerInstrument : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler
     {
         internal enum DragMapping
         {
@@ -33,6 +32,8 @@ namespace Sonosthesia.Instrument
             Pressure,
             Bend
         }
+
+        [SerializeField] private ChannelDriver<MPENote> _driver;
 
         [Header("Rest")]
         
@@ -86,11 +87,11 @@ namespace Sonosthesia.Instrument
             {
                 Debug.LogWarning($"{this} unexpected existing note {pointerNote} for pointer {pointerNote.EventId}");
                 _pointerNotes.Remove(eventData.pointerId);
-                EndEvent(pointerNote.EventId);
+                _driver.EndStream(pointerNote.EventId);
             }
 
             MPENote mpeNote = new MPENote(_note, _velocity, _slide, _pressure, _bend);
-            Guid eventId = BeginEvent(mpeNote);
+            Guid eventId = _driver.BeginStream(mpeNote);
             _pointerNotes[eventData.pointerId] = new PointerNote(eventId, mpeNote);
         }
 
@@ -107,7 +108,7 @@ namespace Sonosthesia.Instrument
             }
             
             _pointerNotes.Remove(eventData.pointerId);
-            EndEvent(pointerNote.EventId);
+            _driver.EndStream(pointerNote.EventId);
         }
 
         public void OnPointerMove(PointerEventData eventData)
@@ -131,7 +132,7 @@ namespace Sonosthesia.Instrument
             mpeNote = mpeNote.ApplyDiff(drag.y, _y);
             mpeNote = mpeNote.ApplyDiff(drag.z, _z);
             
-            UpdateEvent(pointerNote.EventId, mpeNote);
+            _driver.UpdateStream(pointerNote.EventId, mpeNote);
         }
     }
 }

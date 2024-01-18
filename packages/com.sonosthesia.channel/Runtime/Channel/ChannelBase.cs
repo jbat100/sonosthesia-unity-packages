@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Channel
 {
-    // allows observers who do not need specific types but are just interested in stream counts
+    // allows observers who do not need specific types but are just interested in stream counts / ids
 
     public class ChannelBase : MonoBehaviour
     {

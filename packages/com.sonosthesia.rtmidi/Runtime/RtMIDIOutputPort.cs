@@ -48,7 +48,7 @@ namespace Sonosthesia.RtMIDI
         {
             byte* message = stackalloc byte [1];
             message[0] = data0;
-            Debug.Log($"{nameof(RtMIDIInputPort)} {nameof(Broadcast)} 1 byte : {data0:x2}");
+            Debug.Log($"{nameof(RtMIDIOutputPort)} {nameof(Broadcast)} 1 byte : {data0:x2}");
             RtMidiDll.OutSendMessage(_rtmidi, message, 1);
         }
 
@@ -57,7 +57,7 @@ namespace Sonosthesia.RtMIDI
             byte* message = stackalloc byte [2];
             message[0] = data0;
             message[1] = data1;
-            Debug.Log($"{nameof(RtMIDIInputPort)} {nameof(Broadcast)} 2 bytes : {data0:x2} {data1:x2}");
+            Debug.Log($"{nameof(RtMIDIOutputPort)} {nameof(Broadcast)} 2 bytes : {data0:x2} {data1:x2}");
             RtMidiDll.OutSendMessage(_rtmidi, message, 2);
         }
 
@@ -67,7 +67,7 @@ namespace Sonosthesia.RtMIDI
             message[0] = data0;
             message[1] = data1;
             message[2] = data2;
-            Debug.Log($"{nameof(RtMIDIInputPort)} {nameof(Broadcast)} 3 bytes : {data0:x2} {data1:x2} {data2:x2}");
+            Debug.Log($"{nameof(RtMIDIOutputPort)} {nameof(Broadcast)} 3 bytes : {data0:x2} {data1:x2} {data2:x2}");
             RtMidiDll.OutSendMessage(_rtmidi, message, 3);
         }
     }

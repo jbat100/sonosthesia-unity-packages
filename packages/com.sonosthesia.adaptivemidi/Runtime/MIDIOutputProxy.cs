@@ -1,5 +1,5 @@
-using System;
 using UnityEngine;
+using Sonosthesia.AdaptiveMIDI.Messages;
 
 namespace Sonosthesia.AdaptiveMIDI
 {
@@ -7,31 +7,84 @@ namespace Sonosthesia.AdaptiveMIDI
     {
         [SerializeField] private MIDIOutput _output;
 
-        private IDisposable _subscription;
-
-        protected virtual void OnValidate()
+        public override void Broadcast(MIDINoteOn note)
         {
-            ReloadPipe();
-        }
-
-        protected virtual void OnEnable()
-        {
-            ReloadPipe();
-        }
-
-        protected virtual void OnDisable()
-        {
-            _subscription?.Dispose();
-            _subscription = null;
-        }
-
-        private void ReloadPipe()
-        {
-            _subscription?.Dispose();
-            ClearOngoingNotes();
+            base.Broadcast(note);
             if (_output)
             {
-                _subscription = _output.Pipe(this);
+                _output.Broadcast(note);   
+            }
+        }
+        
+        public override void Broadcast(MIDINoteOff note)
+        {
+            base.Broadcast(note);
+            if (_output)
+            {
+                _output.Broadcast(note);   
+            }
+        }
+
+        public override void Broadcast(MIDIControl control)
+        {
+            base.Broadcast(control);
+            if (_output)
+            {
+                _output.Broadcast(control);   
+            }
+        }
+
+        public override void Broadcast(MIDIChannelAftertouch aftertouch)
+        {
+            base.Broadcast(aftertouch);
+            if (_output)
+            {
+                _output.Broadcast(aftertouch);   
+            }
+        }
+
+        public override void Broadcast(MIDIPolyphonicAftertouch aftertouch)
+        {
+            base.Broadcast(aftertouch);
+            if (_output)
+            {
+                _output.Broadcast(aftertouch);   
+            }
+        }
+
+        public override void Broadcast(MIDIPitchBend pitchBend)
+        {
+            base.Broadcast(pitchBend);
+            if (_output)
+            {
+                _output.Broadcast(pitchBend);   
+            }
+        }
+
+        public override void Broadcast(MIDIClock clock)
+        {
+            base.Broadcast(clock);
+            if (_output)
+            {
+                _output.Broadcast(clock);   
+            }
+        }
+
+        public override void Broadcast(MIDISongPositionPointer pointer)
+        {
+            base.Broadcast(pointer);
+            if (_output)
+            {
+                _output.Broadcast(pointer);   
+            }
+        }
+
+        public override void Broadcast(MIDISync sync)
+        {
+            base.Broadcast(sync);
+            if (_output)
+            {
+                _output.Broadcast(sync);   
             }
         }
     }

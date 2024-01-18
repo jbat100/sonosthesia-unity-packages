@@ -33,30 +33,20 @@ namespace Sonosthesia.RtMIDI
             _subscription = Observable.Interval(TimeSpan.FromSeconds(Mathf.Max(1f, _retryInterval))).Subscribe(_ =>
             {
                 Debug.Log(Description());
-                int count = _probe.PortCount;
-                bool found = false;
-                for (int i = 0; i < count; i++)
+                if (_probe.TryGet(_portName, out string actualPortName, out int actualPortNumber))
                 {
-                    string portName = _probe.GetPortName(i);
-                    if (portName == _portName)
-                    {
-                        found = true;
-                        _subscription?.Dispose();
-                        _port?.Dispose();
-                        _port = new RtMIDIOutputPort(i, portName);
-                        break;
-                    }
-                }
-                if (!found)
-                {
-                    Debug.LogWarning($"Could not find MIDI port {_portName} from {count} available");
+                    _subscription?.Dispose();
+                    _port?.Dispose();
+                    _port = new RtMIDIOutputPort(actualPortNumber, actualPortName);
+                    Debug.Log($"Found MIDI output port {actualPortName} (number {actualPortNumber}) for requested : {_portName}");
                 }
                 else
                 {
-                    Debug.Log($"Found MIDI port {_portName}");
+                    Debug.LogWarning($"Could not find MIDI output port for requested {_portName} from {_probe.PortCount} available");
                 }
             });
         }
+        
         
         protected virtual void Awake()
         {

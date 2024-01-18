@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace Sonosthesia.AdaptiveMIDI
 {
-    [RequireComponent(typeof(MIDIInput))]
     public class MIDIMessageLogs : MonoBehaviour
     {
         private MIDIMessageNode _broadcaster;
@@ -11,7 +10,7 @@ namespace Sonosthesia.AdaptiveMIDI
         
         protected void Awake()
         {
-            _broadcaster = GetComponent<MIDIInput>();
+            _broadcaster = GetComponent<MIDIMessageNode>();
         }
 
         protected void OnEnable()
@@ -19,9 +18,10 @@ namespace Sonosthesia.AdaptiveMIDI
             _subscriptions = new CompositeDisposable
             {
                 _broadcaster.ClockObservable.Subscribe(m => Debug.Log(m)),
-                _broadcaster.NoteOnObservable.Subscribe(m => Debug.Log($"NoteOn {m}")),
-                _broadcaster.NoteOffObservable.Subscribe(m => Debug.Log($"NoteOff {m}")),
+                _broadcaster.NoteOnObservable.Subscribe(m => Debug.Log(m)),
+                _broadcaster.NoteOffObservable.Subscribe(m => Debug.Log(m)),
                 _broadcaster.ControlObservable.Subscribe(m => Debug.Log(m)),
+                _broadcaster.PitchBendObservable.Subscribe(m => Debug.Log(m)),
                 _broadcaster.ChannelAftertouchObservable.Subscribe(m => Debug.Log(m)),
                 _broadcaster.PolyphonicAftertouchObservable.Subscribe(m => Debug.Log(m)),
                 _broadcaster.SongPositionPointerObservable.Subscribe(m => Debug.Log(m)),

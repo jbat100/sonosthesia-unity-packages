@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Sonosthesia.AdaptiveMIDI.Messages
 {
@@ -15,17 +16,17 @@ namespace Sonosthesia.AdaptiveMIDI.Messages
         public MIDIPolyphonicAftertouch(TimeSpan timestamp, int channel, int note, int value)
         {
             Timestamp = timestamp;
-            Channel = channel;
-            Note = note;
-            Value = value;
+            Channel = Mathf.Clamp(channel, 0, 15);
+            Note = Mathf.Clamp(note, 0, 127);
+            Value = Mathf.Clamp(value, 0, 127);
         }
         
         public MIDIPolyphonicAftertouch(int channel, int note, int value)
         {
             Timestamp = MIDIUtils.TimestampNow;
-            Channel = channel;
-            Note = note;
-            Value = value;
+            Channel = Mathf.Clamp(channel, 0, 15);
+            Note = Mathf.Clamp(note, 0, 127);
+            Value = Mathf.Clamp(value, 0, 127);
         }
 
         public override string ToString()

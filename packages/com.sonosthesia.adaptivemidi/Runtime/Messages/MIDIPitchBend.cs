@@ -12,22 +12,22 @@ namespace Sonosthesia.AdaptiveMIDI.Messages
         public MIDIPitchBend(TimeSpan timestamp, int channel, int value)
         {
             Timestamp = timestamp;
-            Channel = channel;
-            Value = value;
+            Channel = Mathf.Clamp(channel, 0, 15);
+            Value = Mathf.Clamp(value, -8192, 8191);
         }
         
         public MIDIPitchBend(int channel, int value)
         {
             Timestamp = MIDIUtils.TimestampNow;
-            Channel = channel;
-            Value = value;
+            Channel = Mathf.Clamp(channel, 0, 15);
+            Value = Mathf.Clamp(value, -8192, 8191);
         }
 
         public MIDIPitchBend(int channel, float semitones, float range)
         {
             Timestamp = MIDIUtils.TimestampNow;
-            Channel = channel;
-            Value = Mathf.RoundToInt(Mathf.Min(semitones, range) * 8191 / range);
+            Channel = Mathf.Clamp(channel, 0, 15);
+            Value = Mathf.Clamp(Mathf.RoundToInt(Mathf.Min(semitones, range) * 8191 / range), -8192, 8191);
         }
         
         public override string ToString()

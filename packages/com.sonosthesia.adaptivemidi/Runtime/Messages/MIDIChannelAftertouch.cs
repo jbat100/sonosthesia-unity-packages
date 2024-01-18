@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Sonosthesia.AdaptiveMIDI.Messages
 {
@@ -14,15 +15,15 @@ namespace Sonosthesia.AdaptiveMIDI.Messages
         public MIDIChannelAftertouch(int channel, int value)
         {
             Timestamp = MIDIUtils.TimestampNow;
-            Channel = channel;
-            Value = value;
+            Channel = Mathf.Clamp(channel, 0, 15);
+            Value = Mathf.Clamp(value, 0, 127);
         }
         
         public MIDIChannelAftertouch(TimeSpan timestamp, int channel, int value)
         {
             Timestamp = timestamp;
-            Channel = channel;
-            Value = value;
+            Channel = Mathf.Clamp(channel, 0, 15);
+            Value = Mathf.Clamp(value, 0, 127);
         }
         
         public override string ToString()

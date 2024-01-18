@@ -50,7 +50,7 @@ namespace Sonosthesia.Utils
                 Data result = (current - previous) / deltaTime;
                 if (result.Position.magnitude < 1e-4)
                 {
-                    Debug.LogWarning($"{nameof(TransformDynamics)} very small differential");
+                    //Debug.LogWarning($"{nameof(TransformDynamics)} very small differential");
                 }
 
                 return result;

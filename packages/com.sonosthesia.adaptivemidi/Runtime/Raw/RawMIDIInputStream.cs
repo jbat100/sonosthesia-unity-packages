@@ -6,8 +6,8 @@ namespace Sonosthesia.AdaptiveMIDI
 {
     public readonly struct RawMIDISingle
     {
-        readonly public TimeSpan Timestamp;
-        readonly public byte Data0;
+        public readonly TimeSpan Timestamp;
+        public readonly byte Data0;
 
         public RawMIDISingle(TimeSpan timestamp, byte data0)
         {
@@ -18,9 +18,9 @@ namespace Sonosthesia.AdaptiveMIDI
     
     public readonly struct RawMIDIDouble
     {
-        readonly public TimeSpan Timestamp;
-        readonly public byte Data0;
-        readonly public byte Data1;
+        public readonly TimeSpan Timestamp;
+        public readonly byte Data0;
+        public readonly byte Data1;
             
         public RawMIDIDouble(TimeSpan timestamp, byte data0, byte data1)
         {
@@ -32,10 +32,10 @@ namespace Sonosthesia.AdaptiveMIDI
     
     public readonly struct RawMIDITripple
     {
-        readonly public TimeSpan Timestamp;
-        readonly public byte Data0;
-        readonly public byte Data1;
-        readonly public byte Data2;
+        public readonly TimeSpan Timestamp;
+        public readonly byte Data0;
+        public readonly byte Data1;
+        public readonly byte Data2;
             
         public RawMIDITripple(TimeSpan timestamp, byte data0, byte data1, byte data2)
         {
