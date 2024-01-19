@@ -45,6 +45,10 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private bool _endOnReEnter = true;
 
+        [SerializeField] private bool _autoEnd;
+
+        [SerializeField] private float _autoEndDelay;
+
         private class TriggerData : ITriggerData
         {
             public Collider Collider { get; set; }
@@ -210,6 +214,12 @@ namespace Sonosthesia.Touch
             {
                 actor.ValueStreamNode.Push(eventId, valueObservable);
             }
+
+            if (AutoEnd(value, out float delay))
+            {
+                Observable.Timer(TimeSpan.FromSeconds(delay)).Subscribe(_ => sourceEvent.EndStream());
+            }
+            
         }
 
         private void UpdateStream(Guid eventId, TriggerData triggerData)
@@ -252,6 +262,12 @@ namespace Sonosthesia.Touch
         protected virtual void Clean(ITriggerData triggerData)
         {
             
+        }
+
+        protected virtual bool AutoEnd(TValue initial, out float delay)
+        {
+            delay = _autoEndDelay;
+            return _autoEnd;
         }
     }
 }

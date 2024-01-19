@@ -36,18 +36,10 @@ namespace Sonosthesia.Touch
         }
     }
     
-    public abstract class BaseTriggerSource : MonoBehaviour, IStreamSource<TriggerSourceEvent>
+    public abstract class BaseTriggerSource : TriggerStream
     {
-        private StreamNode<TriggerSourceEvent> _sourceStreamNode;
-        public StreamNode<TriggerSourceEvent> SourceStreamNode => _sourceStreamNode ??= new StreamNode<TriggerSourceEvent>(this);
-
         public abstract void EndAllStreams();
 
         public abstract void EndStream(Guid id);
-        
-        protected virtual void OnDestroy()
-        {
-            _sourceStreamNode?.Dispose();
-        }
     }
 }

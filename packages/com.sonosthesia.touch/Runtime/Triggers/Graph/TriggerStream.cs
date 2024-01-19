@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class TriggerStream : MonoBehaviour
+    public class TriggerStream : MonoBehaviour, IStreamSource<TriggerSourceEvent>
     {
         private StreamNode<TriggerSourceEvent> _sourceStreamNode;
         public StreamNode<TriggerSourceEvent> SourceStreamNode => _sourceStreamNode ??= new StreamNode<TriggerSourceEvent>(this);
