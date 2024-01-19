@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Sonosthesia.Utils;
 using UnityEngine;
 
@@ -38,6 +40,13 @@ namespace Sonosthesia.Touch
     
     public abstract class BaseTriggerSource : TriggerStream
     {
+        [SerializeField] private List<TriggerGate> _gates;
+
+        protected bool CheckGates(BaseTriggerActor actor)
+        {
+            return _gates.All(gate => gate.AllowTrigger(this, actor));
+        }
+        
         public abstract void EndAllStreams();
 
         public abstract void EndStream(Guid id);

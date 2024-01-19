@@ -91,7 +91,15 @@ namespace Sonosthesia.Touch
             Debug.Log($"{this} {nameof(OnTriggerEnter)} {other}");
 
             TriggerData triggerData;
-
+            
+            TriggerActor<TValue> actor = other.GetComponentInParent<TriggerActor<TValue>>();
+            
+            // if gates fail we don't want to go ahead with stream _endOnReEnter
+            if (!actor || !CheckGates(actor))
+            {
+                return;
+            }
+            
             if (_triggerEvents.TryGetValue(other, out Guid eventId))
             {
                 if (_triggerData.TryGetValue(eventId, out triggerData))
@@ -109,8 +117,7 @@ namespace Sonosthesia.Touch
                 }
             }
 
-            TriggerActor<TValue> actor = other.GetComponentInParent<TriggerActor<TValue>>();
-            if (!actor || !actor.RequestPermission(other))
+            if (!actor.RequestPermission(other))
             {
                 return;
             }
