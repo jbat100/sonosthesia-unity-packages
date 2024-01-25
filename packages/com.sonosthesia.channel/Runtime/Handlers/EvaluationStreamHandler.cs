@@ -5,7 +5,7 @@ using Sonosthesia.Signal;
 
 namespace Sonosthesia.Channel
 {
-    public abstract class ChannelStreamSignalHandler<T> : ChannelStreamHandler<T> where T : struct
+    public abstract class EvaluationStreamHandler<T> : StreamHandler<T> where T : struct
     {
         // then use target with signals 
         [SerializeField] private Signal<float> _signal;

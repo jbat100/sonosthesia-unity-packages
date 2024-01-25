@@ -4,11 +4,16 @@ using UnityEngine;
 
 namespace Sonosthesia.Channel
 {
-    public abstract class ChannelStreamHandler<T> : MonoBehaviour, IChannelStreamHandler<T> where T : struct
+    public abstract class StreamHandler<T> : MonoBehaviour, IStreamHandler<T> where T : struct
     {
         private Subject<Unit> _subject;
         private IDisposable _subscription;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
         public IObservable<Unit> HandleStream(IObservable<T> stream)
         {
             Complete();
@@ -23,7 +28,7 @@ namespace Sonosthesia.Channel
         {
             if (_subscription != null)
             {
-                _subscription?.Dispose();
+                _subscription.Dispose();
                 _subscription = null;
             }
             if (_subject != null)

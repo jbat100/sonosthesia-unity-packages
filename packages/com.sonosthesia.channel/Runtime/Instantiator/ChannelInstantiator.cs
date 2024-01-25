@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Sonosthesia.Channel;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Pool;
 
-namespace Sonosthesia.Spawn
+namespace Sonosthesia.Channel
 {
-    public class ChannelObjectInstantiator<T> : MonoBehaviour where T : struct
+    public class ChannelInstantiator<T> : MonoBehaviour where T : struct
     {
         [SerializeField] private Channel<T> _source;
         
@@ -32,14 +31,14 @@ namespace Sonosthesia.Spawn
         }
 
         private IDisposable _subscription;
-        private readonly Dictionary<GameObject, IChannelStreamHandler<T>[]> _alive = new();
+        private readonly Dictionary<GameObject, IStreamHandler<T>[]> _alive = new();
 
         protected void OnEnable()
         {
             _subscription?.Dispose();
             if (_source)
             {
-                _subscription = _source.StreamObservable.Subscribe(Spawn);
+                _subscription = _source.StreamObservable.Subscribe(Instantiate);
             }
         }
 
@@ -49,12 +48,12 @@ namespace Sonosthesia.Spawn
             _subscription = null;
         }
 
-        protected virtual void Spawn(IObservable<T> stream)
+        protected virtual void Instantiate(IObservable<T> stream)
         {
             GameObject spawn = _pool.Get();
-            if (!_alive.TryGetValue(spawn, out IChannelStreamHandler<T>[] handlers))
+            if (!_alive.TryGetValue(spawn, out IStreamHandler<T>[] handlers))
             {
-                handlers = spawn.GetComponentsInChildren<IChannelStreamHandler<T>>();
+                handlers = spawn.GetComponentsInChildren<IStreamHandler<T>>();
                 _alive[spawn] = handlers;
             }
             IEnumerable<IObservable<Unit>> completions = handlers.Select(handler => handler.HandleStream(stream));

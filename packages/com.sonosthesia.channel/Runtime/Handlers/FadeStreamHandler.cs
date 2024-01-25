@@ -1,12 +1,13 @@
 using System;
-using Sonosthesia.Signal;
-using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
+using Sonosthesia.Signal;
+using Sonosthesia.Flow;
+using Sonosthesia.Utils;
 
 namespace Sonosthesia.Channel
 {
-    public abstract class ChannelStreamFadeHandler<T> : ChannelStreamHandler<T> where T : struct
+    public abstract class FadeStreamHandler<T> : StreamHandler<T> where T : struct
     {
         [SerializeField] private Selector<T> _selector;
         

@@ -1,33 +1,34 @@
-using System;
-using Sonosthesia.AdaptiveMIDI.Messages;
-using Sonosthesia.Utils;
+using Sonosthesia.Flow;
 using UnityEngine;
 
 namespace Sonosthesia.MIDI
 {
-    public class MIDISelector : Selector<MIDINote>
+    public class MPENoteSelector : Selector<MPENote>
     {
         private enum Selection
         {
             None,
             Unit,
-            Channel,
             Note,
-            Velocity
+            Velocity,
+            Pressure,
+            Slide,
+            Bend
         }
 
         [SerializeField] private Selection _selection;
 
-        protected override float InternalSelect(MIDINote value)
+        protected override float InternalSelect(MPENote value)
         {
             return _selection switch
             {
-                Selection.None => 0f,
                 Selection.Unit => 1f,
-                Selection.Channel => value.Channel / 16f,
                 Selection.Note => value.Note / 127f,
                 Selection.Velocity => value.Velocity  / 127f,
-                _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+                Selection.Pressure => value.Pressure  / 127f,
+                Selection.Slide => value.Slide  / 127f,
+                Selection.Bend => value.Bend  / 127f,
+                _ => 0
             };
         }
     }
