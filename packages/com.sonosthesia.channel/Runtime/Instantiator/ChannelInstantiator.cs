@@ -13,6 +13,8 @@ namespace Sonosthesia.Channel
         
         [SerializeField] private GameObject _prefab;
 
+        [SerializeField] private Transform _attach;
+
         [SerializeField] private bool _poolCollectionChecks = true;
         
         [SerializeField] private int _maxPoolSize = 10;
@@ -22,7 +24,11 @@ namespace Sonosthesia.Channel
         protected void Awake()
         {
             _pool = new ObjectPool<GameObject>(() => Instantiate(_prefab), 
-                o => o.SetActive(true), 
+                o =>
+                {
+                    o.transform.SetParent(_attach ? _attach : transform, false);
+                    o.SetActive(true);
+                }, 
                 o => o.SetActive(false), 
                 Destroy, 
                 _poolCollectionChecks, 

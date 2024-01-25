@@ -75,7 +75,7 @@ namespace Sonosthesia.MIDI
                 ChannelState state = GetState(note.Channel);
                 if (state.CurrentNote.HasValue)
                 {
-                    Debug.LogWarning($"{nameof(MPENoteChannelSource)} unexpected note on {note}");
+                    Debug.LogWarning($"{nameof(MPENoteChannelSource)} unexpected {note}");
                     return;
                 }
                 state.EventId = _driver.BeginStream(state.Begin(new MIDINote(note)));
@@ -86,7 +86,7 @@ namespace Sonosthesia.MIDI
                 ChannelState state = GetState(note.Channel);
                 if (!state.CurrentNote.HasValue)
                 {
-                    Debug.LogWarning($"{nameof(MPENoteChannelSource)} expected note {note}");
+                    Debug.LogWarning($"{nameof(MPENoteChannelSource)} unexpected {note}");
                     return;
                 }
                 _driver.EndStream(state.EventId.Value);

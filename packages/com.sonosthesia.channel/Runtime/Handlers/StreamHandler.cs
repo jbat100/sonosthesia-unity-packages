@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Sonosthesia.Channel
 {
+    // The number of handler subclasses multiplied by the number of concrete typed subclasses is getting
+    // unwieldy consider having an internal strategy and custom editor
+    
     public abstract class StreamHandler<T> : MonoBehaviour, IStreamHandler<T> where T : struct
     {
         private Subject<Unit> _subject;

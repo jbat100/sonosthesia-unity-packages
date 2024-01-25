@@ -17,17 +17,19 @@ namespace Sonosthesia.MIDI
         }
 
         [SerializeField] private Selection _selection;
+        
+        [SerializeField] private bool _normalize;
 
         protected override float InternalSelect(MPENote value)
         {
             return _selection switch
             {
                 Selection.Unit => 1f,
-                Selection.Note => value.Note / 127f,
-                Selection.Velocity => value.Velocity  / 127f,
-                Selection.Pressure => value.Pressure  / 127f,
-                Selection.Slide => value.Slide  / 127f,
-                Selection.Bend => value.Bend  / 127f,
+                Selection.Note => _normalize ? value.Note / 127f : value.Note,
+                Selection.Velocity => _normalize ? value.Velocity  / 127f : value.Velocity,
+                Selection.Pressure => _normalize ? value.Pressure  / 127f : value.Pressure,
+                Selection.Slide => _normalize ? value.Slide  / 127f : value.Slide,
+                Selection.Bend => _normalize ? value.Bend  / 127f : value.Bend,
                 _ => 0
             };
         }
