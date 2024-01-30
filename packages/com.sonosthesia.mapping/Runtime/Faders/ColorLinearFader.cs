@@ -4,9 +4,9 @@ namespace Sonosthesia.Mapping
 {
     public class ColorLinearFader : LinearFader<Color>
     {
-        protected override Color Lerp(Color start, Color end, float value)
+        protected override Color LerpUnclamped(Color start, Color end, float value)
         {
-            return Color.Lerp(start, end, value);
+            return Color.LerpUnclamped(start, end, value);
         }
     }
 }

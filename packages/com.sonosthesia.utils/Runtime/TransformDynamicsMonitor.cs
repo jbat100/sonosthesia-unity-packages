@@ -69,6 +69,7 @@ namespace Sonosthesia.Utils
             if (_order > 0 && _current.HasValue)
             {
                 updatedVelocity = TransformDynamics.Data.Differential(_current.Value, updatedCurrent, deltaTime);
+                //Debug.Log($"{this} updated velocity {updatedVelocity.Value}");
             }
             
             if (_order > 1 && _velocity.HasValue && updatedVelocity.HasValue)

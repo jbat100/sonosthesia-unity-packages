@@ -45,6 +45,10 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private bool _endOnReEnter = true;
 
+        [SerializeField] private bool _autoEnd;
+
+        [SerializeField] private float _autoEndDelay;
+
         private class TriggerData : ITriggerData
         {
             public Collider Collider { get; set; }
@@ -87,7 +91,15 @@ namespace Sonosthesia.Touch
             Debug.Log($"{this} {nameof(OnTriggerEnter)} {other}");
 
             TriggerData triggerData;
-
+            
+            TriggerActor<TValue> actor = other.GetComponentInParent<TriggerActor<TValue>>();
+            
+            // if gates fail we don't want to go ahead with stream _endOnReEnter
+            if (!actor || !CheckGates(actor))
+            {
+                return;
+            }
+            
             if (_triggerEvents.TryGetValue(other, out Guid eventId))
             {
                 if (_triggerData.TryGetValue(eventId, out triggerData))
@@ -105,8 +117,7 @@ namespace Sonosthesia.Touch
                 }
             }
 
-            TriggerActor<TValue> actor = other.GetComponentInParent<TriggerActor<TValue>>();
-            if (!actor || !actor.RequestPermission(other))
+            if (!actor.RequestPermission(other))
             {
                 return;
             }
@@ -210,6 +221,12 @@ namespace Sonosthesia.Touch
             {
                 actor.ValueStreamNode.Push(eventId, valueObservable);
             }
+
+            if (AutoEnd(value, out float delay))
+            {
+                Observable.Timer(TimeSpan.FromSeconds(delay)).Subscribe(_ => sourceEvent.EndStream());
+            }
+            
         }
 
         private void UpdateStream(Guid eventId, TriggerData triggerData)
@@ -252,6 +269,12 @@ namespace Sonosthesia.Touch
         protected virtual void Clean(ITriggerData triggerData)
         {
             
+        }
+
+        protected virtual bool AutoEnd(TValue initial, out float delay)
+        {
+            delay = _autoEndDelay;
+            return _autoEnd;
         }
     }
 }

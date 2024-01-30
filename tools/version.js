@@ -36,15 +36,31 @@ function run() {
 
     // args.update can be major, minor, patch
 
+    if (args.list) {
+        let packageVersions = packageNames.map(name => getPackageVersion(name));
+        for (const name of packageNames) {
+            console.log(`Package ${name} version ${getPackageVersion(name)}`);
+        }
+        let highestVersion = packageVersions.sort(semver.rcompare)[0];
+        console.log(chalk.green(`Highest version ${highestVersion}`));
+    }
+
+    if (args.align) {
+        let packageVersions = packageNames.map(name => getPackageVersion(name));
+        let highestVersion = packageVersions.sort(semver.rcompare)[0];
+        console.log(chalk.green(`Aligning all versions to current highest ${highestVersion}`));
+        for (const package of packageNames) {
+            updatePackageDependencies(package, highestVersion);
+        }
+    }
+
     if (args.update) {
 
         if (args.all) {
             let packageVersions = packageNames.map(name => getPackageVersion(name));
             let highestVersion = packageVersions.sort(semver.rcompare)[0];
-            console.log(highestVersion);
             let updatedVersion = semver.inc(highestVersion, args.update);
-            console.log(updatedVersion);
-            console.log('All');
+            console.log(chalk.green(`Update all (${args.update}) current highest is ${highestVersion}, updating to ${updatedVersion}`));
             for (const package of packageNames) {
                 updatePackageDependencies(package, updatedVersion);
             }

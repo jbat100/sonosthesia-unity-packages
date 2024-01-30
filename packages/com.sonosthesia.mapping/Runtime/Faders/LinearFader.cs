@@ -7,12 +7,14 @@ namespace Sonosthesia.Mapping
         [SerializeField] private T _start;
 
         [SerializeField] private T _end;
+
+        [SerializeField] private bool _clamp;
         
         public override T Fade(float fade)
         {
-            return Lerp(_start, _end, fade);
+            return LerpUnclamped(_start, _end, _clamp ? Mathf.Clamp01(fade) : fade);
         }
 
-        protected abstract T Lerp(T start, T end, float value);
+        protected abstract T LerpUnclamped(T start, T end, float value);
     }
 }

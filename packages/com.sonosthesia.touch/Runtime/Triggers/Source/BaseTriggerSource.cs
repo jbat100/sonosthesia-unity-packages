@@ -1,5 +1,6 @@
 ﻿using System;
-using Sonosthesia.Utils;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
@@ -36,18 +37,17 @@ namespace Sonosthesia.Touch
         }
     }
     
-    public abstract class BaseTriggerSource : MonoBehaviour, IStreamSource<TriggerSourceEvent>
+    public abstract class BaseTriggerSource : TriggerStream
     {
-        private StreamNode<TriggerSourceEvent> _sourceStreamNode;
-        public StreamNode<TriggerSourceEvent> SourceStreamNode => _sourceStreamNode ??= new StreamNode<TriggerSourceEvent>(this);
+        [SerializeField] private List<TriggerGate> _gates;
 
+        protected bool CheckGates(BaseTriggerActor actor)
+        {
+            return _gates.All(gate => gate.AllowTrigger(this, actor));
+        }
+        
         public abstract void EndAllStreams();
 
         public abstract void EndStream(Guid id);
-        
-        protected virtual void OnDestroy()
-        {
-            _sourceStreamNode?.Dispose();
-        }
     }
 }
