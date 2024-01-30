@@ -6,8 +6,8 @@
     "com.sonosthesia.midi": "1.5.0",
     "com.sonosthesia.touch": "1.5.0",
     "com.sonosthesia.channel": "1.5.0",
-    "com.sonosthesia.signal": "1.3.0",
-    "com.sonosthesia.mapping": "1.4.0"
+    "com.sonosthesia.signal": "1.5.0",
+    "com.sonosthesia.mapping": "1.5.0"
   },
   "description": "Sonosthesia unity instrument",
   "displayName": "Sonosthesia Instrument",

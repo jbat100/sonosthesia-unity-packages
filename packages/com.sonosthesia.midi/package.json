@@ -2,11 +2,11 @@
   "author": "Jonathan Thorpe",
   "dependencies": {
     "com.neuecc.unirx": "7.1.0",
-    "com.sonosthesia.adaptivemidi": "1.4.0",
+    "com.sonosthesia.adaptivemidi": "1.5.0",
     "com.sonosthesia.channel": "1.5.0",
-    "com.sonosthesia.signal": "1.3.0",
-    "com.sonosthesia.mapping": "1.4.0",
-    "com.sonosthesia.sequencer": "1.3.0",
+    "com.sonosthesia.signal": "1.5.0",
+    "com.sonosthesia.mapping": "1.5.0",
+    "com.sonosthesia.sequencer": "1.5.0",
     "com.sonosthesia.flow": "1.5.0"
   },
   "description": "Sonosthesia unity midi",
