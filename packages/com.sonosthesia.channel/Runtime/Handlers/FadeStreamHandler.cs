@@ -61,7 +61,11 @@ namespace Sonosthesia.Channel
             IDisposable mainSubscription = stream.Subscribe(value =>
             {
                 _currentValue = _selector.Select(value);
-            }, () =>
+            }, error =>
+            {
+                Debug.LogError($"{this} {error.Message}");
+                _completionTime = Time.time;
+            } , () =>
             {
                 _completionTime = Time.time;
             });

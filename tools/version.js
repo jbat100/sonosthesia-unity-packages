@@ -36,6 +36,15 @@ function run() {
 
     // args.update can be major, minor, patch
 
+    if (args.list) {
+        let packageVersions = packageNames.map(name => getPackageVersion(name));
+        for (const name of packageNames) {
+            console.log(`Package ${name} version ${getPackageVersion(name)}`);
+        }
+        let highestVersion = packageVersions.sort(semver.rcompare)[0];
+        console.log(chalk.green(`Highest version ${highestVersion}`));
+    }
+
     if (args.update) {
 
         if (args.all) {

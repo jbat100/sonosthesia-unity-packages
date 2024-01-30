@@ -14,7 +14,17 @@ namespace Sonosthesia.Channel
 
         protected override IDisposable InternalHandleStream(IObservable<TValue> stream)
         {
-            return stream.Subscribe(value => _signal.Broadcast(_selector.Select(value)));
+            return stream.Subscribe(
+                value => _signal.Broadcast(_selector.Select(value)), 
+                error =>
+                {
+                    Debug.LogError($"{this} error {error.Message}");
+                    Complete();
+                }, () =>
+                {
+                    Debug.Log($"{this} completed");
+                    Complete();
+                });
         }
     }
 }

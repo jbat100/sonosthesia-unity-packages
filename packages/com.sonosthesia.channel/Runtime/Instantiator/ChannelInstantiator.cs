@@ -59,11 +59,26 @@ namespace Sonosthesia.Channel
             GameObject spawn = _pool.Get();
             if (!_alive.TryGetValue(spawn, out IStreamHandler<T>[] handlers))
             {
-                handlers = spawn.GetComponentsInChildren<IStreamHandler<T>>();
+                handlers = spawn.GetComponentsInChildren<IStreamHandler<T>>(false);
                 _alive[spawn] = handlers;
             }
             IEnumerable<IObservable<Unit>> completions = handlers.Select(handler => handler.HandleStream(stream));
-            completions.Merge().Subscribe(_ => { }, () => _pool.Release(spawn));
+            // merge completes when all handlers have completed
+            completions.Merge().Subscribe(
+                _ =>
+                {
+                    
+                },
+                error =>
+                {
+                    Debug.LogError($"{this} release on handler error {error.Message}");
+                    _pool.Release(spawn);
+                },
+                () =>
+                {
+                    Debug.Log($"{this} release on handler completion");
+                    _pool.Release(spawn);
+                });
         }
     }
 
