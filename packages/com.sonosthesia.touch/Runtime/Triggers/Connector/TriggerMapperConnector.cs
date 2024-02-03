@@ -15,7 +15,7 @@ namespace Sonosthesia.Touch
     {
         [SerializeField] private MapperConnection<TValue> _target;
 
-        [SerializeField] private Mapper<TValue> _mapper;
+        [SerializeField] private CustomMapper<TValue> _mapper;
 
         private readonly Dictionary<Collider, IDisposable> _connections = new();
 

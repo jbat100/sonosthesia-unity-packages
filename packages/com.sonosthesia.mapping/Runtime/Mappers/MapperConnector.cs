@@ -18,7 +18,7 @@ namespace Sonosthesia.Mapping
             _subscription?.Dispose();
             if (_source && _target)
             {
-                _subscription = _mapper ? _mapper.Map(_source, _target) : Mapper<TValue>.AutoMap(_source, _target);   
+                _subscription = _mapper ? _mapper.Map(_source, _target) : MapperUtils.AutoMap(_source, _target);   
             }
         }
 

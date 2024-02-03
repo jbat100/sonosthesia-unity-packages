@@ -24,7 +24,7 @@ namespace Sonosthesia.Instrument
             {
                 if (_instancesRoot == null)
                 {
-                    Debug.Log($"{this} {nameof(TryClearCache)} creating root");
+                    //Debug.Log($"{this} {nameof(TryClearCache)} creating root");
                     _instancesRoot = new GameObject(k_InstancesRootName+GetInstanceID());
                     _instancesRoot.hideFlags |= HideFlags.DontSave;
                     _instancesRoot.transform.parent = transform;
@@ -77,7 +77,7 @@ namespace Sonosthesia.Instrument
 
         protected virtual void OnValidate()
         {
-            Debug.Log($"{this} {nameof(OnValidate)}");
+            //Debug.Log($"{this} {nameof(OnValidate)}");
             _dirtyInstances = _autoRefresh;
         }
 
@@ -149,7 +149,7 @@ namespace Sonosthesia.Instrument
 
             if (_dirtyInstances)
             {
-                Debug.Log($"{this} {nameof(TryClearCache)} destroying instances and root");
+                //Debug.Log($"{this} {nameof(TryClearCache)} destroying instances and root");
                 for (int i = _instances.Count - 1; i >= 0; --i)
                 {
 #if UNITY_EDITOR

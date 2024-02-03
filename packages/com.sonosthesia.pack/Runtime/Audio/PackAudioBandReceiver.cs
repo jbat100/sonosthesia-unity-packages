@@ -8,7 +8,7 @@ namespace Sonosthesia.Pack
     public abstract class PackAudioBandReceiver<T> : MonoBehaviour where T : IPackedAudioBands
     {
         [SerializeField] private AddressedPackConnection _connection;
-
+        
         private readonly CompositeDisposable _subscriptions = new ();
         
         private readonly Subject<T> _subject = new ();

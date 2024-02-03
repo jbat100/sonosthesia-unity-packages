@@ -1,104 +1,42 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using UniRx;
 using Sonosthesia.Processing;
+using UniRx;
+using UnityEngine;
 
 namespace Sonosthesia.Mapping
 {
-    public class Mapper<TValue> : ScriptableObject where TValue : struct
+    public static class MapperUtils
     {
-        public static IDisposable AutoMap(MapperConnection<TValue> source, MapperConnection<TValue> target)
+        public static IDisposable AutoMap<TValue>(MapperConnection<TValue> source, MapperConnection<TValue> target)
+            where TValue: struct
         {
             CompositeDisposable subscriptions = new CompositeDisposable();
 
             // attempt to map the remaining target slots with source slots with the same name
             foreach (string targetSlotName in target.SlotNames)
             {
-                MapperConnection<TValue>.Slot targetSlot = target.GetSlot(targetSlotName);
-                MapperConnection<TValue>.Slot sourceSlot = source.GetSlot(targetSlotName);
-                if (targetSlot == null || sourceSlot == null)
-                {
-                    continue;
-                }
-                subscriptions.Add(targetSlot.Connect(sourceSlot));
+                subscriptions.Add(Connect(targetSlotName, source, target));
             }
 
             return subscriptions;
         }
-        
-        [Serializable] 
-        public class ConnectionInfo
+
+        public static IDisposable Connect<TValue>(string slotName,
+            MapperConnection<TValue> source, MapperConnection<TValue> target,
+            IDynamicProcessor<TValue> processor = null) where TValue: struct
         {
-            [SerializeField] private string _source;
-            public string Source => _source;
-            
-            [SerializeField] private string _target;
-            public string Target => _target;
-            
-            [SerializeField] private DynamicProcessorFactory<TValue> _processorFactory;
-            public DynamicProcessorFactory<TValue> ProcessorFactory => _processorFactory;
+            MapperConnection<TValue>.Slot targetSlot = target.GetSlot(slotName);
+            MapperConnection<TValue>.Slot sourceSlot = source.GetSlot(slotName);
+            if (targetSlot == null || sourceSlot == null)
+            {
+                return Disposable.Empty;
+            }
+            return targetSlot.Connect(sourceSlot, processor);
         }
-        
-        [SerializeField] private bool _autoMap;
-
-        [SerializeField] private List<ConnectionInfo> _connections;
-
-        [SerializeField] private List<string> _compatibility;
-        public IEnumerable<string> Compatibility => _compatibility.AsReadOnly();
-
-        public IDisposable Map(MapperConnection<TValue> source, MapperConnection<TValue> target)
-        {
-            CompositeDisposable subscriptions = new CompositeDisposable();
-
-            HashSet<string> targetSlotNames = new HashSet<string>(target.SlotNames);
-
-            foreach (ConnectionInfo connectionInfo in _connections)
-            {
-                // we don't want to pipe multiple sources into a given target slot
-                if (!targetSlotNames.Contains(connectionInfo.Target))
-                {
-                    continue;
-                }
-                
-                MapperConnection<TValue>.Slot targetSlot = target.GetSlot(connectionInfo.Target);
-                MapperConnection<TValue>.Slot sourceSlot = source.GetSlot(connectionInfo.Source);
-                
-                if (targetSlot == null || sourceSlot == null)
-                {
-                    continue;
-                }
-
-                targetSlotNames.Remove(connectionInfo.Target);
-                IDynamicProcessor<TValue> processor = connectionInfo.ProcessorFactory ? connectionInfo.ProcessorFactory.Make() : null;
-                subscriptions.Add(targetSlot.Connect(sourceSlot, processor));
-            }
-            
-            if (_autoMap)
-            {
-                // attempt to map the remaining target slots with source slots with the same name
-                foreach (string targetSlotName in targetSlotNames.ToList())
-                {
-                    MapperConnection<TValue>.Slot targetSlot = target.GetSlot(targetSlotName);
-                    MapperConnection<TValue>.Slot sourceSlot = source.GetSlot(targetSlotName); 
-                    
-                    if (targetSlot == null || sourceSlot == null)
-                    {
-                        continue;
-                    }
-
-                    targetSlotNames.Remove(targetSlotName);
-                    subscriptions.Add(targetSlot.Connect(sourceSlot));
-                }
-            }
-
-            if (targetSlotNames.Count > 0)
-            {
-                Debug.LogWarning($"{this} target slots are not filled : {string.Join(", ", targetSlotNames)}");
-            }
-            
-            return subscriptions;
-        }
+    }
+    
+    public abstract class Mapper<TValue> : ScriptableObject where TValue : struct
+    {
+        public abstract IDisposable Map(MapperConnection<TValue> source, MapperConnection<TValue> target);
     }
 }
