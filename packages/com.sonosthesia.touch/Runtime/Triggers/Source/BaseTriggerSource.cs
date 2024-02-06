@@ -18,13 +18,13 @@ namespace Sonosthesia.Touch
     }
     
     // used for affordances
-    public readonly struct TriggerSourceEvent
+    public readonly struct TriggerEvent
     {
         public readonly Guid Id;
         public readonly ITriggerData TriggerData;
         public readonly float StartTime;
 
-        public TriggerSourceEvent(Guid id, ITriggerData triggerData, float startTime)
+        public TriggerEvent(Guid id, ITriggerData triggerData, float startTime)
         {
             Id = id;
             TriggerData = triggerData;

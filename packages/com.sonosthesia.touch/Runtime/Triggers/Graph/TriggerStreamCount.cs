@@ -17,7 +17,7 @@ namespace Sonosthesia.Touch
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = _stream.SourceStreamNode.Values.ObserveCountChanged(true)
+            _subscription = _stream.EventStreamNode.Values.ObserveCountChanged(true)
                 .Subscribe(count => Broadcast((float)count));
         }
 

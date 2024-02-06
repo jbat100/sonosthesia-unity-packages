@@ -6,12 +6,12 @@ using UnityEngine.EventSystems;
 namespace Sonosthesia.Touch
 {
     // used for affordances
-    public readonly struct PointerSourceEvent
+    public readonly struct PointerEvent
     {
         public readonly Guid Id;
         public readonly PointerEventData Data;
 
-        public PointerSourceEvent(Guid id, PointerEventData data)
+        public PointerEvent(Guid id, PointerEventData data)
         {
             Id = id;
             Data = data;
@@ -21,14 +21,14 @@ namespace Sonosthesia.Touch
     /// <summary>
     /// Base class allows non templated affordances to access event streams
     /// </summary>
-    public class BasePointerSource : MonoBehaviour, IStreamSource<PointerSourceEvent>
+    public class BasePointerSource : MonoBehaviour, IEventStreamContainer<PointerEvent>
     {
-        private StreamNode<PointerSourceEvent> _sourceStreamNode;
-        public StreamNode<PointerSourceEvent> SourceStreamNode => _sourceStreamNode ??= new StreamNode<PointerSourceEvent>(this);
+        private StreamNode<PointerEvent> _eventStreamNode;
+        public StreamNode<PointerEvent> EventStreamNode => _eventStreamNode ??= new StreamNode<PointerEvent>(this);
 
         protected virtual void OnDestroy()
         {
-            _sourceStreamNode?.Dispose();
+            _eventStreamNode?.Dispose();
         }
     }
 }

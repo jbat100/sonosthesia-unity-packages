@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public readonly struct TriggerValueEvent<TValue> : IEventValue<TValue> where TValue : struct
+    public readonly struct TriggerValueEvent<TValue> : IValueEvent<TValue> where TValue : struct
     {
         public readonly Guid Id;
         public readonly ITriggerData TriggerData;
@@ -36,7 +36,7 @@ namespace Sonosthesia.Touch
     }
 
     public abstract class TriggerSource<TValue> : BaseTriggerSource,
-        IValueStreamSource<TValue, TriggerValueEvent<TValue>>
+        IValueEventStreamContainer<TValue, TriggerValueEvent<TValue>>
         where TValue : struct
     {
         [SerializeField] private ChannelDriver<TValue> _driver;
@@ -204,18 +204,18 @@ namespace Sonosthesia.Touch
             BehaviorSubject<TriggerValueEvent<TValue>> subject = new BehaviorSubject<TriggerValueEvent<TValue>>(new TriggerValueEvent<TValue>(eventId, triggerData, value, startTime));
             _valueEventSubjects[eventId] = subject;
 
-            TriggerSourceEvent sourceEvent = new TriggerSourceEvent(eventId, triggerData, startTime);
+            TriggerEvent sourceEvent = new TriggerEvent(eventId, triggerData, startTime);
 
-            IObservable<TriggerSourceEvent> sourceObservable = subject.Select(_ => sourceEvent);
+            IObservable<TriggerEvent> sourceObservable = subject.Select(_ => sourceEvent);
             IObservable<TriggerValueEvent<TValue>> valueObservable = subject.AsObservable();
             
-            SourceStreamNode.Push(eventId, sourceObservable);
+            EventStreamNode.Push(eventId, sourceObservable);
             ValueStreamNode.Push(eventId, valueObservable);
 
             // push the stream to the actor
             if (triggerData.Actor)
             {
-                triggerData.Actor.SourceStreamNode.Push(eventId, sourceObservable);
+                triggerData.Actor.EventStreamNode.Push(eventId, sourceObservable);
             }
             if (triggerData.Actor is TriggerActor<TValue> actor)
             {

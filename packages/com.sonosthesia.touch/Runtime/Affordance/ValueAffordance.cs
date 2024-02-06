@@ -4,16 +4,11 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    /// <summary>
-    /// Affordance for a given event stream container, agnostic of value 
-    /// </summary>
-    /// <typeparam name="TEvent"></typeparam>
-    /// <typeparam name="TContainer"></typeparam>
-    public class AgnosticAffordance<TEvent, TContainer> : MonoBehaviour 
-        where TEvent : struct 
-        where TContainer : MonoBehaviour, IEventStreamContainer<TEvent>
+    public class ValueAffordance<TValue, TEvent, TContainer> : MonoBehaviour 
+        where TValue : struct
+        where TEvent : struct, IValueEvent<TValue>
+        where TContainer : MonoBehaviour, IValueEventStreamContainer<TValue, TEvent>
     {
-        // TODO : relink in editor
         [SerializeField] private TContainer _container;
 
         private readonly CompositeDisposable _subscriptions = new();
@@ -41,11 +36,11 @@ namespace Sonosthesia.Touch
 
         protected virtual void OnEnable()
         {
-            _subscriptions.Add(_container.EventStreamNode.Values.ObserveCountChanged().Subscribe(OnEventCountChanged));
-            _subscriptions.Add(_container.EventStreamNode.StreamObservable.Subscribe(pair =>
+            _subscriptions.Add(_container.ValueStreamNode.Values.ObserveCountChanged().Subscribe(OnEventCountChanged));
+            _subscriptions.Add(_container.ValueStreamNode.StreamObservable.Subscribe(pair =>
             {
-                IObservable<TEvent> stream = pair.Value.TakeUntilDisable(this); 
-                LinkController(pair.Key, stream);
+                IObservable<TEvent> stream = pair.Value.TakeUntilDisable(this);
+                LinkController(pair.Key, stream);    
                 HandleStream(pair.Key, stream);
             }));
         }

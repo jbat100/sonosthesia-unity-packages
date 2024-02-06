@@ -1,4 +1,5 @@
 using Sonosthesia.AdaptiveMIDI.Messages;
+using UnityEngine;
 
 namespace Sonosthesia.MIDI
 {
@@ -11,10 +12,10 @@ namespace Sonosthesia.MIDI
 
         public MIDINote(int channel, int note, int velocity, int pressure = 0)
         {
-            Channel = channel;
-            Note = note;
-            Velocity = velocity;
-            Pressure = pressure;
+            Channel = Mathf.Clamp(channel, 0, 15);
+            Note = Mathf.Clamp(note, 0, 127);
+            Velocity = Mathf.Clamp(velocity, 0, 127);
+            Pressure = Mathf.Clamp(pressure, 0, 127);
         }
 
         public MIDINote(MIDINoteOn note, int pressure = 0)
@@ -22,7 +23,7 @@ namespace Sonosthesia.MIDI
             Channel = note.Channel;
             Note = note.Note;
             Velocity = note.Velocity;
-            Pressure = pressure;
+            Pressure = Mathf.Clamp(pressure, 0, 127);
         }
         
         public MIDINote(MIDINoteOff note, int pressure = 0)
@@ -30,7 +31,7 @@ namespace Sonosthesia.MIDI
             Channel = note.Channel;
             Note = note.Note;
             Velocity = note.Velocity;
-            Pressure = pressure;
+            Pressure = Mathf.Clamp(pressure, 0, 127);;
         }
 
         public MIDINote WithPressure(int pressure)

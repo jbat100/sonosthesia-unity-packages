@@ -16,11 +16,11 @@ namespace Sonosthesia.MIDI
         
         public MPENote(int note, int velocity, int slide, int pressure, float bend)
         {
-            Note = note;
-            Velocity = velocity;
-            Slide = slide;
-            Pressure = pressure;
-            Bend = bend;
+            Note = Mathf.Clamp(note, 0, 127);
+            Velocity = Mathf.Clamp(velocity, 0, 127);
+            Slide = Mathf.Clamp(slide, 0, 127);
+            Pressure = Mathf.Clamp(pressure, 0, 127);
+            Bend = Mathf.Clamp(bend, -48f, 48f);
         }
 
         public MPENote(MIDINoteOn note)
@@ -75,7 +75,7 @@ namespace Sonosthesia.MIDI
         {
             return new MIDIChannelAftertouch(channel, mpeNote.Pressure);
         }
-        
+
         public static MIDIPitchBend GetPitchBend(this MPENote mpeNote, int channel)
         {
             const float scale = 8192f / MPENote.BEND_RANGE;

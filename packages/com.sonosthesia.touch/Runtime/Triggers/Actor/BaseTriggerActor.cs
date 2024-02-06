@@ -12,7 +12,7 @@ namespace Sonosthesia.Touch
 
         protected virtual void Awake()
         {
-            _node.SourceStreamNode.Pipe(SourceStreamNode);
+            _node.EventStreamNode.Pipe(EventStreamNode);
         }
         
         public virtual bool RequestPermission(Collider other)

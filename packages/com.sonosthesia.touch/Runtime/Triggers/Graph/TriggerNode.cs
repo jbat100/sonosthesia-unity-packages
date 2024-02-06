@@ -33,11 +33,11 @@ namespace Sonosthesia.Touch
                 _parent.RegisterChildNode(this);
                 
                 // used to relay streams up the node hierarchy
-                _parentSubscriptions.Add(_parent.SourceStreamNode.Pipe(SourceStreamNode));
+                _parentSubscriptions.Add(_parent.EventStreamNode.Pipe(EventStreamNode));
                 
                 // used to send events when something changed updstream
                 _parentSubscriptions.Add(_parent
-                    .SourceStreamNode.Values.ObserveCountChanged().AsUnitObservable()
+                    .EventStreamNode.Values.ObserveCountChanged().AsUnitObservable()
                     .Merge(_parent.UpstreamObservable)
                     .Subscribe(_upstreamSubject));
             }
@@ -72,8 +72,8 @@ namespace Sonosthesia.Touch
         public void EndOldestStream()
         {
             float lowestStartTime = float.MaxValue;
-            TriggerSourceEvent? oldest = null;
-            foreach (KeyValuePair<Guid, TriggerSourceEvent> pair in SourceStreamNode.Values)
+            TriggerEvent? oldest = null;
+            foreach (KeyValuePair<Guid, TriggerEvent> pair in EventStreamNode.Values)
             {
                 float startTime = pair.Value.StartTime;
                 if (startTime < lowestStartTime)
@@ -100,7 +100,7 @@ namespace Sonosthesia.Touch
             bool maxReached = false;
             while (current)
             {
-                if (current.SourceStreamNode.Values.Count >= current.MaxConcurrent)
+                if (current.EventStreamNode.Values.Count >= current.MaxConcurrent)
                 {
                     maxReached = true;
                     break;

@@ -3,11 +3,11 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class TriggerStream : MonoBehaviour, IStreamSource<TriggerSourceEvent>
+    public class TriggerStream : MonoBehaviour, IEventStreamContainer<TriggerEvent>
     {
-        private StreamNode<TriggerSourceEvent> _sourceStreamNode;
-        public StreamNode<TriggerSourceEvent> SourceStreamNode => _sourceStreamNode ??= new StreamNode<TriggerSourceEvent>(this);
+        private StreamNode<TriggerEvent> _eventStreamNode;
+        public StreamNode<TriggerEvent> EventStreamNode => _eventStreamNode ??= new StreamNode<TriggerEvent>(this);
         
-        protected virtual void OnDestroy() => _sourceStreamNode?.Dispose();
+        protected virtual void OnDestroy() => _eventStreamNode?.Dispose();
     }
 }

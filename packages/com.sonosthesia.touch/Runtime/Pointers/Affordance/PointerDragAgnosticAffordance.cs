@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class PointerDragAffordance : DragAffordance<PointerSourceEvent, BasePointerSource, PointerDragAffordance>
+    public class PointerDragAgnosticAffordance : DragAgnosticAffordance<PointerEvent, BasePointerSource, PointerDragAgnosticAffordance>
     {
         public enum ScaleDriver
         {
@@ -18,9 +18,9 @@ namespace Sonosthesia.Touch
         
         [SerializeField] private float _scaleSensitivity = 0.1f;
         
-        protected new class Controller : DragAffordance<PointerSourceEvent, BasePointerSource, PointerDragAffordance>.Controller
+        protected new class Controller : DragAgnosticAffordance<PointerEvent, BasePointerSource, PointerDragAgnosticAffordance>.Controller
         {
-            public Controller(Guid id, PointerDragAffordance affordance) : base (id, affordance)
+            public Controller(Guid id, PointerDragAgnosticAffordance affordance) : base (id, affordance)
             {
                 
             }
@@ -30,7 +30,7 @@ namespace Sonosthesia.Touch
             private Vector2 _cumulativeScroll;
             private Vector3 _initialTargetScale;
 
-            protected override void Update(PointerSourceEvent updatedEvent)
+            protected override void Update(PointerEvent updatedEvent)
             {
                 base.Update(updatedEvent);
                 if (updatedEvent.Data.IsScrolling())
@@ -39,7 +39,7 @@ namespace Sonosthesia.Touch
                 }
             }
 
-            protected override bool GetOriginPosition(bool initial, PointerSourceEvent value, ref Vector3 origin)
+            protected override bool GetOriginPosition(bool initial, PointerEvent value, ref Vector3 origin)
             {
                 if (!initial)
                 {
@@ -56,7 +56,7 @@ namespace Sonosthesia.Touch
                 return true;
             }
 
-            protected override bool GetTargetPosition(bool initial, PointerSourceEvent value, Vector3 origin, ref Vector3 target)
+            protected override bool GetTargetPosition(bool initial, PointerEvent value, Vector3 origin, ref Vector3 target)
             {
                 Vector3 direction = _camera.transform.position - origin;
 
@@ -75,12 +75,12 @@ namespace Sonosthesia.Touch
                 return true;
             }
 
-            protected override bool GetOriginScale(bool initial, PointerSourceEvent value, ref Vector3 origin)
+            protected override bool GetOriginScale(bool initial, PointerEvent value, ref Vector3 origin)
             {
                 return false;
             }
 
-            protected override bool GetTargetScale(bool initial, PointerSourceEvent value, Vector3 origin, ref Vector3 target)
+            protected override bool GetTargetScale(bool initial, PointerEvent value, Vector3 origin, ref Vector3 target)
             {
                 if (initial)
                 {
@@ -103,7 +103,7 @@ namespace Sonosthesia.Touch
             }
         }
 
-        protected override IObserver<PointerSourceEvent> MakeController(Guid id)
+        protected override IObserver<PointerEvent> MakeController(Guid id)
         {
             return new Controller(id, this);
         }
