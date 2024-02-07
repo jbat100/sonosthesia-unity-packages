@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Instrument
@@ -7,28 +9,44 @@ namespace Sonosthesia.Instrument
     public class KeyboardBuilder : GroupInstantiator<KeyboardElement>
     {
         [Serializable]
-        private class KeyProperties
+        private class TransformProperties
         {
             [SerializeField] private Vector3 _scale;
             public Vector3 Scale => _scale;
             
             [SerializeField] private Vector3 _offset;
             public Vector3 Offset => _offset;
-            
+        }
+
+        [Serializable]
+        private class StateProperties
+        {
             [SerializeField] private Material _material;
             public Material Material => _material;
+
+            [SerializeField] private SingleUnityLayer _layer;
+            public SingleUnityLayer Layer => _layer;
         }
+        
 
         [SerializeField] private int _startNote;
         
         [SerializeField] private int _endNote;
 
-        [SerializeField] private KeyProperties _white;
+        [SerializeField] private TransformProperties _whiteTransform;
 
-        [SerializeField] private KeyProperties _black;
-
-        [SerializeField] private Vector3 _spacing = Vector3.right;
+        [SerializeField] private TransformProperties _blackTransform;
         
+        [SerializeField] private StateProperties _whiteState;
+
+        [SerializeField] private StateProperties _blackState;
+        
+        [SerializeField] private StateProperties _ghostState;
+
+        [SerializeField] private List<MIDINoteFilter> _filters;
+        
+        [SerializeField] private Vector3 _spacing = Vector3.right;
+
         protected override int RequiredCount => Mathf.Max(_endNote - _startNote + 1, 0);
         
         private static bool NoteIsWhite(int note)
@@ -60,16 +78,18 @@ namespace Sonosthesia.Instrument
                 
                 bool isWhite = NoteIsWhite(note);
                 offset += isWhite && NoteIsWhite(note - 1) ? 1f : 0.5f;
-                
-                KeyProperties properties = isWhite ? _white : _black;
-                
+
+                StateProperties stateProperties = _filters.All(filter => filter.Allow(note)) ? (isWhite ? _whiteState : _blackState) : _ghostState;
+                TransformProperties transformProperties = isWhite ? _whiteTransform : _blackTransform;
+
                 Transform positionTarget = instance.transform;
-                positionTarget.localPosition = properties.Offset + offset * _spacing;
+                positionTarget.localPosition = transformProperties.Offset + offset * _spacing;
 
                 Transform scaleTarget = instance.ScaleTarget ? instance.ScaleTarget : transform;
-                scaleTarget.localScale = properties.Scale;
+                scaleTarget.localScale = transformProperties.Scale;
                 
-                instance.Renderer.sharedMaterial = properties.Material;
+                instance.Renderer.sharedMaterial = stateProperties.Material;
+                instance.gameObject.SetLayerRecursively(stateProperties.Layer.LayerIndex);
             }
         }
     }
