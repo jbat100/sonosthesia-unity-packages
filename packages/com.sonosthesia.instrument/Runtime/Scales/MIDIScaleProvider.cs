@@ -4,7 +4,7 @@ namespace Sonosthesia.Instrument
 {
     public enum ScaleDescriptor
     {
-        None,
+        All,
         Ionian,
         Aeolian,
         HarmonicMinor,
@@ -26,6 +26,7 @@ namespace Sonosthesia.Instrument
     {
         private readonly Dictionary<ScaleDescriptor, MIDIScale> _scales = new ()
         {
+            {ScaleDescriptor.All, new MIDIScale("All", new []{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11})},
             {ScaleDescriptor.Ionian, new MIDIScale("Ionian", new []{0, 2, 4, 5, 7, 9, 11})},
             {ScaleDescriptor.Aeolian, new MIDIScale("Aeolian", new []{0, 2, 3, 5, 7, 8, 10})},
             {ScaleDescriptor.HarmonicMinor, new MIDIScale("Harmonic Minor", new []{0, 2, 3, 5, 7, 8, 11})},

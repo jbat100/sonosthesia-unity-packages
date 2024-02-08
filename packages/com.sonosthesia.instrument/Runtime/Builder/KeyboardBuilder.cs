@@ -28,7 +28,6 @@ namespace Sonosthesia.Instrument
             public SingleUnityLayer Layer => _layer;
         }
         
-
         [SerializeField] private int _startNote;
         
         [SerializeField] private int _endNote;
