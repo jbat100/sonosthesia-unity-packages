@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class DragAffordance<TEvent, TSource, TAffordance> : AgnosticAffordance<TEvent, TSource> 
+    public class DragAgnosticAffordance<TEvent, TSource, TAffordance> : AgnosticAffordance<TEvent, TSource> 
         where TEvent : struct 
-        where TSource : MonoBehaviour, IStreamSource<TEvent>
-        where TAffordance : DragAffordance<TEvent, TSource, TAffordance> 
+        where TSource : MonoBehaviour, IEventStreamContainer<TEvent>
+        where TAffordance : DragAgnosticAffordance<TEvent, TSource, TAffordance> 
     {
         // TODO : use pools 
 

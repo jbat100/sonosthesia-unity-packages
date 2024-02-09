@@ -6,7 +6,7 @@ const {
     getPackageDescription, 
     getPackagePath, 
     getPackageNames
-} = require('./packages');
+} = require('./utils');
 
 function updatePackageField(package, field, value) {
     let description = getPackageDescription(package);

@@ -16,6 +16,7 @@ namespace Sonosthesia.Instrument
             if(GUILayout.Button("Reload"))
             {
                 intantiator.Reload();
+                EditorApplication.QueuePlayerLoopUpdate();
             }
         }
     }

@@ -1,5 +1,29 @@
 namespace Sonosthesia.MIDI
 {
+    public enum MIDINoteName
+    {
+        C = 0,
+        CSharp = 1,
+        D = 2,
+        DSharp = 3,
+        E = 4,
+        F = 5,
+        FSharp = 6,
+        G = 7,
+        GSharp = 8,
+        A = 9,
+        ASharp = 10,
+        B = 11,
+    }
+
+    public static class MIDINoteNameExtensions
+    {
+        public static MIDINoteName ToMIDINoteName(this int note)
+        {
+            return (MIDINoteName)(note % 12);
+        }
+    }
+    
     public enum MIDIPitch
     {
         /// <summary>C in octave -1.</summary>

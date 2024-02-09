@@ -10,7 +10,7 @@ namespace Sonosthesia.Touch
 {
     
     // used for affordances
-    public readonly struct PointerValueEvent<TValue> : IEventValue<TValue> where TValue : struct
+    public readonly struct PointerValueEvent<TValue> : IValueEvent<TValue> where TValue : struct
     {
         public readonly Guid Id;
         public readonly TValue Value;
@@ -27,7 +27,7 @@ namespace Sonosthesia.Touch
     }
     
     public abstract class PointerSource<TValue> : BasePointerSource, 
-        IValueStreamSource<TValue, PointerValueEvent<TValue>>,
+        IValueEventStreamContainer<TValue, PointerValueEvent<TValue>>,
         IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler, IPointerExitHandler,
         IScrollHandler,
         IDragHandler, IInitializePotentialDragHandler
@@ -72,7 +72,7 @@ namespace Sonosthesia.Touch
             _valueEventSubjects[eventId] = subject;
 
             ValueStreamNode.Push(eventId, subject.AsObservable());
-            SourceStreamNode.Push(eventId, subject.Select(valueEvent => new PointerSourceEvent(valueEvent.Id, eventData)));
+            EventStreamNode.Push(eventId, subject.Select(valueEvent => new PointerEvent(valueEvent.Id, eventData)));
         }
 
         private void UpdateEvent(PointerEventData eventData)

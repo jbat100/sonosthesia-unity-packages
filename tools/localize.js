@@ -5,7 +5,7 @@ const parser = require('args-parser');
 const { 
     getPackageDependencyTree,
     getPackageVersion, 
-    getPackagePath } = require('./packages');
+    getPackagePath } = require('./utils');
 
 // returns a set of local paths to dependencies for a unity project manifest as object
 function getManifestDependencies(unityJSON) {

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniRx;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -24,7 +26,7 @@ namespace Sonosthesia.Instrument
             {
                 if (_instancesRoot == null)
                 {
-                    Debug.Log($"{this} {nameof(TryClearCache)} creating root");
+                    //Debug.Log($"{this} {nameof(TryClearCache)} creating root");
                     _instancesRoot = new GameObject(k_InstancesRootName+GetInstanceID());
                     _instancesRoot.hideFlags |= HideFlags.DontSave;
                     _instancesRoot.transform.parent = transform;
@@ -46,6 +48,8 @@ namespace Sonosthesia.Instrument
         
         private TEntry _previousPrefab;
 
+        private IDisposable _refreshRequestSubscription;
+
         protected abstract int RequiredCount { get; }
 
         public override void Reload()
@@ -53,6 +57,19 @@ namespace Sonosthesia.Instrument
             _dirtyInstances = true;
         }
 
+        protected virtual IObservable<Unit> RefreshRequestObservable => Observable.Empty<Unit>();
+
+        private void RefreshRequestSubscription()
+        {
+            _refreshRequestSubscription?.Dispose();
+            _refreshRequestSubscription = RefreshRequestObservable.Subscribe(_ => UpdateInstances());
+        }
+
+        protected virtual void Start()
+        {
+            RefreshRequestSubscription();
+        }
+        
         protected virtual void OnEnable()
         {
 #if UNITY_EDITOR
@@ -77,7 +94,8 @@ namespace Sonosthesia.Instrument
 
         protected virtual void OnValidate()
         {
-            Debug.Log($"{this} {nameof(OnValidate)}");
+            RefreshRequestSubscription();
+            //Debug.Log($"{this} {nameof(OnValidate)}");
             _dirtyInstances = _autoRefresh;
         }
 
@@ -149,7 +167,7 @@ namespace Sonosthesia.Instrument
 
             if (_dirtyInstances)
             {
-                Debug.Log($"{this} {nameof(TryClearCache)} destroying instances and root");
+                //Debug.Log($"{this} {nameof(TryClearCache)} destroying instances and root");
                 for (int i = _instances.Count - 1; i >= 0; --i)
                 {
 #if UNITY_EDITOR

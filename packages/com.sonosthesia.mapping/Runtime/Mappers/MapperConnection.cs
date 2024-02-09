@@ -79,15 +79,27 @@ namespace Sonosthesia.Mapping
             return _slots.FirstOrDefault(slot => slot.Name == slotName);
         }
 
-        public override void AutofillSlots()
+        public override void AutofillSlots(bool recursive)
         {
-            foreach (Transform child in transform)
+            FillSlots(transform, recursive);
+        }
+
+        private void FillSlots(Transform root, bool recursive)
+        {
+            foreach (Transform child in root)
             {
-                if (_slots.Any(slot => slot.Name == child.name))
+                if (_slots.All(slot => slot.Name != child.name))
                 {
-                    continue;
+                    Signal<TValue> signal = child.GetComponent<Signal<TValue>>();
+                    if (signal)
+                    {
+                        _slots.Add(new Slot(child.name, signal));
+                    }
                 }
-                _slots.Add(new Slot(child.name, child.GetComponent<Signal<TValue>>()));
+                if (recursive)
+                {
+                    FillSlots(child, true);
+                }
             }
         }
 

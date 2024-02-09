@@ -20,7 +20,7 @@ namespace Sonosthesia.MIDI
         
         [SerializeField] private bool _normalize;
 
-        [SerializeField] private float _bendSemitones;
+        [SerializeField] private float _bendSemitones = 48f;
 
         protected override float InternalSelect(MPENote value)
         {
@@ -31,7 +31,7 @@ namespace Sonosthesia.MIDI
                 Selection.Velocity => _normalize ? value.Velocity  / 127f : value.Velocity,
                 Selection.Pressure => _normalize ? value.Pressure  / 127f : value.Pressure,
                 Selection.Slide => _normalize ? value.Slide  / 127f : value.Slide,
-                Selection.Bend => _normalize ? value.Bend  / 48f : value.Bend,
+                Selection.Bend => _normalize ? value.Bend  / _bendSemitones : value.Bend,
                 _ => 0
             };
         }

@@ -4,11 +4,17 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class AgnosticAffordance<TEvent, TSource> : MonoBehaviour 
+    /// <summary>
+    /// Affordance for a given event stream container, agnostic of value 
+    /// </summary>
+    /// <typeparam name="TEvent"></typeparam>
+    /// <typeparam name="TContainer"></typeparam>
+    public class AgnosticAffordance<TEvent, TContainer> : MonoBehaviour 
         where TEvent : struct 
-        where TSource : MonoBehaviour, IStreamSource<TEvent>
+        where TContainer : MonoBehaviour, IEventStreamContainer<TEvent>
     {
-        [SerializeField] private TSource _source;
+        // TODO : relink in editor
+        [SerializeField] private TContainer _container;
 
         private readonly CompositeDisposable _subscriptions = new();
 
@@ -19,7 +25,7 @@ namespace Sonosthesia.Touch
 
         protected virtual IObserver<TEvent> MakeController(Guid id) => null;
         
-        private void HandleStream(Guid id, IObservable<TEvent> stream)
+        private void LinkController(Guid id, IObservable<TEvent> stream)
         {
             IObserver<TEvent> controller = MakeController(id);
             if (controller != null)
@@ -28,12 +34,19 @@ namespace Sonosthesia.Touch
             }
         }
 
+        protected virtual void HandleStream(Guid id, IObservable<TEvent> stream)
+        {
+            
+        }
+
         protected virtual void OnEnable()
         {
-            _subscriptions.Add(_source.SourceStreamNode.Values.ObserveCountChanged().Subscribe(OnEventCountChanged));
-            _subscriptions.Add(_source.SourceStreamNode.StreamObservable.Subscribe(pair =>
+            _subscriptions.Add(_container.EventStreamNode.Values.ObserveCountChanged().Subscribe(OnEventCountChanged));
+            _subscriptions.Add(_container.EventStreamNode.StreamObservable.Subscribe(pair =>
             {
-                HandleStream(pair.Key, pair.Value.TakeUntilDisable(this));    
+                IObservable<TEvent> stream = pair.Value.TakeUntilDisable(this); 
+                LinkController(pair.Key, stream);
+                HandleStream(pair.Key, stream);
             }));
         }
 
