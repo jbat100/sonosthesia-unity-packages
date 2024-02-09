@@ -296,6 +296,8 @@ namespace Sonosthesia.Pack
                 throw new ObjectDisposedException(GetType().FullName);
             }
             
+            // TODO : use Dictionary<string, Subject> and lookup OnNext to reduce string comparisons
+            
             return _envelopeSubject.Where(e => e.Address == address)
                 .Select(envelope =>
                 {
@@ -336,7 +338,7 @@ namespace Sonosthesia.Pack
     
     // note could separate out the websocket to potentially swap it out for any other stream 
 
-    public class AddressedPackConnection : WebSocketClient
+    public class AddressedPackConnection : WebSocketWire
     {
         [SerializeField] private bool _log;
         

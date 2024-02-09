@@ -16,7 +16,7 @@ namespace Sonosthesia.Pack
         public byte[] Content { get; set; }
     }
 
-    public class TypedPackReceiver : WebSocketClient
+    public class TypedPackReceiver : WebSocketWire
     {
         private readonly Subject<TypedEnvelope> _envelopeSubject = new();
 
