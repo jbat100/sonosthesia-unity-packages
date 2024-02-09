@@ -68,10 +68,11 @@ function checkDependencies() {
             if (!dependency.startsWith('com.sonosthesia.')) {
                 continue;
             }
+            const packageVersion = description.version;
             const dependencyVersion = description.dependencies[dependency];
             const currentVersion = getPackageVersion(dependency);
             if (dependencyVersion != currentVersion) {
-                console.error(chalk.red(`Package ${package} dependency ${dependency} version ${dependencyVersion} is not aligned with current ${currentVersion}`));
+                console.error(chalk.red(`Package ${package} ${packageVersion} dependency ${dependency} version ${dependencyVersion} is not aligned with current ${currentVersion}`));
             }
         }
     }

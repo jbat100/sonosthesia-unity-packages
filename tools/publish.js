@@ -7,7 +7,6 @@ const {
     orderedDependencies,
     getPackagePath } = require('./utils');
 
-
 const blacklist = new Set([
     "com.sonosthesia.fractal",
     "com.sonosthesia.shape",
