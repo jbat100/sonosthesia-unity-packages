@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Sonosthesia.Utils;
+using UniRx;
 using UnityEngine;
 
 namespace Sonosthesia.Instrument
@@ -47,7 +48,10 @@ namespace Sonosthesia.Instrument
         [SerializeField] private Vector3 _spacing = Vector3.right;
 
         protected override int RequiredCount => Mathf.Max(_endNote - _startNote + 1, 0);
-        
+
+        protected override IObservable<Unit> RefreshRequestObservable =>
+            _filters.Select(f => f.ChangeObservable).Merge();
+
         private static bool NoteIsWhite(int note)
         {
             int octaveNote = note % 12;
@@ -91,5 +95,6 @@ namespace Sonosthesia.Instrument
                 instance.gameObject.SetLayerRecursively(stateProperties.Layer.LayerIndex);
             }
         }
+        
     }
 }
