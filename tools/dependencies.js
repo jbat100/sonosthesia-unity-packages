@@ -12,7 +12,7 @@ const {
     getPackageAsmdefDescriptions,
     getPackageDescription,
     getPackageDependencyTree
-} = require('./packages');
+} = require('./utils');
 
 // runs a series of sanity checks concerning packages and dependencies
 function checkDependencies() {
@@ -89,6 +89,10 @@ function run() {
             + dependencies.size + " dependencies \n  " 
             + [...dependencies].join("\n  ") );
         }
+    }
+
+    if (args.dependers) {
+        
     }
 
     if (args.order) {

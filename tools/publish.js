@@ -3,10 +3,10 @@ const chalk = require('chalk');
 const parser = require('args-parser');
 
 const { 
+    listChangedPackages,
     orderedDependencies,
-    getPackagePath } = require('./packages');
+    getPackagePath } = require('./utils');
 
-const { listChangedPackages } = require('./state');
 
 const blacklist = new Set([
     "com.sonosthesia.fractal",

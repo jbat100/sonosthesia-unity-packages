@@ -9,9 +9,8 @@ const {
     getPackageDescription, 
     getPackagePath, 
     getPackageNames, 
-    getPackageVersion, 
-    getPackageDependencies 
-} = require('./packages');
+    getPackageVersion 
+} = require('./utils');
 
 const {
     listChangedPackages
