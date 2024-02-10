@@ -3,6 +3,7 @@ const fs = require('fs');
 const glob = require('glob');
 const YAML = require('yaml');
 const memoizee = require('memoizee');
+const { execSync } = require('child_process');
 
 // gives the dependencies in resolution order (lowest first) 
 const orderedDependencies = memoizee(() => {
@@ -113,6 +114,31 @@ function getPackageAsmdefDescriptions(package) {
     return descriptions;
 }
 
+const listChangedFiles = memoizee((tag) => {
+    // Run the git diff command synchronously
+    const stdout = execSync(`git diff --name-only ${tag}`, { encoding: 'utf-8' });
+    // Split the stdout into an array of file names
+    const files = stdout.trim().split('\n');
+    return files;
+});
+
+const listChangedPackages = memoizee((tag) => {
+    let files = listChangedFiles(tag);
+    let packages = new Set();
+    for (const file of files) {
+        if (!file.startsWith('packages/')) {
+            continue;
+        }
+        const filePath = path.parse(file);
+        const directoryComponents = filePath.dir.split(path.posix.sep);
+        if (directoryComponents.length < 2) {
+            continue;
+        }
+        const package = directoryComponents[1];
+        packages.add(package);
+    }
+    return packages;
+});
 
 module.exports = {
     orderedDependencies,
@@ -124,5 +150,7 @@ module.exports = {
     getPackageNames,
     getPackagePath,
     getPackageNames,
-    getPackageAsmdefDescriptions
+    getPackageAsmdefDescriptions,
+    listChangedFiles,
+    listChangedPackages
 };

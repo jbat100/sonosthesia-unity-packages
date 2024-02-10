@@ -9,13 +9,9 @@ const {
     getPackageDescription, 
     getPackagePath, 
     getPackageNames, 
-    getPackageVersion, 
-    getPackageDependencies 
-} = require('./packages');
-
-const {
+    getPackageVersion,
     listChangedPackages
-} = require('./state');
+} = require('./utils');
 
 function updatePackageDependencies(package, updated) {
     let description = getPackageDescription(package);

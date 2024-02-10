@@ -12,7 +12,7 @@ const {
     getPackageAsmdefDescriptions,
     getPackageDescription,
     getPackageDependencyTree
-} = require('./packages');
+} = require('./utils');
 
 // runs a series of sanity checks concerning packages and dependencies
 function checkDependencies() {
@@ -68,10 +68,11 @@ function checkDependencies() {
             if (!dependency.startsWith('com.sonosthesia.')) {
                 continue;
             }
+            const packageVersion = description.version;
             const dependencyVersion = description.dependencies[dependency];
             const currentVersion = getPackageVersion(dependency);
             if (dependencyVersion != currentVersion) {
-                console.error(chalk.red(`Package ${package} dependency ${dependency} version ${dependencyVersion} is not aligned with current ${currentVersion}`));
+                console.error(chalk.red(`Package ${package} ${packageVersion} dependency ${dependency} version ${dependencyVersion} is not aligned with current ${currentVersion}`));
             }
         }
     }
@@ -89,6 +90,10 @@ function run() {
             + dependencies.size + " dependencies \n  " 
             + [...dependencies].join("\n  ") );
         }
+    }
+
+    if (args.dependers) {
+        
     }
 
     if (args.order) {

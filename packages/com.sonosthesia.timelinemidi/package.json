@@ -2,7 +2,7 @@
   "author": "Jonathan Thorpe",
   "dependencies": {
     "com.unity.timeline": "1.7.1",
-    "com.sonosthesia.midi": "1.5.0"
+    "com.sonosthesia.midi": "1.6.0"
   },
   "description": "Custom timeline/playables package that provides callbacks based on sequence data contained in a standard MIDI file",
   "displayName": "Sonosthesia Timeline MIDI",
@@ -13,5 +13,5 @@
   "name": "com.sonosthesia.timelinemidi",
   "repository": "github:jbat100/sonosthesia-unity-packages",
   "unity": "2022.3",
-  "version": "1.5.0"
+  "version": "1.6.0"
 }
