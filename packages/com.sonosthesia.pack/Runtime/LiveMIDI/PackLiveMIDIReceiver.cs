@@ -9,7 +9,7 @@ namespace Sonosthesia.Pack
     
     public class PackLiveMIDIReceiver : MonoBehaviour
     {
-        [SerializeField] private AddressedPackConnection _connection;
+        [SerializeField] private PackEnvelopeHub envelopeHub;
 
         private IDisposable _subscription;
         
@@ -37,13 +37,13 @@ namespace Sonosthesia.Pack
         internal IObservable<PackedLiveMIDIPitchBend> PitchBendObservable 
             => _pitchBendSubject.AsObservable();
         
-        private protected virtual IDisposable Setup(AddressedPackConnection connection)
+        private protected virtual IDisposable Setup(PackEnvelopeHub envelopeHub)
         {
             CompositeDisposable subscriptions = new();
 
             void Connect<T>(string address, IObserver<T> observer, Func<T, bool> filter = null)
             {
-                subscriptions.Add(connection.IncomingContentObservable<T>(address)
+                subscriptions.Add(envelopeHub.IncomingContentObservable<T>(address)
                     .Where(item => filter == null || filter(item))
                     .ObserveOnMainThread()
                     .Subscribe(observer));
@@ -64,7 +64,7 @@ namespace Sonosthesia.Pack
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = Setup(_connection);
+            _subscription = Setup(envelopeHub);
         }
 
         protected virtual void OnDisable()

@@ -16,8 +16,10 @@ namespace Sonosthesia.Pack
         public byte[] Content { get; set; }
     }
 
-    public class TypedPackReceiver : WebSocketWire
+    public class TypedPackReceiver : MonoBehaviour
     {
+        [SerializeField] private Wire _wire;
+        
         private readonly Subject<TypedEnvelope> _envelopeSubject = new();
 
         private readonly Dictionary<Type, int> _types = new Dictionary<Type, int>
@@ -26,6 +28,21 @@ namespace Sonosthesia.Pack
             {typeof(Point), 2},
             {typeof(MediapipePose), 1000}
         };
+
+        private IDisposable _messageSubscription;
+
+        protected virtual void OnEnable()
+        {
+            _messageSubscription?.Dispose();
+            _messageSubscription = _wire.MessageObservable.Subscribe(bytes =>
+            {
+                TypedEnvelope envelope = MessagePackSerializer.Deserialize<TypedEnvelope>(bytes);
+                Debug.Log($"Received {nameof(TypedEnvelope)} with type {envelope.Type}");
+                _envelopeSubject.OnNext(envelope);
+            });
+        }
+
+        protected virtual void OnDisable() => _messageSubscription?.Dispose();
         
         public IObservable<T> PublishContent<T>()
         {
@@ -48,14 +65,6 @@ namespace Sonosthesia.Pack
                     }
                 })
                 .AsObservable();
-        }
-
-        protected override void OnMessage(byte[] bytes)
-        {
-            base.OnMessage(bytes);
-            TypedEnvelope envelope = MessagePackSerializer.Deserialize<TypedEnvelope>(bytes);
-            Debug.Log($"Received {nameof(TypedEnvelope)} with type {envelope.Type}");
-            _envelopeSubject.OnNext(envelope);
         }
     }
 }

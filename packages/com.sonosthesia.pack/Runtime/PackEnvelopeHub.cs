@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using UniRx;
@@ -57,11 +58,11 @@ namespace Sonosthesia.Pack
     internal class ForgetOutgoingAddressedPackQueue : IOutgoingAddressedPackQueue
     {
         private bool _isDisposed;
-        private AddressedPackConnection _connection;
+        private readonly Wire _wire;
         
-        public ForgetOutgoingAddressedPackQueue(AddressedPackConnection connection)
+        public ForgetOutgoingAddressedPackQueue(Wire wire)
         {
-            _connection = connection;
+            _wire = wire;
         }
         
         public void Push<T>(string address, T content)
@@ -70,7 +71,7 @@ namespace Sonosthesia.Pack
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
-            _connection.Send(AddressedEnvelopeUtils.SerializedEnvelope(address, content)).Forget();
+            _wire.Send(AddressedEnvelopeUtils.SerializedEnvelope(address, content)).Forget();
         }
         
         public void Dispose()
@@ -97,23 +98,25 @@ namespace Sonosthesia.Pack
     
     internal class RxOutgoingAddressedPackQueue : IOutgoingAddressedPackQueue
     {
-        private AddressedPackConnection _connection;
+        private Wire _wire;
         private bool _isDisposed;
         private Subject<IOutgoingQueueItem> _subject = new ();
         private IDisposable _subscription;
 
-        public RxOutgoingAddressedPackQueue(AddressedPackConnection connection, bool background)
+        public RxOutgoingAddressedPackQueue(Wire wire, bool background)
         {
-            _connection = connection;
+            _wire = wire;
 
             IObservable<IOutgoingQueueItem> observable = background ? _subject.ObserveOn(Scheduler.ThreadPool) : _subject.AsObservable();
 
+            // TODO : switch to R3 to handle async subscribe
+            
             _subscription = observable.Subscribe(async item =>
                 {
                     try
                     {
                         byte[] bytes = item.Serialize();
-                        await _connection.Send(bytes);
+                        await _wire.Send(bytes);
                         //Debug.Log($"WebSocket sent content to address: {item.Address}");
                     }
                     catch (Exception e)
@@ -136,6 +139,7 @@ namespace Sonosthesia.Pack
 
         public void Dispose()
         {
+            _wire = null;
             _subscription?.Dispose();
             _subscription = null;
             _subject?.Dispose();
@@ -147,13 +151,13 @@ namespace Sonosthesia.Pack
     internal class TaskOutgoingAddressedPackQueue : IOutgoingAddressedPackQueue
     {
         private ConcurrentQueue<IOutgoingQueueItem> _queue = new ();
-        private AddressedPackConnection _connection;
+        private Wire _wire;
         private bool _isProcessingQueue;
         private bool _isDisposed;
         
-        public TaskOutgoingAddressedPackQueue(AddressedPackConnection connection)
+        public TaskOutgoingAddressedPackQueue(Wire wire)
         {
-            _connection = connection;
+            _wire = wire;
         }
         
         public void Push<T>(string address, T content)
@@ -186,7 +190,7 @@ namespace Sonosthesia.Pack
                     try
                     {
                         byte[] bytes = item.Serialize();
-                        await _connection.Send(bytes);
+                        await _wire.Send(bytes);
                         Debug.Log($"WebSocket sent content to address: {item.Address}");
                     }
                     catch (Exception e)
@@ -203,7 +207,7 @@ namespace Sonosthesia.Pack
 
         public void Dispose()
         {
-            _connection = null;
+            _wire = null;
             _queue = null;
             _isDisposed = true;
         }
@@ -222,8 +226,13 @@ namespace Sonosthesia.Pack
 
     internal class RxIncomingAddressedPackQueue : IIncomingAddressedPackQueue
     {
+        // entry point for byte arrays, background constructor arg determines if observed on main thread or thread pool
         private readonly Subject<byte[]> _incomingSubject = new();
-        private readonly Subject<AddressedEnvelope> _envelopeSubject = new();
+        
+        // TODO : try using pools but it is not easy with background PooledObject, could make things easier
+        // envelope subjects by address, if address is not request, AddressedEnvelope is ignored
+        private readonly Dictionary<string, Subject<AddressedEnvelope>> _envelopeSubjects = new();
+        
         private IDisposable _subscription;
         private bool _isDisposed;
         private bool _log;
@@ -245,7 +254,7 @@ namespace Sonosthesia.Pack
                         EnvelopeBundle bundle = MessagePackSerializer.Deserialize<EnvelopeBundle>(envelope.Content);
                         if (_log)
                         {
-                            Debug.Log($"{nameof(AddressedPackConnection)} deserialized bundle with {bundle.Envelopes.Length} envelopes successfully");
+                            Debug.Log($"{nameof(PackEnvelopeHub)} deserialized bundle with {bundle.Envelopes.Length} envelopes successfully");
                         }
                         foreach (AddressedEnvelope child in bundle.Envelopes)
                         {
@@ -254,14 +263,17 @@ namespace Sonosthesia.Pack
                     }
                     else
                     {
-                        //Debug.LogWarning($"{nameof(AddressedPackConnection)} deserialized envelope successfully");
-                        _envelopeSubject.OnNext(envelope);
-                        //Debug.LogWarning($"{nameof(AddressedPackConnection)} onNext called successfully");    
+                        if (_envelopeSubjects.TryGetValue(envelope.Address, out Subject<AddressedEnvelope> subject))
+                        {
+                            //Debug.LogWarning($"{nameof(AddressedPackConnection)} deserialized envelope");
+                            subject.OnNext(envelope);
+                            //Debug.LogWarning($"{nameof(AddressedPackConnection)} onNext called successfully");                              
+                        }
                     }
                 }
                 else
                 {
-                    Debug.LogError($"{nameof(AddressedPackConnection)} failed to deserialize envelope");
+                    Debug.LogError($"{nameof(PackEnvelopeHub)} failed to deserialize envelope");
                 }
             }
             
@@ -274,7 +286,7 @@ namespace Sonosthesia.Pack
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"{nameof(AddressedPackConnection)} failed to deserialize envelope : ${e.Message}");
+                    Debug.LogError($"{nameof(PackEnvelopeHub)} failed to deserialize envelope : ${e.Message}");
                 }
             });
         }
@@ -289,16 +301,13 @@ namespace Sonosthesia.Pack
             _incomingSubject.OnNext(bytes);
         }
 
-        public IObservable<T> IncomingContentObservable<T>(string address)
+        private readonly Dictionary<string, object> _contentObservables = new();
+        
+        private IObservable<T> MakeIncomingContentObservable<T>(string address)
         {
-            if (_isDisposed)
-            {
-                throw new ObjectDisposedException(GetType().FullName);
-            }
-            
-            // TODO : use Dictionary<string, Subject> and lookup OnNext to reduce string comparisons
-            
-            return _envelopeSubject.Where(e => e.Address == address)
+            Subject<AddressedEnvelope> envelopeSubject = _envelopeSubjects.Ensure(address);
+
+            return envelopeSubject.Where(e => e.Address == address)
                 .Select(envelope =>
                 {
                     try
@@ -308,10 +317,12 @@ namespace Sonosthesia.Pack
                         {
                             if (_log)
                             {
-                                Debug.Log($"{nameof(RxIncomingAddressedPackQueue)} deserialized content {content}");   
+                                Debug.Log($"{nameof(RxIncomingAddressedPackQueue)} deserialized content {content}");
                             }
+
                             return Option<T>.Some(content);
                         }
+
                         Debug.LogError($"{nameof(RxIncomingAddressedPackQueue)} failed to deserialize content");
                         return Option<T>.None;
                     }
@@ -319,17 +330,42 @@ namespace Sonosthesia.Pack
                     {
                         Debug.LogException(e);
                         return Option<T>.None;
-                    } 
+                    }
                 }).Where(option => option.HasValue).Select(option => option.Value);
+        }
+        
+        public IObservable<T> IncomingContentObservable<T>(string address)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+
+            object result = _contentObservables.Ensure(address, () => MakeIncomingContentObservable<T>(address));
+
+            if (result is IObservable<T> observable)
+            {
+                return observable.AsObservable();
+            }
+
+            throw new Exception($"Mismatched requests for address {address}");
         }
 
         public void Dispose()
         {
             _isDisposed = true;
             _incomingSubject?.Dispose();
-            _envelopeSubject?.Dispose();
             _subscription?.Dispose();
             _subscription = null;
+
+            foreach (Subject<AddressedEnvelope> envelopeSubject in _envelopeSubjects.Values)
+            {
+                envelopeSubject.OnCompleted();
+                envelopeSubject.Dispose();
+            }
+
+            _envelopeSubjects.Clear();
+            _contentObservables.Clear();
         }
     }
 
@@ -338,9 +374,13 @@ namespace Sonosthesia.Pack
     
     // note could separate out the websocket to potentially swap it out for any other stream 
 
-    public class AddressedPackConnection : WebSocketWire
+    public class PackEnvelopeHub : MonoBehaviour
     {
         [SerializeField] private bool _log;
+
+        [SerializeField] private Wire _wire;
+
+        private IDisposable _messageSubscription;
         
         private enum OutgoingQueueType
         {
@@ -366,13 +406,24 @@ namespace Sonosthesia.Pack
         private IIncomingAddressedPackQueue _incomingQueue;
         private IIncomingAddressedPackQueue IncomingQueue => _incomingQueue ??= CreateIncomingQueue();
 
+        protected virtual void Awake()
+        {
+            _messageSubscription = _wire.MessageObservable
+                .ObserveOnMainThread()
+                .Subscribe(bytes => IncomingQueue.Push(bytes));
+        }
+        
         protected virtual void OnValidate()
         {
+            _messageSubscription?.Dispose();
+            
             _outgoingQueue?.Dispose();
             _outgoingQueue = null;
             
             _incomingQueue?.Dispose();
             _incomingQueue = null;
+            
+            _messageSubscription = _wire.MessageObservable.Subscribe(bytes => IncomingQueue.Push(bytes));
         }
 
         private IIncomingAddressedPackQueue CreateIncomingQueue() => _incomingQueueType switch
@@ -381,27 +432,13 @@ namespace Sonosthesia.Pack
             IncomingQueueType.RxThreadPool => new RxIncomingAddressedPackQueue(true, _log),
             _ => throw new ArgumentOutOfRangeException()
         };
-        
-        protected override void OnMessage(byte[] bytes)
-        {
-            base.OnMessage(bytes);
-            if (!PlayerLoopHelper.IsMainThread)
-            {
-                Debug.LogWarning($"Unexpected {nameof(OnMessage)} call off main thread ({bytes.Length} bytes)");
-            }
-            else if (_log)
-            {
-                Debug.Log($"{nameof(OnMessage)} call on main thread ({bytes.Length} bytes)");
-            }
-            IncomingQueue.Push(bytes);
-        }
 
         private IOutgoingAddressedPackQueue CreateOutgoingQueue() => _outgoingQueueType switch
         {
-            OutgoingQueueType.Forget => new ForgetOutgoingAddressedPackQueue(this),
-            OutgoingQueueType.Task => new TaskOutgoingAddressedPackQueue(this),
-            OutgoingQueueType.RxMainThread => new RxOutgoingAddressedPackQueue(this, false),
-            OutgoingQueueType.RxThreadPool => new RxOutgoingAddressedPackQueue(this, true),
+            OutgoingQueueType.Forget => new ForgetOutgoingAddressedPackQueue(_wire),
+            OutgoingQueueType.Task => new TaskOutgoingAddressedPackQueue(_wire),
+            OutgoingQueueType.RxMainThread => new RxOutgoingAddressedPackQueue(_wire, false),
+            OutgoingQueueType.RxThreadPool => new RxOutgoingAddressedPackQueue(_wire, true),
             _ => throw new ArgumentOutOfRangeException()
         };
 

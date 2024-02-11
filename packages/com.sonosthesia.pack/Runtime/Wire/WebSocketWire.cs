@@ -1,4 +1,3 @@
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using NativeWebSocket;
 using UnityEngine;
@@ -69,6 +68,7 @@ namespace Sonosthesia.Pack
         
         protected override async UniTask Connect()
         {
+            State = WireState.Connecting;
             await websocket.Connect();
         }
         

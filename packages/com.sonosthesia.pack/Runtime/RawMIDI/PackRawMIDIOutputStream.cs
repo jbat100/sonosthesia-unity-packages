@@ -5,7 +5,7 @@ namespace Sonosthesia.Pack
 {
     public class PackRawMIDIOutputStream : RawMIDIOutputStream
     {
-        [SerializeField] private AddressedPackConnection _connection;
+        [SerializeField] private PackEnvelopeHub envelopeHub;
         
         [SerializeField] private string _port;
 
@@ -16,7 +16,7 @@ namespace Sonosthesia.Pack
                 Port = _port,
                 B0 = data0
             };
-            _connection.QueueOutgoingContent(PackRawMIDISinkAddress.SINGLE, data);
+            envelopeHub.QueueOutgoingContent(PackRawMIDISinkAddress.SINGLE, data);
         }
 
         public override void Broadcast(byte data0, byte data1)
@@ -27,7 +27,7 @@ namespace Sonosthesia.Pack
                 B0 = data0,
                 B1 = data1
             };
-            _connection.QueueOutgoingContent(PackRawMIDISinkAddress.DOUBLE, data);
+            envelopeHub.QueueOutgoingContent(PackRawMIDISinkAddress.DOUBLE, data);
         }
 
         public override void Broadcast(byte data0, byte data1, byte data2)
@@ -39,7 +39,7 @@ namespace Sonosthesia.Pack
                 B1 = data1,
                 B2 = data2
             };
-            _connection.QueueOutgoingContent(PackRawMIDISinkAddress.TRIPPLE, data);
+            envelopeHub.QueueOutgoingContent(PackRawMIDISinkAddress.TRIPPLE, data);
         }
     }
 }

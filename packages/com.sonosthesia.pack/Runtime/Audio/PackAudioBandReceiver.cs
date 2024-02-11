@@ -7,7 +7,7 @@ namespace Sonosthesia.Pack
 {
     public abstract class PackAudioBandReceiver<T> : MonoBehaviour where T : IPackedAudioBands
     {
-        [SerializeField] private AddressedPackConnection _connection;
+        [SerializeField] private PackEnvelopeHub envelopeHub;
         
         private readonly CompositeDisposable _subscriptions = new ();
         
@@ -23,7 +23,7 @@ namespace Sonosthesia.Pack
         {
             _subscriptions.Clear();
             
-            _subscriptions.Add(_connection.IncomingContentObservable<T>(PackAddress)
+            _subscriptions.Add(envelopeHub.IncomingContentObservable<T>(PackAddress)
                 .ObserveOnMainThread()
                 .Subscribe(_subject));
             

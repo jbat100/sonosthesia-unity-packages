@@ -6,7 +6,7 @@ namespace Sonosthesia.Pack
 {
     public class PackRawMIDIReceiver : MonoBehaviour
     {
-        [SerializeField] private AddressedPackConnection _connection;
+        [SerializeField] private PackEnvelopeHub envelopeHub;
 
         [SerializeField] private string _portFilter;
 
@@ -24,13 +24,13 @@ namespace Sonosthesia.Pack
         internal IObservable<PackedRawMIDISourceTripple> TrippleObservable 
             => _trippleSubject.AsObservable();
         
-        private protected virtual IDisposable Setup(AddressedPackConnection connection)
+        private protected virtual IDisposable Setup(PackEnvelopeHub envelopeHub)
         {
             CompositeDisposable subscriptions = new();
 
             void Connect<T>(string address, IObserver<T> observer) where T : IPackedRawMIDISourceData
             {
-                subscriptions.Add(connection.IncomingContentObservable<T>(address)
+                subscriptions.Add(envelopeHub.IncomingContentObservable<T>(address)
                     .Where(data => string.IsNullOrEmpty(_portFilter) || data.Port == _portFilter)
                     .ObserveOnMainThread()
                     .Subscribe(observer));
@@ -46,7 +46,7 @@ namespace Sonosthesia.Pack
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = Setup(_connection);
+            _subscription = Setup(envelopeHub);
         }
 
         protected virtual void OnDisable()
