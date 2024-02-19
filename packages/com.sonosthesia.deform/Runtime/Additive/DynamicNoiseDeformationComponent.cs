@@ -16,9 +16,14 @@ namespace Sonosthesia.Deform
             NativeArray<Sample4> deformations, NativeArray<TriNoise.DomainNoiseComponent> configs, 
             int innerloopBatchCount, JobHandle dependency
         );
+
+        private delegate Sample4 ComputeDelegate (
+            float3x4 v, 
+            NativeArray<TriNoise.DomainNoiseComponent> configs
+        );
         
         [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
-        private struct Job<N> : IJobFor where N : struct, ISimpleNoise
+        private struct Job<N> : IJobFor where N : struct, ISimpleNoise, INoise
         {
             [ReadOnly] private NativeArray<Vertex4> vertices;
             
@@ -39,6 +44,25 @@ namespace Sonosthesia.Deform
                     noise += position.GetSimpleNoise<N>(component.Component);
                 }
                 deformations[i] = noise;
+            }
+
+            /// <summary>
+            /// Used for single on the fly computes 
+            /// </summary>
+            /// <param name="v"></param>
+            /// <param name="configs"></param>
+            /// <returns></returns>
+            public static Sample4 Compute(float3x4 v, NativeArray<TriNoise.DomainNoiseComponent> configs)
+            {
+                Sample4 noise = default;
+                for (int c = 0; c < configs.Length; c++)
+                {
+                    TriNoise.DomainNoiseComponent component = configs[c];
+                    float4x3 position = component.DomainTRS.TransformVectors(transpose(v));
+                    noise += position.GetNoise<N>(component.Component, component.DerivativeMatrix);
+                }
+
+                return noise;
             }
         
             public static JobHandle ScheduleParallel (UnityEngine.Mesh.MeshData meshData, 
@@ -132,6 +156,84 @@ namespace Sonosthesia.Deform
             }
         };
 
+        private static readonly ComputeDelegate[,] _computes = {
+            {
+                Job<Lattice1D<Perlin, LatticeNormal>>.Compute,
+                Job<Lattice2D<Perlin, LatticeNormal>>.Compute,
+                Job<Lattice3D<Perlin, LatticeNormal>>.Compute
+            },
+            {
+                Job<Lattice1D<Smoothstep<Turbulence<Perlin>>, LatticeNormal>>.Compute,
+                Job<Lattice2D<Smoothstep<Turbulence<Perlin>>, LatticeNormal>>.Compute,
+                Job<Lattice3D<Smoothstep<Turbulence<Perlin>>, LatticeNormal>>.Compute
+            },
+            {
+                Job<Lattice1D<Value, LatticeNormal>>.Compute,
+                Job<Lattice2D<Value, LatticeNormal>>.Compute,
+                Job<Lattice3D<Value, LatticeNormal>>.Compute
+            },
+            {
+                Job<Simplex1D<Simplex>>.Compute,
+                Job<Simplex2D<Simplex>>.Compute,
+                Job<Simplex3D<Simplex>>.Compute
+            },
+            {
+                Job<Simplex1D<Turbulence<Simplex>>>.Compute,
+                Job<Simplex2D<Turbulence<Simplex>>>.Compute,
+                Job<Simplex3D<Turbulence<Simplex>>>.Compute
+            },
+            {
+                Job<Simplex1D<Smoothstep<Turbulence<Simplex>>>>.Compute,
+                Job<Simplex2D<Smoothstep<Turbulence<Simplex>>>>.Compute,
+                Job<Simplex3D<Smoothstep<Turbulence<Simplex>>>>.Compute
+            },
+            {
+                Job<Simplex1D<Value>>.Compute,
+                Job<Simplex2D<Value>>.Compute,
+                Job<Simplex3D<Value>>.Compute
+            },
+            {
+                Job<Voronoi1D<LatticeNormal, Worley, F1>>.Compute,
+                Job<Voronoi2D<LatticeNormal, Worley, F1>>.Compute,
+                Job<Voronoi3D<LatticeNormal, Worley, F1>>.Compute
+            },
+            {
+                Job<Voronoi1D<LatticeNormal, Worley, F2>>.Compute,
+                Job<Voronoi2D<LatticeNormal, Worley, F2>>.Compute,
+                Job<Voronoi3D<LatticeNormal, Worley, F2>>.Compute
+            },
+            {
+                Job<Voronoi1D<LatticeNormal, Worley, F2MinusF1>>.Compute,
+                Job<Voronoi2D<LatticeNormal, Worley, F2MinusF1>>.Compute,
+                Job<Voronoi3D<LatticeNormal, Worley, F2MinusF1>>.Compute
+            },
+            {
+                Job<Voronoi1D<LatticeNormal, SmoothWorley, F1>>.Compute,
+                Job<Voronoi2D<LatticeNormal, SmoothWorley, F1>>.Compute,
+                Job<Voronoi3D<LatticeNormal, SmoothWorley, F1>>.Compute
+            },
+            {
+                Job<Voronoi1D<LatticeNormal, SmoothWorley, F2>>.Compute,
+                Job<Voronoi2D<LatticeNormal, SmoothWorley, F2>>.Compute,
+                Job<Voronoi3D<LatticeNormal, SmoothWorley, F2>>.Compute
+            },
+            {
+                Job<Voronoi1D<LatticeNormal, Chebyshev, F1>>.Compute,
+                Job<Voronoi2D<LatticeNormal, Chebyshev, F1>>.Compute,
+                Job<Voronoi3D<LatticeNormal, Chebyshev, F1>>.Compute
+            },
+            {
+                Job<Voronoi1D<LatticeNormal, Chebyshev, F2>>.Compute,
+                Job<Voronoi2D<LatticeNormal, Chebyshev, F2>>.Compute,
+                Job<Voronoi3D<LatticeNormal, Chebyshev, F2>>.Compute
+            },
+            {
+                Job<Voronoi1D<LatticeNormal, Chebyshev, F2MinusF1>>.Compute,
+                Job<Voronoi2D<LatticeNormal, Chebyshev, F2MinusF1>>.Compute,
+                Job<Voronoi3D<LatticeNormal, Chebyshev, F2MinusF1>>.Compute
+            }
+        };
+        
         public enum NoiseType 
         {
             Perlin, PerlinSmoothTurbulence, PerlinValue, 
@@ -149,7 +251,7 @@ namespace Sonosthesia.Deform
 
         [SerializeField] private DynamicNoiseConfiguration _configuration;
 
-        public override JobHandle GetDeformation(UnityEngine.Mesh.MeshData meshData, NativeArray<Sample4> deformations, int innerloopBatchCount, JobHandle dependency)
+        public override JobHandle MeshDeformation(UnityEngine.Mesh.MeshData meshData, NativeArray<Sample4> deformations, int innerloopBatchCount, JobHandle dependency)
         {
             return _jobs[(int) _noiseType, _dimensions - 1](
                 meshData,
@@ -157,6 +259,11 @@ namespace Sonosthesia.Deform
                 _configuration.NoiseComponents,
                 innerloopBatchCount,
                 dependency);
+        }
+
+        public override Sample4 VertexDeformation(float3x4 vertex)
+        {
+            return _computes[(int) _noiseType, _dimensions - 1](vertex, _configuration.NoiseComponents);
         }
     }
 }
