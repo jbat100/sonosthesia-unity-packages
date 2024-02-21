@@ -1,18 +1,18 @@
 using UnityEngine;
 
-namespace Sonosthesia.Generator
+namespace Sonosthesia.Trigger
 {
 #if UNITY_EDITOR
     using UnityEditor;
 
-    [CustomEditor(typeof(TriggerFloatSignalTest))]
+    [CustomEditor(typeof(TriggerableTest))]
     public class TriggerFloatSignalTestEditor : Editor
     {
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
 
-            TriggerFloatSignalTest test = (TriggerFloatSignalTest)target;
+            TriggerableTest test = (TriggerableTest)target;
             if(GUILayout.Button("Trigger"))
             {
                 test.Trigger();
@@ -21,16 +21,16 @@ namespace Sonosthesia.Generator
     }
 #endif
     
-    [RequireComponent(typeof(TriggerFloatSignal))]
-    public class TriggerFloatSignalTest : MonoBehaviour
+    [RequireComponent(typeof(Triggerable))]
+    public class TriggerableTest : MonoBehaviour
     {
         [SerializeField] private float _valueScale = 1f;
         
         [SerializeField] private float _timeScale = 1f;
 
-        private TriggerFloatSignal _signal;
+        private Triggerable _signal;
 
-        protected void Awake() => _signal = GetComponent<TriggerFloatSignal>();
+        protected void Awake() => _signal = GetComponent<Triggerable>();
 
         public void Trigger()
         {

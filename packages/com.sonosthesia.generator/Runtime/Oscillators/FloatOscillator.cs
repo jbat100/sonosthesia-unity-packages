@@ -16,7 +16,7 @@ namespace Sonosthesia.Generator
 
         public sealed override float Evaluate(float time)
         {
-            float duration = Duration() * _timeScale;
+            float duration = Duration * _timeScale;
             float period = duration + _pause;
             float iterationTime = (time + _offset) % period;
             if (iterationTime < duration)
@@ -26,7 +26,7 @@ namespace Sonosthesia.Generator
             return 0f;
         }
 
-        protected abstract float Duration();
+        protected abstract float Duration { get; }
         
         protected abstract float EvaluateIteration(float time);
     }

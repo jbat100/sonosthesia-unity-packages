@@ -17,7 +17,7 @@ namespace Sonosthesia.Generator
 
         [SerializeField] private PrimitiveType _primitiveType;
 
-        protected override float Duration() => 1f;
+        protected override float Duration => 1f;
 
         protected override float EvaluateIteration(float time)
         {

@@ -1,11 +1,10 @@
 using System;
-using Sonosthesia.Flow;
 using UniRx;
 using UnityEngine;
 using Sonosthesia.Utils;
-using Sonosthesia.Generator;
+using Sonosthesia.Channel;
 
-namespace Sonosthesia.Channel
+namespace Sonosthesia.Trigger
 {
     /// <summary>
     /// Uses the first value of each channel stream to trigger a TriggerFloatSignal using selectors
@@ -14,7 +13,7 @@ namespace Sonosthesia.Channel
     /// <typeparam name="T"></typeparam>
     public class ChannelTrigger<T> : MonoBehaviour where T : struct
     {
-        [SerializeField] private TriggerFloatSignal _triggerFloatSignal;
+        [SerializeField] private Triggerable _triggerable;
 
         [SerializeField] private Channel<T> _channel;
 
@@ -29,9 +28,9 @@ namespace Sonosthesia.Channel
             _subscription?.Dispose();
             _subscription = _channel.StreamObservable
                 .SelectMany(stream => stream.First())
-                .Subscribe(note =>
+                .Subscribe(value =>
                 {
-                    _triggerFloatSignal.Trigger(_valueSelector.Select(note), _timeSelector.Select(note));
+                    _triggerable.Trigger(_valueSelector.Select(value), _timeSelector.Select(value));
                 });
         }
 

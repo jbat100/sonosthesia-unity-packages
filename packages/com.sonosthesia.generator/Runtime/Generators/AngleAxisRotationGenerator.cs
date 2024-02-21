@@ -9,7 +9,7 @@ namespace Sonosthesia.Generator
         [SerializeField] private float _offset;
         
         // do not specify frequency, use GeneratorSignal timeFactor instead so that it keeps the rotation 
-        // when frequency goes to 0, spins 1 revolution per unit time
+        // smooth, spins 1 revolution per unit time
         
         public override Quaternion Evaluate(float time)
         {

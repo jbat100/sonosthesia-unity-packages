@@ -6,9 +6,40 @@ namespace Sonosthesia.Generator
     {
         [SerializeField] private AnimationCurve _animationCurve;
         
-        public override float Duration()
+        public override float Duration
         {
-            return _animationCurve[_animationCurve.length - 1].time;
+            get
+            {
+                if (_animationCurve.length == 0)
+                {
+                    return 0;
+                }
+                return _animationCurve[_animationCurve.length - 1].time;
+            }
+        }
+
+        public override float InitialValue 
+        {
+            get
+            {
+                if (_animationCurve.length == 0)
+                {
+                    return 0;
+                }
+                return _animationCurve[0].value;
+            }
+        }
+        
+        public override float FinalValue 
+        {
+            get
+            {
+                if (_animationCurve.length == 0)
+                {
+                    return 0;
+                }
+                return _animationCurve[_animationCurve.length - 1].value;
+            }
         }
 
         public override float Evaluate(float t)

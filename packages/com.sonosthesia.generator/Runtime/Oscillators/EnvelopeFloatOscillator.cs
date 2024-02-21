@@ -6,7 +6,7 @@ namespace Sonosthesia.Generator
     {
         [SerializeField] private FloatEnvelope _envelope;
 
-        protected override float Duration() => _envelope.Duration();
+        protected override float Duration => _envelope.Duration;
 
         protected override float EvaluateIteration(float time) => _envelope.Evaluate(time);
     }

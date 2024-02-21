@@ -79,6 +79,7 @@ namespace Sonosthesia.Mapping
             return _slots.FirstOrDefault(slot => slot.Name == slotName);
         }
 
+#if UNITY_EDITOR
         public override void AutofillSlots(bool recursive)
         {
             FillSlots(transform, recursive);
@@ -107,5 +108,6 @@ namespace Sonosthesia.Mapping
         {
             _slots.Clear();
         }
+#endif
     }
 }
