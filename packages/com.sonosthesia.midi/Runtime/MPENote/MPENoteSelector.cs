@@ -1,4 +1,4 @@
-using Sonosthesia.Flow;
+using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.MIDI
