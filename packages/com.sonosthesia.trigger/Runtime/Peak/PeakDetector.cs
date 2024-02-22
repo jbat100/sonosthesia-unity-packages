@@ -4,14 +4,14 @@ using UniRx;
 using Sonosthesia.Signal;
 using Sonosthesia.Flow;
 
-namespace Sonosthesia.Audio
+namespace Sonosthesia.Trigger
 {
-    public readonly struct AudioPeak
+    public readonly struct Peak
     {
         public readonly float Magnitude;
         public readonly float Duration;
 
-        public AudioPeak(float magnitude, float duration)
+        public Peak(float magnitude, float duration)
         {
             Magnitude = magnitude;
             Duration = duration;
@@ -23,9 +23,9 @@ namespace Sonosthesia.Audio
         }
     }
     
-    public class AudioPeakDetector : Adaptor<float, AudioPeak>
+    public class PeakDetector : Adaptor<float, Peak>
     {
-        [SerializeField] private AudioPeakDetectorSettings _settings;
+        [SerializeField] private PeakDetectorSettings _settings;
         
         private readonly struct Sample
         {
@@ -76,7 +76,7 @@ namespace Sonosthesia.Audio
                 float duration = _previous.Value.Time - _start.Value.Time;
                 if (magnitude > _settings.MagnitudeThreshold && duration < _settings.MaximumDuration)
                 {
-                    Broadcast(new AudioPeak(magnitude, duration));
+                    Broadcast(new Peak(_settings.ValuePostProcessor.Process(magnitude), duration));
                 }
                 _start = null;
             }

@@ -9,7 +9,16 @@ namespace Sonosthesia.VFX
         [SerializeField] private VisualEffect _visualEffect;
 
         [SerializeField] private string _nameID;
-        
+
+        protected override void Awake()
+        {
+            base.Awake();
+            if (!_visualEffect)
+            {
+                _visualEffect = GetComponent<VisualEffect>();
+            }
+        }
+
         protected sealed override void Apply(T value)
         {
             Apply(value, _visualEffect, _nameID);

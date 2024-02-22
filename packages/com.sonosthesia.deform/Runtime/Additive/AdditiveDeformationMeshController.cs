@@ -4,6 +4,7 @@ using Unity.Jobs;
 using UnityEngine;
 using Sonosthesia.Noise;
 using Sonosthesia.Mesh;
+using Unity.Mathematics;
 
 namespace Sonosthesia.Deform
 {
@@ -166,7 +167,7 @@ namespace Sonosthesia.Deform
             NativeArray<JobHandle> deformationJobs = new NativeArray<JobHandle>(_deformations.Length, Allocator.Temp);
             for (int i = 0; i < _deformations.Length; i++)
             {
-                deformationJobs[i] = _components[i].GetDeformation(meshData, _deformations[i], _resolution, default);
+                deformationJobs[i] = _components[i].MeshDeformation(meshData, _deformations[i], _resolution, default);
             }
             JobHandle.CombineDependencies(deformationJobs).Complete();
 
@@ -216,6 +217,17 @@ namespace Sonosthesia.Deform
                     break;
                 }
             }
+        }
+
+        public Sample4 ComputeDeformation(float3x4 vertex)
+        {
+            Sample4 deformation = default;
+            foreach (AdditiveDeformationComponent component in _components)
+            {
+                deformation += component.VertexDeformation(vertex);
+            }
+
+            return deformation;
         }
     }
 }

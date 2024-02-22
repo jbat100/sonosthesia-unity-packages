@@ -164,7 +164,7 @@ namespace Sonosthesia.Deform
         
         public override bool IsDynamic => true;
         
-        public override JobHandle GetDeformation(UnityEngine.Mesh.MeshData meshData, 
+        public override JobHandle MeshDeformation(UnityEngine.Mesh.MeshData meshData, 
             NativeArray<Sample4> deformations, int innerloopBatchCount, JobHandle dependency)
         {
             float time = Time.time;
@@ -181,6 +181,11 @@ namespace Sonosthesia.Deform
                 _displacement,
                 innerloopBatchCount, 
                 dependency);
+        }
+
+        public override Sample4 VertexDeformation(float3x4 vertex)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

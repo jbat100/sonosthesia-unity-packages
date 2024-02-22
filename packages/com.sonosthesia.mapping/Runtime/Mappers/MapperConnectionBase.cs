@@ -42,8 +42,10 @@ namespace Sonosthesia.Mapping
     
     public abstract class MapperConnectionBase : MonoBehaviour
     {
+#if UNITY_EDITOR        
         public abstract void AutofillSlots(bool recursive);
         
         public abstract void DeleteAllSlots();
+#endif
     }
 }
