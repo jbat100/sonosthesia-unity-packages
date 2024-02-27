@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Sonosthesia.Trigger
@@ -5,14 +6,14 @@ namespace Sonosthesia.Trigger
 #if UNITY_EDITOR
     using UnityEditor;
 
-    [CustomEditor(typeof(TriggerableTest))]
-    public class TriggerableTestEditor : Editor
+    [CustomEditor(typeof(TriggerableMultiTest))]
+    public class TriggerableMultiTestEditor : Editor
     {
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
 
-            TriggerableTest test = (TriggerableTest)target;
+            TriggerableMultiTest test = (TriggerableMultiTest)target;
             if(GUILayout.Button("Trigger"))
             {
                 test.Trigger();
@@ -21,20 +22,20 @@ namespace Sonosthesia.Trigger
     }
 #endif
     
-    [RequireComponent(typeof(Triggerable))]
-    public class TriggerableTest : MonoBehaviour
+    public class TriggerableMultiTest : MonoBehaviour
     {
         [SerializeField] private float _valueScale = 1f;
         
         [SerializeField] private float _timeScale = 1f;
 
-        private Triggerable _signal;
-
-        protected void Awake() => _signal = GetComponent<Triggerable>();
+        [SerializeField] private List<Triggerable> _signals;
 
         public void Trigger()
         {
-            _signal.Trigger(_valueScale, _timeScale);
+            foreach (Triggerable triggerable in _signals)
+            {
+                triggerable.Trigger(_valueScale, _timeScale);
+            }
         }
     }
 }

@@ -24,7 +24,6 @@ namespace Sonosthesia.Instrument
         }
 
         private Renderer _renderer;
-
         public Renderer Renderer
         {
             get

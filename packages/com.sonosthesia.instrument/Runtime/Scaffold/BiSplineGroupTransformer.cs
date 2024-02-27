@@ -19,7 +19,7 @@ namespace Sonosthesia.Instrument
 
         [SerializeField] private Vector3 _scale = Vector3.one;
 
-        [SerializeField] private Axes _scaleAxes = Axes.Y;
+        [SerializeField] private Axes _growAxes = Axes.Y;
         
         private enum BiSplineDirection
         {
@@ -70,7 +70,14 @@ namespace Sonosthesia.Instrument
             {
                 if (!guideSpline.Evaluate(element.Offset, out float3 guidePosition, out float3 guideTangent, out float3 guideUp))
                 {
+                    Debug.LogError($"{this} could not evaluate guide position for {element} with offset {element.Offset}");
                     continue;
+                }
+
+                if (guideTangent.Equals(float3.zero) || guideUp.Equals(float3.zero))
+                {
+                    Debug.LogError($"{this} evaluated to zero, this may occur when knots are on [0,1] [0,0], looks like a bug");
+                    guideSpline.Evaluate(element.Offset, out guidePosition, out guideTangent, out guideUp);
                 }
 
                 float3 orientationPosition = orientationSpline.EvaluatePosition(element.Offset);
@@ -104,10 +111,16 @@ namespace Sonosthesia.Instrument
                 }
 
                 element.Transform.localPosition = guidePosition;
-                element.Transform.localRotation = Quaternion.LookRotation(SelectDirection(_forwardDirection), SelectDirection(_upDirection));
+
+                Vector3 forward = SelectDirection(_forwardDirection);
+                Vector3 up = SelectDirection(_upDirection);
+
+                element.Transform.localRotation = Quaternion.LookRotation(forward, up);
 
                 Vector3 localScale = Vector3.Magnitude(guidePosition - orientationPosition) * _scale;
-                element.ScaleTransform.localScale = element.ScaleTransform.localScale.SetAxes(localScale, _scaleAxes);
+                
+                element.ScaleTransform.localScale = element.ScaleTransform.localScale.SetAxes(localScale, _growAxes);
+                element.ScaleTransform.localScale = element.ScaleTransform.localScale.SetAxes(_scale, ~_growAxes);
             }
         }
     }

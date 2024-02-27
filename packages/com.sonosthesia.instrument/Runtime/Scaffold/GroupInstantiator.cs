@@ -55,6 +55,13 @@ namespace Sonosthesia.Instrument
         public override void Reload()
         {
             _dirtyInstances = true;
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                UnityEditor.EditorApplication.QueuePlayerLoopUpdate();
+                UnityEditor.SceneView.RepaintAll();
+            }
+#endif
         }
 
         protected virtual IObservable<Unit> RefreshRequestObservable => Observable.Empty<Unit>();
@@ -62,14 +69,21 @@ namespace Sonosthesia.Instrument
         private void RefreshRequestSubscription()
         {
             _refreshRequestSubscription?.Dispose();
-            _refreshRequestSubscription = RefreshRequestObservable.Subscribe(_ => UpdateInstances());
+            _refreshRequestSubscription = RefreshRequestObservable.Subscribe(_ => Reload());
         }
 
         protected virtual void Start()
         {
             RefreshRequestSubscription();
         }
-        
+
+        protected virtual void OnDestroy()
+        {
+            _refreshRequestSubscription?.Dispose();
+            _dirtyInstances = true;
+            TryClearCache();
+        }
+
         protected virtual void OnEnable()
         {
 #if UNITY_EDITOR

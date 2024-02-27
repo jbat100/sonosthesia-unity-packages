@@ -5,6 +5,8 @@ namespace Sonosthesia.Generator
     public class AnimationCurveFloatEnvelope : FloatEnvelope
     {
         [SerializeField] private AnimationCurve _animationCurve;
+
+        [SerializeField] private float _timeScale = 1f;
         
         public override float Duration
         {
@@ -14,7 +16,7 @@ namespace Sonosthesia.Generator
                 {
                     return 0;
                 }
-                return _animationCurve[_animationCurve.length - 1].time;
+                return _animationCurve[_animationCurve.length - 1].time * _timeScale;
             }
         }
 
@@ -44,7 +46,7 @@ namespace Sonosthesia.Generator
 
         public override float Evaluate(float t)
         {
-            return _animationCurve.Evaluate(t);
+            return _animationCurve.Evaluate(t / _timeScale);
         }
     }
 }
