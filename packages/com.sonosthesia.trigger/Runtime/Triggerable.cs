@@ -7,7 +7,6 @@ using Sonosthesia.Utils;
 
 namespace Sonosthesia.Trigger
 {
-
     public class Triggerable : Signal<float>
     {
         [SerializeField] private FloatEnvelope _envelope;
@@ -20,12 +19,30 @@ namespace Sonosthesia.Trigger
         {
             TriggerEntry entry = new TriggerEntry(valueScale, timeScale, _envelope);
             _entries.Add(entry);
-            Debug.Log($"{this} added entry {entry}");
+            // Debug.Log($"{this} added entry {entry}");
         }
+
+        public int TriggerCount => _entries.Count; 
+
+        // used to avoid alloc on update
+        private static readonly HashSet<TriggerEntry> _obsolete = new();
         
+        private readonly HashSet<TriggerEntry> _entries = new ();
+
         protected void Update()
         {
-            _entries.ExceptWith(_entries.Where(entry => entry.IsEnded).ToList());
+            int previousCount = _entries.Count;
+            _obsolete.Clear();
+            _obsolete.UnionWith(_entries.Where(entry => entry.IsEnded));
+            _entries.ExceptWith(_obsolete);
+            _obsolete.Clear();
+            int currentCount = _entries.Count;
+            
+            if (previousCount != currentCount)
+            {
+                // Debug.Log($"{this} removed {previousCount - currentCount} obsolete entries");
+            }
+            
             float raw = _entries.Aggregate(0f, (current, entry) => entry.Accumulate(_accumulationMode, current));
             Broadcast(_postProcessor.Process(raw));
         }
@@ -51,7 +68,7 @@ namespace Sonosthesia.Trigger
                 _valueScale = valueScale;
                 _timeScale = timeScale;
                 _envelope = envelope;
-                _endTime = CurrentTime + envelope.Duration * timeScale;
+                _endTime = CurrentTime + envelope.Duration / timeScale;
             }
 
             public bool IsEnded => CurrentTime > _endTime;
@@ -69,6 +86,5 @@ namespace Sonosthesia.Trigger
             }
         }
         
-        private readonly HashSet<TriggerEntry> _entries = new ();
     }
 }

@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Sonosthesia.MIDI
 {
     public enum MIDINoteName
@@ -21,6 +23,25 @@ namespace Sonosthesia.MIDI
         public static MIDINoteName ToMIDINoteName(this int note)
         {
             return (MIDINoteName)(note % 12);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="noteName"></param>
+        /// <param name="octave">Octave in range [-1, 9] </param>
+        /// <param name="note"></param>
+        /// <returns>true if valid conversion was made</returns>
+        public static bool MIDIPitchForOctave(this MIDINoteName noteName, int octave, out MIDIPitch note)
+        {
+            int result = (int) noteName + 12 * (octave + 1);
+            if (result is < 0 or > 127)
+            {
+                note = default;
+                return false;
+            }
+            note = (MIDIPitch) result;
+            return true;
         }
     }
     
