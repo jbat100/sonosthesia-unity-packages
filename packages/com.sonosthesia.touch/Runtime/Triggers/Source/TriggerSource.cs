@@ -1,43 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Sonosthesia.Channel;
-using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public readonly struct TriggerValueEvent<TValue> : IValueEvent<TValue> where TValue : struct
-    {
-        public readonly Guid Id;
-        public readonly ITriggerData TriggerData;
-        public readonly TValue Value;
-        public readonly float StartTime;
-
-        public TriggerValueEvent(Guid id, ITriggerData triggerData, TValue value, float startTime)
-        {
-            Id = id;
-            TriggerData = triggerData;
-            Value = value;
-            StartTime = startTime;
-        }
-
-        public TriggerValueEvent<TValue> Update(TValue value)
-        {
-            return new TriggerValueEvent<TValue>(Id, TriggerData, value, StartTime);
-        }
-        
-        public void EndStream()
-        {
-            TriggerData.Source.EndStream(Id);
-        }
-
-        public TValue GetValue() => Value;
-    }
-
-    public abstract class TriggerSource<TValue> : BaseTriggerSource,
-        IValueEventStreamContainer<TValue, TriggerValueEvent<TValue>>
-        where TValue : struct
+    
+    public abstract class TriggerSource<TValue> : ValueTriggerEndpoint<TValue> where TValue : struct
     {
         [SerializeField] private ChannelDriver<TValue> _driver;
 
@@ -53,8 +23,8 @@ namespace Sonosthesia.Touch
         {
             public Collider Collider { get; set; }
             public bool Colliding { get; set; }
-            public BaseTriggerSource Source { get; set; }
-            public BaseTriggerActor Actor { get; set; }
+            public TriggerEndpoint Source { get; set; }
+            public TriggerEndpoint Actor { get; set; }
         }
 
         // note : we don't want concurrent events from the same collider
@@ -65,15 +35,6 @@ namespace Sonosthesia.Touch
 
         private readonly Dictionary<Guid, BehaviorSubject<TriggerValueEvent<TValue>>> _valueEventSubjects = new();
 
-        private StreamNode<TriggerValueEvent<TValue>> _valueStreamNode;
-        public StreamNode<TriggerValueEvent<TValue>> ValueStreamNode => _valueStreamNode ??= new StreamNode<TriggerValueEvent<TValue>>(this);
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            _valueStreamNode?.Dispose();
-        }
-        
         protected virtual void FixedUpdate()
         {
             foreach (KeyValuePair<Collider, Guid> pair in _triggerEvents)
@@ -95,7 +56,7 @@ namespace Sonosthesia.Touch
             TriggerActor<TValue> actor = other.GetComponentInParent<TriggerActor<TValue>>();
             
             // if gates fail we don't want to go ahead with stream _endOnReEnter
-            if (!actor || !CheckGates(actor))
+            if (!CheckGates(this, actor) || !actor || !actor.CheckGates(this, actor))
             {
                 return;
             }

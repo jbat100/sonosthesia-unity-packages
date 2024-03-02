@@ -1,6 +1,6 @@
 namespace Sonosthesia.Touch
 {
-    public class TriggerActivationAffordance : ActivationAffordance<TriggerEvent, BaseTriggerSource>
+    public class TriggerActivationAffordance : ActivationAffordance<TriggerEvent, TriggerEndpoint>
     {
         
     }

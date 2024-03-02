@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -13,8 +13,8 @@ namespace Sonosthesia.Touch
     {
         Collider Collider { get; }
         bool Colliding { get; }
-        BaseTriggerSource Source { get; }
-        BaseTriggerActor Actor { get; }
+        TriggerEndpoint Source { get; }
+        TriggerEndpoint Actor { get; }
     }
     
     // used for affordances
@@ -37,11 +37,17 @@ namespace Sonosthesia.Touch
         }
     }
     
-    public abstract class BaseTriggerSource : TriggerStream
+    public abstract class TriggerEndpoint : TriggerStream
     {
+        // can be used to filter actors or to allow one source to have different responses 
+        [SerializeField] private int _domain;
+
+        [SerializeField] private TriggerNode _node;
+        public TriggerNode Node => _node;
+
         [SerializeField] private List<TriggerGate> _gates;
 
-        protected bool CheckGates(BaseTriggerActor actor)
+        public bool CheckGates(TriggerEndpoint source, TriggerEndpoint actor)
         {
             return _gates.All(gate => gate.AllowTrigger(this, actor));
         }
@@ -49,5 +55,23 @@ namespace Sonosthesia.Touch
         public abstract void EndAllStreams();
 
         public abstract void EndStream(Guid id);
+        
+        protected virtual void Awake()
+        {
+            if (_node)
+            {
+                _node.EventStreamNode.Pipe(EventStreamNode);    
+            }
+        }
+        
+        public virtual bool RequestPermission(Collider other)
+        {
+            if (!isActiveAndEnabled)
+            {
+                return false;
+            }
+
+            return !_node || _node.RequestPermission(other);
+        }
     }
 }
