@@ -10,7 +10,11 @@ namespace Sonosthesia.Generator
         
         [SerializeField] private float _duration = 1;
 
-        public override float Duration() => _duration;
+        public override float Duration => _duration;
+
+        public override float InitialValue => _start;
+
+        public override float FinalValue => _end;
 
         public override float Evaluate(float t)
         {

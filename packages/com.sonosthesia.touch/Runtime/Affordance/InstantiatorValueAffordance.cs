@@ -26,10 +26,24 @@ namespace Sonosthesia.Touch
             instance.transform.SetParent(_attach ? _attach : transform, false);
             instance.transform.localPosition = Vector3.zero;
             instance.transform.localRotation = Quaternion.identity;
-
-            stream.Subscribe(valueEvent => UpdateAfforfance(id, instance, valueEvent));
             
             IStreamHandler<TValue>[] valueStreamHandlers = instance.GetComponentsInChildren<IStreamHandler<TValue>>();
+
+            bool doneAffordanceSetup = false;
+            stream.Subscribe(valueEvent =>
+            {
+                if (doneAffordanceSetup)
+                {
+                    UpdateAfforfanceInstance(id, instance, valueStreamHandlers, valueEvent);    
+                }
+                else
+                {
+                    doneAffordanceSetup = true;
+                    SetupAfforfanceInstance(id, instance, valueStreamHandlers, valueEvent);    
+                }
+                
+            });
+            
             IObservable<TValue> valueStream = stream.Select(e => e.GetValue());
             valueStreamHandlers.Select(handler => handler.HandleStream(valueStream))
                 .Merge().Subscribe(_ => { }, exception => { }, () =>
@@ -38,7 +52,12 @@ namespace Sonosthesia.Touch
                 });
         }
         
-        protected virtual void UpdateAfforfance(Guid id, GameObject instance, TEvent valueEvent)
+        protected virtual void SetupAfforfanceInstance(Guid id, GameObject instance, IStreamHandler<TValue>[] handlers, TEvent valueEvent)
+        {
+            
+        }
+        
+        protected virtual void UpdateAfforfanceInstance(Guid id, GameObject instance, IStreamHandler<TValue>[] handlers, TEvent valueEvent)
         {
             
         }

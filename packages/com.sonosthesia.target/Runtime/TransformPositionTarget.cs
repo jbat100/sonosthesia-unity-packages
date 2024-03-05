@@ -4,9 +4,20 @@ namespace Sonosthesia.Target
 {
     public class TransformPositionTarget : BlendTarget<Vector3, Vector3Blender>
     {
-        protected override Vector3 Reference => transform.localPosition;
+        [SerializeField] private bool _local;
+        
+        protected override Vector3 Reference => _local ? transform.localPosition : transform.position;
 
-        protected override void ApplyBlended(Vector3 value) => transform.localPosition = value;
-
+        protected override void ApplyBlended(Vector3 value)
+        {
+            if (_local)
+            {
+                transform.localPosition = value;
+            }
+            else
+            {
+                transform.position = value;
+            }
+        }
     }
 }

@@ -23,7 +23,9 @@ namespace Sonosthesia.Target
 
         protected override void Apply(T value)
         {
-            _fieldInfo?.SetValue(_component, value);
+            _fieldInfo?.SetValue(_component, PostProcess(value));
         }
+
+        protected virtual T PostProcess(T value) => value;
     }
 }

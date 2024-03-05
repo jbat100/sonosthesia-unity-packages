@@ -1,0 +1,17 @@
+{
+    "name": "Sonosthesia.Timeline",
+    "rootNamespace": "Sonosthesia.Timeline",
+    "references": [
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:0e73a958ea93c4999aae301d99219c62"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

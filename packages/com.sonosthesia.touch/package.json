@@ -3,11 +3,12 @@
   "dependencies": {
     "com.unity.mathematics": "1.2.6",
     "com.neuecc.unirx": "7.1.0",
-    "com.sonosthesia.signal": "1.6.0",
-    "com.sonosthesia.channel": "1.6.0",
-    "com.sonosthesia.mapping": "1.6.0",
-    "com.sonosthesia.utils": "1.6.0",
-    "com.sonosthesia.flow": "1.6.0"
+    "com.sonosthesia.signal": "1.7.0",
+    "com.sonosthesia.channel": "1.7.0",
+    "com.sonosthesia.mapping": "1.7.0",
+    "com.sonosthesia.utils": "1.7.0",
+    "com.sonosthesia.flow": "1.7.0",
+    "com.sonosthesia.trigger": "1.7.0"
   },
   "description": "Sonosthesia unity touch",
   "displayName": "Sonosthesia Touch",
@@ -18,5 +19,5 @@
   "name": "com.sonosthesia.touch",
   "repository": "github:jbat100/sonosthesia-unity-packages",
   "unity": "2022.3",
-  "version": "1.6.0"
+  "version": "1.7.0"
 }

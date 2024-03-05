@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.VFX;
 using Sonosthesia.Signal;
@@ -9,12 +10,30 @@ namespace Sonosthesia.VFX
         [SerializeField] private VisualEffect _visualEffect;
 
         [SerializeField] private string _nameID;
-        
-        protected sealed override void Apply(T value)
+
+        private int _intNameID;
+
+        protected override void Awake()
         {
-            Apply(value, _visualEffect, _nameID);
+            base.Awake();
+            if (!_visualEffect)
+            {
+                _visualEffect = GetComponent<VisualEffect>();
+            }
+
+            _intNameID = Shader.PropertyToID(_nameID);
         }
 
-        protected abstract void Apply(T value, VisualEffect visualEffect, string nameID);
+        protected virtual void OnValidate()
+        {
+            _intNameID = Shader.PropertyToID(_nameID);
+        }
+
+        protected sealed override void Apply(T value)
+        {
+            Apply(value, _visualEffect, _intNameID);
+        }
+
+        protected abstract void Apply(T value, VisualEffect visualEffect, int nameID);
     }
 }

@@ -1,3 +1,4 @@
+using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Generator
@@ -9,24 +10,24 @@ namespace Sonosthesia.Generator
         [SerializeField] private float _timeScale = 1f;
         
         [SerializeField] private float _pause = 0f;
-        
-        [SerializeField] private float _amplitude = 1f;
-        
+
         [SerializeField] private float _offset = 0f;
+
+        [SerializeField] private FloatProcessor _postProcessor;
 
         public sealed override float Evaluate(float time)
         {
-            float duration = Duration() * _timeScale;
+            float duration = Duration * _timeScale;
             float period = duration + _pause;
             float iterationTime = (time + _offset) % period;
             if (iterationTime < duration)
             {
-                return EvaluateIteration(iterationTime / _timeScale) * _amplitude;
+                return _postProcessor.Process(EvaluateIteration(iterationTime / _timeScale));
             }
-            return 0f;
+            return _postProcessor.Process(0f);
         }
 
-        protected abstract float Duration();
+        protected abstract float Duration { get; }
         
         protected abstract float EvaluateIteration(float time);
     }

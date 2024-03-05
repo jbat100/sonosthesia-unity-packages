@@ -1,10 +1,23 @@
 using UnityEngine;
-using Sonosthesia.Signal;
 
 namespace Sonosthesia.Target
 {
-    public class TransformRotationTarget : Target<Quaternion>
+    public class TransformRotationTarget : BlendTarget<Quaternion, QuaternionBlender>
     {
-        protected override void Apply(Quaternion value) => transform.rotation = value;
+        [SerializeField] private bool _local;
+
+        protected override Quaternion Reference => _local ? transform.localRotation : transform.rotation;
+        protected override void ApplyBlended(Quaternion value)
+        {
+            if (_local)
+            {
+                transform.localRotation = value;  
+            }
+            else
+            {
+                transform.rotation = value;     
+            }
+        }
+
     }
 }

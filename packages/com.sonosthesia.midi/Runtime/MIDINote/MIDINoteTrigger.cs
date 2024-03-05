@@ -1,5 +1,4 @@
-using Sonosthesia.AdaptiveMIDI.Messages;
-using Sonosthesia.Channel;
+using Sonosthesia.Trigger;
 
 namespace Sonosthesia.MIDI
 {
