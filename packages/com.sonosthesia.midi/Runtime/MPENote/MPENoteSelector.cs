@@ -16,7 +16,7 @@ namespace Sonosthesia.MIDI
             Bend
         }
 
-        [SerializeField] private Selection _selection;
+        [SerializeField] private Selection _selection = Selection.Unit;
         
         [SerializeField] private bool _normalize;
 

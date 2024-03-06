@@ -15,11 +15,22 @@ namespace Sonosthesia.Trigger
 
         [SerializeField] private FloatProcessor _postProcessor;
 
+        private const float THRESHOLD = 1e-6f;
+        
         public void Trigger(float valueScale, float timeScale)
         {
+            if (Mathf.Abs(valueScale) < THRESHOLD)
+            {
+                return;
+            }
+            if (timeScale < THRESHOLD)
+            {
+                Debug.LogWarning($"{this} fired with tiny time scale {timeScale}");
+                return;
+            }
             TriggerEntry entry = new TriggerEntry(valueScale, timeScale, _envelope);
             _entries.Add(entry);
-            // Debug.Log($"{this} added entry {entry}");
+            Debug.Log($"{this} added entry {entry}");
         }
 
         public int TriggerCount => _entries.Count; 
@@ -40,7 +51,7 @@ namespace Sonosthesia.Trigger
             
             if (previousCount != currentCount)
             {
-                // Debug.Log($"{this} removed {previousCount - currentCount} obsolete entries");
+                Debug.Log($"{this} removed {previousCount - currentCount} obsolete entries");
             }
             
             float raw = _entries.Aggregate(0f, (current, entry) => entry.Accumulate(_accumulationMode, current));
