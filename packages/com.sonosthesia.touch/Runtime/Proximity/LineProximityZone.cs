@@ -8,7 +8,7 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private Vector3 _offset;
         
-        public override bool ComputeTarget(Vector3 point, out Vector3 target)
+        protected override bool ComputeRawTarget(Vector3 point, out Vector3 target)
         {
             // https://forum.unity.com/threads/how-do-i-find-the-closest-point-on-a-line.340058/
             

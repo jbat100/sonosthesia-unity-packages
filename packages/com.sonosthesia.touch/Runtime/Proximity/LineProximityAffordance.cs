@@ -9,6 +9,8 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private Vector3 _offset;
 
+        [SerializeField] private float _lerp = 10;
+        
         [SerializeField] private float _fade;
 
         [SerializeField] private AnimationCurve _distanceWidth;
@@ -22,12 +24,14 @@ namespace Sonosthesia.Touch
         [SerializeField] private string _intensityProperty;
         
         [SerializeField] private string _emissionColorProperty;
-
-        private Vector3 _lastTarget;
+        
         private float _alpha;
         private bool _running;
         private int? _intensityPropertyID = null;
         private int? _emissionColorPropertyID = null;
+
+        private Vector3? _lastTarget = null;
+        private Vector3? _visualTarget = null;
 
         protected virtual void OnEnable()
         {
@@ -42,6 +46,7 @@ namespace Sonosthesia.Touch
             }
             _running = false;
             _alpha = 0;
+            _visualTarget = null;
         }
 
         protected virtual void Update()
@@ -51,6 +56,7 @@ namespace Sonosthesia.Touch
             {
                 _lastTarget = target;
                 _running = true;
+                _visualTarget ??= _lastTarget;
             }
             else
             {
@@ -62,7 +68,12 @@ namespace Sonosthesia.Touch
 
             _alpha = Mathf.MoveTowards(_alpha, alphaTarget, maxAlphaChange);
 
-            if (_alpha < 1e-6)
+            if (_visualTarget.HasValue && _lastTarget.HasValue)
+            {
+                _visualTarget = Vector3.Lerp(_visualTarget.Value, _lastTarget.Value, Time.deltaTime * _lerp);
+            }
+            
+            if (_alpha < 1e-6 || !_visualTarget.HasValue)
             {
                 _lineRenderer.enabled = false;
             }
@@ -72,7 +83,7 @@ namespace Sonosthesia.Touch
                 float intensity = _distanceIntensity.Evaluate(distance);
                 
                 _lineRenderer.SetPosition(0, point);
-                _lineRenderer.SetPosition(1, _lastTarget);
+                _lineRenderer.SetPosition(1, _visualTarget.Value);
                 
                 _lineRenderer.startWidth = width;
                 _lineRenderer.endWidth = width;

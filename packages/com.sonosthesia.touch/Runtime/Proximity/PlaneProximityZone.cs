@@ -8,7 +8,7 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private Vector3 _offset;
 
-        public override bool ComputeTarget(Vector3 point, out Vector3 target)
+        protected override bool ComputeRawTarget(Vector3 point, out Vector3 target)
         {
             Plane plane = new Plane(transform.TransformDirection(_normal), transform.TransformPoint(_offset));
             target = plane.ClosestPointOnPlane(point);
