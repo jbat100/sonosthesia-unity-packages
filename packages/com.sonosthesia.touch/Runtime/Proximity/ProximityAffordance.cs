@@ -3,27 +3,39 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public abstract class ProximityAffordance : MonoBehaviour
+    public class ProximityAffordance : MonoBehaviour
     {
         private readonly Dictionary<Collider, ProximityZone> _zones = new ();
         protected IReadOnlyDictionary<Collider, ProximityZone> Zones => _zones;
 
-        protected abstract float DistanceToZone(ProximityZone zone);
-
-        protected bool ClosestZone(out ProximityZone zone, out float distance)
+        protected bool ClosestZone(Vector3 point, out ProximityZone zone, out Vector3 target, out float distance)
         {
             bool result = _zones.Count > 0;
             zone = null;
+            target = default;
             distance = float.MaxValue;
-            float closest = float.MaxValue;
-            foreach (ProximityZone candidate in _zones.Values)
-            { 
-                float d = DistanceToZone(candidate);
-                if (d < closest)
+            float closestSqr = float.MaxValue;
+            bool found = false;
+            foreach (ProximityZone candidateZone in _zones.Values)
+            {
+                if (!candidateZone.ComputeTarget(point, out Vector3 candidateTarget))
                 {
-                    closest = d;
-                    zone = candidate;
+                    continue;
                 }
+                float distanceSqr = (point - candidateTarget).sqrMagnitude;
+                if (!(distanceSqr < closestSqr))
+                {
+                    continue;
+                }
+                found = true;
+                closestSqr = distanceSqr;
+                zone = candidateZone;
+                target = candidateTarget;
+            }
+
+            if (found)
+            {
+                distance = Mathf.Sqrt(closestSqr);
             }
             return result;
         }
@@ -35,6 +47,8 @@ namespace Sonosthesia.Touch
             {
                 return;
             }
+
+            _zones[other] = zone;
         }
         
         protected virtual void OnTriggerStay(Collider other)
