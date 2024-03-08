@@ -1,7 +1,9 @@
 {
   "author": "Jonathan Thorpe",
   "dependencies": {
-    "com.neuecc.unirx": "7.1.0"
+    "com.neuecc.unirx": "7.1.0",
+    "com.cysharp.unitask": "2.5.2",
+    "com.unity.xr.interaction.toolkit": "2.5.3"
   },
   "description": "Sonosthesia unity haptic",
   "displayName": "Sonosthesia Haptic",
