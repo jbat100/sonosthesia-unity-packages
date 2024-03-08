@@ -1,5 +1,5 @@
 using Sonosthesia.MIDI;
-using Sonosthesia.Touch;
+using Sonosthesia.Pointer;
 using UnityEngine;
 using UnityEngine.EventSystems;
 

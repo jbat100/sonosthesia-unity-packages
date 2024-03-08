@@ -1,4 +1,5 @@
 using System;
+using Sonosthesia.Interaction;
 using Sonosthesia.Utils;
 
 namespace Sonosthesia.Touch

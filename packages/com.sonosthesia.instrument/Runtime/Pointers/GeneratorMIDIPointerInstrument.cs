@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Sonosthesia.MIDI;
-using Sonosthesia.Touch;
+using Sonosthesia.Pointer;
 
 namespace Sonosthesia.Instrument
 {

@@ -1,3 +1,4 @@
+using Sonosthesia.Interaction;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
