@@ -43,18 +43,19 @@ namespace Sonosthesia.Instrument
         
         private Spline OrientationSpline => _orientationSplineContainer[_orientationSplineIndex];
         
-        protected virtual void OnEnable()
+        protected virtual void Awake()
         {
             Spline.Changed += SplineOnChanged;
         }
 
-        protected virtual void OnDisable()
+        protected virtual void OnDestroy()
         {
             Spline.Changed -= SplineOnChanged;
         }
         
         private void SplineOnChanged(Spline spline, int knot, SplineModification modification)
         {
+            Debug.Log($"{this} {nameof(SplineOnChanged)}");
             if (GuideSpline == spline || OrientationSpline == spline)
             {
                 BroadcastChange();

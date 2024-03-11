@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Instrument
 {
-    [ExecuteInEditMode]
+    [ExecuteAlways]
     public abstract class TransformedGroupInstantiator<TEntry> : GroupInstantiator<TEntry> 
         where TEntry : MonoBehaviour, IGroupTransformerElement
     {
@@ -28,20 +28,19 @@ namespace Sonosthesia.Instrument
 
         private bool _dirtyTransforms;
         
-        protected override void OnEnable()
+        protected virtual void Awake()
         {
             _changeSubscriptions.Clear();
             foreach (GroupTransformer transformer in _groupTransformers)
             {
                 _changeSubscriptions.Add(transformer.ChangeObservable.Subscribe(_ => ApplyTransformers()));
             }
-            base.OnEnable();
         }
 
-        protected override void OnDisable()
+        protected override void OnDestroy()
         {
             _changeSubscriptions.Clear();
-            base.OnDisable();
+            base.OnDestroy();
         }
 
         protected override void OnValidate()
@@ -74,6 +73,7 @@ namespace Sonosthesia.Instrument
 
         public void ApplyTransformers()
         {
+            Debug.Log($"{this} {nameof(ApplyTransformers)} ({_groupTransformers.Count})");
             foreach (GroupTransformer transformer in _groupTransformers)
             {
                 transformer.Apply(Instances);    
