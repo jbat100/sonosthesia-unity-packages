@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sonosthesia.Instrument
+namespace Sonosthesia.Scaffold
 {
     public class CustomGroupTransformerTester : GroupTransformerTester
     {

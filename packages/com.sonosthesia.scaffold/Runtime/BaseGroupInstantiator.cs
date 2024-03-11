@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Instrument
+namespace Sonosthesia.Scaffold
 {
 #if UNITY_EDITOR
     using UnityEditor;

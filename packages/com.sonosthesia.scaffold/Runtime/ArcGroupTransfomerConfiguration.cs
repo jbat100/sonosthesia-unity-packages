@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sonosthesia.Instrument
+namespace Sonosthesia.Scaffold
 {
     [CreateAssetMenu(fileName = "ArcGroupTransfomerConfiguration", menuName = "Sonosthesia/Transformer/ArcGroupTransfomerConfiguration")]
     public class ArcGroupTransfomerConfiguration : GroupTransformerConfiguration

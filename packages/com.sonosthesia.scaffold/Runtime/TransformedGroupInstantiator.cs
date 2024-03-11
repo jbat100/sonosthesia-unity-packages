@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
 
-namespace Sonosthesia.Instrument
+namespace Sonosthesia.Scaffold
 {
     [ExecuteAlways]
     public abstract class TransformedGroupInstantiator<TEntry> : GroupInstantiator<TEntry> 

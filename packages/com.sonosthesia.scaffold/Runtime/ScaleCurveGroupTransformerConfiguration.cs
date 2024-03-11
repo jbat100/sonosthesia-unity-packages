@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Sonosthesia.Utils;
 using UnityEngine;
 
-namespace Sonosthesia.Instrument
+namespace Sonosthesia.Scaffold
 {
     [CreateAssetMenu(fileName = "SizeCurveGroupTransformerConfiguration", menuName = "Sonosthesia/Transformer/SizeCurveGroupTransformerConfiguration")]
     public class ScaleCurveGroupTransformerConfiguration : GroupTransformerConfiguration

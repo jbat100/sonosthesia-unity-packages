@@ -5,7 +5,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
 
-namespace Sonosthesia.Instrument
+namespace Sonosthesia.Scaffold
 {
     public class BiSplineGroupTransformer : GroupTransformer
     {

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sonosthesia.Utils;
 
-namespace Sonosthesia.Instrument
+namespace Sonosthesia.Scaffold
 {
     [ExecuteAlways]
     public abstract class GroupTransformer : ObservableBehaviour

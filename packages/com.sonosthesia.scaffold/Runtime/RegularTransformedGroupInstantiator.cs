@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sonosthesia.Instrument
+namespace Sonosthesia.Scaffold
 {
     [ExecuteInEditMode]
     public class RegularTransformedGroupInstantiator : TransformedGroupInstantiator<GroupTransformerElement>

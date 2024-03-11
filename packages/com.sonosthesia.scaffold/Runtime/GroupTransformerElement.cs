@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Instrument
+namespace Sonosthesia.Scaffold
 {
     public interface IGroupTransformerElement : IIndexed
     {

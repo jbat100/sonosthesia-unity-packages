@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace Sonosthesia.Instrument
+namespace Sonosthesia.Scaffold
 {
 
     // Based on object handling sections of SplineInstantiate.cs to ensure that the instantiation is done 

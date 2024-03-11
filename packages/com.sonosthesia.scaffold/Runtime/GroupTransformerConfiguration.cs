@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Sonosthesia.Utils;
 
-namespace Sonosthesia.Instrument
+namespace Sonosthesia.Scaffold
 {
     public abstract class GroupTransformerConfiguration : DynamicScriptableObject
     {

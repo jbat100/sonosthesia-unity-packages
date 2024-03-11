@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Splines;
 
-namespace Sonosthesia.Instrument
+namespace Sonosthesia.Scaffold
 {
     public class BiSplineOutline : MonoBehaviour
     {

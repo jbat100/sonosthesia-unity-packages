@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sonosthesia.Scaffold;
 using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;

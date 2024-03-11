@@ -5,7 +5,7 @@ using UnityEditor.Splines;
 using UnityEngine;
 using UnityEngine.Splines;
 
-namespace Sonosthesia.Instrument.Editor
+namespace Sonosthesia.Scaffold.Editor
 {
     /// <summary>
     /// Splines.Changed does not fire in Editor, using this as a workaround

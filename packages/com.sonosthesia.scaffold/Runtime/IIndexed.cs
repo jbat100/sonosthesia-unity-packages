@@ -1,4 +1,4 @@
-namespace Sonosthesia.Instrument
+namespace Sonosthesia.Scaffold
 {
     public interface IIndexed
     {

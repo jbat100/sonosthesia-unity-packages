@@ -1,3 +1,4 @@
+using Sonosthesia.Scaffold;
 using UnityEngine;
 
 namespace Sonosthesia.Instrument
