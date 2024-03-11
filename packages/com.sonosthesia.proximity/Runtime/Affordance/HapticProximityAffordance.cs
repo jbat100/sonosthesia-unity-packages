@@ -19,42 +19,42 @@ namespace Sonosthesia.Proximity
 
         private CancellationTokenSource _rumbleCancellationTokenSource;
 
+        private float _lastDistance;
+
         protected virtual void Update()
         {
             Vector3 point = transform.TransformPoint(_offset);
             if (ClosestZone(point, out ProximityZone zone, out Vector3 target, out float distance))
             {
-                Rumble(distance);
+                _lastDistance = distance;
+                Rumble(true);
             }
             else
             {
-                StopRumble();
+                Rumble(false);
             }
         }
 
         protected virtual void OnDisable()
         {
-            StopRumble();
+            Rumble(false);
         }
 
-        private void Rumble(float distance)
+        private void Rumble(bool on)
         {
-            if (_rumbleCancellationTokenSource == null)
+            switch (on)
             {
-                _rumbleCancellationTokenSource = new CancellationTokenSource();
-                _controller.Rumble(() => _distanceAmplitude.Evaluate(distance),
-                    () => _distanceDuration.Evaluate(distance),
-                    () => _distancePeriod.Evaluate(distance),
-                    _rumbleCancellationTokenSource.Token).Forget();
-            }
-        }
-
-        private void StopRumble()
-        {
-            if (_rumbleCancellationTokenSource != null)
-            {
-                _rumbleCancellationTokenSource.Cancel();
-                _rumbleCancellationTokenSource = null;   
+                case true when _rumbleCancellationTokenSource == null:
+                    _rumbleCancellationTokenSource = new CancellationTokenSource();
+                    _controller.Rumble(() => _distanceAmplitude.Evaluate(_lastDistance),
+                        () => _distanceDuration.Evaluate(_lastDistance),
+                        () => _distancePeriod.Evaluate(_lastDistance),
+                        _rumbleCancellationTokenSource.Token).Forget();
+                    break;
+                case false when _rumbleCancellationTokenSource != null:
+                    _rumbleCancellationTokenSource.Cancel();
+                    _rumbleCancellationTokenSource = null;
+                    break;
             }
         }
     }

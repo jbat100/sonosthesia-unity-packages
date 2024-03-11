@@ -12,6 +12,7 @@ namespace Sonosthesia.Haptic
 
         public bool SendHapticImpulse(float amplitude, float duration)
         {
+            // Debug.Log($"{this} {nameof(SendHapticImpulse)} {nameof(amplitude)} {amplitude} {nameof(duration)} {duration}");
             return _controller && _controller.SendHapticImpulse(amplitude, duration);
         }
 
@@ -38,6 +39,8 @@ namespace Sonosthesia.Haptic
                     {
                         break;
                     }
+                    
+                    // Debug.Log($"{this} rumble awaited period {period}");
                 }
             }
             
