@@ -1,9 +1,10 @@
+﻿using Sonosthesia.Utils;
 using UnityEngine;
 using UnityEngine.Splines;
 
 namespace Sonosthesia.Instrument
 {
-    public class BiSplineOutline : MonoBehaviour
+    public class BiSplineConfiguration : ObservableBehaviour
     {
         [SerializeField] private SplineContainer _guideSplineContainer;
 
@@ -12,6 +13,10 @@ namespace Sonosthesia.Instrument
         [SerializeField] private SplineContainer _orientationSplineContainer;
 
         [SerializeField] private int _orientationSplineIndex;
+        
+        private Spline GuideSpline => _guideSplineContainer[_guideSplineIndex];
+        
+        private Spline OrientationSpline => _orientationSplineContainer[_orientationSplineIndex];
         
         protected virtual void Awake()
         {
@@ -23,12 +28,14 @@ namespace Sonosthesia.Instrument
             Spline.Changed -= SplineOnChanged;
         }
         
-        private void SplineOnChanged(Spline arg1, int arg2, SplineModification arg3)
+        private void SplineOnChanged(Spline spline, int knot, SplineModification modification)
         {
-            throw new System.NotImplementedException();
+            Debug.Log($"{this} {nameof(SplineOnChanged)}");
+            if (GuideSpline == spline || OrientationSpline == spline)
+            {
+                BroadcastChange();
+            }
         }
         
-    }    
+    }
 }
-
-

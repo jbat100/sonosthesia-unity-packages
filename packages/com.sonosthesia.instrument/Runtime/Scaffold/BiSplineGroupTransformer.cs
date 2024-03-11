@@ -38,7 +38,7 @@ namespace Sonosthesia.Instrument
         [SerializeField] private BiSplineDirection _forwardDirection = BiSplineDirection.GuideTangent;
         
         [SerializeField] private BiSplineDirection _upDirection = BiSplineDirection.Orientation;
-
+        
         private Spline GuideSpline => _guideSplineContainer[_guideSplineIndex];
         
         private Spline OrientationSpline => _orientationSplineContainer[_orientationSplineIndex];
