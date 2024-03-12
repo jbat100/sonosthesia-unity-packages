@@ -271,6 +271,8 @@ namespace Sonosthesia.Scaffold
             }
 #endif
 
+            Debug.LogWarning($"{this} instantiating {count - _instances.Count} elements");
+            
             for (int i = _instances.Count; i < count; i++)
             {
 #if UNITY_EDITOR

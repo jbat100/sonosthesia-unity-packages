@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Sonosthesia.Utils;
+using UniRx;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -9,14 +10,8 @@ namespace Sonosthesia.Scaffold
 {
     public class BiSplineGroupTransformer : GroupTransformer
     {
-        [SerializeField] private SplineContainer _guideSplineContainer;
-
-        [SerializeField] private int _guideSplineIndex;
+        [SerializeField] private BiSplineConfiguration _configuration;
         
-        [SerializeField] private SplineContainer _orientationSplineContainer;
-
-        [SerializeField] private int _orientationSplineIndex;
-
         [SerializeField] private Vector3 _scale = Vector3.one;
 
         [SerializeField] private Axes _growAxes = Axes.Y;
@@ -38,34 +33,24 @@ namespace Sonosthesia.Scaffold
         [SerializeField] private BiSplineDirection _forwardDirection = BiSplineDirection.GuideTangent;
         
         [SerializeField] private BiSplineDirection _upDirection = BiSplineDirection.Orientation;
-        
-        private Spline GuideSpline => _guideSplineContainer[_guideSplineIndex];
-        
-        private Spline OrientationSpline => _orientationSplineContainer[_orientationSplineIndex];
+
+
+        private IDisposable _configurationSubscription;
         
         protected virtual void Awake()
         {
-            Spline.Changed += SplineOnChanged;
+            _configurationSubscription = _configuration.ChangeObservable.Subscribe(_ => BroadcastChange());
         }
 
         protected virtual void OnDestroy()
         {
-            Spline.Changed -= SplineOnChanged;
+            _configurationSubscription?.Dispose();
         }
-        
-        private void SplineOnChanged(Spline spline, int knot, SplineModification modification)
-        {
-            Debug.Log($"{this} {nameof(SplineOnChanged)}");
-            if (GuideSpline == spline || OrientationSpline == spline)
-            {
-                BroadcastChange();
-            }
-        }
-        
+
         public override void Apply<T>(IEnumerable<T> targets)
         {
-            Spline guideSpline = GuideSpline;
-            Spline orientationSpline = OrientationSpline;
+            Spline guideSpline = _configuration.GuideSpline;
+            Spline orientationSpline = _configuration.OrientationSpline;
             
             foreach (T element in targets)
             {

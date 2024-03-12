@@ -14,9 +14,9 @@ namespace Sonosthesia.Scaffold
 
         [SerializeField] private int _orientationSplineIndex;
         
-        private Spline GuideSpline => _guideSplineContainer[_guideSplineIndex];
+        public Spline GuideSpline => _guideSplineContainer[_guideSplineIndex];
         
-        private Spline OrientationSpline => _orientationSplineContainer[_orientationSplineIndex];
+        public Spline OrientationSpline => _orientationSplineContainer[_orientationSplineIndex];
         
         protected virtual void Awake()
         {

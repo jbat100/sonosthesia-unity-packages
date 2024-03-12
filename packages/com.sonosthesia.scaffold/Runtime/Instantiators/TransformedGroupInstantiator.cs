@@ -62,6 +62,7 @@ namespace Sonosthesia.Scaffold
         protected override void OnUpdatedInstances(IReadOnlyList<TEntry> instances)
         {
             base.OnUpdatedInstances(instances);
+            Debug.Log($"{this} {nameof(OnUpdatedInstances)} ({instances.Count})");
             IReadOnlyList<float> offsets = Offsets;
             int count = Mathf.Min(instances.Count, offsets.Count);
             for (int i = 0; i < count; i++)
