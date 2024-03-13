@@ -25,8 +25,6 @@ namespace Sonosthesia.Scaffold
     }
 #endif
 
-    
-    
     [ExecuteAlways, RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
     public class BiSplineOutline : MonoBehaviour
     {
@@ -75,14 +73,14 @@ namespace Sonosthesia.Scaffold
 
             Debug.Log($"Updating mesh with {nameof(guideStart)} {guideStart} {nameof(guideEnd)} {guideEnd} {nameof(orientationStart)} {orientationStart} {nameof(orientationEnd)} {orientationEnd}");
 
-            Vector3 p0 = orientationStart;
-            Vector3 p1 = orientationEnd;
+            Vector3 p0 = orientationEnd;
+            Vector3 p1 = orientationStart;
             
             // reflect about guide line https://stackoverflow.com/questions/48793217/how-can-i-reflect-a-point-about-a-line-in-unity
 
             Vector3 guideDirection = (guideEnd - guideStart).normalized;
-            Vector3 p0Direction = guideStart - orientationStart;
-            Vector3 p1Direction = guideStart - orientationEnd;
+            Vector3 p0Direction = guideStart - p0;
+            Vector3 p1Direction = guideStart - p1;
             Vector3 p2 = Vector3.Reflect(p1Direction, guideDirection);
             Vector3 p3 = Vector3.Reflect(p0Direction, guideDirection);
             
