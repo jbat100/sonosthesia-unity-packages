@@ -24,48 +24,14 @@ namespace Sonosthesia.XR.Test
             
             Vector3 targetPosition = _target.position;
             Quaternion targetRotation = _target.rotation;
-            Vector3 upperPosition = _upper.position;
-            Vector3 lowerPosition = _lower.position;
 
             Gizmos.color = Color.blue;
             Gizmos.DrawSphere(targetPosition, RADIUS);
             bool bound = false;
 
-            void DrawBind(Vector3 position, Vector3 localNormal)
-            {
-                //Quaternion rotation = Quaternion.FromToRotation(localNormal, Vector3.up);
-                //GizmoUtils.DrawPlane(position, rotation * targetRotation, Color.cyan, Vector2.one, 0.001f);
-                Gizmos.color = Color.yellow;
-                Gizmos.DrawSphere(targetPosition, RADIUS);
-            }
-
-            void Bind(Vector3 position, Vector3 localNormal)
-            {
-                Vector3 normal = _target.TransformDirection(localNormal);
-                if (GeomUtils.BindTargetToPlane(position, normal, ref targetPosition))
-                {
-                    bound = true;
-                    Gizmos.color = Color.yellow;
-                    Gizmos.DrawSphere(targetPosition, RADIUS);
-                } 
-            }
+            bound |= GeomUtils.LowerBind(_lower.position, targetRotation, _axes, ref targetPosition);
+            bound |= GeomUtils.UpperBind(_upper.position, targetRotation, _axes, ref targetPosition);
             
-            if (_axes.HasFlag(Axes.X))
-            {
-                Bind(upperPosition, Vector3.left);
-                Bind(lowerPosition, Vector3.right);
-            }
-            if (_axes.HasFlag(Axes.Y))
-            {
-                Bind(upperPosition, Vector3.down);
-                Bind(lowerPosition, Vector3.up);
-            }
-            if (_axes.HasFlag(Axes.Z))
-            {
-                Bind(upperPosition, Vector3.back);
-                Bind(lowerPosition, Vector3.forward);
-            }
-
             if (bound)
             {
                 Gizmos.color = Color.red;

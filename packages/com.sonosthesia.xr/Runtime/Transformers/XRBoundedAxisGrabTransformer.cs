@@ -6,11 +6,6 @@ using Sonosthesia.Utils;
 
 namespace Sonosthesia.XR
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <seealso cref="XRGrabInteractable"/>
-    [AddComponentMenu("XR/Transformers/XR Single Grab Free Transformer", 11)]
     public class XRBoundedAxisGrabTransformer : XRBaseGrabTransformer
     {
         [SerializeField] private Axes _displacementAxes;
@@ -54,7 +49,7 @@ namespace Sonosthesia.XR
             IXRSelectInteractor interactor = grabInteractable.interactorsSelecting[0];
             
             Pose interactorPose = interactor.transform.GetWorldPose();
-            Vector3 worldDrag = _grabInteractorPose.position - interactorPose.position;
+            Vector3 worldDrag = interactorPose.position - _grabInteractorPose.position;
 
             // calculate the drag in interactable space
             Vector3 interactableDrag = grabInteractable.transform.InverseTransformDirection(worldDrag);
@@ -62,9 +57,25 @@ namespace Sonosthesia.XR
             Vector3 filteredInteractableDrag = interactableDrag.FilterAxes(_displacementAxes);
             // transform back to world
             Vector3 filteredWorldDrag = grabInteractable.transform.TransformDirection(filteredInteractableDrag);
-
-            Vector3 targetPosition = _attachOffset + _grabInteractorPose.position + filteredWorldDrag;
             
+            Vector3 targetPosition = _grabInteractablePose.position + filteredWorldDrag;
+
+            // apply bind to final position
+            bool bound = false;
+            Quaternion targetRotation = grabInteractable.transform.rotation;
+            if (_lowerBound)
+            {
+                bound |= GeomUtils.LowerBind(_lowerBound.position, targetRotation, _displacementAxes, ref targetPosition);    
+            }
+
+            if (_upperBound)
+            {
+                bound |= GeomUtils.UpperBind(_upperBound.position, targetRotation, _displacementAxes, ref targetPosition);    
+            }
+            
+            // TODO : use bound to (de)activate some kind of affordance
+
+            targetPose.position = targetPosition;
 
             // Pose interactorAttachPose = interactor.GetAttachTransform(grabInteractable).GetWorldPose();
             // Pose thisTransformPose = grabInteractable.transform.GetWorldPose();
