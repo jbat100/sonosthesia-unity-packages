@@ -1,12 +1,14 @@
 {
-    "name": "Sonosthesia.XR",
-    "rootNamespace": "Sonosthesia.XR",
+    "name": "Sonosthesia.XR.Test",
+    "rootNamespace": "Sonosthesia.XR.Test",
     "references": [
         "GUID:560b04d1a97f54a4e82edc0cbbb69285",
         "GUID:ce522b6ed64c8be4c989a1d26d0e3275",
         "GUID:fe685ec1767f73d42b749ea8045bfe43",
         "GUID:dc960734dc080426fa6612f1c5fe95f3",
-        "GUID:25e5e4b6f3916462c92ecc1d0ffca2c2"
+        "GUID:25e5e4b6f3916462c92ecc1d0ffca2c2",
+        "GUID:c6a7c0bd587b4c841aa1b82f85f607ae",
+        "GUID:da4dcb349cd2457b9de2fe9f9ea29a3d"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

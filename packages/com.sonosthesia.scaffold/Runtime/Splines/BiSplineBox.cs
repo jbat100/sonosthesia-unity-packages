@@ -1,106 +1,45 @@
-using System;
-using UniRx;
 using UnityEngine;
-using UnityEngine.Splines;
 
 namespace Sonosthesia.Scaffold
 {
-    
-#if UNITY_EDITOR
-    using UnityEditor;
-
-    [CustomEditor(typeof(BiSplineOutline), true)]
-    public class BiSplineOutlineEditor : Editor
+    [ExecuteAlways, RequireComponent(typeof(MeshFilter))]
+    public class BiSplineBox : BiSplineAffordance
     {
-        public override void OnInspectorGUI()
-        {
-            DrawDefaultInspector();
-
-            BiSplineOutline outline = (BiSplineOutline)target;
-            if(GUILayout.Button("Update Mesh"))
-            {
-                outline.UpdateMesh();
-            }
-        }
-    }
-#endif
-
-    [ExecuteAlways, RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
-    public class BiSplineOutline : MonoBehaviour
-    {
-        [SerializeField] private BiSplineConfiguration _configuration;
-
         [SerializeField] private float _topOffset;
 
         [SerializeField] private float _bottomOffset;
-        
-        private IDisposable _configurationSubscription;
-
-        private MeshRenderer _meshRenderer;
 
         private MeshFilter _meshFilter;
-        
-        protected virtual void Awake()
+
+        protected override void Setup()
         {
             _meshFilter = GetComponent<MeshFilter>();
-            _meshRenderer = GetComponent<MeshRenderer>();
-            _configurationSubscription = _configuration.ChangeObservable.Subscribe(_ => UpdateMesh());
+            base.Setup();
         }
 
-        protected virtual void OnEnable()
-        {
-            UpdateMesh();
-        }
-        
-        protected virtual void OnDestroy()
-        {
-            _configurationSubscription?.Dispose();
-        }
-
-        public virtual void UpdateMesh()
+        protected override void RefreshAffordance()
         {
             Mesh mesh = new Mesh();
 
-            Vector3 guideStart = _configuration.GuideSpline.EvaluatePosition(0);
-            Vector3 guideEnd = _configuration.GuideSpline.EvaluatePosition(1);
-            Vector3 orientationStart = _configuration.OrientationSpline.EvaluatePosition(0);
-            Vector3 orientationEnd = _configuration.OrientationSpline.EvaluatePosition(1);
+            BiSplineVertices splineVertices = Configuration.Vertices;
             
-            // force coplanar
-
-            Plane plane = new Plane(guideStart, guideEnd, orientationStart);
-            orientationEnd = plane.ClosestPointOnPlane(orientationEnd);
-
-            Debug.Log($"Updating mesh with {nameof(guideStart)} {guideStart} {nameof(guideEnd)} {guideEnd} {nameof(orientationStart)} {orientationStart} {nameof(orientationEnd)} {orientationEnd}");
-
-            Vector3 p0 = orientationEnd;
-            Vector3 p1 = orientationStart;
+            Debug.Log($"Updating mesh with {nameof(BiSplineVertices)} {splineVertices}");
             
-            // reflect about guide line https://stackoverflow.com/questions/48793217/how-can-i-reflect-a-point-about-a-line-in-unity
-
-            Vector3 guideDirection = (guideEnd - guideStart).normalized;
-            Vector3 p0Direction = guideStart - p0;
-            Vector3 p1Direction = guideStart - p1;
-            Vector3 p2 = Vector3.Reflect(p1Direction, guideDirection);
-            Vector3 p3 = Vector3.Reflect(p0Direction, guideDirection);
-            
-            Vector3 normal = plane.normal;
-            
-            Debug.Log($"Calculated {nameof(p0)} {p0} {nameof(p1)} {p1} {nameof(p2)} {p2} {nameof(p3)} {p3}");
+            Vector3 normal = splineVertices.Plane.normal;
 
             Vector3[] c = new Vector3[8];
 
             Vector3 bottomDisplacement = _bottomOffset * normal;
-            c[0] = p0 + bottomDisplacement;
-            c[1] = p1 + bottomDisplacement;
-            c[2] = p2 + bottomDisplacement;
-            c[3] = p3 + bottomDisplacement;
+            c[0] = splineVertices.P0 + bottomDisplacement;
+            c[1] = splineVertices.P1 + bottomDisplacement;
+            c[2] = splineVertices.P2 + bottomDisplacement;
+            c[3] = splineVertices.P3 + bottomDisplacement;
 
             Vector3 topDisplacement = _topOffset * normal;
-            c[4] = p0 + topDisplacement;
-            c[5] = p1 + topDisplacement;
-            c[6] = p2 + topDisplacement;
-            c[7] = p3 + topDisplacement;
+            c[4] = splineVertices.P0 + topDisplacement;
+            c[5] = splineVertices.P1 + topDisplacement;
+            c[6] = splineVertices.P2 + topDisplacement;
+            c[7] = splineVertices.P3 + topDisplacement;
             
             Debug.Log($"Calculated {nameof(topDisplacement)} {topDisplacement} {nameof(topDisplacement)} {topDisplacement}");
             
@@ -125,9 +64,9 @@ namespace Sonosthesia.Scaffold
             
             Vector3 forward = -normal;
             Vector3 back = normal;
-            Vector3 down = Vector3.Cross(p1 - p0, normal);
-            Vector3 up = Vector3.Cross(p2 - p3, normal);
-            Vector3 left = -Vector3.Cross(p3 - p0, normal);
+            Vector3 down = Vector3.Cross(splineVertices.P1 - splineVertices.P0, normal);
+            Vector3 up = Vector3.Cross(splineVertices.P2 - splineVertices.P3, normal);
+            Vector3 left = -Vector3.Cross(splineVertices.P3 - splineVertices.P0, normal);
             Vector3 right = -left;
             
             Vector3[] normals = new Vector3[]
@@ -175,7 +114,6 @@ namespace Sonosthesia.Scaffold
             
             //mesh.Optimize();
 
-            
             _meshFilter.mesh = mesh;
 
         }

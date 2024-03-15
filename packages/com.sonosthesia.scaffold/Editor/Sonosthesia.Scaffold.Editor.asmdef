@@ -1,6 +1,6 @@
 {
     "name": "Sonosthesia.Scaffold.Editor",
-    "rootNamespace": "",
+    "rootNamespace": "Sonosthesia.Scaffold.Editor",
     "references": [
         "GUID:d8b63aba1907145bea998dd612889d6b",
         "GUID:21d1eb854b91ade49bc69a263d12bee2",
@@ -16,7 +16,9 @@
         "GUID:dd6e19b0338b5794bbc76fd73cfd172e",
         "GUID:1fd512b3b6c091f43bedec2c48831e94"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": true,
     "overrideReferences": false,
