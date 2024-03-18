@@ -1,8 +1,9 @@
 {
   "author": "Jonathan Thorpe",
   "dependencies": {
+    "com.unity.splines": "2.5.2",
     "com.unity.mathematics": "1.2.6",
-    "com.unity.burst": "1.8.4"
+    "com.unity.burst": "1.8.13"
   },
   "description": "Sonosthesia unity mesh",
   "displayName": "Sonosthesia Mesh",

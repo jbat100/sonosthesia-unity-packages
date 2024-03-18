@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Splines;
 
-namespace Sonosthesia.Deform
+namespace Sonosthesia.Mesh
 {
     public static class ParallelSplineMesh
     {
@@ -510,6 +510,7 @@ namespace Sonosthesia.Deform
         }
 
         // Two overloads for winding triangles because there is no generic constraint for UInt{16, 32}
+        // Note this winds the tris of the whole extruded spline mesh
         static void WindTris(NativeArray<UInt16> indices, Settings settings, int vertexArrayOffset = 0, int indexArrayOffset = 0)
         {
             var closed = settings.closed;
@@ -517,15 +518,19 @@ namespace Sonosthesia.Deform
             var sides = settings.sides;
             var capped = settings.capped;
 
+            // loop over the segments along the length of the spline 
             for (int i = 0; i < (closed ? segments : segments - 1); ++i)
             {
+                // loop over the sides of a given spline extrusion segments
                 for (int n = 0; n < sides; ++n)
                 {
+                    // takes two vertices of the current segment and the two corresponding vertices of the next segment
                     var index0 = vertexArrayOffset + i * sides + n;
                     var index1 = vertexArrayOffset + i * sides + ((n + 1) % sides);
                     var index2 = vertexArrayOffset + ((i+1) % segments) * sides + n;
                     var index3 = vertexArrayOffset + ((i+1) % segments) * sides + ((n + 1) % sides);
 
+                    // for a face we have two triangles, therefore we times the i sides and n faces 
                     indices[indexArrayOffset + i * sides * 6 + n * 6 + 0] = (UInt16) index0;
                     indices[indexArrayOffset + i * sides * 6 + n * 6 + 1] = (UInt16) index1;
                     indices[indexArrayOffset + i * sides * 6 + n * 6 + 2] = (UInt16) index2;

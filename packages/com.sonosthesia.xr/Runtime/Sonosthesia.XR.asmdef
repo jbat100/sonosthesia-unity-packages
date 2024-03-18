@@ -2,11 +2,14 @@
     "name": "Sonosthesia.XR",
     "rootNamespace": "Sonosthesia.XR",
     "references": [
-        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:21d1eb854b91ade49bc69a263d12bee2",
         "GUID:ce522b6ed64c8be4c989a1d26d0e3275",
         "GUID:fe685ec1767f73d42b749ea8045bfe43",
         "GUID:dc960734dc080426fa6612f1c5fe95f3",
-        "GUID:25e5e4b6f3916462c92ecc1d0ffca2c2"
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:25e5e4b6f3916462c92ecc1d0ffca2c2",
+        "GUID:dba3931124f22634593d24bf8e6723eb"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
