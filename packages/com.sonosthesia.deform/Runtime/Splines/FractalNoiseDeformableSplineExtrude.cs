@@ -1,3 +1,4 @@
+using Sonosthesia.Mesh;
 using Sonosthesia.Noise;
 using Unity.Burst;
 using Unity.Collections;

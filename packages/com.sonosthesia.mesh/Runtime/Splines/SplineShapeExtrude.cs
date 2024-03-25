@@ -1,26 +1,24 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Sonosthesia.Mesh;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Splines;
 
-namespace Sonosthesia.Deform
+#if UNITY_EDITOR
+using UnityEditor.SceneManagement;
+#endif
+
+namespace Sonosthesia.Mesh
 {
-    // pretty much copy pasted from com.unity.splines SplineExtrude.cs with obsolete methods removed and hooks added
-    
-    /// <summary>
+/// <summary>
     /// A component for creating a tube mesh from a Spline at runtime.
     /// </summary>
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-    public abstract class DeformableSplineExtrude : MonoBehaviour
+    public class SplineShapeExtrude : MonoBehaviour
     {
-        [SerializeField]
-        bool m_Parallel;
-        
         [SerializeField, Tooltip("The Spline to extrude.")]
         SplineContainer m_Container;
 
@@ -28,9 +26,6 @@ namespace Sonosthesia.Deform
              "this option if the Spline will not be modified at runtime.")]
         bool m_RebuildOnSplineChange;
 
-        [SerializeField]
-        bool m_RebuildOnUpdate;
-        
         [SerializeField, Tooltip("The maximum number of times per-second that the mesh will be rebuilt.")]
         int m_RebuildFrequency = 30;
 
@@ -39,8 +34,8 @@ namespace Sonosthesia.Deform
         bool m_UpdateColliders = true;
 #pragma warning restore 414
 
-        [SerializeField, Tooltip("The number of sides that comprise the radius of the mesh.")]
-        int m_Sides = 8;
+        [SerializeField, Tooltip("The shape to be extruded.")]
+        ExtrusionShape m_Shape;
 
         [SerializeField, Tooltip("The number of edge loops that comprise the length of one unit of the mesh. The " +
              "total number of sections is equal to \"Spline.GetLength() * segmentsPerUnit\".")]
@@ -50,39 +45,21 @@ namespace Sonosthesia.Deform
         bool m_Capped = true;
 
         [SerializeField, Tooltip("The radius of the extruded mesh.")]
-        float m_Radius = .25f;
+        float m_Scale = .25f;
 
         [SerializeField, Tooltip("The section of the Spline to extrude.")]
         Vector2 m_Range = new Vector2(0f, 1f);
         
-        [SerializeField]
-        bool m_BypassDeformation = true;
-
+        [SerializeField, Tooltip("Execute extrusion in parallel.")]
+        bool m_Parallel;
+        
         [SerializeField] 
         bool m_RecalculateNormals;
-        
-        // Note : for some reason recalculating tangents seems to crash Unity editor
-        
-        [SerializeField] 
-        bool m_RecalculateTangents;
-        
+
         UnityEngine.Mesh m_Mesh;
         bool m_RebuildRequested;
         float m_NextScheduledRebuild;
         
-        // used for gizmos
-        
-        [Flags]
-        private enum GizmoMode
-        {
-            Vertices = 1 << 1, 
-            Normals = 1 << 2
-        }
-
-        [SerializeField] private GizmoMode _gizmoMode;
-        
-        private Vector3[] _vertices, _normals;
-
         /// <summary>The SplineContainer of the <see cref="Spline"/> to extrude.</summary>
         public SplineContainer Container
         {
@@ -99,19 +76,12 @@ namespace Sonosthesia.Deform
             get => m_RebuildOnSplineChange;
             set => m_RebuildOnSplineChange = value;
         }
-
+        
         /// <summary>The maximum number of times per-second that the mesh will be rebuilt.</summary>
         public int RebuildFrequency
         {
             get => m_RebuildFrequency;
             set => m_RebuildFrequency = Mathf.Max(value, 1);
-        }
-
-        /// <summary>How many sides make up the radius of the mesh.</summary>
-        public int Sides
-        {
-            get => m_Sides;
-            set => m_Sides = Mathf.Max(value, 3);
         }
 
         /// <summary>How many edge loops comprise the one unit length of the mesh.</summary>
@@ -129,10 +99,10 @@ namespace Sonosthesia.Deform
         }
 
         /// <summary>The radius of the extruded mesh.</summary>
-        public float Radius
+        public float Scale
         {
-            get => m_Radius;
-            set => m_Radius = Mathf.Max(value, .00001f);
+            get => m_Scale;
+            set => m_Scale = Mathf.Max(value, .00001f);
         }
 
         /// <summary>
@@ -143,17 +113,17 @@ namespace Sonosthesia.Deform
             get => m_Range;
             set => m_Range = new Vector2(Mathf.Min(value.x, value.y), Mathf.Max(value.x, value.y));
         }
-
+        
         /// <summary>The main Spline to extrude.</summary>
         public Spline Spline
         {
-            get => m_Container.Spline;
+            get => m_Container?.Spline;
         }
 
         /// <summary>The Splines to extrude.</summary>
         public IReadOnlyList<Spline> Splines
         {
-            get => m_Container.Splines;
+            get => m_Container?.Splines;
         }
 
         protected virtual void Reset()
@@ -169,13 +139,21 @@ namespace Sonosthesia.Deform
                 renderer.sharedMaterial = mat;
             }
 
-            m_RebuildRequested = true;
+            Rebuild();
         }
 
-        protected virtual void Awake()
+        private UnityEngine.Mesh Mesh
         {
-            m_Mesh = new UnityEngine.Mesh {name = "SplineExtrude"};
-            GetComponent<MeshFilter>().mesh = m_Mesh;
+            get
+            {
+                if (m_Mesh != null)
+                {
+                    return m_Mesh;
+                }
+                m_Mesh = new UnityEngine.Mesh {name = "SplineShapeExtrude"};
+                GetComponent<MeshFilter>().mesh = m_Mesh;
+                return m_Mesh;
+            }
         }
 
         protected virtual void Start()
@@ -185,10 +163,6 @@ namespace Sonosthesia.Deform
                 Debug.LogError("Spline Extrude does not have a valid SplineContainer set.");
                 return;
             }
-
-            if((m_Mesh = GetComponent<MeshFilter>().sharedMesh) == null)
-                Debug.LogError("SplineExtrude.createMeshInstance is disabled, but there is no valid mesh assigned. " +
-                    "Please create or assign a writable mesh asset.");
         }
 
         protected virtual void OnEnable()
@@ -197,59 +171,62 @@ namespace Sonosthesia.Deform
             Spline.Changed += OnSplineChanged;
         }
 
-        protected void OnDisable()
+        protected virtual void OnDisable()
         {
             Spline.Changed -= OnSplineChanged;
         }
 
+        protected virtual void Update()
+        {
+            if(m_RebuildRequested && Time.time >= m_NextScheduledRebuild)
+                Rebuild();
+        }
+        
+        protected virtual void OnValidate()
+        {
+            Rebuild();
+        }
+        
         void OnSplineChanged(Spline spline, int knotIndex, SplineModification modificationType)
         {
             if (m_Container != null && Splines.Contains(spline) && m_RebuildOnSplineChange)
                 m_RebuildRequested = true;
         }
-
-        protected virtual void Update()
-        {
-            if (m_RebuildOnUpdate || (m_RebuildRequested && Time.time >= m_NextScheduledRebuild))
-            {
-                m_RebuildRequested = false;
-                Rebuild();
-                m_NextScheduledRebuild = Time.time + 1f / m_RebuildFrequency;
-            }
-        }
+        
 
         /// <summary>
         /// Triggers the rebuild of a Spline's extrusion mesh and collider.
         /// </summary>
-        private void Rebuild()
+        public void Rebuild()
         {
-            _vertices = null;
-            _normals = null;
-
-            m_Mesh.Clear();
+            if (!m_Shape)
+            {
+                return; 
+            }
+            
+            Mesh.Clear();
             UnityEngine.Mesh.MeshDataArray meshDataArray = UnityEngine.Mesh.AllocateWritableMeshData(1);
             UnityEngine.Mesh.MeshData data = meshDataArray[0];
-            
-            Extrude(Splines[0], data, m_Radius, m_Sides, m_SegmentsPerUnit, m_Capped, m_Range);
 
-            if (!m_BypassDeformation)
-            {
-                Deform(Splines[0], data, m_Radius, m_Sides, m_SegmentsPerUnit, m_Capped, m_Range);   
-            }
+            Spline spline = Splines[0];
+            float span = Mathf.Abs(m_Range.y - m_Range.x);
+            int segments = Mathf.Max((int)Mathf.Ceil(spline.GetLength() * span * m_SegmentsPerUnit), 1);
 
-            UnityEngine.Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, m_Mesh);
+            ExtrusionSettings extrusionSettings = new ExtrusionSettings(segments, m_Capped, spline.Closed, m_Range);
+            SplineShapeExtrusion.ShapeSettings shapeSettings = new SplineShapeExtrusion.ShapeSettings(m_Scale, m_Shape.PointCount, m_Shape.Closed);
+
+            Extrude(spline, data, m_Shape, extrusionSettings, shapeSettings);
+
+            UnityEngine.Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, Mesh);
             
-            m_Mesh.RecalculateBounds();
+            Mesh.RecalculateBounds();
             
             if (m_RecalculateNormals)
             {
-                m_Mesh.RecalculateNormals();
+                Mesh.RecalculateNormals();
             }
-
-            if (m_RecalculateTangents)
-            {
-                m_Mesh.RecalculateTangents();
-            }
+            
+            m_NextScheduledRebuild = Time.time + 1f / m_RebuildFrequency;
 
 #if UNITY_PHYSICS_MODULE
             if (m_UpdateColliders)
@@ -272,7 +249,7 @@ namespace Sonosthesia.Deform
             }
 #endif
         }
-        
+
         static readonly VertexAttributeDescriptor[] k_PipeVertexAttribs = new VertexAttributeDescriptor[]
         {
             new (VertexAttribute.Position),
@@ -280,16 +257,14 @@ namespace Sonosthesia.Deform
             new (VertexAttribute.TexCoord0, dimension: 2)
         };
         
-        private void Extrude<TSpline>(TSpline spline, UnityEngine.Mesh.MeshData data, float radius, int sides, float segmentsPerUnit, bool capped, float2 range) 
+        private void Extrude<TSpline>(TSpline spline, UnityEngine.Mesh.MeshData data, ExtrusionShape shape, ExtrusionSettings extrusionSettings, SplineShapeExtrusion.ShapeSettings shapeSettings) 
             where TSpline : ISpline
         {
             data.subMeshCount = 1;
-
-            var span = Mathf.Abs(range.y - range.x);
-
-            var segments = Mathf.Max((int)Mathf.Ceil(spline.GetLength() * span * segmentsPerUnit), 1);
             
-            SplineMesh.GetVertexAndIndexCount(sides, segments, capped, spline.Closed, (float2)range, out int vertexCount, out int indexCount);
+            NativeArray<ExtrusionShapePoint> points = shape.NativePoints;
+            
+            SplineShapeExtrusion.GetVertexAndIndexCount(extrusionSettings, shapeSettings, out int vertexCount, out int indexCount);
             
             var indexFormat = vertexCount >= ushort.MaxValue ? IndexFormat.UInt32 : IndexFormat.UInt16;
             
@@ -300,56 +275,15 @@ namespace Sonosthesia.Deform
             if (indexFormat == IndexFormat.UInt16)
             {
                 NativeArray<UInt16> indices = data.GetIndexData<UInt16>();
-                SplineRingExtrusion.Extrude(m_Parallel, spline, vertices, indices, radius, sides, segments, capped, range);
+                SplineShapeExtrusion.Extrude(m_Parallel, spline, vertices, indices, points, extrusionSettings, shapeSettings);
             }
             else
             {
                 NativeArray<UInt32> indices = data.GetIndexData<UInt32>();
-                SplineRingExtrusion.Extrude(m_Parallel, spline, vertices, indices, radius, sides, segments, capped, range);
+                SplineShapeExtrusion.Extrude(m_Parallel, spline, vertices, indices, points, extrusionSettings, shapeSettings);
             }
             
             data.SetSubMesh(0, new SubMeshDescriptor(0, vertexCount));
-        }
-
-        protected abstract void Deform(ISpline spline, UnityEngine.Mesh.MeshData data, 
-            float radius, int sides, float segmentsPerUnit, bool capped, float2 range);
-
-        protected virtual void OnValidate()
-        {
-            m_RebuildRequested = true;
-        }
-
-        protected void OnDrawGizmos () 
-        {
-            if (m_Mesh == null || _gizmoMode == 0) 
-            {
-                return;
-            }
-            Transform t = transform;
-            
-            bool drawVertices = (_gizmoMode & GizmoMode.Vertices) != 0;
-            bool drawNormals = (_gizmoMode & GizmoMode.Normals) != 0 && m_Mesh.HasVertexAttribute(VertexAttribute.Normal);
-            
-            _vertices ??= m_Mesh.vertices;
-            if (drawNormals && _normals == null) 
-            {
-                _normals = m_Mesh.normals;
-            }
-            
-            for (int i = 0; i < _vertices.Length; i++) 
-            {
-                Vector3 position = t.TransformPoint(_vertices[i]);
-                if (drawVertices)
-                {
-                    Gizmos.color = Color.cyan;
-                    Gizmos.DrawSphere(position, 0.02f);
-                }
-                if (drawNormals)
-                {
-                    Gizmos.color = Color.green;
-                    Gizmos.DrawRay(position, t.TransformDirection(_normals[i] * 0.2f));
-                }
-            }
         }
     }
 }
