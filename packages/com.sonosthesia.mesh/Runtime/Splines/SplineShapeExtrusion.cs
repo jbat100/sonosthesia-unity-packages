@@ -36,7 +36,7 @@ namespace Sonosthesia.Mesh
             TSplineType spline,
             NativeArray<TVertexType> vertices,
             NativeArray<TIndexType> indices,
-            NativeArray<ExtrusionShapePoint> points,
+            NativeArray<ExtrusionPoint> points,
             ExtrusionSettings extrusionSettings,
             ShapeSettings shapeSettings,
             int vertexArrayOffset = 0,
@@ -61,7 +61,7 @@ namespace Sonosthesia.Mesh
         
         
         [BurstCompile]
-        static void ExtrudeShape<T, K>(T spline, float t, NativeArray<K> data, NativeArray<ExtrusionShapePoint> shapePoints, ShapeSettings shapeSettings, int start)
+        static void ExtrudeShape<T, K>(T spline, float t, NativeArray<K> data, NativeArray<ExtrusionPoint> shapePoints, ShapeSettings shapeSettings, int start)
             where T : ISpline
             where K : struct, SplineMesh.ISplineVertexData
         {
@@ -80,11 +80,9 @@ namespace Sonosthesia.Mesh
             var rot = quaternion.LookRotationSafe(st, up);
             int count = shapePoints.Length;
 
-            float splineLength = spline.GetLength();
-            
             for (int n = 0; n < count; ++n)
             {
-                ExtrusionShapePoint point = shapePoints[n];
+                ExtrusionPoint point = shapePoints[n];
                 
                 var vertex = new K();
                 
@@ -94,13 +92,15 @@ namespace Sonosthesia.Mesh
                 Vector3 normal = point.normal;
                 vertex.normal = math.rotate(rot, normal);
                 
-                vertex.texture = new Vector2(point.u, t * splineLength);
+                vertex.texture = new Vector2(point.u, t);
 
                 data[start + n] = vertex;
             }
         }
         
         // switch to using IJobFor
+        
+        // note for simple shapes, parallel degrades performance
         
         [BurstCompile]
         struct ExtrudeShapeJob<K> : IJobParallelFor where K : struct, SplineMesh.ISplineVertexData
@@ -109,11 +109,11 @@ namespace Sonosthesia.Mesh
             [ReadOnly] public NativeSpline Spline;
             
             [NativeDisableContainerSafetyRestriction]
-            [WriteOnly] public NativeArray<K> Vertices;
+            [ReadOnly] public NativeArray<ExtrusionPoint> Points;
             
             [NativeDisableContainerSafetyRestriction]
-            [WriteOnly] public NativeArray<ExtrusionShapePoint> Points;
-            
+            [WriteOnly] public NativeArray<K> Vertices;
+
             public ExtrusionSettings ExtrusionSettings;
             public ShapeSettings ShapeSettings;
             public int VertexArrayOffset;
@@ -135,7 +135,7 @@ namespace Sonosthesia.Mesh
                 TSplineType spline,
                 NativeArray<TVertexType> vertices,
                 NativeArray<TIndexType> indices,
-                NativeArray<ExtrusionShapePoint> points,
+                NativeArray<ExtrusionPoint> points,
                 ExtrusionSettings extrusionSettings,
                 ShapeSettings shapeSettings,
                 int vertexArrayOffset = 0,
@@ -207,7 +207,7 @@ namespace Sonosthesia.Mesh
                 TSplineType spline,
                 NativeArray<TVertexType> vertices,
                 NativeArray<TIndexType> indices,
-                NativeArray<ExtrusionShapePoint> points,
+                NativeArray<ExtrusionPoint> points,
                 ExtrusionSettings extrusionSettings,
                 ShapeSettings shapeSettings,
                 int vertexArrayOffset = 0,
@@ -251,7 +251,12 @@ namespace Sonosthesia.Mesh
             }
 
             for (int i = 0; i < segments; ++i)
-                ExtrudeShape(spline, math.lerp(range.x, range.y, i / (segments - 1f)), vertices, points, shapeSettings, vertexArrayOffset + i * shapeSettings.points);
+            {
+                float t = math.lerp(range.x, range.y, i / (segments - 1f));
+                // Debug.Log($"{nameof(SplineShapeExtrusion)} extruding at t = {t} for segment {i} of {segments}");
+                ExtrudeShape(spline, t, vertices, points, shapeSettings, vertexArrayOffset + i * shapeSettings.points);
+            }
+                
 
             if (capped)
             {
@@ -275,6 +280,8 @@ namespace Sonosthesia.Mesh
 
             int shapePoints = shapeSettings.points;
             int shapeSides = shapeSettings.Sides;
+            
+            Debug.Log($"{nameof(SplineShapeExtrusion)} {nameof(WindTris)} for {segments} segments");
 
             // loop over the segments along the length of the spline 
             for (int i = 0; i < (closed ? segments : segments - 1); ++i)
