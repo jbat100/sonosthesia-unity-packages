@@ -133,10 +133,11 @@ namespace Sonosthesia.Deform
         
         [SerializeField] private DynamicNoiseConfiguration _configuration;
 
-        protected override void Deform(ISpline spline, UnityEngine.Mesh.MeshData data, float radius, int sides, float segmentsPerUnit, 
-            bool capped, float2 range, NoiseType noiseType, int dimensions, int seed)
+        protected override void Deform(ISpline spline, UnityEngine.Mesh.MeshData data, 
+            SplineRingExtrusion.RingSettings ringSettings, ExtrusionSettings extrusionSettings, 
+            NoiseType noiseType, int dimensions, int seed)
         {
-            int innerloopBatchCount = (int)sqrt(segmentsPerUnit);
+            int innerloopBatchCount = (int)sqrt(extrusionSettings.segments);
             
             _jobs[(int) noiseType, dimensions - 1](
                 data,

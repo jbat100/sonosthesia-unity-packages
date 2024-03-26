@@ -5,6 +5,8 @@ using UnityEngine.Splines;
 
 namespace Sonosthesia.Mesh
 {
+    // based on com.unity.splines SplineExtrude.cs with obsolete methods removed and hooks added
+    
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public abstract class SplineCustomExtrude : MonoBehaviour
     {

@@ -29,6 +29,8 @@ namespace Sonosthesia.Deform
         {
             get
             {
+                CheckArrays();
+                
                 if (!_dirty)
                 {
                     return _noiseComponents;
@@ -83,7 +85,7 @@ namespace Sonosthesia.Deform
         private void CheckArrays()
         {
             int count = Count;
-            if (_noiseComponents.Length != count)
+            if (!_noiseComponents.IsCreated || _noiseComponents.Length != count)
             {
                 _noiseComponents.Dispose();
                 _noiseComponents = new NativeArray<TriNoise.DomainNoiseComponent>(count, Allocator.Persistent);

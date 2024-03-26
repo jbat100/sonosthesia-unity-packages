@@ -135,12 +135,12 @@ namespace Sonosthesia.Mesh
             if (indexFormat == IndexFormat.UInt16)
             {
                 var indices = data.GetIndexData<UInt16>();
-                Extrude(false, spline, vertices, indices, radius, sides, segments, capped, range);
+                Extrude(false, spline, vertices, indices, ringSettings, extrusionSettings);
             }
             else
             {
                 var indices = data.GetIndexData<UInt32>();
-                Extrude(false, spline, vertices, indices, radius, sides, segments, capped, range);
+                Extrude(false, spline, vertices, indices, ringSettings, extrusionSettings);
             }
 
             mesh.Clear();
@@ -249,11 +249,8 @@ namespace Sonosthesia.Mesh
             TSplineType spline,
             NativeArray<TVertexType> vertices,
             NativeArray<TIndexType> indices,
-            float radius,
-            int sides,
-            int segments,
-            bool capped,
-            float2 range,
+            RingSettings ringSettings,
+            ExtrusionSettings extrusionSettings,
             int vertexArrayOffset = 0,
             int indicesArrayOffset = 0)
             where TSplineType : ISpline
@@ -262,17 +259,11 @@ namespace Sonosthesia.Mesh
         {
             if (parallel)
             {
-                ExtrudeParallel(spline, vertices, indices, 
-                    new ExtrusionSettings(segments, capped, spline.Closed, range),
-                    new RingSettings(sides, radius),
-                    vertexArrayOffset, indicesArrayOffset);  
+                ExtrudeParallel(spline, vertices, indices, extrusionSettings, ringSettings, vertexArrayOffset, indicesArrayOffset);  
             }
             else
             {
-                Extrude(spline, vertices, indices, 
-                    new ExtrusionSettings(segments, capped, spline.Closed, range),
-                    new RingSettings(sides, radius),
-                    vertexArrayOffset, indicesArrayOffset);    
+                Extrude(spline, vertices, indices, extrusionSettings, ringSettings, vertexArrayOffset, indicesArrayOffset);    
             }
         }
 
