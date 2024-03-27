@@ -5,7 +5,8 @@
     "com.sonosthesia.channel": "1.7.0",
     "com.sonosthesia.signal": "1.7.0",
     "com.sonosthesia.target": "1.7.0",
-    "com.sonosthesia.spawn": "1.7.0"
+    "com.sonosthesia.spawn": "1.7.0",
+    "com.sonosthesia.mesh": "1.7.0"
   },
   "description": "Sonosthesia vfx",
   "displayName": "Sonosthesia VFX",

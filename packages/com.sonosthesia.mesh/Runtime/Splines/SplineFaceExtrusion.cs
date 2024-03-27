@@ -17,10 +17,13 @@ namespace Sonosthesia.Mesh
 
             public float scale { get; private set; }
             
+            public float fade { get; private set; }
+            
             public int faces { get; private set; }
 
-            public FaceSettings(float scale, int faces)
+            public FaceSettings(float scale, float fade, int faces)
             {
+                this.fade = fade;
                 this.scale = math.clamp(scale, k_ScaleMin, k_ScaleMax);
                 this.faces = faces;
             }
@@ -53,29 +56,57 @@ namespace Sonosthesia.Mesh
                     vertexArrayOffset, indicesArrayOffset);    
             }
         }
-        
-        
+
+        private readonly struct ExtrudeInfo
+        {
+            public readonly float T;
+            public readonly float Length;
+            public readonly float Scale;
+            public readonly int Start;
+
+            public ExtrudeInfo(float t, float length, float scale, int start)
+            {
+                T = t;
+                Length = length;
+                Scale = scale;
+                Start = start;
+            }
+        }
+
         [BurstCompile]
-        static void ExtrudeSegments<T, K>(T spline, float t, NativeArray<K> data, NativeArray<ExtrusionSegment> segments, FaceSettings faceSettings, int start)
+        private static void ExtrudeSegments<T, K>(T spline, NativeArray<K> data,
+            NativeArray<ExtrusionSegment> segments, ExtrusionSettings extrusionSettings, FaceSettings faceSettings, 
+            int index, float length, int vertexArrayOffset)
             where T : ISpline
             where K : struct, SplineMesh.ISplineVertexData
         {
-            var evaluationT = spline.Closed ? math.frac(t) : math.clamp(t, 0f, 1f);
+            float s = index / (extrusionSettings.segments - 1f);
+            float t = math.lerp(extrusionSettings.range.x, extrusionSettings.range.y, s);
+            float fade = faceSettings.fade == 0f ? 1f : math.smoothstep(0f, faceSettings.fade, math.abs(math.round(s) - s));
+            float scale = fade * faceSettings.scale;
+            ExtrudeInfo info = new ExtrudeInfo(t, length, scale, vertexArrayOffset + index * segments.Length * 2);
+            ExtrudeSegments(spline, info, data, segments);
+        }
+
+        [BurstCompile]
+        private static void ExtrudeSegments<T, K>(T spline, ExtrudeInfo info, NativeArray<K> data, NativeArray<ExtrusionSegment> segments)
+            where T : ISpline
+            where K : struct, SplineMesh.ISplineVertexData
+        {
+            float evaluationT = spline.Closed ? math.frac(info.T) : math.clamp(info.T, 0f, 1f);
             spline.Evaluate(evaluationT, out var sp, out var st, out var up);
 
-            var tangentLength = math.lengthsq(st);
+            float tangentLength = math.lengthsq(st);
             if (tangentLength == 0f || float.IsNaN(tangentLength))
             {
-                var adjustedT = math.clamp(evaluationT + (0.0001f * (t < 1f ? 1f : -1f)), 0f, 1f);
+                float adjustedT = math.clamp(evaluationT + (0.0001f * (info.T < 1f ? 1f : -1f)), 0f, 1f);
                 spline.Evaluate(adjustedT, out _, out st, out up);
             }
 
             st = math.normalize(st);
-
-            var rot = quaternion.LookRotationSafe(st, up);
+            quaternion rot = quaternion.LookRotationSafe(st, up);
             int count = segments.Length;
-
-            float splineLength = spline.GetLength();
+            float y = info.T * info.Length;
             
             for (int n = 0; n < count; ++n)
             {
@@ -85,18 +116,18 @@ namespace Sonosthesia.Mesh
                 {
                     K vertex = new K();
                 
-                    Vector3 position = point.position * faceSettings.scale;
+                    Vector3 position = point.position * info.Scale;
                     vertex.position = sp + math.rotate(rot, position);
                 
                     Vector3 normal = point.normal;
                     vertex.normal = math.rotate(rot, normal);
                 
-                    vertex.texture = new Vector2(point.u, t * splineLength);
+                    vertex.texture = new Vector2(point.u, y);
 
                     return vertex;
                 }
 
-                int indexOffset = start + 2 * n;
+                int indexOffset = info.Start + 2 * n;
 
                 data[indexOffset] = MakeVertex(segment.start);
                 data[indexOffset + 1] = MakeVertex(segment.end);
@@ -122,11 +153,13 @@ namespace Sonosthesia.Mesh
             public ExtrusionSettings ExtrusionSettings;
             public FaceSettings FaceSettings;
             public int VertexArrayOffset;
+            
+            // pre compute to avoid expensive GetLength on each iteration
+            public float Length;
 
             public void Execute(int index)
             {
-                float t = math.lerp(ExtrusionSettings.range.x, ExtrusionSettings.range.y, index / (ExtrusionSettings.segments - 1f));
-                ExtrudeSegments(Spline, t, Vertices, Segments, FaceSettings, VertexArrayOffset + index * Segments.Length * 2);
+                ExtrudeSegments(Spline, Vertices, Segments, ExtrusionSettings, FaceSettings, index, Length, VertexArrayOffset);
             }
         }
         
@@ -149,20 +182,13 @@ namespace Sonosthesia.Mesh
                 where TVertexType : struct, SplineMesh.ISplineVertexData
                 where TIndexType : struct
         {
-            GetVertexAndIndexCount(extrusionSettings, faceSettings, out var vertexCount, out var indexCount);
-
+           
             if (faceSettings.faces < 1)
                 throw new ArgumentOutOfRangeException(nameof(faceSettings.faces), "Faces must be greater than 0");
 
             if (extrusionSettings.segments < 2)
                 throw new ArgumentOutOfRangeException(nameof(extrusionSettings.segments), "Segments must be greater than 2");
             
-            if (vertices.Length < vertexCount)
-                throw new ArgumentOutOfRangeException($"Vertex array is incorrect size. Expected {vertexCount} or more, but received {vertices.Length}.");
-
-            if (indices.Length < indexCount)
-                throw new ArgumentOutOfRangeException($"Index array is incorrect size. Expected {indexCount} or more, but received {indices.Length}.");
-
             if (typeof(TIndexType) == typeof(UInt16))
             {
                 var ushortIndices = indices.Reinterpret<UInt16>();
@@ -187,7 +213,8 @@ namespace Sonosthesia.Mesh
                     Segments = segments,
                     ExtrusionSettings = extrusionSettings,
                     FaceSettings = faceSettings,
-                    VertexArrayOffset = vertexArrayOffset
+                    VertexArrayOffset = vertexArrayOffset,
+                    Length = spline.GetLength()
                 };
                 job.Schedule(extrusionSettings.segments, (int)math.sqrt(extrusionSettings.segments)).Complete();
             }
@@ -207,20 +234,12 @@ namespace Sonosthesia.Mesh
                 where TVertexType : struct, SplineMesh.ISplineVertexData
                 where TIndexType : struct
         {
-            GetVertexAndIndexCount(extrusionSettings, faceSettings, out var vertexCount, out var indexCount);
-
             if (faceSettings.faces < 1)
                 throw new ArgumentOutOfRangeException(nameof(faceSettings.faces), "Faces must be greater than 0");
 
             if (extrusionSettings.segments < 2)
                 throw new ArgumentOutOfRangeException(nameof(extrusionSettings.segments), "Segments must be greater than 1");
-            
-            if (vertices.Length < vertexCount)
-                throw new ArgumentOutOfRangeException($"Vertex array is incorrect size. Expected {vertexCount} or more, but received {vertices.Length}.");
-
-            if (indices.Length < indexCount)
-                throw new ArgumentOutOfRangeException($"Index array is incorrect size. Expected {indexCount} or more, but received {indices.Length}.");
-
+           
             if (typeof(TIndexType) == typeof(UInt16))
             {
                 var ushortIndices = indices.Reinterpret<UInt16>();
@@ -236,10 +255,10 @@ namespace Sonosthesia.Mesh
                 throw new ArgumentException("Indices must be UInt16 or UInt32", nameof(indices));
             }
 
+            float length = spline.GetLength();
             for (int i = 0; i < extrusionSettings.segments; ++i)
             {
-                float t = math.lerp(extrusionSettings.range.x, extrusionSettings.range.y, i / (extrusionSettings.segments - 1f));
-                ExtrudeSegments(spline, t, vertices, segments, faceSettings, vertexArrayOffset + i * faceSettings.faces * 2);                
+                ExtrudeSegments(spline, vertices, segments, extrusionSettings, faceSettings, i, length, vertexArrayOffset);           
             }
         }
         

@@ -8,7 +8,7 @@ namespace Sonosthesia.Mesh
     // based on com.unity.splines SplineExtrude.cs with obsolete methods removed and hooks added
     
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-    public abstract class SplineCustomExtrude : MonoBehaviour
+    public abstract class SplineCustomExtrude : MeshController
     {
         [SerializeField, Tooltip("The Spline to extrude.")]
         SplineContainer m_Container;
@@ -56,7 +56,6 @@ namespace Sonosthesia.Mesh
         [SerializeField] private GizmoMode _gizmoMode;
         
         private Vector3[] _vertices, _normals;
-        private UnityEngine.Mesh m_Mesh;
         private bool m_RebuildRequested;
         private float m_NextScheduledRebuild;
 
@@ -78,21 +77,6 @@ namespace Sonosthesia.Mesh
             }
 
             Rebuild();
-        }
-
-        private UnityEngine.Mesh Mesh
-        {
-            get
-            {
-                if (m_Mesh != null)
-                {
-                    return m_Mesh;
-                }
-
-                m_Mesh = new UnityEngine.Mesh { name = "SplineExtrude" };
-                GetComponent<MeshFilter>().mesh = m_Mesh;
-                return m_Mesh;
-            }
         }
 
         protected virtual void Start()
@@ -199,9 +183,11 @@ namespace Sonosthesia.Mesh
 #endif
         }
         
-        protected void OnDrawGizmos () 
+        protected void OnDrawGizmos ()
         {
-            if (m_Mesh == null || _gizmoMode == 0) 
+            UnityEngine.Mesh mesh = Mesh;
+            
+            if (mesh == null || _gizmoMode == 0) 
             {
                 return;
             }
@@ -209,12 +195,12 @@ namespace Sonosthesia.Mesh
             Transform t = transform;
             
             bool drawVertices = (_gizmoMode & GizmoMode.Vertices) != 0;
-            bool drawNormals = (_gizmoMode & GizmoMode.Normals) != 0 && m_Mesh.HasVertexAttribute(VertexAttribute.Normal);
+            bool drawNormals = (_gizmoMode & GizmoMode.Normals) != 0 && mesh.HasVertexAttribute(VertexAttribute.Normal);
             
-            _vertices ??= m_Mesh.vertices;
+            _vertices ??= mesh.vertices;
             if (drawNormals && _normals == null) 
             {
-                _normals = m_Mesh.normals;
+                _normals = mesh.normals;
             }
             
             for (int i = 0; i < _vertices.Length; i++) 
