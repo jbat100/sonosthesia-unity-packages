@@ -1,45 +1,35 @@
 using System;
-using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.Splines;
 
 namespace Sonosthesia.Mesh
 {
     public static class SplineRingExtrusion
     {
-        static readonly VertexAttributeDescriptor[] k_PipeVertexAttribs = new VertexAttributeDescriptor[]
+        public readonly struct RingSettings
         {
-            new (VertexAttribute.Position),
-            new (VertexAttribute.Normal),
-            new (VertexAttribute.TexCoord0, dimension: 2)
-        };
-        
-        public struct RingSettings
-        {
-            const float k_RadiusMin = .00001f, k_RadiusMax = 10000f;
             const int k_SidesMin = 3, k_SidesMax = 2084;
-        
-            public int sides { get; private set; }
-        
-            public float radius { get; private set; }
 
-            public RingSettings(int sides, float radius)
+            public readonly int sides;
+
+            public readonly bool capped;
+
+            public RingSettings(int sides, bool capped)
             {
+                this.capped = capped;
                 this.sides = math.clamp(sides, k_SidesMin, k_SidesMax);
-                this.radius = math.clamp(radius, k_RadiusMin, k_RadiusMax);
             }
         }
         
         private static void GetVertexAndIndexCount(ExtrusionSettings extrusionSettings, RingSettings ringSettings, out int vertexCount, out int indexCount)
         {
-            vertexCount = ringSettings.sides * (extrusionSettings.segments + (extrusionSettings.capped ? 2 : 0));
-            indexCount = ringSettings.sides * 6 * (extrusionSettings.segments - (extrusionSettings.closed ? 0 : 1)) + (extrusionSettings.capped ? (ringSettings.sides - 2) * 3 * 2 : 0);
+            vertexCount = ringSettings.sides * (extrusionSettings.segments + (ringSettings.capped ? 2 : 0));
+            indexCount = ringSettings.sides * 6 * (extrusionSettings.segments - (extrusionSettings.closed ? 0 : 1)) + (ringSettings.capped ? (ringSettings.sides - 2) * 3 * 2 : 0);
         }
 
         /// <summary>
@@ -48,202 +38,41 @@ namespace Sonosthesia.Mesh
         /// </summary>
         
         [BurstCompile]
-        static void ExtrudeRing<T, K>(T spline, float t, NativeArray<K> data, int start, int count, float radius)
+        static void ExtrudeRing<T, K>(T spline, NativeArray<K> data, ExtrudeInfo info, RingSettings ringSettings)
             where T : ISpline
             where K : struct, SplineMesh.ISplineVertexData
         {
-            var evaluationT = spline.Closed ? math.frac(t) : math.clamp(t, 0f, 1f);
+            var evaluationT = info.closed ? math.frac(info.t) : math.clamp(info.t, 0f, 1f);
             spline.Evaluate(evaluationT, out var sp, out var st, out var up);
 
             var tangentLength = math.lengthsq(st);
             if (tangentLength == 0f || float.IsNaN(tangentLength))
             {
-                var adjustedT = math.clamp(evaluationT + (0.0001f * (t < 1f ? 1f : -1f)), 0f, 1f);
+                var adjustedT = math.clamp(evaluationT + (0.0001f * (info.t < 1f ? 1f : -1f)), 0f, 1f);
                 spline.Evaluate(adjustedT, out _, out st, out up);
             }
 
             st = math.normalize(st);
 
             quaternion rot = quaternion.LookRotationSafe(st, up);
-            float rad = math.radians(360f / count);
-            float splineLength = spline.GetLength();
+            float rad = math.radians(360f / ringSettings.sides);
             
-            // TODO : could have setting enum to determine how to spread texture v on the extruded mesh
-            float v = t * splineLength;
-            
-            for (int n = 0; n < count; ++n)
+            for (int n = 0; n < ringSettings.sides; ++n)
             {
                 var vertex = new K();
-                var p = new float3(math.cos(n * rad), math.sin(n * rad), 0f) * radius;
+                var p = new float3(math.cos(n * rad), math.sin(n * rad), 0f) * info.scale;
                 vertex.position = sp + math.rotate(rot, p);
                 vertex.normal = (vertex.position - (Vector3)sp).normalized;
 
                 // instead of inserting a seam, wrap UVs using a triangle wave so that texture wraps back onto itself
-                float ut = n / ((float)count + count%2);
+                float ut = n / ((float)ringSettings.sides + ringSettings.sides%2);
                 float u = math.abs(ut - math.floor(ut + .5f)) * 2f;
-                vertex.texture = new Vector2(u, v);
+                vertex.texture = new Vector2(u, info.v);
 
-                data[start + n] = vertex;
+                data[info.start + n] = vertex;
             }
         }
         
-        /// <summary>
-        /// Extrude a mesh along a spline in a tube-like shape.
-        /// </summary>
-        /// <param name="spline">The spline to extrude.</param>
-        /// <param name="mesh">A mesh that will be cleared and filled with vertex data for the shape.</param>
-        /// <param name="radius">The radius of the extruded mesh.</param>
-        /// <param name="sides">How many sides make up the radius of the mesh.</param>
-        /// <param name="segments">How many sections compose the length of the mesh.</param>
-        /// <param name="capped">Whether the start and end of the mesh is filled. This setting is ignored when spline is closed.</param>
-        /// <typeparam name="T">A type implementing ISpline.</typeparam>
-        public static void Extrude<T>(T spline, UnityEngine.Mesh mesh, float radius, int sides, int segments, bool capped = true) where T : ISpline
-        {
-            Extrude(spline, mesh, radius, sides, segments, capped, new float2(0f, 1f));
-        }
-
-        /// <summary>
-        /// Extrude a mesh along a spline in a tube-like shape.
-        /// </summary>
-        /// <param name="spline">The spline to extrude.</param>
-        /// <param name="mesh">A mesh that will be cleared and filled with vertex data for the shape.</param>
-        /// <param name="radius">The radius of the extruded mesh.</param>
-        /// <param name="sides">How many sides make up the radius of the mesh.</param>
-        /// <param name="segments">How many sections compose the length of the mesh.</param>
-        /// <param name="capped">Whether the start and end of the mesh is filled. This setting is ignored when spline is closed.</param>
-        /// <param name="range">
-        /// The section of the Spline to extrude. This value expects a normalized interpolation start and end.
-        /// I.e., [0,1] is the entire Spline, whereas [.5, 1] is the last half of the Spline.
-        /// </param>
-        /// <typeparam name="T">A type implementing ISpline.</typeparam>
-        public static void Extrude<T>(T spline, UnityEngine.Mesh mesh, float radius, int sides, int segments, bool capped, float2 range) where T : ISpline
-        {
-            ExtrusionSettings extrusionSettings = new ExtrusionSettings(segments, capped, spline.Closed, range);
-            RingSettings ringSettings = new RingSettings(sides, radius);
-             
-            GetVertexAndIndexCount(extrusionSettings, ringSettings, out var vertexCount, out var indexCount);
-
-            var meshDataArray = UnityEngine.Mesh.AllocateWritableMeshData(1);
-            var data = meshDataArray[0];
-
-            var indexFormat = vertexCount >= ushort.MaxValue ? IndexFormat.UInt32 : IndexFormat.UInt16;
-            data.SetIndexBufferParams(indexCount, indexFormat);
-            data.SetVertexBufferParams(vertexCount, k_PipeVertexAttribs);
-
-            var vertices = data.GetVertexData<SplineVertexData>();
-
-            if (indexFormat == IndexFormat.UInt16)
-            {
-                var indices = data.GetIndexData<UInt16>();
-                Extrude(false, spline, vertices, indices, ringSettings, extrusionSettings);
-            }
-            else
-            {
-                var indices = data.GetIndexData<UInt32>();
-                Extrude(false, spline, vertices, indices, ringSettings, extrusionSettings);
-            }
-
-            mesh.Clear();
-            data.subMeshCount = 1;
-            data.SetSubMesh(0, new SubMeshDescriptor(0, indexCount));
-            UnityEngine.Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, mesh);
-            mesh.RecalculateBounds();
-        }
-        
-        /// <summary>
-        /// Extrude a mesh along a list of splines in a tube-like shape.
-        /// </summary>
-        /// <param name="splines">The splines to extrude.</param>
-        /// <param name="mesh">A mesh that will be cleared and filled with vertex data for the shape.</param>
-        /// <param name="radius">The radius of the extruded mesh.</param>
-        /// <param name="sides">How many sides make up the radius of the mesh.</param>
-        /// <param name="segmentsPerUnit">The number of edge loops that comprise the length of one unit of the mesh.</param>
-        /// <param name="capped">Whether the start and end of the mesh is filled. This setting is ignored when spline is closed.</param>
-        /// <param name="range">
-        /// The section of the Spline to extrude. This value expects a normalized interpolation start and end.
-        /// I.e., [0,1] is the entire Spline, whereas [.5, 1] is the last half of the Spline.
-        /// </param>
-        /// <typeparam name="T">A type implementing ISpline.</typeparam>
-        public static void Extrude<T>(IReadOnlyList<T> splines, UnityEngine.Mesh mesh, float radius, int sides, float segmentsPerUnit, bool capped, float2 range) where T : ISpline
-        {
-            mesh.Clear();
-            var meshDataArray = UnityEngine.Mesh.AllocateWritableMeshData(1);
-            var data = meshDataArray[0];
-            data.subMeshCount = 1;
-
-            var totalVertexCount = 0;
-            var totalIndexCount = 0;
-            var extrusionSettings = new ExtrusionSettings[splines.Count];
-            var ringSettings = new RingSettings[splines.Count];
-            var span = Mathf.Abs(range.y - range.x);
-            var splineMeshOffsets = new (int indexStart, int vertexStart)[splines.Count];
-            for (int i = 0; i < splines.Count; ++i)
-            {
-                var spline = splines[i];
-                
-                var segments = Mathf.Max((int)Mathf.Ceil(spline.GetLength() * span * segmentsPerUnit), 1);
-                extrusionSettings[i] = new ExtrusionSettings(segments, capped, spline.Closed, range);
-                ringSettings[i] = new RingSettings(sides, radius);
-            
-                GetVertexAndIndexCount(extrusionSettings[i], ringSettings[i], out var vertexCount, out var indexCount);
-
-                splineMeshOffsets[i] = (totalIndexCount, totalVertexCount);
-                totalVertexCount += vertexCount;
-                totalIndexCount += indexCount;
-            }
-            
-            var indexFormat = totalVertexCount >= ushort.MaxValue ? IndexFormat.UInt32 : IndexFormat.UInt16;
-            
-            data.SetIndexBufferParams(totalIndexCount, indexFormat);
-            data.SetVertexBufferParams(totalVertexCount, k_PipeVertexAttribs);
-
-            var vertices = data.GetVertexData<SplineVertexData>();
-            if (indexFormat == IndexFormat.UInt16)
-            {
-                var indices = data.GetIndexData<UInt16>();
-                for (int i = 0; i < splines.Count; ++i)
-                    Extrude(splines[i], vertices, indices, extrusionSettings[i], ringSettings[i], splineMeshOffsets[i].vertexStart, splineMeshOffsets[i].indexStart);
-            }
-            else
-            {
-                var indices = data.GetIndexData<UInt32>();
-                for (int i = 0; i < splines.Count; ++i)
-                    Extrude(splines[i], vertices, indices, extrusionSettings[i], ringSettings[i], splineMeshOffsets[i].vertexStart, splineMeshOffsets[i].indexStart);
-            }
-            
-            data.SetSubMesh(0, new SubMeshDescriptor(0, totalIndexCount));
-
-            UnityEngine.Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, mesh);
-            mesh.RecalculateBounds();
-        }
-
-        /// <summary>
-        /// Extrude a mesh along a spline in a tube-like shape.
-        /// </summary>
-        /// <param name="spline">The spline to extrude.</param>
-        /// <param name="vertices">A pre-allocated buffer of vertex data.</param>
-        /// <param name="indices">A pre-allocated index buffer. Must be of type UInt16 or UInt32.</param>
-        /// <param name="radius">The radius of the extruded mesh.</param>
-        /// <param name="sides">How many sides make up the radius of the mesh.</param>
-        /// <param name="segments">How many sections compose the length of the mesh.</param>
-        /// <param name="capped">Whether the start and end of the mesh is filled. This setting is ignored when spline
-        /// is closed.</param>
-        /// <param name="range">
-        /// The section of the Spline to extrude. This value expects a normalized interpolation start and end.
-        /// I.e., [0,1] is the entire Spline, whereas [.5, 1] is the last half of the Spline.
-        /// </param>
-        /// <param name="vertexArrayOffset"></param>
-        /// <param name="indicesArrayOffset"></param>
-        /// <typeparam name="TSplineType">A type implementing ISpline.</typeparam>
-        /// <typeparam name="TVertexType">A type implementing ISplineVertexData.</typeparam>
-        /// <typeparam name="TIndexType">The mesh index format. Must be UInt16 or UInt32.</typeparam>
-        /// <exception cref="ArgumentOutOfRangeException">An out of range exception is thrown if the vertex or index
-        /// buffer lengths do not match the expected size. Use <see cref="GetVertexAndIndexCount"/> to calculate the
-        /// expected buffer sizes.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        /// An argument exception is thrown if {TIndexType} is not UInt16 or UInt32.
-        /// </exception>
         public static void Extrude<TSplineType, TVertexType, TIndexType>(
             bool parallel,
             TSplineType spline,
@@ -282,10 +111,12 @@ namespace Sonosthesia.Mesh
             public RingSettings RingSettings;
             public int VertexArrayOffset;
 
+            public float Length;
+            
             public void Execute(int index)
             {
-                float t = math.lerp(ExtrusionSettings.range.x, ExtrusionSettings.range.y, index / (ExtrusionSettings.segments - 1f));
-                ExtrudeRing(Spline, t, Vertices, VertexArrayOffset + index * RingSettings.sides, RingSettings.sides, RingSettings.radius);
+                ExtrudeInfo info = new ExtrudeInfo(ExtrusionSettings, index, VertexArrayOffset + index * RingSettings.sides, Length);
+                ExtrudeRing(Spline, Vertices, info, RingSettings);
             }
         }
 
@@ -301,11 +132,10 @@ namespace Sonosthesia.Mesh
                 where TVertexType : struct, SplineMesh.ISplineVertexData
                 where TIndexType : struct
         {
-            var radius = ringSettings.radius;
             var sides = ringSettings.sides;
             var segments = extrusionSettings.segments;
             var range = extrusionSettings.range;
-            var capped = extrusionSettings.capped;
+            var capped = ringSettings.capped;
 
             GetVertexAndIndexCount(extrusionSettings, ringSettings, out var vertexCount, out var indexCount);
 
@@ -324,17 +154,19 @@ namespace Sonosthesia.Mesh
             if (typeof(TIndexType) == typeof(UInt16))
             {
                 var ushortIndices = indices.Reinterpret<UInt16>();
-                SplineExtrusion.WindTris(ushortIndices, extrusionSettings, sides, vertexArrayOffset, indicesArrayOffset);
+                WindTris(ushortIndices, extrusionSettings, sides, capped, vertexArrayOffset, indicesArrayOffset);
             }
             else if (typeof(TIndexType) == typeof(UInt32))
             {
                 var ulongIndices = indices.Reinterpret<UInt32>();
-                SplineExtrusion.WindTris(ulongIndices, extrusionSettings, sides, vertexArrayOffset, indicesArrayOffset);
+                WindTris(ulongIndices, extrusionSettings, sides, capped, vertexArrayOffset, indicesArrayOffset);
             }
             else
             {
                 throw new ArgumentException("Indices must be UInt16 or UInt32", nameof(indices));
             }
+
+            float length = spline.GetLength();
 
             {
                 using NativeSpline nativeSpline = new NativeSpline(spline, Allocator.TempJob);
@@ -344,7 +176,8 @@ namespace Sonosthesia.Mesh
                     Vertices = vertices,
                     ExtrusionSettings = extrusionSettings,
                     RingSettings = ringSettings,
-                    VertexArrayOffset = vertexArrayOffset
+                    VertexArrayOffset = vertexArrayOffset,
+                    Length = length
                 };
                 job.Schedule(segments, (int)math.sqrt(segments)).Complete();
             }
@@ -355,8 +188,9 @@ namespace Sonosthesia.Mesh
                 var endCapVertexStart = vertexArrayOffset + (segments + 1) * sides;
 
                 var rng = spline.Closed ? math.frac(range) : math.clamp(range, 0f, 1f);
-                ExtrudeRing(spline, rng.x, vertices, capVertexStart, sides, radius);
-                ExtrudeRing(spline, rng.y, vertices, endCapVertexStart, sides, radius);
+                
+                ExtrudeRing(spline, vertices, ExtrudeInfo.StartCap(extrusionSettings, capVertexStart, length), ringSettings);
+                ExtrudeRing(spline, vertices, ExtrudeInfo.EndCap(extrusionSettings, capVertexStart, length), ringSettings);
 
                 var beginAccel = math.normalize(spline.EvaluateTangent(rng.x));
                 var accelLen = math.lengthsq(beginAccel);
@@ -400,11 +234,11 @@ namespace Sonosthesia.Mesh
                 where TVertexType : struct, SplineMesh.ISplineVertexData
                 where TIndexType : struct
         {
-            var radius = ringSettings.radius;
+            var radius = extrusionSettings.scale;
             var sides = ringSettings.sides;
             var segments = extrusionSettings.segments;
             var range = extrusionSettings.range;
-            var capped = extrusionSettings.capped;
+            var capped = ringSettings.capped;
 
             GetVertexAndIndexCount(extrusionSettings, ringSettings, out var vertexCount, out var indexCount);
 
@@ -423,20 +257,25 @@ namespace Sonosthesia.Mesh
             if (typeof(TIndexType) == typeof(UInt16))
             {
                 var ushortIndices = indices.Reinterpret<UInt16>();
-                SplineExtrusion.WindTris(ushortIndices, extrusionSettings, sides, vertexArrayOffset, indicesArrayOffset);
+                WindTris(ushortIndices, extrusionSettings, sides, capped, vertexArrayOffset, indicesArrayOffset);
             }
             else if (typeof(TIndexType) == typeof(UInt32))
             {
                 var ulongIndices = indices.Reinterpret<UInt32>();
-                SplineExtrusion.WindTris(ulongIndices, extrusionSettings, sides, vertexArrayOffset, indicesArrayOffset);
+                WindTris(ulongIndices, extrusionSettings, sides, capped, vertexArrayOffset, indicesArrayOffset);
             }
             else
             {
                 throw new ArgumentException("Indices must be UInt16 or UInt32", nameof(indices));
             }
 
+            float length = spline.GetLength();
+
             for (int i = 0; i < segments; ++i)
-                ExtrudeRing(spline, math.lerp(range.x, range.y, i / (segments - 1f)), vertices, vertexArrayOffset + i * sides, sides, radius);
+            {
+                ExtrudeInfo info = new ExtrudeInfo(extrusionSettings, i, vertexArrayOffset + i * sides, length);
+                ExtrudeRing(spline, vertices, info, ringSettings);
+            }
 
             if (capped)
             {
@@ -444,8 +283,8 @@ namespace Sonosthesia.Mesh
                 var endCapVertexStart = vertexArrayOffset + (segments + 1) * sides;
 
                 var rng = spline.Closed ? math.frac(range) : math.clamp(range, 0f, 1f);
-                ExtrudeRing(spline, rng.x, vertices, capVertexStart, sides, radius);
-                ExtrudeRing(spline, rng.y, vertices, endCapVertexStart, sides, radius);
+                ExtrudeRing(spline, vertices, ExtrudeInfo.StartCap(extrusionSettings, capVertexStart, length), ringSettings);
+                ExtrudeRing(spline, vertices, ExtrudeInfo.EndCap(extrusionSettings, capVertexStart, length), ringSettings);
 
                 var beginAccel = math.normalize(spline.EvaluateTangent(rng.x));
                 var accelLen = math.lengthsq(beginAccel);
@@ -472,6 +311,101 @@ namespace Sonosthesia.Mesh
 
                     vertices[capVertexStart + i] = v0;
                     vertices[endCapVertexStart + i] = v1;
+                }
+            }
+        }
+        
+        // Two overloads for winding triangles because there is no generic constraint for UInt{16, 32}
+        // Note this winds the tris of the whole extruded spline mesh and should work with any extruded shape
+        [BurstCompile]
+        internal static void WindTris(NativeArray<UInt16> indices, ExtrusionSettings settings, int sides, bool capped, int vertexArrayOffset = 0, int indexArrayOffset = 0)
+        {
+            var closed = settings.closed;
+            var segments = settings.segments;
+
+            // loop over the segments along the length of the spline 
+            for (int i = 0; i < (closed ? segments : segments - 1); ++i)
+            {
+                // loop over the sides of a given spline extrusion segments
+                for (int n = 0; n < sides; ++n)
+                {
+                    // takes two vertices of the current segment and the two corresponding vertices of the next segment
+                    var index0 = vertexArrayOffset + i * sides + n;
+                    var index1 = vertexArrayOffset + i * sides + ((n + 1) % sides);
+                    var index2 = vertexArrayOffset + ((i+1) % segments) * sides + n;
+                    var index3 = vertexArrayOffset + ((i+1) % segments) * sides + ((n + 1) % sides);
+
+                    // for a face we have two triangles, therefore we times the i sides and n faces 
+                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 0] = (UInt16) index0;
+                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 1] = (UInt16) index1;
+                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 2] = (UInt16) index2;
+                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 3] = (UInt16) index1;
+                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 4] = (UInt16) index3;
+                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 5] = (UInt16) index2;
+                }
+            }
+
+            if (capped)
+            {
+                var capVertexStart = vertexArrayOffset + segments * sides;
+                var capIndexStart = indexArrayOffset + sides * 6 * (segments-1);
+                var endCapVertexStart = vertexArrayOffset + (segments + 1) * sides;
+                var endCapIndexStart = indexArrayOffset + (segments-1) * 6 * sides + (sides-2) * 3;
+
+                for(ushort i = 0; i < sides - 2; ++i)
+                {
+                    indices[capIndexStart + i * 3 + 0] = (UInt16)(capVertexStart);
+                    indices[capIndexStart + i * 3 + 1] = (UInt16)(capVertexStart + i + 2);
+                    indices[capIndexStart + i * 3 + 2] = (UInt16)(capVertexStart + i + 1);
+
+                    indices[endCapIndexStart + i * 3 + 0] = (UInt16) (endCapVertexStart);
+                    indices[endCapIndexStart + i * 3 + 1] = (UInt16) (endCapVertexStart + i + 1);
+                    indices[endCapIndexStart + i * 3 + 2] = (UInt16) (endCapVertexStart + i + 2);
+                }
+            }
+        }
+
+        // Two overloads for winding triangles because there is no generic constraint for UInt{16, 32}
+        [BurstCompile]
+        internal static void WindTris(NativeArray<UInt32> indices, ExtrusionSettings settings, int sides, bool capped, int vertexArrayOffset = 0, int indexArrayOffset = 0)
+        {
+            var closed = settings.closed;
+            var segments = settings.segments;
+
+            for (int i = 0; i < (closed ? segments : segments - 1); ++i)
+            {
+                for (int n = 0; n < sides; ++n)
+                {
+                    var index0 = vertexArrayOffset + i * sides + n;
+                    var index1 = vertexArrayOffset + i * sides + ((n + 1) % sides);
+                    var index2 = vertexArrayOffset + ((i+1) % segments) * sides + n;
+                    var index3 = vertexArrayOffset + ((i+1) % segments) * sides + ((n + 1) % sides);
+
+                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 0] = (UInt32) index0;
+                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 1] = (UInt32) index1;
+                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 2] = (UInt32) index2;
+                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 3] = (UInt32) index1;
+                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 4] = (UInt32) index3;
+                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 5] = (UInt32) index2;
+                }
+            }
+
+            if (capped)
+            {
+                var capVertexStart = vertexArrayOffset + segments * sides;
+                var capIndexStart = indexArrayOffset + sides * 6 * (segments-1);
+                var endCapVertexStart = vertexArrayOffset + (segments + 1) * sides;
+                var endCapIndexStart = indexArrayOffset + (segments-1) * 6 * sides + (sides-2) * 3;
+
+                for(ushort i = 0; i < sides - 2; ++i)
+                {
+                    indices[capIndexStart + i * 3 + 0] = (UInt32)(capVertexStart);
+                    indices[capIndexStart + i * 3 + 1] = (UInt32)(capVertexStart + i + 2);
+                    indices[capIndexStart + i * 3 + 2] = (UInt32)(capVertexStart + i + 1);
+
+                    indices[endCapIndexStart + i * 3 + 0] = (UInt32) (endCapVertexStart);
+                    indices[endCapIndexStart + i * 3 + 1] = (UInt32) (endCapVertexStart + i + 1);
+                    indices[endCapIndexStart + i * 3 + 2] = (UInt32) (endCapVertexStart + i + 2);
                 }
             }
         }

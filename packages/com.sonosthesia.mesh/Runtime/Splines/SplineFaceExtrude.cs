@@ -8,12 +8,6 @@ namespace Sonosthesia.Mesh
 {
     public class SplineFaceExtrude : SplineCustomExtrude
     {
-        [SerializeField, Tooltip("The radius of the extruded mesh.")]
-        private float m_Scale = .25f;
-        
-        [SerializeField, Range(0f, 1f), Tooltip("Scale fade at spline extremities.")]
-        private float m_Fade = .05f;
-
         [SerializeField] 
         private ExtrusionSegmentContainer m_SegmentContainer;
 
@@ -24,8 +18,7 @@ namespace Sonosthesia.Mesh
                 return;
             }
             
-            SplineFaceExtrusion.FaceSettings faceSettings =
-                new SplineFaceExtrusion.FaceSettings(m_Scale, m_Fade, m_SegmentContainer.SegmentCount);
+            SplineFaceExtrusion.FaceSettings faceSettings = new (m_SegmentContainer.SegmentCount);
 
             Extrude(spline, data, m_SegmentContainer, extrusionSettings, faceSettings, parallel);
         }

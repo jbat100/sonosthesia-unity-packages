@@ -1,7 +1,4 @@
-﻿using System;
-using Unity.Burst;
-using Unity.Collections;
-using Unity.Mathematics;
+﻿using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -15,124 +12,119 @@ namespace Sonosthesia.Mesh
         public Vector2 texture { get; set; }
     }
 
-    // The logic around when caps and closing is a little complicated and easy to confuse. This wraps settings in a
-    // consistent way so that methods aren't working with mixed data.
-    public struct ExtrusionSettings
+    public enum ExtrusionVStrategy
+    {
+        None,
+        Unit,
+        Length,
+        NormalizedLength,
+        Range,
+        NormalizedRange
+    }
+    
+    public readonly struct ExtrusionSettings
     {
         const int k_SegmentsMin = 2, k_SegmentsMax = 4096;
-            
-        public int segments { get; private set; }
-        public bool capped { get; private set; }
-        public bool closed { get; private set; }
-        public float2 range { get; private set; }
 
-        public ExtrusionSettings(int segments, bool capped, bool closed, float2 range)
+        public readonly int segments;
+        public readonly bool closed;
+        public readonly float2 range;
+        public readonly float scale;
+        public readonly float fade;
+        public readonly ExtrusionVStrategy vStrategy;
+
+        public ExtrusionSettings(int segments, bool closed, float2 range, float scale, float fade, ExtrusionVStrategy vStrategy)
         {
             this.segments = math.clamp(segments, k_SegmentsMin, k_SegmentsMax);
             this.range = new float2(math.min(range.x, range.y), math.max(range.x, range.y));
             this.closed = math.abs(1f - (this.range.y - this.range.x)) < float.Epsilon && closed;
-            this.capped = capped && !this.closed;
+            this.scale = scale;
+            this.fade = fade;
+            this.vStrategy = vStrategy;
+        }
+    }
+    
+    internal readonly struct ExtrudeInfo
+    {
+        public readonly float t;
+        public readonly float v;
+        public readonly float length;
+        public readonly float scale;
+        public readonly int start;
+        public readonly bool closed;
+
+        public ExtrudeInfo(float t, float v, float length, float scale, int start, bool closed)
+        {
+            this.t = t;
+            this.v = v;
+            this.length = length;
+            this.scale = scale;
+            this.start = start;
+            this.closed = closed;
+        }
+
+        public ExtrudeInfo(ExtrusionSettings extrusionSettings, int index, int start, float length)
+        {
+            float s = index / (extrusionSettings.segments - 1f);
+            float t = math.lerp(extrusionSettings.range.x, extrusionSettings.range.y, s);
+            float fade = extrusionSettings.fade == 0f ? 1f : math.smoothstep(0f, extrusionSettings.fade, math.abs(math.round(s) - s));
+            float scale = fade * extrusionSettings.scale;
+            float v = SplineExtrusion.ComputeV(extrusionSettings.vStrategy, s, t, length, extrusionSettings.range);
+            
+            this.t = t;
+            this.v = v;
+            this.length = length;
+            this.scale = scale;
+            this.start = start;
+            this.closed = extrusionSettings.closed;
+        }
+
+        public static ExtrudeInfo StartCap(ExtrusionSettings extrusionSettings, int start, float length)
+        {
+            float2 range = extrusionSettings.closed ? math.frac(extrusionSettings.range) : math.clamp(extrusionSettings.range, 0f, 1f);
+            float s = 0f;
+            float t = math.lerp(range.x, range.y, s);
+            float fade = extrusionSettings.fade == 0f ? 1f : math.smoothstep(0f, extrusionSettings.fade, math.abs(math.round(s) - s));
+            float scale = fade * extrusionSettings.scale;
+            float v = SplineExtrusion.ComputeV(extrusionSettings.vStrategy, s, t, length, extrusionSettings.range);
+            return new ExtrudeInfo(t, v, length, scale, start, extrusionSettings.closed);
+        }
+        
+        public static ExtrudeInfo EndCap(ExtrusionSettings extrusionSettings, int start, float length)
+        {
+            float2 range = extrusionSettings.closed ? math.frac(extrusionSettings.range) : math.clamp(extrusionSettings.range, 0f, 1f);
+            float s = 1f;
+            float t = math.lerp(range.x, range.y, s);
+            float fade = extrusionSettings.fade == 0f ? 1f : math.smoothstep(0f, extrusionSettings.fade, math.abs(math.round(s) - s));
+            float scale = fade * extrusionSettings.scale;
+            float v = SplineExtrusion.ComputeV(extrusionSettings.vStrategy, s, t, length, extrusionSettings.range);
+            return new ExtrudeInfo(t, v, length, scale, start, extrusionSettings.closed);
         }
     }
     
     public static class SplineExtrusion
     {
-        // Two overloads for winding triangles because there is no generic constraint for UInt{16, 32}
-        // Note this winds the tris of the whole extruded spline mesh and should work with any extruded shape
-        [BurstCompile]
-        internal static void WindTris(NativeArray<UInt16> indices, ExtrusionSettings settings, int sides, int vertexArrayOffset = 0, int indexArrayOffset = 0)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="s">Normalized along range</param>
+        /// <param name="t">Normalized along spline</param>
+        /// <param name="length">Spline length</param>
+        /// <param name="range">Extrusion Range</param>
+        /// <returns></returns>
+        public static float ComputeV(ExtrusionVStrategy vStrategy, float s, float t, float length, float2 range)
         {
-            var closed = settings.closed;
-            var segments = settings.segments;
-            var capped = settings.capped;
-
-            // loop over the segments along the length of the spline 
-            for (int i = 0; i < (closed ? segments : segments - 1); ++i)
+            return vStrategy switch
             {
-                // loop over the sides of a given spline extrusion segments
-                for (int n = 0; n < sides; ++n)
-                {
-                    // takes two vertices of the current segment and the two corresponding vertices of the next segment
-                    var index0 = vertexArrayOffset + i * sides + n;
-                    var index1 = vertexArrayOffset + i * sides + ((n + 1) % sides);
-                    var index2 = vertexArrayOffset + ((i+1) % segments) * sides + n;
-                    var index3 = vertexArrayOffset + ((i+1) % segments) * sides + ((n + 1) % sides);
-
-                    // for a face we have two triangles, therefore we times the i sides and n faces 
-                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 0] = (UInt16) index0;
-                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 1] = (UInt16) index1;
-                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 2] = (UInt16) index2;
-                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 3] = (UInt16) index1;
-                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 4] = (UInt16) index3;
-                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 5] = (UInt16) index2;
-                }
-            }
-
-            if (capped)
-            {
-                var capVertexStart = vertexArrayOffset + segments * sides;
-                var capIndexStart = indexArrayOffset + sides * 6 * (segments-1);
-                var endCapVertexStart = vertexArrayOffset + (segments + 1) * sides;
-                var endCapIndexStart = indexArrayOffset + (segments-1) * 6 * sides + (sides-2) * 3;
-
-                for(ushort i = 0; i < sides - 2; ++i)
-                {
-                    indices[capIndexStart + i * 3 + 0] = (UInt16)(capVertexStart);
-                    indices[capIndexStart + i * 3 + 1] = (UInt16)(capVertexStart + i + 2);
-                    indices[capIndexStart + i * 3 + 2] = (UInt16)(capVertexStart + i + 1);
-
-                    indices[endCapIndexStart + i * 3 + 0] = (UInt16) (endCapVertexStart);
-                    indices[endCapIndexStart + i * 3 + 1] = (UInt16) (endCapVertexStart + i + 1);
-                    indices[endCapIndexStart + i * 3 + 2] = (UInt16) (endCapVertexStart + i + 2);
-                }
-            }
+                ExtrusionVStrategy.Unit => 1f,
+                ExtrusionVStrategy.Length => t * length,
+                ExtrusionVStrategy.NormalizedLength => t,
+                ExtrusionVStrategy.Range => s * (range.y - range.x),
+                ExtrusionVStrategy.NormalizedRange => s,
+                _ => 0f
+            };
         }
-
-        // Two overloads for winding triangles because there is no generic constraint for UInt{16, 32}
-        [BurstCompile]
-        internal static void WindTris(NativeArray<UInt32> indices, ExtrusionSettings settings, int sides, int vertexArrayOffset = 0, int indexArrayOffset = 0)
-        {
-            var closed = settings.closed;
-            var segments = settings.segments;
-            var capped = settings.capped;
-
-            for (int i = 0; i < (closed ? segments : segments - 1); ++i)
-            {
-                for (int n = 0; n < sides; ++n)
-                {
-                    var index0 = vertexArrayOffset + i * sides + n;
-                    var index1 = vertexArrayOffset + i * sides + ((n + 1) % sides);
-                    var index2 = vertexArrayOffset + ((i+1) % segments) * sides + n;
-                    var index3 = vertexArrayOffset + ((i+1) % segments) * sides + ((n + 1) % sides);
-
-                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 0] = (UInt32) index0;
-                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 1] = (UInt32) index1;
-                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 2] = (UInt32) index2;
-                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 3] = (UInt32) index1;
-                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 4] = (UInt32) index3;
-                    indices[indexArrayOffset + i * sides * 6 + n * 6 + 5] = (UInt32) index2;
-                }
-            }
-
-            if (capped)
-            {
-                var capVertexStart = vertexArrayOffset + segments * sides;
-                var capIndexStart = indexArrayOffset + sides * 6 * (segments-1);
-                var endCapVertexStart = vertexArrayOffset + (segments + 1) * sides;
-                var endCapIndexStart = indexArrayOffset + (segments-1) * 6 * sides + (sides-2) * 3;
-
-                for(ushort i = 0; i < sides - 2; ++i)
-                {
-                    indices[capIndexStart + i * 3 + 0] = (UInt32)(capVertexStart);
-                    indices[capIndexStart + i * 3 + 1] = (UInt32)(capVertexStart + i + 2);
-                    indices[capIndexStart + i * 3 + 2] = (UInt32)(capVertexStart + i + 1);
-
-                    indices[endCapIndexStart + i * 3 + 0] = (UInt32) (endCapVertexStart);
-                    indices[endCapIndexStart + i * 3 + 1] = (UInt32) (endCapVertexStart + i + 1);
-                    indices[endCapIndexStart + i * 3 + 2] = (UInt32) (endCapVertexStart + i + 2);
-                }
-            }
-        }
+        
         
     }
 }

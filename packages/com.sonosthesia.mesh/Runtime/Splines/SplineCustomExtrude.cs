@@ -32,12 +32,13 @@ namespace Sonosthesia.Mesh
         [SerializeField, Tooltip("The number of edge loops that comprise the length of one unit of the mesh. The " +
                                  "total number of sections is equal to \"Spline.GetLength() * segmentsPerUnit\".")]
         float m_SegmentsPerUnit = 4;
+        
+        [SerializeField] float m_Scale = 1f;
+        
+        [SerializeField] float m_Fade = 0f;
 
-        [SerializeField,
-         Tooltip(
-             "Indicates if the start and end of the mesh are filled. When the Spline is closed this setting is ignored.")]
-        bool m_Capped = true;
-
+        [SerializeField] private ExtrusionVStrategy m_VStrategy = ExtrusionVStrategy.NormalizedRange;
+        
         [SerializeField, Tooltip("The section of the Spline to extrude.")]
         Vector2 m_Range = new Vector2(0f, 1f);
 
@@ -144,7 +145,7 @@ namespace Sonosthesia.Mesh
             
             // Debug.Log($"{this} rebuilding spline with length : {splineLength}, range {m_Range}, span {span}, segments {segments}");
 
-            ExtrusionSettings extrusionSettings = new ExtrusionSettings(segments, m_Capped, spline.Closed, m_Range);
+            ExtrusionSettings extrusionSettings = new ExtrusionSettings(segments, spline.Closed, m_Range, m_Scale, m_Fade, m_VStrategy);
 
             PopulateMeshData(data, spline, extrusionSettings, m_Parallel);
 

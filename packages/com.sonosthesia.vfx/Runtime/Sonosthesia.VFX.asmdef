@@ -3,6 +3,7 @@
     "rootNamespace": "Sonosthesia.VFX",
     "references": [
         "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:d04eb9c554ad44ceab303cecf0c0cf82",
         "GUID:560b04d1a97f54a4e82edc0cbbb69285",
         "GUID:9ae4e48213dc844d79ea0c712e4b45ed",
         "GUID:0e73a958ea93c4999aae301d99219c62",

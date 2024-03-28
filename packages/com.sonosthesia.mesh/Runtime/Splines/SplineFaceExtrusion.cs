@@ -13,18 +13,10 @@ namespace Sonosthesia.Mesh
     {
         public struct FaceSettings
         {
-            const float k_ScaleMin = .00001f, k_ScaleMax = 10000f;
-
-            public float scale { get; private set; }
-            
-            public float fade { get; private set; }
-            
             public int faces { get; private set; }
 
-            public FaceSettings(float scale, float fade, int faces)
+            public FaceSettings(int faces)
             {
-                this.fade = fade;
-                this.scale = math.clamp(scale, k_ScaleMin, k_ScaleMax);
                 this.faces = faces;
             }
         }
@@ -57,34 +49,14 @@ namespace Sonosthesia.Mesh
             }
         }
 
-        private readonly struct ExtrudeInfo
-        {
-            public readonly float T;
-            public readonly float Length;
-            public readonly float Scale;
-            public readonly int Start;
-
-            public ExtrudeInfo(float t, float length, float scale, int start)
-            {
-                T = t;
-                Length = length;
-                Scale = scale;
-                Start = start;
-            }
-        }
-
         [BurstCompile]
         private static void ExtrudeSegments<T, K>(T spline, NativeArray<K> data,
-            NativeArray<ExtrusionSegment> segments, ExtrusionSettings extrusionSettings, FaceSettings faceSettings, 
+            NativeArray<ExtrusionSegment> segments, ExtrusionSettings extrusionSettings, 
             int index, float length, int vertexArrayOffset)
             where T : ISpline
             where K : struct, SplineMesh.ISplineVertexData
         {
-            float s = index / (extrusionSettings.segments - 1f);
-            float t = math.lerp(extrusionSettings.range.x, extrusionSettings.range.y, s);
-            float fade = faceSettings.fade == 0f ? 1f : math.smoothstep(0f, faceSettings.fade, math.abs(math.round(s) - s));
-            float scale = fade * faceSettings.scale;
-            ExtrudeInfo info = new ExtrudeInfo(t, length, scale, vertexArrayOffset + index * segments.Length * 2);
+            ExtrudeInfo info = new ExtrudeInfo(extrusionSettings, index, vertexArrayOffset + index * segments.Length * 2, length);
             ExtrudeSegments(spline, info, data, segments);
         }
 
@@ -93,20 +65,19 @@ namespace Sonosthesia.Mesh
             where T : ISpline
             where K : struct, SplineMesh.ISplineVertexData
         {
-            float evaluationT = spline.Closed ? math.frac(info.T) : math.clamp(info.T, 0f, 1f);
+            float evaluationT = info.closed ? math.frac(info.t) : math.clamp(info.t, 0f, 1f);
             spline.Evaluate(evaluationT, out var sp, out var st, out var up);
 
             float tangentLength = math.lengthsq(st);
             if (tangentLength == 0f || float.IsNaN(tangentLength))
             {
-                float adjustedT = math.clamp(evaluationT + (0.0001f * (info.T < 1f ? 1f : -1f)), 0f, 1f);
+                float adjustedT = math.clamp(evaluationT + (0.0001f * (info.t < 1f ? 1f : -1f)), 0f, 1f);
                 spline.Evaluate(adjustedT, out _, out st, out up);
             }
 
             st = math.normalize(st);
             quaternion rot = quaternion.LookRotationSafe(st, up);
             int count = segments.Length;
-            float y = info.T * info.Length;
             
             for (int n = 0; n < count; ++n)
             {
@@ -116,18 +87,18 @@ namespace Sonosthesia.Mesh
                 {
                     K vertex = new K();
                 
-                    Vector3 position = point.position * info.Scale;
+                    Vector3 position = point.position * info.scale;
                     vertex.position = sp + math.rotate(rot, position);
                 
                     Vector3 normal = point.normal;
                     vertex.normal = math.rotate(rot, normal);
                 
-                    vertex.texture = new Vector2(point.u, y);
+                    vertex.texture = new Vector2(point.u, info.v);
 
                     return vertex;
                 }
 
-                int indexOffset = info.Start + 2 * n;
+                int indexOffset = info.start + 2 * n;
 
                 data[indexOffset] = MakeVertex(segment.start);
                 data[indexOffset + 1] = MakeVertex(segment.end);
@@ -159,7 +130,7 @@ namespace Sonosthesia.Mesh
 
             public void Execute(int index)
             {
-                ExtrudeSegments(Spline, Vertices, Segments, ExtrusionSettings, FaceSettings, index, Length, VertexArrayOffset);
+                ExtrudeSegments(Spline, Vertices, Segments, ExtrusionSettings, index, Length, VertexArrayOffset);
             }
         }
         
@@ -258,7 +229,7 @@ namespace Sonosthesia.Mesh
             float length = spline.GetLength();
             for (int i = 0; i < extrusionSettings.segments; ++i)
             {
-                ExtrudeSegments(spline, vertices, segments, extrusionSettings, faceSettings, i, length, vertexArrayOffset);           
+                ExtrudeSegments(spline, vertices, segments, extrusionSettings, i, length, vertexArrayOffset);           
             }
         }
         

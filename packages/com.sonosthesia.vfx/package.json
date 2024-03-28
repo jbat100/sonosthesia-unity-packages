@@ -1,6 +1,7 @@
 {
   "author": "Jonathan Thorpe",
   "dependencies": {
+    "com.unity.visualeffectgraph": "14.0.9",
     "com.neuecc.unirx": "7.1.0",
     "com.sonosthesia.channel": "1.7.0",
     "com.sonosthesia.signal": "1.7.0",
