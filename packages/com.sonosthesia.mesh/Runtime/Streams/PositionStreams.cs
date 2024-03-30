@@ -7,7 +7,7 @@ using UnityEngine.Rendering;
 
 namespace Sonosthesia.Mesh
 {
-public struct PositionStreams : IMeshStreams
+    public struct PositionStreams : IMeshStreams
     {
         [NativeDisableContainerSafetyRestriction]
         NativeArray<float3> _stream0;
