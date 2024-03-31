@@ -14,30 +14,13 @@ namespace Sonosthesia.Mesh
 
         public int SegmentCount => _segments.Count;
         
-        public NativeArray<ExtrusionSegment> NativeSegments
+        public void Populate(ref NativeArray<ExtrusionSegment> segments)
         {
-            get
+            segments.TryReusePersistentArray(SegmentCount);
+            for (int i = 0; i < segments.Length; ++i)
             {
-                if (_nativeSegments.IsCreated)
-                {
-                    return _nativeSegments;
-                }
-
-                _nativeSegments = new NativeArray<ExtrusionSegment>(_segments.Select(p => p.Segment()).ToArray(), Allocator.Persistent);
-                return _nativeSegments;
+                segments[i] = _segments[i].Segment();
             }
-        }
-
-        protected virtual void OnValidate()
-        {
-            _nativeSegments.Dispose();
-            _nativeSegments = default;
-        }
-
-        protected virtual void OnDisable()
-        {
-            _nativeSegments.Dispose();
-            _nativeSegments = default;
         }
     }
 }

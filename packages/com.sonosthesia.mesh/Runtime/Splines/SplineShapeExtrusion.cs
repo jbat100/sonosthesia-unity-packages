@@ -115,11 +115,6 @@ namespace Sonosthesia.Mesh
             }
         }
         
-        public static void GetVertexAndIndexCount(ExtrusionSettings extrusionSettings, ShapeSettings shapeSettings, out int vertexCount, out int indexCount)
-        {
-            vertexCount = shapeSettings.points * extrusionSettings.segments;
-            indexCount = shapeSettings.Sides * 6 * (extrusionSettings.segments - (extrusionSettings.closed ? 0 : 1));
-        }
 
         public static void ExtrudeParallel<TSplineType, TVertexType, TIndexType>(
                 TSplineType spline,

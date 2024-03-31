@@ -9,18 +9,26 @@ namespace Sonosthesia.Mesh
     public class SplineShapeExtrude : SplineCustomExtrude
     {
         [SerializeField] 
-        private ExtrusionPointContainer m_PointContainer;
+        private ExtrusionPointContainer _pointContainer;
 
+        private NativeArray<ExtrusionPoint> _points;
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            _points.Dispose();
+        }
+        
         protected override void PopulateMeshData(UnityEngine.Mesh.MeshData data, Spline spline, ExtrusionSettings extrusionSettings, bool parallel)
         {
-            if (!m_PointContainer)
+            if (!_pointContainer)
             {
                 return;
             }
             
-            ShapeSettings shapeSettings = new ShapeSettings(m_PointContainer.PointCount, m_PointContainer.Closed);
+            ShapeSettings shapeSettings = new ShapeSettings(_pointContainer.PointCount, _pointContainer.Closed);
 
-            Extrude(spline, data, m_PointContainer, extrusionSettings, shapeSettings, parallel);
+            Extrude(spline, data, _pointContainer, extrusionSettings, shapeSettings, parallel);
         }
 
         private void Extrude<TSpline>(TSpline spline, UnityEngine.Mesh.MeshData data, ExtrusionPointContainer pointContainer,
@@ -29,9 +37,9 @@ namespace Sonosthesia.Mesh
         {
             data.subMeshCount = 1;
 
-            NativeArray<ExtrusionPoint> points = pointContainer.NativePoints;
+            _pointContainer.Populate(ref _points);
 
-            SplineShapeExtrusion.GetVertexAndIndexCount(extrusionSettings, shapeSettings, out int vertexCount, out int indexCount);
+            ShapeExtrusion.GetVertexAndIndexCount(extrusionSettings, shapeSettings, out int vertexCount, out int indexCount);
 
             IndexFormat indexFormat = vertexCount >= ushort.MaxValue ? IndexFormat.UInt32 : IndexFormat.UInt16;
 
@@ -43,13 +51,13 @@ namespace Sonosthesia.Mesh
             {
                 NativeArray<UInt16> indices = data.GetIndexData<UInt16>();
                 // Debug.Log($"{this} expecting {vertexCount} vertices (array count is {vertices.Length}) and {indexCount} indices (array count is {indices.Length})");
-                SplineShapeExtrusion.Extrude(parallel, spline, vertices, indices, points, extrusionSettings, shapeSettings);
+                SplineShapeExtrusion.Extrude(parallel, spline, vertices, indices, _points, extrusionSettings, shapeSettings);
             }
             else
             {
                 NativeArray<UInt32> indices = data.GetIndexData<UInt32>();
                 // Debug.Log($"{this} expecting {vertexCount} vertices (array count is {vertices.Length}) and {indexCount} indices (array count is {indices.Length})");
-                SplineShapeExtrusion.Extrude(parallel, spline, vertices, indices, points, extrusionSettings, shapeSettings);
+                SplineShapeExtrusion.Extrude(parallel, spline, vertices, indices, _points, extrusionSettings, shapeSettings);
             }
 
             data.SetSubMesh(0, new SubMeshDescriptor(0, indexCount));

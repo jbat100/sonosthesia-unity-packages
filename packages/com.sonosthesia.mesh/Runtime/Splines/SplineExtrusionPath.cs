@@ -37,8 +37,10 @@ namespace Sonosthesia.Mesh
         
         public override float GetLength() => _spline?.Spline?.GetLength() ?? 0f;
 
-        public override bool Populate(NativeArray<RigidTransform> points, float2 range, int segments)
+        public override bool Populate(ref NativeArray<RigidTransform> points, float2 range, int segments)
         {
+            points.TryReusePersistentArray(segments);
+            
             Spline spline = _spline.Spline;
 
             if (_parallel && segments > _innerBatchCount * 2)

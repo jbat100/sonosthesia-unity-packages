@@ -1,51 +1,66 @@
 ﻿using System;
 using UniRx;
+using Unity.Collections;
+using Unity.Mathematics;
 using UnityEngine;
-
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace Sonosthesia.Mesh
 {
     [ExecuteAlways]
-    public class PathCustomExtrude : MonoBehaviour
+    public abstract class PathCustomExtrude : MeshController
     {
-        [SerializeField] private ExtrusionPath _extrusionPath;
+        [SerializeField] private ExtrusionPath _path;
+
+        [SerializeField] private int _segments = 10;
         
+        [SerializeField] private float _scale = 1f;
         
-        private IDisposable _extrusionSubscription;
-        private bool _dirty;
+        [SerializeField] private float _fade = 0f;
+
+        [SerializeField] private ExtrusionVStrategy m_VStrategy = ExtrusionVStrategy.NormalizedRange;
+        
+        [SerializeField] private Vector2 _range = new Vector2(0f, 1f);
+        
+        [SerializeField] private bool _parallel;
+        
+        private IDisposable _pathSubscription;
+
+        private NativeArray<RigidTransform> _pathPoints;
         
         private void Setup()
         {
-            _dirty = true;
-            _extrusionSubscription?.Dispose();
-            if (_extrusionPath)
+            _pathSubscription?.Dispose();
+            if (_path)
             {
-                _extrusionSubscription = _extrusionPath.ChangeObservable.Subscribe(_ =>
-                {
-                    _dirty = true;
-#if UNITY_EDITOR
-                    if (!Application.isPlaying)
-                    {
-                        EditorApplication.QueuePlayerLoopUpdate();
-                    }
-#endif
-                });
+                _pathSubscription = _path.ChangeObservable.Subscribe(_ => RequestRebuild());
             }
         }
 
-        protected virtual void OnValidate() => Setup();
-
-        protected virtual void OnEnable() => Setup();
-
-        protected virtual void OnDisable() => _extrusionSubscription?.Dispose();
-
-        protected virtual void Update()
+        protected override void OnValidate()
         {
-            
+            Setup();
+            base.OnValidate();
         }
-        
+
+        protected override void OnEnable()
+        {
+            Setup();
+            base.OnEnable();
+        }
+
+        protected virtual void OnDisable()
+        {
+            _pathSubscription?.Dispose();
+            _pathPoints.Dispose();
+        }
+
+        protected sealed override void PopulateMeshData(UnityEngine.Mesh.MeshData data)
+        {
+            ExtrusionSettings extrusionSettings = new ExtrusionSettings(_path.GetLength(), _segments, _path.Closed, _range, _scale, _fade, m_VStrategy);
+            _path.Populate(ref _pathPoints, _range, _segments);
+            PopulateMeshData(data, _pathPoints, extrusionSettings, _parallel);
+        }
+
+        protected abstract void PopulateMeshData(UnityEngine.Mesh.MeshData data, NativeArray<RigidTransform> pathPoints, ExtrusionSettings extrusionSettings, bool parallel);
     }
 }

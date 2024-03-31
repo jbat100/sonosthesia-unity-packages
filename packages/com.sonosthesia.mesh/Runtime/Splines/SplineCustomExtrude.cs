@@ -5,19 +5,19 @@ namespace Sonosthesia.Mesh
 {
     public abstract class SplineCustomExtrude : MeshController
     {
-        [SerializeField] SplineReference _spline;
+        [SerializeField] private SplineReference _spline;
 
-        [SerializeField] float _segmentsPerUnit = 4;
+        [SerializeField] private float _segmentsPerUnit = 4;
         
-        [SerializeField] float _scale = 1f;
+        [SerializeField] private float _scale = 1f;
         
-        [SerializeField] float _fade = 0f;
+        [SerializeField] private float _fade = 0f;
 
         [SerializeField] private ExtrusionVStrategy m_VStrategy = ExtrusionVStrategy.NormalizedRange;
         
-        [SerializeField] Vector2 _range = new Vector2(0f, 1f);
+        [SerializeField] private Vector2 _range = new Vector2(0f, 1f);
 
-        [SerializeField] bool _parallel;
+        [SerializeField] private bool _parallel;
 
         protected virtual void Reset()
         {

@@ -11,8 +11,6 @@ namespace Sonosthesia.Mesh
 {
     public static class SplineFaceExtrusion
     {
-        
-        
         public static void Extrude<TSplineType, TVertexType, TIndexType>(
             bool parallel,
             TSplineType spline,
@@ -121,12 +119,6 @@ namespace Sonosthesia.Mesh
             {
                 ExtrudeSegments(Spline, Vertices, Segments, ExtrusionSettings, index, VertexArrayOffset);
             }
-        }
-        
-        public static void GetVertexAndIndexCount(ExtrusionSettings extrusionSettings, FaceSettings faceSettings, out int vertexCount, out int indexCount)
-        {
-            vertexCount = faceSettings.faces * 2 * extrusionSettings.segments;
-            indexCount = faceSettings.faces * 6 * (extrusionSettings.segments - (extrusionSettings.closed ? 0 : 1));
         }
 
         public static void ExtrudeParallel<TSplineType, TVertexType, TIndexType>(

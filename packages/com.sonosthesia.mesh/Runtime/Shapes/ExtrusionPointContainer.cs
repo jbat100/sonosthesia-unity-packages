@@ -1,47 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using Sonosthesia.Utils;
 using Unity.Collections;
 using UnityEngine;
 
 namespace Sonosthesia.Mesh
 {
     [CreateAssetMenu(fileName = "ExtrusionPointContainer", menuName = "Sonosthesia/Mesh/ExtrusionPointContainer")]
-    public class ExtrusionPointContainer : ScriptableObject
+    public class ExtrusionPointContainer : ObservableScriptableObject
     {
         [SerializeField] private List<ExtrusionPointData> _points;
         
         [SerializeField] private bool _closed;
         public bool Closed => _closed;
 
-        private NativeArray<ExtrusionPoint> _nativePoints;
-
         public int PointCount => _points.Count;
         
-        public NativeArray<ExtrusionPoint> NativePoints
+        public void Populate(ref NativeArray<ExtrusionPoint> points)
         {
-            get
+            points.TryReusePersistentArray(PointCount);
+            for (int i = 0; i < points.Length; ++i)
             {
-                if (_nativePoints.IsCreated)
-                {
-                    return _nativePoints;
-                }
-
-                _nativePoints = new NativeArray<ExtrusionPoint>(_points.Select(p => p.Point()).ToArray(), Allocator.Persistent);
-                return _nativePoints;
+                points[i] = _points[i].Point();
             }
-        }
-
-        protected virtual void OnValidate()
-        {
-            _nativePoints.Dispose();
-            _nativePoints = default;
-        }
-
-        protected virtual void OnDisable()
-        {
-            _nativePoints.Dispose();
-            _nativePoints = default;
         }
     }
 }
