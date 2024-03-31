@@ -46,7 +46,7 @@ namespace Sonosthesia.Deform
             {
                 return new Job<N>
                 {
-                    vertices = meshData.GetVertexData<SplineVertexData>().Reinterpret<SplineVertexData4>(12 + 12 + 8),
+                    vertices = meshData.GetVertexData<VertexData>().Reinterpret<SplineVertexData4>(12 + 12 + 8),
                     configs = configs
                 }.ScheduleParallel(meshData.vertexCount / 4, innerloopBatchCount, dependency);
             }

@@ -40,7 +40,7 @@ namespace Sonosthesia.Mesh
         [BurstCompile]
         static void ExtrudeRing<T, K>(T spline, NativeArray<K> data, ExtrudeInfo info, RingSettings ringSettings)
             where T : ISpline
-            where K : struct, SplineMesh.ISplineVertexData
+            where K : struct, IVertexData
         {
             var evaluationT = info.closed ? math.frac(info.t) : math.clamp(info.t, 0f, 1f);
             spline.Evaluate(evaluationT, out var sp, out var st, out var up);
@@ -83,7 +83,7 @@ namespace Sonosthesia.Mesh
             int vertexArrayOffset = 0,
             int indicesArrayOffset = 0)
             where TSplineType : ISpline
-            where TVertexType : struct, SplineMesh.ISplineVertexData
+            where TVertexType : struct, IVertexData
             where TIndexType : struct
         {
             if (parallel)
@@ -99,7 +99,7 @@ namespace Sonosthesia.Mesh
         // switch to using IJobFor
         
         [BurstCompile]
-        struct ExtrudeRingJob<K> : IJobParallelFor where K : struct, SplineMesh.ISplineVertexData
+        struct ExtrudeRingJob<K> : IJobParallelFor where K : struct, IVertexData
         {
             [NativeDisableContainerSafetyRestriction]
             [ReadOnly] public NativeSpline Spline;
@@ -111,11 +111,9 @@ namespace Sonosthesia.Mesh
             public RingSettings RingSettings;
             public int VertexArrayOffset;
 
-            public float Length;
-            
             public void Execute(int index)
             {
-                ExtrudeInfo info = new ExtrudeInfo(ExtrusionSettings, index, VertexArrayOffset + index * RingSettings.sides, Length);
+                ExtrudeInfo info = new ExtrudeInfo(ExtrusionSettings, index, VertexArrayOffset + index * RingSettings.sides);
                 ExtrudeRing(Spline, Vertices, info, RingSettings);
             }
         }
@@ -129,13 +127,13 @@ namespace Sonosthesia.Mesh
                 int vertexArrayOffset = 0,
                 int indicesArrayOffset = 0)
                 where TSplineType : ISpline
-                where TVertexType : struct, SplineMesh.ISplineVertexData
+                where TVertexType : struct, IVertexData
                 where TIndexType : struct
         {
-            var sides = ringSettings.sides;
-            var segments = extrusionSettings.segments;
-            var range = extrusionSettings.range;
-            var capped = ringSettings.capped;
+            int sides = ringSettings.sides;
+            int segments = extrusionSettings.segments;
+            float2 range = extrusionSettings.range;
+            bool capped = ringSettings.capped;
 
             GetVertexAndIndexCount(extrusionSettings, ringSettings, out var vertexCount, out var indexCount);
 
@@ -166,8 +164,6 @@ namespace Sonosthesia.Mesh
                 throw new ArgumentException("Indices must be UInt16 or UInt32", nameof(indices));
             }
 
-            float length = spline.GetLength();
-
             {
                 using NativeSpline nativeSpline = new NativeSpline(spline, Allocator.TempJob);
                 ExtrudeRingJob<TVertexType> job = new ExtrudeRingJob<TVertexType>()
@@ -176,8 +172,7 @@ namespace Sonosthesia.Mesh
                     Vertices = vertices,
                     ExtrusionSettings = extrusionSettings,
                     RingSettings = ringSettings,
-                    VertexArrayOffset = vertexArrayOffset,
-                    Length = length
+                    VertexArrayOffset = vertexArrayOffset
                 };
                 job.Schedule(segments, (int)math.sqrt(segments)).Complete();
             }
@@ -189,8 +184,8 @@ namespace Sonosthesia.Mesh
 
                 var rng = spline.Closed ? math.frac(range) : math.clamp(range, 0f, 1f);
                 
-                ExtrudeRing(spline, vertices, ExtrudeInfo.StartCap(extrusionSettings, capVertexStart, length), ringSettings);
-                ExtrudeRing(spline, vertices, ExtrudeInfo.EndCap(extrusionSettings, capVertexStart, length), ringSettings);
+                ExtrudeRing(spline, vertices, ExtrudeInfo.StartCap(extrusionSettings, capVertexStart), ringSettings);
+                ExtrudeRing(spline, vertices, ExtrudeInfo.EndCap(extrusionSettings, capVertexStart), ringSettings);
 
                 var beginAccel = math.normalize(spline.EvaluateTangent(rng.x));
                 var accelLen = math.lengthsq(beginAccel);
@@ -231,14 +226,13 @@ namespace Sonosthesia.Mesh
                 int vertexArrayOffset = 0,
                 int indicesArrayOffset = 0)
                 where TSplineType : ISpline
-                where TVertexType : struct, SplineMesh.ISplineVertexData
+                where TVertexType : struct, IVertexData
                 where TIndexType : struct
         {
-            var radius = extrusionSettings.scale;
-            var sides = ringSettings.sides;
-            var segments = extrusionSettings.segments;
-            var range = extrusionSettings.range;
-            var capped = ringSettings.capped;
+            int sides = ringSettings.sides;
+            int segments = extrusionSettings.segments;
+            float2 range = extrusionSettings.range;
+            bool capped = ringSettings.capped;
 
             GetVertexAndIndexCount(extrusionSettings, ringSettings, out var vertexCount, out var indexCount);
 
@@ -268,12 +262,10 @@ namespace Sonosthesia.Mesh
             {
                 throw new ArgumentException("Indices must be UInt16 or UInt32", nameof(indices));
             }
-
-            float length = spline.GetLength();
-
+            
             for (int i = 0; i < segments; ++i)
             {
-                ExtrudeInfo info = new ExtrudeInfo(extrusionSettings, i, vertexArrayOffset + i * sides, length);
+                ExtrudeInfo info = new ExtrudeInfo(extrusionSettings, i, vertexArrayOffset + i * sides);
                 ExtrudeRing(spline, vertices, info, ringSettings);
             }
 
@@ -283,8 +275,8 @@ namespace Sonosthesia.Mesh
                 var endCapVertexStart = vertexArrayOffset + (segments + 1) * sides;
 
                 var rng = spline.Closed ? math.frac(range) : math.clamp(range, 0f, 1f);
-                ExtrudeRing(spline, vertices, ExtrudeInfo.StartCap(extrusionSettings, capVertexStart, length), ringSettings);
-                ExtrudeRing(spline, vertices, ExtrudeInfo.EndCap(extrusionSettings, capVertexStart, length), ringSettings);
+                ExtrudeRing(spline, vertices, ExtrudeInfo.StartCap(extrusionSettings, capVertexStart), ringSettings);
+                ExtrudeRing(spline, vertices, ExtrudeInfo.EndCap(extrusionSettings, capVertexStart), ringSettings);
 
                 var beginAccel = math.normalize(spline.EvaluateTangent(rng.x));
                 var accelLen = math.lengthsq(beginAccel);

@@ -11,23 +11,6 @@ namespace Sonosthesia.Mesh
 {
     public static class SplineShapeExtrusion
     {
-        public struct ShapeSettings
-        {
-            const float k_ScaleMin = .00001f, k_ScaleMax = 10000f;
-
-            public int points { get; private set; }
-
-            public bool closed { get; private set; }
-
-            public int Sides => Mathf.Max(closed ? points : points - 1, 0);
-
-            public ShapeSettings(int points, bool closed)
-            {
-                this.points = points;
-                this.closed = closed;
-            }
-        }
-        
         public static void Extrude<TSplineType, TVertexType, TIndexType>(
             bool parallel,
             TSplineType spline,
@@ -39,7 +22,7 @@ namespace Sonosthesia.Mesh
             int vertexArrayOffset = 0,
             int indicesArrayOffset = 0)
             where TSplineType : ISpline
-            where TVertexType : struct, SplineMesh.ISplineVertexData
+            where TVertexType : struct, IVertexData
             where TIndexType : struct
         {
             if (parallel)
@@ -59,11 +42,11 @@ namespace Sonosthesia.Mesh
         [BurstCompile]
         private static void ExtrudeShape<T, K>(T spline, NativeArray<K> data,
             NativeArray<ExtrusionPoint> shapePoints, ExtrusionSettings extrusionSettings, ShapeSettings shapeSettings, 
-            int index, float length, int vertexArrayOffset)
+            int index, int vertexArrayOffset)
             where T : ISpline
-            where K : struct, SplineMesh.ISplineVertexData
+            where K : struct, IVertexData
         {
-            ExtrudeInfo info = new ExtrudeInfo(extrusionSettings, index, vertexArrayOffset + index * shapePoints.Length, length);
+            ExtrudeInfo info = new ExtrudeInfo(extrusionSettings, index, vertexArrayOffset + index * shapePoints.Length);
             ExtrudeShape(spline, info, data, shapePoints);
         }
 
@@ -71,7 +54,7 @@ namespace Sonosthesia.Mesh
         [BurstCompile]
         static void ExtrudeShape<T, K>(T spline, ExtrudeInfo info, NativeArray<K> data, NativeArray<ExtrusionPoint> shapePoints)
             where T : ISpline
-            where K : struct, SplineMesh.ISplineVertexData
+            where K : struct, IVertexData
         {
             var evaluationT = info.closed ? math.frac(info.t) : math.clamp(info.t, 0f, 1f);
             spline.Evaluate(evaluationT, out var sp, out var st, out var up);
@@ -100,7 +83,7 @@ namespace Sonosthesia.Mesh
                 Vector3 normal = point.normal;
                 vertex.normal = math.rotate(rot, normal);
                 
-                vertex.texture = new Vector2(point.u, info.t);
+                vertex.texture = new Vector2(point.u, info.v);
 
                 data[info.start + n] = vertex;
             }
@@ -111,7 +94,7 @@ namespace Sonosthesia.Mesh
         // note for simple shapes, parallel degrades performance
         
         [BurstCompile]
-        struct ExtrudeShapeJob<K> : IJobParallelFor where K : struct, SplineMesh.ISplineVertexData
+        struct ExtrudeShapeJob<K> : IJobParallelFor where K : struct, IVertexData
         {
             [NativeDisableContainerSafetyRestriction]
             [ReadOnly] public NativeSpline Spline;
@@ -125,13 +108,10 @@ namespace Sonosthesia.Mesh
             public ExtrusionSettings ExtrusionSettings;
             public ShapeSettings ShapeSettings;
             public int VertexArrayOffset;
-            
-            // pre compute to avoid expensive GetLength on each iteration
-            public float Length;
 
             public void Execute(int index)
             {
-                ExtrudeShape(Spline, Vertices, Points, ExtrusionSettings, ShapeSettings, index, Length, VertexArrayOffset);
+                ExtrudeShape(Spline, Vertices, Points, ExtrusionSettings, ShapeSettings, index, VertexArrayOffset);
             }
         }
         
@@ -151,7 +131,7 @@ namespace Sonosthesia.Mesh
                 int vertexArrayOffset = 0,
                 int indexArrayOffset = 0)
                 where TSplineType : ISpline
-                where TVertexType : struct, SplineMesh.ISplineVertexData
+                where TVertexType : struct, IVertexData
                 where TIndexType : struct
         {
             int segments = extrusionSettings.segments;
@@ -165,12 +145,12 @@ namespace Sonosthesia.Mesh
             if (typeof(TIndexType) == typeof(UInt16))
             {
                 var ushortIndices = indices.Reinterpret<UInt16>();
-                WindTris(ushortIndices, extrusionSettings, shapeSettings, vertexArrayOffset, indexArrayOffset);
+                ShapeExtrusion.WindTris(ushortIndices, extrusionSettings, shapeSettings, vertexArrayOffset, indexArrayOffset);
             }
             else if (typeof(TIndexType) == typeof(UInt32))
             {
                 var ulongIndices = indices.Reinterpret<UInt32>();
-                WindTris(ulongIndices, extrusionSettings, shapeSettings, vertexArrayOffset, indexArrayOffset);
+                ShapeExtrusion.WindTris(ulongIndices, extrusionSettings, shapeSettings, vertexArrayOffset, indexArrayOffset);
             }
             else
             {
@@ -186,8 +166,7 @@ namespace Sonosthesia.Mesh
                     Points = points,
                     ExtrusionSettings = extrusionSettings,
                     ShapeSettings = shapeSettings,
-                    VertexArrayOffset = vertexArrayOffset,
-                    Length = spline.GetLength()
+                    VertexArrayOffset = vertexArrayOffset
                 };
                 job.Schedule(segments, (int)math.sqrt(segments)).Complete();
             }
@@ -203,7 +182,7 @@ namespace Sonosthesia.Mesh
                 int vertexArrayOffset = 0,
                 int indicesArrayOffset = 0)
                 where TSplineType : ISpline
-                where TVertexType : struct, SplineMesh.ISplineVertexData
+                where TVertexType : struct, IVertexData
                 where TIndexType : struct
         {
             
@@ -218,89 +197,21 @@ namespace Sonosthesia.Mesh
             if (typeof(TIndexType) == typeof(UInt16))
             {
                 var ushortIndices = indices.Reinterpret<UInt16>();
-                WindTris(ushortIndices, extrusionSettings, shapeSettings, vertexArrayOffset, indicesArrayOffset);
+                ShapeExtrusion.WindTris(ushortIndices, extrusionSettings, shapeSettings, vertexArrayOffset, indicesArrayOffset);
             }
             else if (typeof(TIndexType) == typeof(UInt32))
             {
                 var ulongIndices = indices.Reinterpret<UInt32>();
-                WindTris(ulongIndices, extrusionSettings, shapeSettings, vertexArrayOffset, indicesArrayOffset);
+                ShapeExtrusion.WindTris(ulongIndices, extrusionSettings, shapeSettings, vertexArrayOffset, indicesArrayOffset);
             }
             else
             {
                 throw new ArgumentException("Indices must be UInt16 or UInt32", nameof(indices));
             }
 
-            float length = spline.GetLength();
-            
             for (int i = 0; i < segments; ++i)
             {
-                ExtrudeShape(spline, vertices, points, extrusionSettings, shapeSettings, i, length, vertexArrayOffset);
-            }
-            
-        }
-        
-        // Two overloads for winding triangles because there is no generic constraint for UInt{16, 32}
-        // Note this winds the tris of the whole extruded spline mesh and should work with any extruded shape
-        [BurstCompile]
-        internal static void WindTris(NativeArray<UInt16> indices, ExtrusionSettings settings, ShapeSettings shapeSettings, int vertexArrayOffset = 0, int indexArrayOffset = 0)
-        {
-            bool closed = settings.closed;
-            int segments = settings.segments;
-
-            int shapePoints = shapeSettings.points;
-            int shapeSides = shapeSettings.Sides;
-            
-            Debug.Log($"{nameof(SplineShapeExtrusion)} {nameof(WindTris)} for {segments} segments");
-
-            // loop over the segments along the length of the spline 
-            for (int i = 0; i < (closed ? segments : segments - 1); ++i)
-            {
-                // loop over the sides of a given spline extrusion segments
-                for (int n = 0; n < shapeSides; ++n)
-                {
-                    // takes two vertices of the current segment and the two corresponding vertices of the next segment
-                    var index0 = vertexArrayOffset + i * shapePoints + n;
-                    var index1 = vertexArrayOffset + i * shapePoints + ((n + 1) % shapePoints);
-                    var index2 = vertexArrayOffset + ((i+1) % segments) * shapePoints + n;
-                    var index3 = vertexArrayOffset + ((i+1) % segments) * shapePoints + ((n + 1) % shapePoints);
-
-                    // for a face we have two triangles, therefore we times the i sides and n faces 
-                    indices[indexArrayOffset + i * shapeSides * 6 + n * 6 + 0] = (UInt16) index0;
-                    indices[indexArrayOffset + i * shapeSides * 6 + n * 6 + 1] = (UInt16) index1;
-                    indices[indexArrayOffset + i * shapeSides * 6 + n * 6 + 2] = (UInt16) index2;
-                    indices[indexArrayOffset + i * shapeSides * 6 + n * 6 + 3] = (UInt16) index1;
-                    indices[indexArrayOffset + i * shapeSides * 6 + n * 6 + 4] = (UInt16) index3;
-                    indices[indexArrayOffset + i * shapeSides * 6 + n * 6 + 5] = (UInt16) index2;
-                }
-            }
-        }
-
-        // Two overloads for winding triangles because there is no generic constraint for UInt{16, 32}
-        [BurstCompile]
-        internal static void WindTris(NativeArray<UInt32> indices, ExtrusionSettings settings, ShapeSettings shapeSettings, int vertexArrayOffset = 0, int indexArrayOffset = 0)
-        {
-            var closed = settings.closed;
-            var segments = settings.segments;
-            
-            int shapePoints = shapeSettings.points;
-            int shapeSides = shapeSettings.Sides;
-
-            for (int i = 0; i < (closed ? segments : segments - 1); ++i)
-            {
-                for (int n = 0; n < shapeSides; ++n)
-                {
-                    var index0 = vertexArrayOffset + i * shapePoints + n;
-                    var index1 = vertexArrayOffset + i * shapePoints + ((n + 1) % shapePoints);
-                    var index2 = vertexArrayOffset + ((i+1) % segments) * shapePoints + n;
-                    var index3 = vertexArrayOffset + ((i+1) % segments) * shapePoints + ((n + 1) % shapePoints);
-
-                    indices[indexArrayOffset + i * shapeSides * 6 + n * 6 + 0] = (UInt32) index0;
-                    indices[indexArrayOffset + i * shapeSides * 6 + n * 6 + 1] = (UInt32) index1;
-                    indices[indexArrayOffset + i * shapeSides * 6 + n * 6 + 2] = (UInt32) index2;
-                    indices[indexArrayOffset + i * shapeSides * 6 + n * 6 + 3] = (UInt32) index1;
-                    indices[indexArrayOffset + i * shapeSides * 6 + n * 6 + 4] = (UInt32) index3;
-                    indices[indexArrayOffset + i * shapeSides * 6 + n * 6 + 5] = (UInt32) index2;
-                }
+                ExtrudeShape(spline, vertices, points, extrusionSettings, shapeSettings, i, vertexArrayOffset);
             }
         }
     }

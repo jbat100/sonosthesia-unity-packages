@@ -19,13 +19,6 @@ namespace Sonosthesia.Mesh
             Extrude(spline, data, RingSettings, extrusionSettings, parallel);
         }
 
-        static readonly VertexAttributeDescriptor[] k_PipeVertexAttribs = new VertexAttributeDescriptor[]
-        {
-            new (VertexAttribute.Position),
-            new (VertexAttribute.Normal),
-            new (VertexAttribute.TexCoord0, dimension: 2)
-        };
-        
         private void Extrude<TSpline>(TSpline spline, UnityEngine.Mesh.MeshData data, SplineRingExtrusion.RingSettings ringSettings, ExtrusionSettings extrusionSettings, bool parallel) 
             where TSpline : ISpline
         {
@@ -36,9 +29,9 @@ namespace Sonosthesia.Mesh
             var indexFormat = vertexCount >= ushort.MaxValue ? IndexFormat.UInt32 : IndexFormat.UInt16;
             
             data.SetIndexBufferParams(indexCount, indexFormat);
-            data.SetVertexBufferParams(vertexCount, k_PipeVertexAttribs);
+            data.SetVertexBufferParams(vertexCount, Extrusion.PipeVertexAttribs);
 
-            NativeArray<SplineVertexData> vertices = data.GetVertexData<SplineVertexData>();
+            NativeArray<VertexData> vertices = data.GetVertexData<VertexData>();
             if (indexFormat == IndexFormat.UInt16)
             {
                 NativeArray<UInt16> indices = data.GetIndexData<UInt16>();

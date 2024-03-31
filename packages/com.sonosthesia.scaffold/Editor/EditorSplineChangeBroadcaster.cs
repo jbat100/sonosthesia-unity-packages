@@ -18,12 +18,12 @@ namespace Sonosthesia.Scaffold.Editor
         
         [SerializeField] private List<ObservableBehaviour> _targets;
 
-        protected virtual void Awake()
+        protected virtual void OnEnable()
         {
             EditorSplineUtility.AfterSplineWasModified += SplineOnChanged;
         }
 
-        protected virtual void OnDestroy()
+        protected virtual void OnDisable()
         {
             EditorSplineUtility.AfterSplineWasModified -= SplineOnChanged;
         }
