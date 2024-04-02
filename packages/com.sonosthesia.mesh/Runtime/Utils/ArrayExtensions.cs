@@ -5,7 +5,7 @@ namespace Sonosthesia.Mesh
     public static class ArrayExtensions
     {
         /// <summary>
-        /// Recreates an persistent array with uninitialized memory if current is not create or different length
+        /// Recreates an persistent array with uninitialized memory if current is not created or different capacity
         /// Useful when we expect contents to be updated often with length which is updated rarely
         /// </summary>
         /// <param name="array"></param>

@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Mesh
 {
+    [ExecuteAlways]
     public abstract class ExtrusionPath : ObservableBehaviour
     {
         [SerializeField] private bool _closed;
