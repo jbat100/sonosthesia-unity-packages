@@ -11,6 +11,8 @@ namespace Sonosthesia.Mesh
     {
         [SerializeField] private ExtrusionPath _path;
 
+        [SerializeField] private PathProcessor _processor;
+        
         [SerializeField] private int _segments = 10;
         
         [SerializeField] private float _scale = 1f;
@@ -57,8 +59,13 @@ namespace Sonosthesia.Mesh
         protected sealed override void PopulateMeshData(UnityEngine.Mesh.MeshData data)
         {
             ExtrusionSettings extrusionSettings = new ExtrusionSettings(_path.GetLength(), _segments, _path.Closed, _range, _scale, _fade, m_VStrategy);
-            _pathPoints.TryReusePersistentArray(_segments);
-            _path.Populate(ref _pathPoints, _range, _segments);
+            _pathPoints.TryReusePersistentArray(extrusionSettings.segments);
+            _path.Populate(_pathPoints, _range, _segments);
+            if (_processor)
+            {
+                _processor.Process(_pathPoints);
+                
+            }
             PopulateMeshData(data, _pathPoints, extrusionSettings, _parallel);
         }
 

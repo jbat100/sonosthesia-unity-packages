@@ -10,7 +10,7 @@ namespace Sonosthesia.Mesh
 
         public override float GetLength() => _radius * TAU;
 
-        public override bool Populate(ref NativeArray<RigidTransform> points, float2 range, int segments)
+        public override bool Populate(NativeArray<RigidTransform> points, float2 range, int segments)
         {
             for (int index = 0; index < segments; ++index)
             {

@@ -13,7 +13,7 @@ namespace Sonosthesia.Mesh
         // formulas for ellipse perimeters are non exact and silly https://www.cuemath.com/measurement/perimeter-of-ellipse/
         public override float GetLength() => Mathf.PI * (3f * (_a + _b) - math.sqrt((3f * _a + _b) * (_a + 3f * _b)));
 
-        public override bool Populate(ref NativeArray<RigidTransform> points, float2 range, int segments)
+        public override bool Populate(NativeArray<RigidTransform> points, float2 range, int segments)
         {
             for (int index = 0; index < segments; ++index)
             {
@@ -23,7 +23,7 @@ namespace Sonosthesia.Mesh
                 points[index] = new RigidTransform(quaternion.identity, position);
             }
             
-            RecalculateRotations(ref points, range);
+            points.CalculateRotations(range);
             
             return true;
         }
