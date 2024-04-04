@@ -27,7 +27,7 @@ namespace Sonosthesia.Mesh
         [SerializeField] private float _rebuildFrequency;
         
         [SerializeField] bool _recalculateNormals;
-        
+         
         private bool _rebuildRequested;
         private float _nextScheduledRebuild;
         private Vector3[] _vertices, _normals;

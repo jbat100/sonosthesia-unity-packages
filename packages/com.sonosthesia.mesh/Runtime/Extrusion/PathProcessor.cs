@@ -1,10 +1,10 @@
-﻿using Unity.Collections;
+﻿using Sonosthesia.Utils;
+using Unity.Collections;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace Sonosthesia.Mesh
 {
-    public abstract class PathProcessor : MonoBehaviour
+    public abstract class PathProcessor : ObservableBehaviour
     {
         public abstract void Process(NativeArray<RigidTransform> points);
     }

@@ -25,16 +25,20 @@ namespace Sonosthesia.Mesh
         
         [SerializeField] private bool _parallel;
         
-        private IDisposable _pathSubscription;
+        private CompositeDisposable _rebuildSubscriptions = new ();
 
         private NativeArray<RigidTransform> _pathPoints;
         
         private void Setup()
         {
-            _pathSubscription?.Dispose();
+            _rebuildSubscriptions.Clear();
             if (_path)
             {
-                _pathSubscription = _path.ChangeObservable.Subscribe(_ => RequestRebuild());
+                _rebuildSubscriptions.Add(_path.ChangeObservable.Subscribe(_ => RequestRebuild()));
+            }
+            if (_processor)
+            {
+                _rebuildSubscriptions.Add(_processor.ChangeObservable.Subscribe(_ => RequestRebuild()));
             }
         }
 
@@ -52,7 +56,7 @@ namespace Sonosthesia.Mesh
 
         protected virtual void OnDisable()
         {
-            _pathSubscription?.Dispose();
+            _rebuildSubscriptions.Clear();
             _pathPoints.Dispose();
         }
 
