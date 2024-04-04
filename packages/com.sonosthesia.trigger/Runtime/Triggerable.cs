@@ -30,7 +30,7 @@ namespace Sonosthesia.Trigger
             }
             TriggerEntry entry = new TriggerEntry(valueScale, timeScale, _envelope);
             _entries.Add(entry);
-            Debug.Log($"{this} added entry {entry}");
+            // Debug.Log($"{this} added entry {entry}");
         }
 
         public int TriggerCount => _entries.Count; 
@@ -51,7 +51,7 @@ namespace Sonosthesia.Trigger
             
             if (previousCount != currentCount)
             {
-                Debug.Log($"{this} removed {previousCount - currentCount} obsolete entries");
+                // Debug.Log($"{this} removed {previousCount - currentCount} obsolete entries");
             }
             
             float raw = _entries.Aggregate(0f, (current, entry) => entry.Accumulate(_accumulationMode, current));
