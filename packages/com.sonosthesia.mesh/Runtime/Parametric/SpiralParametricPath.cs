@@ -27,13 +27,10 @@ namespace Sonosthesia.Mesh
         [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
         private struct Job : IJob
         {
-            [NativeDisableParallelForRestriction]
             public NativeArray<RigidTransform> points;
 
-            [NativeDisableParallelForRestriction]
             public NativeArray<float> radii;
             
-            [NativeDisableParallelForRestriction]
             public NativeArray<float> heights;
 
             public int segments;
@@ -47,29 +44,6 @@ namespace Sonosthesia.Mesh
             public float scale;
 
             public void Execute()
-            {
-                SIMD();
-            }
-
-            private void SISD()
-            {
-                for (int index = 0; index < segments; ++index)
-                {
-                    float s = math.lerp(range.x, range.y, index / ((float)segments - 1));
-                    float t = phase + s * TAU * revolutions;
-
-                    math.sincos(t, out float sinT, out float cosT);
-
-                    float r = radii[index];
-                    float x = r * cosT;
-                    float y = heights[index];
-                    float z = r * sinT;
-                
-                    points[index] = new RigidTransform(quaternion.identity, new float3(x, y, z) * scale);  
-                }
-            }
-            
-            private void SIMD()
             {
                 float tauRevolutions = TAU * revolutions;
                 int steps = segments / 4;
