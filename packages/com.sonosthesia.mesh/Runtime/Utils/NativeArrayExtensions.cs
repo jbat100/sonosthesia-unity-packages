@@ -26,6 +26,7 @@ namespace Sonosthesia.Mesh
             return false;
         }
 
+        // Note : use Reinterpret instead
         public static float4 Slice4(this NativeArray<float> array, int startIndex)
         {
             float4 result = default;

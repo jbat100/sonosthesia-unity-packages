@@ -20,5 +20,20 @@ namespace Sonosthesia.Mesh
                 curvePoints[i] = animationCurve.Evaluate(current);
             }
         }
+        
+        // Note: useful if native array was created with padding for float4 Reinterpret 
+        public static void Populate(this AnimationCurve animationCurve, NativeArray<float> curvePoints, int count)
+        {
+            if (count < 2)
+            {
+                return;
+            }
+            float step = animationCurve.Duration() / (count - 1);
+            float current = 0f;
+            for (int i = 0; i < count; ++i, current += step)
+            {
+                curvePoints[i] = animationCurve.Evaluate(current);
+            }
+        }
     }
 }

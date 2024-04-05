@@ -47,7 +47,7 @@ namespace Sonosthesia.Target
 
     public abstract class BlendTarget<T, B> : Target<T> where T : struct where B : struct, IBlender<T>
     {
-        [SerializeField] private TargetBlend _targetBlend;
+        [SerializeField] private TargetBlend _targetBlend = TargetBlend.Override;
 
         private T _reference;
 

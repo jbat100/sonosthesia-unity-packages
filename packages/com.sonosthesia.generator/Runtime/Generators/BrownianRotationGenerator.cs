@@ -12,7 +12,7 @@ namespace Sonosthesia.Generator
         
         private float3 _offset;
         
-        protected void Awake ()
+        protected virtual void Awake ()
         {
             Rehash();
         }

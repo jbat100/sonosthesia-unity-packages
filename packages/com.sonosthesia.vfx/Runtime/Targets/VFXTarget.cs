@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.VFX;
 using Sonosthesia.Signal;
@@ -15,15 +14,20 @@ namespace Sonosthesia.VFX
 
         protected override void Awake()
         {
-            base.Awake();
             if (!_visualEffect)
             {
                 _visualEffect = GetComponent<VisualEffect>();
             }
-
+            base.Awake();
             _intNameID = Shader.PropertyToID(_nameID);
         }
 
+        protected override void OnEnable()
+        {
+            _intNameID = Shader.PropertyToID(_nameID);
+            base.OnEnable();
+        }
+        
         protected virtual void OnValidate()
         {
             _intNameID = Shader.PropertyToID(_nameID);

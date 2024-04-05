@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -16,6 +17,31 @@ namespace Sonosthesia.Trigger
         [SerializeField] private FloatProcessor _postProcessor;
 
         private const float THRESHOLD = 1e-6f;
+
+        [Serializable]
+        public class Payload
+        {
+            public float TimeScale;
+            public float ValueScale;
+        }
+        
+        /// <summary>
+        /// Useful for inspector bindings in Timeline etc...
+        /// </summary>
+        /// <param name="payload"></param>
+        public void PayloadTrigger(Payload payload)
+        {
+            if (payload == null)
+            {
+                return;
+            }
+            Trigger(payload.TimeScale, payload.ValueScale);
+        }
+        
+        public void DefaultTrigger()
+        {
+            Trigger(1f, 1f);
+        }
         
         public void Trigger(float valueScale, float timeScale)
         {
@@ -58,7 +84,7 @@ namespace Sonosthesia.Trigger
             Broadcast(_postProcessor.Process(raw));
         }
         
-        private class TriggerEntry
+        private class TriggerEntry  
         {
             private static float CurrentTime => Time.time;
             

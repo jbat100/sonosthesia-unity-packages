@@ -57,6 +57,8 @@ namespace Sonosthesia.Mesh
 
                     math.sincos(t, out float4 sinT, out float4 cosT);
 
+                    // TODO : use Reinterpret outside loop
+                    
                     float4 r = radii.Slice4(offset);
                     float4 x = r * cosT;
                     float4 y = heights.Slice4(offset);
@@ -94,7 +96,6 @@ namespace Sonosthesia.Mesh
                 _radii.TryReusePersistentArray(segments);
                 _heights.TryReusePersistentArray(segments);
             
-                // use bitwise or to ensure both reuse calls are made
                 if (_dirty)
                 {
                     _radiusCurve.Populate(_radii);
