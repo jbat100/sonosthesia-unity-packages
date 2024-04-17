@@ -20,6 +20,11 @@ namespace Sonosthesia.Mesh
 
         protected override void PopulateMeshData(UnityEngine.Mesh.MeshData data, NativeArray<RigidTransform> pathPoints, ExtrusionSettings extrusionSettings, bool parallel)
         {
+            if (!_segmentContainer)
+            {
+                return;
+            }
+            
             data.subMeshCount = 1;
 
             _segmentContainer.Populate(ref _extrusionSegments);

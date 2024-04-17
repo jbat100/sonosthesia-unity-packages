@@ -21,8 +21,11 @@ namespace Sonosthesia.Trigger
         [Serializable]
         public class Payload
         {
-            public float TimeScale;
-            public float ValueScale;
+            [SerializeField] private float _timeScale = 1f;
+            public float TimeScale => _timeScale;
+            
+            [SerializeField] private float _valueScale = 1f;
+            public float ValueScale => _valueScale;
         }
         
         /// <summary>
@@ -35,7 +38,7 @@ namespace Sonosthesia.Trigger
             {
                 return;
             }
-            Trigger(payload.TimeScale, payload.ValueScale);
+            Trigger(payload.ValueScale, payload.TimeScale);
         }
         
         public void DefaultTrigger()

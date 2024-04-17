@@ -62,6 +62,11 @@ namespace Sonosthesia.Mesh
 
         protected sealed override void PopulateMeshData(UnityEngine.Mesh.MeshData data)
         {
+            if (!_path)
+            {
+                return;
+            }
+            
             ExtrusionSettings extrusionSettings = new ExtrusionSettings(_path.GetLength(), _segments, _path.Closed, _range, _scale, _fade, m_VStrategy);
             _pathPoints.TryReusePersistentArray(extrusionSettings.segments);
             _path.Populate(_pathPoints, _range, _segments);

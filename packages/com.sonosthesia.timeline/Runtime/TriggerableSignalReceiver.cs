@@ -22,7 +22,6 @@ namespace Sonosthesia.Timeline
             public class ParameterizedEvent : UnityEvent<Triggerable.Payload> { }
         }
         
-        
         public void OnNotify(Playable origin, INotification notification, object context)
         {
             SignalEmitter signal = notification as SignalEmitter;
