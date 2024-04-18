@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: 84bba1f84c0017a4f99475ba715806d1
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - m_ViewDataDictionary: {instanceID: 0}
+  - m_VisualTreeAsset: {fileID: 9197481963319205126, guid: b940e6d3458db634794d4c01a28649a7,
+      type: 3}
+  - m_LineTreeAsset: {fileID: 9197481963319205126, guid: 0d07c669c85e3984cb85008dc1372f97,
+      type: 3}
+  - m_SpiralTreeAsset: {fileID: 9197481963319205126, guid: 5917a76c056d9b048b34569805b02f7b,
+      type: 3}
+  - m_PolygonTreeAsset: {fileID: 9197481963319205126, guid: 7565d11f6e295d04db745498ba1d0bf9,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

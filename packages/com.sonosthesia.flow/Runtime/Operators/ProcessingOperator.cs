@@ -11,14 +11,17 @@ namespace Sonosthesia.Flow
 
         private IDynamicProcessor<T> _operator;
 
-        protected void Awake() => _operator = _operatorFactory.Make();
+        protected void Awake() => _operator = _operatorFactory ? _operatorFactory.Make() : null;
 
         protected override void OnEnable()
         {
             base.OnEnable();
-            _operator.Reset();
+            _operator?.Reset();
         }
 
-        protected override T Process(T input) => _operator.Process(input, Time.time * _timeScale);
+        protected override T Process(T input)
+        {
+            return _operator?.Process(input, Time.time * _timeScale) ?? input;
+        }
     }
 }

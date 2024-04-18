@@ -8,6 +8,10 @@ namespace Sonosthesia.Flow
     {
         protected override IDisposable Setup(Signal<T> source)
         {
+            if (!source)
+            {
+                return Disposable.Empty;
+            }
             return source.SignalObservable.Subscribe(value =>
             {
                 Broadcast(Bypass ? value : Process(value));

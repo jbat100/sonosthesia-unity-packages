@@ -22,8 +22,13 @@ namespace Sonosthesia.Signal
             }
         }
         
-        protected void OnEnable()
+        protected virtual void OnEnable()
         {
+            if (!_source)
+            {
+                return;
+            }
+            
             _processor = _processingFactory ? _processingFactory.Make() : null;
             _subscription?.Dispose();
 
@@ -41,7 +46,7 @@ namespace Sonosthesia.Signal
             }
         }
 
-        protected void OnDisable()
+        protected virtual void OnDisable()
         {
             _processor = null;
             _subscription?.Dispose();

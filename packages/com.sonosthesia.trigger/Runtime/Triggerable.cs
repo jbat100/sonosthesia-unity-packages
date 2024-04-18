@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,7 +8,6 @@ using Sonosthesia.Utils;
 
 namespace Sonosthesia.Trigger
 {
-
     public class Triggerable : Signal<float>
     {
         [SerializeField] private FloatEnvelope _envelope;
@@ -16,21 +16,78 @@ namespace Sonosthesia.Trigger
 
         [SerializeField] private FloatProcessor _postProcessor;
 
-        public void Trigger(float valueScale, float timeScale)
+        private const float THRESHOLD = 1e-6f;
+
+        [Serializable]
+        public class Payload
         {
-            TriggerEntry entry = new TriggerEntry(valueScale, timeScale, _envelope);
-            _entries.Add(entry);
-            Debug.Log($"{this} added entry {entry}");
+            [SerializeField] private float _timeScale = 1f;
+            public float TimeScale => _timeScale;
+            
+            [SerializeField] private float _valueScale = 1f;
+            public float ValueScale => _valueScale;
         }
         
+        /// <summary>
+        /// Useful for inspector bindings in Timeline etc...
+        /// </summary>
+        /// <param name="payload"></param>
+        public void PayloadTrigger(Payload payload)
+        {
+            if (payload == null)
+            {
+                return;
+            }
+            Trigger(payload.ValueScale, payload.TimeScale);
+        }
+        
+        public void DefaultTrigger()
+        {
+            Trigger(1f, 1f);
+        }
+        
+        public void Trigger(float valueScale, float timeScale)
+        {
+            if (Mathf.Abs(valueScale) < THRESHOLD)
+            {
+                return;
+            }
+            if (timeScale < THRESHOLD)
+            {
+                Debug.LogWarning($"{this} fired with tiny time scale {timeScale}");
+                return;
+            }
+            TriggerEntry entry = new TriggerEntry(valueScale, timeScale, _envelope);
+            _entries.Add(entry);
+            // Debug.Log($"{this} added entry {entry}");
+        }
+
+        public int TriggerCount => _entries.Count; 
+
+        // used to avoid alloc on update
+        private static readonly HashSet<TriggerEntry> _obsolete = new();
+        
+        private readonly HashSet<TriggerEntry> _entries = new ();
+
         protected void Update()
         {
-            _entries.ExceptWith(_entries.Where(entry => entry.IsEnded).ToList());
+            int previousCount = _entries.Count;
+            _obsolete.Clear();
+            _obsolete.UnionWith(_entries.Where(entry => entry.IsEnded));
+            _entries.ExceptWith(_obsolete);
+            _obsolete.Clear();
+            int currentCount = _entries.Count;
+            
+            if (previousCount != currentCount)
+            {
+                // Debug.Log($"{this} removed {previousCount - currentCount} obsolete entries");
+            }
+            
             float raw = _entries.Aggregate(0f, (current, entry) => entry.Accumulate(_accumulationMode, current));
             Broadcast(_postProcessor.Process(raw));
         }
         
-        private class TriggerEntry
+        private class TriggerEntry  
         {
             private static float CurrentTime => Time.time;
             
@@ -51,7 +108,7 @@ namespace Sonosthesia.Trigger
                 _valueScale = valueScale;
                 _timeScale = timeScale;
                 _envelope = envelope;
-                _endTime = CurrentTime + envelope.Duration * timeScale;
+                _endTime = CurrentTime + envelope.Duration / timeScale;
             }
 
             public bool IsEnded => CurrentTime > _endTime;
@@ -69,6 +126,5 @@ namespace Sonosthesia.Trigger
             }
         }
         
-        private readonly HashSet<TriggerEntry> _entries = new ();
     }
 }

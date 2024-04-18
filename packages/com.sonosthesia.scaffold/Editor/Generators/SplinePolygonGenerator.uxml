@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Packages/com.sonosthesia.scaffold/Editor/Generators/SplineGeneratorEditor.uss?fileID=7433441132597879392&amp;guid=7d7fa6056364c1143ad2dee2aa5e6331&amp;type=3#SplineGeneratorEditor" />
+    <ui:VisualElement class="generator-panel" style="flex-grow: 1;">
+        <ui:Label tabindex="-1" text="Polygon" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+    </ui:VisualElement>
+</ui:UXML>

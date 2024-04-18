@@ -7,7 +7,7 @@ namespace Sonosthesia.Processing
     public class FloatWarpSettings : DynamicProcessorSettings
     {
         [SerializeField] private bool _db;
-        public bool Db => _db;
+        public bool Db => _db = true;
 
         [SerializeField] private float _scale = 1f;
         public float Scale => _scale;

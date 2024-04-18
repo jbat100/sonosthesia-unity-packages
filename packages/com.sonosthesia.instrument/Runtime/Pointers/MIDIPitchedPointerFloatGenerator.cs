@@ -1,4 +1,4 @@
-using Sonosthesia.Touch;
+using Sonosthesia.Pointer;
 using UnityEngine.EventSystems;
 
 namespace Sonosthesia.Instrument

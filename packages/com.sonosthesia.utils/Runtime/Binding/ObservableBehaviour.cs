@@ -11,7 +11,19 @@ namespace Sonosthesia.Utils
 
         protected virtual void OnValidate() => BroadcastChange();
 
-        protected void BroadcastChange() => _changeSubject.OnNext(Unit.Default);
+        protected virtual void OnEnable() => BroadcastChange();
+
+        public void BroadcastChange()
+        {
+            OnChanged();
+            // Debug.Log($"{this} {nameof(BroadcastChange)}");
+            _changeSubject.OnNext(Unit.Default);
+        }
+
+        protected virtual void OnChanged()
+        {
+            
+        }
 
         protected void BroadcastSet<T>(T updated, ref T value)
         {

@@ -17,9 +17,13 @@ const blacklist = new Set([
 // Publish sequence:
 // - Ensure no errors in unity project
 // - Run node version.js to bump and align versions (all or changed since specific tag)
+//      node version.js update=minor all
 // - Run dependencies.js check to detect potential dependency/reference issues
+//      node dependencies.js check
 // - Run publish.js to publish all the packages to npm and check for errors (specify tag if not all)
-// - Ensure no build errors on Unity project
+//      node publish.js all
+// - Delocalise Ensure no build errors on Unity project
+//      node localize.js version
 // - Push dev, merge to main 
 // - Create release on github with vx.x.x tag corresponding to the highest package version
 

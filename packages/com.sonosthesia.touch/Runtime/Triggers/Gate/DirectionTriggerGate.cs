@@ -11,7 +11,7 @@ namespace Sonosthesia.Touch
         
         [SerializeField] private float _dotThreshold;
         
-        public override bool AllowTrigger(BaseTriggerSource source, BaseTriggerActor actor)
+        public override bool AllowTrigger(TriggerEndpoint source, TriggerEndpoint actor)
         {
             TransformDynamicsMonitor monitor = actor.GetComponentInParent<TransformDynamicsMonitor>();
             if (!monitor)

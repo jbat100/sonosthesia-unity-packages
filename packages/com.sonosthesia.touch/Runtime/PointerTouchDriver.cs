@@ -1,6 +1,3 @@
-using UniRx;
-using Unity.Mathematics;
-using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Sonosthesia.Touch

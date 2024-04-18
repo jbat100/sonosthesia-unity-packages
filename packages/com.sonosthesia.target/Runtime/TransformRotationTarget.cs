@@ -4,7 +4,7 @@ namespace Sonosthesia.Target
 {
     public class TransformRotationTarget : BlendTarget<Quaternion, QuaternionBlender>
     {
-        [SerializeField] private bool _local;
+        [SerializeField] private bool _local = true;
 
         protected override Quaternion Reference => _local ? transform.localRotation : transform.rotation;
         protected override void ApplyBlended(Quaternion value)

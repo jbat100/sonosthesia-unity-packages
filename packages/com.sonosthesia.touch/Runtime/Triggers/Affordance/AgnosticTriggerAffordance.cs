@@ -1,6 +1,8 @@
+using Sonosthesia.Interaction;
+
 namespace Sonosthesia.Touch
 {
-    public class AgnosticTriggerAffordance : AgnosticAffordance<TriggerEvent, BaseTriggerSource>
+    public class AgnosticTriggerAffordance : AgnosticAffordance<TriggerEvent, TriggerEndpoint>
     {
         
     }

@@ -1,29 +1,30 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Sonosthesia.Scaffold;
 using Sonosthesia.Utils;
+using UniRx;
 using UnityEngine;
 
 namespace Sonosthesia.Instrument
 {
     public class PitchedInstrumentBuilder : TransformedGroupInstantiator<PitchedInstrumentElement>
     {
+        private enum OffsetSpread
+        {
+            Even,
+            Interval
+        }
+        
         [Header("Pitch")]
         
         [SerializeField] private int _startNote;
         
         [SerializeField] private int _endNote;
 
-        [SerializeField] private int _rootNote;
+        [SerializeField] private List<MIDINoteFilter> _filters;
 
-        [SerializeField] private ScaleDescriptor _scaleDescriptor;
-        
-        private enum OffsetSpread
-        {
-            Even,
-            Interval
-        }
-
-        [Header("Spacing")] 
+        [Header("Appearance")] 
         
         [SerializeField] private OffsetSpread _offsetSpread;
 
@@ -31,7 +32,10 @@ namespace Sonosthesia.Instrument
 
         [SerializeField] private float _endOffset = 1;
 
-        private readonly MIDIScaleProvider _scaleProvider = new ();
+        [SerializeField] private MIDINoteMaterialProvider _materialProvider;
+        
+        protected override IObservable<Unit> RefreshRequestObservable =>
+            _filters.Select(f => f.ChangeObservable).Merge();
 
         protected override void OnValidate()
         {
@@ -48,31 +52,23 @@ namespace Sonosthesia.Instrument
                 {
                     return _notes;
                 }
-                
-                MIDIScale scale = _scaleProvider.GetScale(_scaleDescriptor);
-
-                int octave = 0;
 
                 // using local function to break out of nested loops
                 List<int> Compute() 
                 {
                     List<int> notes = new();
-                    while (true)
+                    int startNote = Mathf.Max(0, _startNote);
+                    int endNote = Mathf.Min(127, _endNote);
+                    for (int i = startNote; i <= endNote; i++)
                     {
-                        foreach (int interval in scale.Intervals)
+                        int note = i;
+                        if (_filters.All(filter => filter.Allow(note)))
                         {
-                            int note = _rootNote + (octave * 12) + interval;
-                            if (note > _endNote)
-                            {
-                                return notes;
-                            }
-                            if (note > _startNote)
-                            {
-                                notes.Add(note);    
-                            }
+                            notes.Add(note);   
                         }
-                        octave++;
-                    }    
+                    }
+
+                    return notes;
                 }
                 
                 _notes = Compute().AsReadOnly();
@@ -125,7 +121,15 @@ namespace Sonosthesia.Instrument
             int count = Mathf.Min(instances.Count, notes.Count);
             for (int i = 0; i < count; i++)
             {
-                instances[i].MIDINote = notes[i];
+                int note = notes[i];
+                PitchedInstrumentElement element = instances[i];
+                element.MIDINote = note;
+                Renderer elementRenderer = element.Renderer;
+                Material elementMaterial = _materialProvider ? _materialProvider.MaterialForNote(note) : null;
+                if (elementRenderer && elementMaterial)
+                {
+                    elementRenderer.sharedMaterial = elementMaterial;
+                }
             }
         }
     }

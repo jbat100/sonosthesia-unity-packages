@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Sonosthesia.Mesh;
 using Sonosthesia.Utils;
 using Unity.Collections;
 using UnityEngine;
@@ -25,24 +26,39 @@ namespace Sonosthesia.Deform
         private NativeArray<TriNoise.DomainNoiseComponent> _noiseComponents;
         private float[] _localTimes;
 
+        private void PopulateComponents(NativeArray<TriNoise.DomainNoiseComponent> components)
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                DynamicNoiseSettings settings = GetSettings(i);
+                _noiseComponents[i] = new TriNoise.DomainNoiseComponent(
+                    TriNoise.GetNoiseComponent(settings, _seed, _displacement, _localTimes[i]),
+                    settings.Domain.Matrix,
+                    settings.Domain.DerivativeMatrix
+                );
+            }
+        }
+
+        public void Populate(ref NativeArray<TriNoise.DomainNoiseComponent> components)
+        {
+            components.TryReusePersistentArray(Count);
+            PopulateComponents(components);
+        }
+        
+        // note : this is dangerous as client code does not own the array and does not know when it is disposed 
+        // prefer Populate API
         public NativeArray<TriNoise.DomainNoiseComponent> NoiseComponents
         {
             get
             {
+                CheckArrays();
+                
                 if (!_dirty)
                 {
                     return _noiseComponents;
                 }
                 
-                for (int i = 0; i < Count; i++)
-                {
-                    DynamicNoiseSettings settings = GetSettings(i);
-                    _noiseComponents[i] = new TriNoise.DomainNoiseComponent(
-                        TriNoise.GetNoiseComponent(settings, _seed, _displacement, _localTimes[i]),
-                        settings.Domain.Matrix,
-                        settings.Domain.DerivativeMatrix
-                    );
-                }
+                PopulateComponents(_noiseComponents);
 
                 _dirty = false;
                 return _noiseComponents;
@@ -83,7 +99,7 @@ namespace Sonosthesia.Deform
         private void CheckArrays()
         {
             int count = Count;
-            if (_noiseComponents.Length != count)
+            if (!_noiseComponents.IsCreated || _noiseComponents.Length != count)
             {
                 _noiseComponents.Dispose();
                 _noiseComponents = new NativeArray<TriNoise.DomainNoiseComponent>(count, Allocator.Persistent);

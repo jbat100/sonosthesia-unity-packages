@@ -2,10 +2,10 @@
   "author": "Jonathan Thorpe",
   "dependencies": {
     "com.neuecc.unirx": "7.1.0",
-    "com.sonosthesia.utils": "1.7.0",
-    "com.sonosthesia.signal": "1.7.0",
-    "com.sonosthesia.channel": "1.7.0",
-    "com.sonosthesia.target": "1.7.0"
+    "com.sonosthesia.utils": "1.8.0",
+    "com.sonosthesia.signal": "1.8.0",
+    "com.sonosthesia.channel": "1.8.0",
+    "com.sonosthesia.target": "1.8.0"
   },
   "description": "Sonosthesia unity visual flow",
   "displayName": "Sonosthesia Visual Flow",
@@ -16,5 +16,5 @@
   "name": "com.sonosthesia.visualflow",
   "repository": "github:jbat100/sonosthesia-unity-packages",
   "unity": "2022.3",
-  "version": "1.7.0"
+  "version": "1.8.0"
 }

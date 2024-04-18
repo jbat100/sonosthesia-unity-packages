@@ -2,13 +2,13 @@
   "author": "Jonathan Thorpe",
   "dependencies": {
     "com.neuecc.unirx": "7.1.0",
-    "com.sonosthesia.adaptivemidi": "1.7.0",
-    "com.sonosthesia.channel": "1.7.0",
-    "com.sonosthesia.signal": "1.7.0",
-    "com.sonosthesia.mapping": "1.7.0",
-    "com.sonosthesia.sequencer": "1.7.0",
-    "com.sonosthesia.flow": "1.7.0",
-    "com.sonosthesia.trigger": "1.7.0"
+    "com.sonosthesia.adaptivemidi": "1.8.0",
+    "com.sonosthesia.channel": "1.8.0",
+    "com.sonosthesia.signal": "1.8.0",
+    "com.sonosthesia.mapping": "1.8.0",
+    "com.sonosthesia.sequencer": "1.8.0",
+    "com.sonosthesia.flow": "1.8.0",
+    "com.sonosthesia.trigger": "1.8.0"
   },
   "description": "Sonosthesia unity midi",
   "displayName": "Sonosthesia MIDI",
@@ -19,5 +19,5 @@
   "name": "com.sonosthesia.midi",
   "repository": "github:jbat100/sonosthesia-unity-packages",
   "unity": "2022.3",
-  "version": "1.7.0"
+  "version": "1.8.0"
 }

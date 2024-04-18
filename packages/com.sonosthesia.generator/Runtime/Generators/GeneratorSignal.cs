@@ -11,12 +11,17 @@ namespace Sonosthesia.Generator
         
         private float _time;
         
-        protected void OnEnable() => _time = 0;
+        protected void OnEnable() => ResetTime();
         
         protected void Update()
         {
             _time += _timeFactor * Time.deltaTime;
-            Broadcast(_generator.Evaluate(_time));
+            T raw = _generator.Evaluate(_time);
+            Broadcast(PostProcess(raw));
         }
+
+        protected virtual T PostProcess(T value) => value;
+
+        public void ResetTime() => _time = 0;
     }
 }

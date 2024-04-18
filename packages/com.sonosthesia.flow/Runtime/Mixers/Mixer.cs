@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UniRx;
 using UnityEngine;
 using Sonosthesia.Signal;
@@ -9,6 +10,7 @@ namespace Sonosthesia.Flow
     {
         [SerializeField] private List<Signal<TValue>> _inputs;
 
+        // TODO : could use signal.Value instead of storing in dictionary
         private readonly Dictionary<Signal<TValue>, TValue> _current = new();
 
         private readonly CompositeDisposable _subscriptions = new();
@@ -29,7 +31,7 @@ namespace Sonosthesia.Flow
         protected virtual void OnEnable()
         {
             _subscriptions.Clear();
-            foreach (Signal<TValue> input in _inputs)
+            foreach (Signal<TValue> input in _inputs.Where(input => input))
             {
                 _subscriptions.Add(input.SignalObservable.Subscribe(value =>
                 {

@@ -4,23 +4,9 @@ namespace Sonosthesia.Touch
 {
     public class ZoneTriggerStreamKiller : TriggerStreamKiller
     {
-        public enum StreamType
-        {
-            None,
-            Actor,
-            Source
-        }
-
-        [SerializeField] private StreamType _streamType;
-        
         protected virtual void OnTriggerEnter(Collider other)
         {
-            TriggerStream stream = _streamType switch
-            {
-                StreamType.Actor => Extract<BaseTriggerActor>(other),
-                StreamType.Source => Extract<BaseTriggerSource>(other),
-                _ => null
-            };
+            TriggerStream stream = Extract<TriggerEndpoint>(other);
 
             if (stream)
             {

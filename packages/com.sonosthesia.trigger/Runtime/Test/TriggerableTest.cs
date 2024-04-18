@@ -6,7 +6,7 @@ namespace Sonosthesia.Trigger
     using UnityEditor;
 
     [CustomEditor(typeof(TriggerableTest))]
-    public class TriggerFloatSignalTestEditor : Editor
+    public class TriggerableTestEditor : Editor
     {
         public override void OnInspectorGUI()
         {
