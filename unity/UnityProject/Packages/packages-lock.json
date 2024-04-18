@@ -63,8 +63,8 @@
       "source": "local",
       "dependencies": {
         "com.unity.mathematics": "1.2.6",
-        "com.unity.burst": "1.8.4",
-        "com.unity.splines": "2.4.0",
+        "com.unity.burst": "1.8.13",
+        "com.unity.splines": "2.5.2",
         "com.sonosthesia.mesh": "1.7.0",
         "com.sonosthesia.noise": "1.7.0",
         "com.sonosthesia.signal": "1.7.0",
@@ -106,7 +106,22 @@
         "com.sonosthesia.touch": "1.7.0",
         "com.sonosthesia.channel": "1.7.0",
         "com.sonosthesia.signal": "1.7.0",
-        "com.sonosthesia.mapping": "1.7.0"
+        "com.sonosthesia.mapping": "1.7.0",
+        "com.sonosthesia.pointer": "1.7.0",
+        "com.sonosthesia.interaction": "1.7.0",
+        "com.sonosthesia.scaffold": "1.7.0",
+        "com.sonosthesia.utils": "1.7.0"
+      }
+    },
+    "com.sonosthesia.interaction": {
+      "version": "file:../../../packages/com.sonosthesia.interaction",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.neuecc.unirx": "7.1.0",
+        "com.sonosthesia.utils": "1.7.0",
+        "com.sonosthesia.channel": "1.7.0",
+        "com.sonosthesia.trigger": "1.7.0"
       }
     },
     "com.sonosthesia.link": {
@@ -138,8 +153,11 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
+        "com.unity.splines": "2.5.2",
         "com.unity.mathematics": "1.2.6",
-        "com.unity.burst": "1.8.4"
+        "com.unity.burst": "1.8.13",
+        "com.neuecc.unirx": "7.1.0",
+        "com.sonosthesia.utils": "1.7.0"
       }
     },
     "com.sonosthesia.midi": {
@@ -180,6 +198,18 @@
         "com.sonosthesia.utils": "1.7.0"
       }
     },
+    "com.sonosthesia.pointer": {
+      "version": "file:../../../packages/com.sonosthesia.pointer",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.neuecc.unirx": "7.1.0",
+        "com.sonosthesia.utils": "1.7.0",
+        "com.sonosthesia.interaction": "1.7.0",
+        "com.sonosthesia.channel": "1.7.0",
+        "com.sonosthesia.trigger": "1.7.0"
+      }
+    },
     "com.sonosthesia.processing": {
       "version": "file:../../../packages/com.sonosthesia.processing",
       "depth": 0,
@@ -197,6 +227,16 @@
         "jp.keijiro.rtmidi": "1.0.4",
         "com.neuecc.unirx": "7.1.0",
         "com.sonosthesia.adaptivemidi": "1.7.0"
+      }
+    },
+    "com.sonosthesia.scaffold": {
+      "version": "file:../../../packages/com.sonosthesia.scaffold",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.unity.splines": "2.5.1",
+        "com.neuecc.unirx": "7.1.0",
+        "com.sonosthesia.utils": "1.7.0"
       }
     },
     "com.sonosthesia.sequencer": {
@@ -252,8 +292,10 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
+        "com.unity.timeline": "1.8.2",
         "com.neuecc.unirx": "7.1.0",
-        "com.sonosthesia.signal": "1.7.0"
+        "com.sonosthesia.signal": "1.7.0",
+        "com.sonosthesia.trigger": "1.7.0"
       }
     },
     "com.sonosthesia.touch": {
@@ -268,7 +310,8 @@
         "com.sonosthesia.mapping": "1.7.0",
         "com.sonosthesia.utils": "1.7.0",
         "com.sonosthesia.flow": "1.7.0",
-        "com.sonosthesia.trigger": "1.7.0"
+        "com.sonosthesia.trigger": "1.7.0",
+        "com.sonosthesia.interaction": "1.7.0"
       }
     },
     "com.sonosthesia.trigger": {
@@ -299,19 +342,22 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
+        "com.unity.visualeffectgraph": "14.0.9",
         "com.neuecc.unirx": "7.1.0",
         "com.sonosthesia.channel": "1.7.0",
         "com.sonosthesia.signal": "1.7.0",
         "com.sonosthesia.target": "1.7.0",
-        "com.sonosthesia.spawn": "1.7.0"
+        "com.sonosthesia.spawn": "1.7.0",
+        "com.sonosthesia.mesh": "1.7.0"
       }
     },
     "com.unity.burst": {
-      "version": "1.8.11",
+      "version": "1.8.13",
       "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.unity.mathematics": "1.2.1"
+        "com.unity.mathematics": "1.2.1",
+        "com.unity.modules.jsonserialize": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },
@@ -325,7 +371,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.collab-proxy": {
-      "version": "2.2.0",
+      "version": "2.3.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -339,7 +385,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "3.0.27",
+      "version": "3.0.28",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -389,7 +435,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.render-pipelines.core": {
-      "version": "14.0.9",
+      "version": "14.0.11",
       "depth": 1,
       "source": "builtin",
       "dependencies": {
@@ -400,23 +446,23 @@
       }
     },
     "com.unity.render-pipelines.universal": {
-      "version": "14.0.9",
+      "version": "14.0.11",
       "depth": 0,
       "source": "builtin",
       "dependencies": {
         "com.unity.mathematics": "1.2.1",
         "com.unity.burst": "1.8.9",
-        "com.unity.render-pipelines.core": "14.0.9",
-        "com.unity.shadergraph": "14.0.9",
+        "com.unity.render-pipelines.core": "14.0.11",
+        "com.unity.shadergraph": "14.0.11",
         "com.unity.render-pipelines.universal-config": "14.0.9"
       }
     },
     "com.unity.render-pipelines.universal-config": {
-      "version": "14.0.9",
+      "version": "14.0.10",
       "depth": 1,
       "source": "builtin",
       "dependencies": {
-        "com.unity.render-pipelines.core": "14.0.9"
+        "com.unity.render-pipelines.core": "14.0.10"
       }
     },
     "com.unity.searcher": {
@@ -434,16 +480,16 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.shadergraph": {
-      "version": "14.0.9",
+      "version": "14.0.11",
       "depth": 1,
       "source": "builtin",
       "dependencies": {
-        "com.unity.render-pipelines.core": "14.0.9",
+        "com.unity.render-pipelines.core": "14.0.11",
         "com.unity.searcher": "4.9.2"
       }
     },
     "com.unity.splines": {
-      "version": "2.5.1",
+      "version": "2.5.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -474,8 +520,8 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.timeline": {
-      "version": "1.7.6",
-      "depth": 0,
+      "version": "1.8.2",
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.modules.director": "1.0.0",
@@ -495,16 +541,16 @@
       }
     },
     "com.unity.visualeffectgraph": {
-      "version": "14.0.9",
+      "version": "14.0.11",
       "depth": 0,
       "source": "builtin",
       "dependencies": {
-        "com.unity.shadergraph": "14.0.9",
-        "com.unity.render-pipelines.core": "14.0.9"
+        "com.unity.shadergraph": "14.0.11",
+        "com.unity.render-pipelines.core": "14.0.11"
       }
     },
     "com.unity.visualscripting": {
-      "version": "1.9.1",
+      "version": "1.9.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {
