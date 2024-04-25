@@ -45,273 +45,278 @@ namespace Sonosthesia.MIDI
         }
     }
     
+    // A bit of a debate on whether octaves go from -1 to 9 or -2 to 8
+    // https://studiocode.dev/resources/midi-middle-c/
+    // https://forum.ableton.com/viewtopic.php?t=39722
+    // using latter as it fits with ableton live
+    
     public enum MIDIPitch
     {
+        /// <summary>C in octave -2.</summary>
+        CNeg2 = 0,
+        /// <summary>C# in octave -2.</summary>
+        CSharpNeg2 = 1,
+        /// <summary>D in octave -2.</summary>
+        DNeg2 = 2,
+        /// <summary>D# in octave -2.</summary>
+        DSharpNeg2 = 3,
+        /// <summary>E in octave -2.</summary>
+        ENeg2 = 4,
+        /// <summary>F in octave -2.</summary>
+        FNeg2 = 5,
+        /// <summary>F# in octave -2.</summary>
+        FSharpNeg2 = 6,
+        /// <summary>G in octave -2.</summary>
+        GNeg2 = 7,
+        /// <summary>G# in octave -2.</summary>
+        GSharpNeg2 = 8,
+        /// <summary>A in octave -2.</summary>
+        ANeg2 = 9,
+        /// <summary>A# in octave -2.</summary>
+        ASharpNeg2 = 10,
+        /// <summary>B in octave -2.</summary>
+        BNeg2 = 11,
+
         /// <summary>C in octave -1.</summary>
-        CNeg1 = 0,
+        CNeg1 = 12,
         /// <summary>C# in octave -1.</summary>
-        CSharpNeg1 = 1,
+        CSharpNeg1 = 13,
         /// <summary>D in octave -1.</summary>
-        DNeg1 = 2,
+        DNeg1 = 14,
         /// <summary>D# in octave -1.</summary>
-        DSharpNeg1 = 3,
+        DSharpNeg1 = 15,
         /// <summary>E in octave -1.</summary>
-        ENeg1 = 4,
+        ENeg1 = 16,
         /// <summary>F in octave -1.</summary>
-        FNeg1 = 5,
+        FNeg1 = 17,
         /// <summary>F# in octave -1.</summary>
-        FSharpNeg1 = 6,
+        FSharpNeg1 = 18,
         /// <summary>G in octave -1.</summary>
-        GNeg1 = 7,
+        GNeg1 = 19,
         /// <summary>G# in octave -1.</summary>
-        GSharpNeg1 = 8,
+        GSharpNeg1 = 20,
         /// <summary>A in octave -1.</summary>
-        ANeg1 = 9,
+        ANeg1 = 21,
         /// <summary>A# in octave -1.</summary>
-        ASharpNeg1 = 10,
+        ASharpNeg1 = 22,
         /// <summary>B in octave -1.</summary>
-        BNeg1 = 11,
+        BNeg1 = 23,
 
         /// <summary>C in octave 0.</summary>
-        C0 = 12,
+        C0 = 24,
         /// <summary>C# in octave 0.</summary>
-        CSharp0 = 13,
+        CSharp0 = 25,
         /// <summary>D in octave 0.</summary>
-        D0 = 14,
+        D0 = 26,
         /// <summary>D# in octave 0.</summary>
-        DSharp0 = 15,
+        DSharp0 = 27,
         /// <summary>E in octave 0.</summary>
-        E0 = 16,
+        E0 = 28,
         /// <summary>F in octave 0.</summary>
-        F0 = 17,
+        F0 = 29,
         /// <summary>F# in octave 0.</summary>
-        FSharp0 = 18,
+        FSharp0 = 30,
         /// <summary>G in octave 0.</summary>
-        G0 = 19,
+        G0 = 31,
         /// <summary>G# in octave 0.</summary>
-        GSharp0 = 20,
+        GSharp0 = 32,
         /// <summary>A in octave 0.</summary>
-        A0 = 21,
-        /// <summary>A# in octave 0, usually the lowest key on an 88-key keyboard.</summary>
-        ASharp0 = 22,
+        A0 = 33,
+        /// <summary>A# in octave 0.</summary>
+        ASharp0 = 34,
         /// <summary>B in octave 0.</summary>
-        B0 = 23,
+        B0 = 35,
 
         /// <summary>C in octave 1.</summary>
-        C1 = 24,
+        C1 = 36,
         /// <summary>C# in octave 1.</summary>
-        CSharp1 = 25,
+        CSharp1 = 37,
         /// <summary>D in octave 1.</summary>
-        D1 = 26,
+        D1 = 38,
         /// <summary>D# in octave 1.</summary>
-        DSharp1 = 27,
+        DSharp1 = 39,
         /// <summary>E in octave 1.</summary>
-        E1 = 28,
+        E1 = 40,
         /// <summary>F in octave 1.</summary>
-        F1 = 29,
+        F1 = 41,
         /// <summary>F# in octave 1.</summary>
-        FSharp1 = 30,
+        FSharp1 = 42,
         /// <summary>G in octave 1.</summary>
-        G1 = 31,
+        G1 = 43,
         /// <summary>G# in octave 1.</summary>
-        GSharp1 = 32,
+        GSharp1 = 44,
         /// <summary>A in octave 1.</summary>
-        A1 = 33,
+        A1 = 45,
         /// <summary>A# in octave 1.</summary>
-        ASharp1 = 34,
+        ASharp1 = 46,
         /// <summary>B in octave 1.</summary>
-        B1 = 35,
+        B1 = 47,
 
         /// <summary>C in octave 2.</summary>
-        C2 = 36,
+        C2 = 48,
         /// <summary>C# in octave 2.</summary>
-        CSharp2 = 37,
+        CSharp2 = 49,
         /// <summary>D in octave 2.</summary>
-        D2 = 38,
+        D2 = 50,
         /// <summary>D# in octave 2.</summary>
-        DSharp2 = 39,
+        DSharp2 = 51,
         /// <summary>E in octave 2.</summary>
-        E2 = 40,
+        E2 = 52,
         /// <summary>F in octave 2.</summary>
-        F2 = 41,
+        F2 = 53,
         /// <summary>F# in octave 2.</summary>
-        FSharp2 = 42,
+        FSharp2 = 54,
         /// <summary>G in octave 2.</summary>
-        G2 = 43,
+        G2 = 55,
         /// <summary>G# in octave 2.</summary>
-        GSharp2 = 44,
+        GSharp2 = 56,
         /// <summary>A in octave 2.</summary>
-        A2 = 45,
+        A2 = 57,
         /// <summary>A# in octave 2.</summary>
-        ASharp2 = 46,
+        ASharp2 = 58,
         /// <summary>B in octave 2.</summary>
-        B2 = 47,
+        B2 = 59,
 
         /// <summary>C in octave 3.</summary>
-        C3 = 48,
+        C3 = 60,
         /// <summary>C# in octave 3.</summary>
-        CSharp3 = 49,
+        CSharp3 = 61,
         /// <summary>D in octave 3.</summary>
-        D3 = 50,
+        D3 = 62,
         /// <summary>D# in octave 3.</summary>
-        DSharp3 = 51,
+        DSharp3 = 63,
         /// <summary>E in octave 3.</summary>
-        E3 = 52,
+        E3 = 64,
         /// <summary>F in octave 3.</summary>
-        F3 = 53,
+        F3 = 65,
         /// <summary>F# in octave 3.</summary>
-        FSharp3 = 54,
+        FSharp3 = 66,
         /// <summary>G in octave 3.</summary>
-        G3 = 55,
+        G3 = 67,
         /// <summary>G# in octave 3.</summary>
-        GSharp3 = 56,
+        GSharp3 = 68,
         /// <summary>A in octave 3.</summary>
-        A3 = 57,
+        A3 = 69,
         /// <summary>A# in octave 3.</summary>
-        ASharp3 = 58,
+        ASharp3 = 70,
         /// <summary>B in octave 3.</summary>
-        B3 = 59,
+        B3 = 71,
 
-        /// <summary>C in octave 4, also known as Middle C.</summary>
-        C4 = 60,
+        /// <summary>C in octave 4.</summary>
+        C4 = 72,
         /// <summary>C# in octave 4.</summary>
-        CSharp4 = 61,
+        CSharp4 = 73,
         /// <summary>D in octave 4.</summary>
-        D4 = 62,
+        D4 = 74,
         /// <summary>D# in octave 4.</summary>
-        DSharp4 = 63,
+        DSharp4 = 75,
         /// <summary>E in octave 4.</summary>
-        E4 = 64,
+        E4 = 76,
         /// <summary>F in octave 4.</summary>
-        F4 = 65,
+        F4 = 77,
         /// <summary>F# in octave 4.</summary>
-        FSharp4 = 66,
+        FSharp4 = 78,
         /// <summary>G in octave 4.</summary>
-        G4 = 67,
+        G4 = 79,
         /// <summary>G# in octave 4.</summary>
-        GSharp4 = 68,
+        GSharp4 = 80,
         /// <summary>A in octave 4.</summary>
-        A4 = 69,
+        A4 = 81,
         /// <summary>A# in octave 4.</summary>
-        ASharp4 = 70,
+        ASharp4 = 82,
         /// <summary>B in octave 4.</summary>
-        B4 = 71,
+        B4 = 83,
 
         /// <summary>C in octave 5.</summary>
-        C5 = 72,
+        C5 = 74,
         /// <summary>C# in octave 5.</summary>
-        CSharp5 = 73,
+        CSharp5 = 75,
         /// <summary>D in octave 5.</summary>
-        D5 = 74,
+        D5 = 86,
         /// <summary>D# in octave 5.</summary>
-        DSharp5 = 75,
+        DSharp5 = 87,
         /// <summary>E in octave 5.</summary>
-        E5 = 76,
+        E5 = 88,
         /// <summary>F in octave 5.</summary>
-        F5 = 77,
+        F5 = 89,
         /// <summary>F# in octave 5.</summary>
-        FSharp5 = 78,
+        FSharp5 = 90,
         /// <summary>G in octave 5.</summary>
-        G5 = 79,
+        G5 = 91,
         /// <summary>G# in octave 5.</summary>
-        GSharp5 = 80,
+        GSharp5 = 92,
         /// <summary>A in octave 5.</summary>
-        A5 = 81,
+        A5 = 93,
         /// <summary>A# in octave 5.</summary>
-        ASharp5 = 82,
+        ASharp5 = 94,
         /// <summary>B in octave 5.</summary>
-        B5 = 83,
-
+        B5 = 95,
+        
         /// <summary>C in octave 6.</summary>
-        C6 = 84,
+        C6 = 96,
         /// <summary>C# in octave 6.</summary>
-        CSharp6 = 85,
+        CSharp6 = 97,
         /// <summary>D in octave 6.</summary>
-        D6 = 86,
+        D6 = 98,
         /// <summary>D# in octave 6.</summary>
-        DSharp6 = 87,
+        DSharp6 = 99,
         /// <summary>E in octave 6.</summary>
-        E6 = 88,
+        E6 = 100,
         /// <summary>F in octave 6.</summary>
-        F6 = 89,
+        F6 = 101,
         /// <summary>F# in octave 6.</summary>
-        FSharp6 = 90,
+        FSharp6 = 102,
         /// <summary>G in octave 6.</summary>
-        G6 = 91,
+        G6 = 103,
         /// <summary>G# in octave 6.</summary>
-        GSharp6 = 92,
+        GSharp6 = 104,
         /// <summary>A in octave 6.</summary>
-        A6 = 93,
+        A6 = 105,
         /// <summary>A# in octave 6.</summary>
-        ASharp6 = 94,
+        ASharp6 = 106,
         /// <summary>B in octave 6.</summary>
-        B6 = 95,
+        B6 = 107,
 
-        /// <summary>C in octave 7.</summary>
-        C7 = 96,
+        /// <summary>C in octave 7, usually the highest key on an 88-key keyboard.</summary>
+        C7 = 108,
         /// <summary>C# in octave 7.</summary>
-        CSharp7 = 97,
+        CSharp7 = 109,
         /// <summary>D in octave 7.</summary>
-        D7 = 98,
+        D7 = 110,
         /// <summary>D# in octave 7.</summary>
-        DSharp7 = 99,
+        DSharp7 = 111,
         /// <summary>E in octave 7.</summary>
-        E7 = 100,
+        E7 = 112,
         /// <summary>F in octave 7.</summary>
-        F7 = 101,
+        F7 = 113,
         /// <summary>F# in octave 7.</summary>
-        FSharp7 = 102,
+        FSharp7 = 114,
         /// <summary>G in octave 7.</summary>
-        G7 = 103,
+        G7 = 115,
         /// <summary>G# in octave 7.</summary>
-        GSharp7 = 104,
+        GSharp7 = 116,
         /// <summary>A in octave 7.</summary>
-        A7 = 105,
+        A7 = 117,
         /// <summary>A# in octave 7.</summary>
-        ASharp7 = 106,
+        ASharp7 = 118,
         /// <summary>B in octave 7.</summary>
-        B7 = 107,
+        B7 = 119,
 
-        /// <summary>C in octave 8, usually the highest key on an 88-key keyboard.</summary>
-        C8 = 108,
+        /// <summary>C in octave 8.</summary>
+        C8 = 120,
         /// <summary>C# in octave 8.</summary>
-        CSharp8 = 109,
+        CSharp8 = 121,
         /// <summary>D in octave 8.</summary>
-        D8 = 110,
+        D8 = 122,
         /// <summary>D# in octave 8.</summary>
-        DSharp8 = 111,
+        DSharp8 = 123,
         /// <summary>E in octave 8.</summary>
-        E8 = 112,
+        E8 = 124,
         /// <summary>F in octave 8.</summary>
-        F8 = 113,
+        F8 = 125,
         /// <summary>F# in octave 8.</summary>
-        FSharp8 = 114,
+        FSharp8 = 126,
         /// <summary>G in octave 8.</summary>
-        G8 = 115,
-        /// <summary>G# in octave 8.</summary>
-        GSharp8 = 116,
-        /// <summary>A in octave 8.</summary>
-        A8 = 117,
-        /// <summary>A# in octave 8.</summary>
-        ASharp8 = 118,
-        /// <summary>B in octave 8.</summary>
-        B8 = 119,
-
-        /// <summary>C in octave 9.</summary>
-        C9 = 120,
-        /// <summary>C# in octave 9.</summary>
-        CSharp9 = 121,
-        /// <summary>D in octave 9.</summary>
-        D9 = 122,
-        /// <summary>D# in octave 9.</summary>
-        DSharp9 = 123,
-        /// <summary>E in octave 9.</summary>
-        E9 = 124,
-        /// <summary>F in octave 9.</summary>
-        F9 = 125,
-        /// <summary>F# in octave 9.</summary>
-        FSharp9 = 126,
-        /// <summary>G in octave 9.</summary>
-        G9 = 127
+        G8 = 127
     }
 }
