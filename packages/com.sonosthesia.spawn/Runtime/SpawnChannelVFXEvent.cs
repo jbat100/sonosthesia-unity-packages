@@ -25,6 +25,7 @@ namespace Sonosthesia.Spawn
                 _subscription?.Dispose();
                 _eventName = eventName;
                 _visualEffect = visualEffect;
+                // TODO : we don't don't want to spawn past first event, one event per stream
                 _subscription = stream.Subscribe(Spawn);
             }
 

@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    
     public abstract class TriggerSource<TValue> : ValueTriggerEndpoint<TValue> where TValue : struct
     {
         [SerializeField] private ChannelDriver<TValue> _driver;
@@ -236,6 +235,18 @@ namespace Sonosthesia.Touch
         {
             delay = _autoEndDelay;
             return _autoEnd;
+        }
+
+        public void TestStream(TValue value)
+        {
+            if (!Application.isPlaying)
+            {
+                Debug.LogError("Stream test requires play mode");
+                return;
+            }
+            Guid id = _driver.BeginStream(value);
+            double delay = _autoEnd ? _autoEndDelay : 1f;
+            Observable.Timer(TimeSpan.FromSeconds(delay)).TakeUntilDestroy(this).Subscribe(_ => _driver.EndStream(id));
         }
     }
 }

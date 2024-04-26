@@ -90,7 +90,7 @@ namespace Sonosthesia.Mesh
         
         protected virtual void Update()
         {
-            if (_rebuildOnUpdate || (_rebuildRequested && Time.time >= _nextScheduledRebuild))
+            if (_rebuildOnUpdate || (_rebuildRequested && (Time.time >= _nextScheduledRebuild || !Application.isPlaying)))
             {
                 Rebuild();
             }

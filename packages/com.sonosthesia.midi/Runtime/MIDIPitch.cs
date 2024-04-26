@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace Sonosthesia.MIDI
 {
     public enum MIDINoteName
@@ -34,17 +32,29 @@ namespace Sonosthesia.MIDI
         /// <returns>true if valid conversion was made</returns>
         public static bool MIDIPitchForOctave(this MIDINoteName noteName, int octave, out MIDIPitch note)
         {
-            int result = (int) noteName + 12 * (octave + 1);
+            if (noteName.MIDIPitchForOctave(octave, out int rawNote))
+            {
+                note = (MIDIPitch)rawNote;
+                return true;
+            }
+
+            note = default;
+            return false;
+        }
+
+        public static bool MIDIPitchForOctave(this MIDINoteName noteName, int octave, out int note)
+        {
+            int result = (int) noteName + 12 * (octave + 2);
             if (result is < 0 or > 127)
             {
                 note = default;
                 return false;
             }
-            note = (MIDIPitch) result;
+            note = result;
             return true;
         }
     }
-    
+
     // A bit of a debate on whether octaves go from -1 to 9 or -2 to 8
     // https://studiocode.dev/resources/midi-middle-c/
     // https://forum.ableton.com/viewtopic.php?t=39722
