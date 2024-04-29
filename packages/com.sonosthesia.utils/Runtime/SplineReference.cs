@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Splines;
 
-namespace Sonosthesia.Mesh
+namespace Sonosthesia.Utils
 {
     [Serializable]
     public class SplineReference

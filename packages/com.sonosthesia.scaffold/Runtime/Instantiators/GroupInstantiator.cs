@@ -207,7 +207,7 @@ namespace Sonosthesia.Scaffold
         {
             if (!_dirtyInstances)
             {
-                _dirtyInstances = (_previousPrefab == null || _previousPrefab != _prefab);    
+                _dirtyInstances = _previousPrefab != _prefab;
             }
 
             if (_dirtyInstances)
@@ -234,13 +234,13 @@ namespace Sonosthesia.Scaffold
 
         private void EnsureCount(int count)
         {
+            _previousPrefab = _prefab;
+            
             if (_prefab == null)
             {
                 return;
             }
-            
-            _previousPrefab = _prefab;
-            
+
             if (count < _instances.Count)
             {
                 //removing extra unnecessary instances
