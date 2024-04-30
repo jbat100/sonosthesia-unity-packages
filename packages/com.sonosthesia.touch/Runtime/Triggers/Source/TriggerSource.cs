@@ -95,7 +95,7 @@ namespace Sonosthesia.Touch
 
         protected virtual void OnTriggerStay(Collider other)
         {
-            Debug.Log($"{this} {nameof(OnTriggerStay)} {other.gameObject.name}");
+            // Debug.Log($"{this} {nameof(OnTriggerStay)} {other.gameObject.name}");
 
             if (!_triggerEvents.TryGetValue(other, out Guid eventId))
             {

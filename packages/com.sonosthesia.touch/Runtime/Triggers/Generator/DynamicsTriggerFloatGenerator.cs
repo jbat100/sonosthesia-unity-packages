@@ -18,6 +18,8 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private FloatProcessor _postProcessor;
 
+        [SerializeField] private AnimationCurve _postEnvelope;
+
         protected override bool BeginTrigger(ITriggerData triggerData, State state, out float value)
         {
             TransformDynamicsMonitor monitor = triggerData.Actor.GetComponentInParent<TransformDynamicsMonitor>();
@@ -25,6 +27,7 @@ namespace Sonosthesia.Touch
             {
                 state.Monitor = monitor;
                 value = Extract(monitor);
+                // Debug.LogWarning($"{this} extracted dynamics {value}");
                 return true;
             }
             value = default;
@@ -46,6 +49,9 @@ namespace Sonosthesia.Touch
         
         protected override float Relative(float initial, float current) => current - initial;
 
-        protected override float PostProcess(float value) => _postProcessor.Process(value);
+        protected override float PostProcess(float value)
+        {
+            return _postEnvelope.Evaluate(_postProcessor.Process(value));
+        }
     }
 }
