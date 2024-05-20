@@ -1,19 +1,18 @@
-using Sonosthesia.Pack;
+using System.IO;
 using UnityEditor.AssetImporters;
 using UnityEngine;
 
 namespace Sonosthesia.Audio.Editor
 {
-    [ScriptedImporter(1, "aad")]
-    public class AudioAnalysisImporter : ScriptedImporter
+    [ScriptedImporter(1, "aadb")]
+    public class AudioAnalysisPackImporter : ScriptedImporter
     {
         public override void OnImportAsset(AssetImportContext ctx)
         {
             string assetName = System.IO.Path.GetFileNameWithoutExtension(assetPath);
 
-            AudioAnalysis[] samples = PackedFileUtils.ReadAnalysisFile(ctx.assetPath);
-            AudioAnalysisAsset asset = ScriptableObject.CreateInstance<AudioAnalysisAsset>();
-            asset.samples = samples;
+            AudioAnalysisPackAsset asset = ScriptableObject.CreateInstance<AudioAnalysisPackAsset>();
+            asset.data = File.ReadAllBytes(ctx.assetPath);
             asset.name = assetName;
             ctx.AddObjectToAsset("AudioAnalysisFileAsset", asset);
             ctx.SetMainObject(asset);

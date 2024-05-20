@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace Sonosthesia.Audio.Editor
 {
-    [ScriptedImporter(1, "aad")]
-    public class AudioAnalysisImporter : ScriptedImporter
+    [ScriptedImporter(1, "aadc")]
+    public class AudioAnalysisContainerImporter : ScriptedImporter
     {
         public override void OnImportAsset(AssetImportContext ctx)
         {
@@ -14,9 +14,16 @@ namespace Sonosthesia.Audio.Editor
             AudioAnalysis[] samples = PackedFileUtils.ReadAnalysisFile(ctx.assetPath);
             AudioAnalysisAsset asset = ScriptableObject.CreateInstance<AudioAnalysisAsset>();
             asset.samples = samples;
-            asset.name = assetName;
-            ctx.AddObjectToAsset("AudioAnalysisFileAsset", asset);
-            ctx.SetMainObject(asset);
+            
+            AudioAnalysisFileAsset fileAsset = ScriptableObject.CreateInstance<AudioAnalysisFileAsset>();
+            fileAsset.analysis = asset;
+            
+            fileAsset.name = assetName;
+            ctx.AddObjectToAsset("AudioAnalysisFileAsset", fileAsset);
+            ctx.SetMainObject(fileAsset);
+
+            asset.name = "Samples";
+            ctx.AddObjectToAsset("Analysis", asset);
         }
     }
 }
