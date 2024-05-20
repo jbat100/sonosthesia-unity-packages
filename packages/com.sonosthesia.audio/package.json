@@ -1,11 +1,13 @@
 {
   "author": "Jonathan Thorpe",
   "dependencies": {
+    "com.unity.timeline": "1.8.2",
     "com.neuecc.unirx": "7.1.0",
     "com.sonosthesia.signal": "1.8.0",
     "com.sonosthesia.utils": "1.8.0",
     "com.sonosthesia.processing": "1.8.0",
-    "com.sonosthesia.flow": "1.8.0"
+    "com.sonosthesia.flow": "1.8.0",
+    "com.sonosthesia.pack": "1.8.0"
   },
   "description": "Sonosthesia unity audio",
   "displayName": "Sonosthesia Audio",
