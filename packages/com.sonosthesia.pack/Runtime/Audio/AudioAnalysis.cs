@@ -17,7 +17,7 @@ namespace Sonosthesia.Pack
 
         public override string ToString()
         {
-            return $"{nameof(AudioAnalysis)} {nameof(time)} {time} {nameof(rms)} {rms}";
+            return $"{nameof(AudioAnalysis)} {nameof(time)} {time} {nameof(rms)} {rms} bins ({lows}, {mids}, {highs})";
         }
     }
 }

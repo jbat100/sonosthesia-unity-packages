@@ -1,6 +1,7 @@
 using System;
 using Sonosthesia.Pack;
 using Sonosthesia.Signal;
+using Sonosthesia.Trigger;
 using UniRx;
 using UnityEngine;
 
@@ -19,6 +20,8 @@ namespace Sonosthesia.Audio
         [SerializeField] private Signal<float> _highs;
         
         [SerializeField] private Signal<float> _centroid;
+        
+        [SerializeField] private Signal<Peak> _peaks;
 
         private IDisposable _subscription;
 
@@ -34,6 +37,12 @@ namespace Sonosthesia.Audio
                     _mids.Broadcast(a.mids);
                     _highs.Broadcast(a.highs);
                     _centroid.Broadcast(a.centroid);
+                    if (a.offset)
+                    {
+                        // audio analysis contains no info on peaks, just offset detection
+                        // note it probably didn't have much meaning anyway
+                        _peaks.Broadcast(new Peak(1f, 1f));
+                    }
                 });
             }
         }

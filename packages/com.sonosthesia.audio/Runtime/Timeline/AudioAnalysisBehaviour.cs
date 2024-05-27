@@ -19,7 +19,7 @@ namespace Sonosthesia.Audio
         /// <param name="playable">The Playable that owns the current PlayableBehaviour.</param>
         public override void OnGraphStart(Playable playable)
         {
-            Debug.Log($"{this} {nameof(OnGraphStart)} time {(float)playable.GetTime()}");
+            // Debug.Log($"{this} {nameof(OnGraphStart)} time {(float)playable.GetTime()}");
             _latestIndex = 0;
         }
 
@@ -29,7 +29,7 @@ namespace Sonosthesia.Audio
         /// <param name="playable">The Playable that owns the current PlayableBehaviour.</param>
         public override void OnGraphStop(Playable playable)
         {
-            Debug.Log($"{this} {nameof(OnGraphStop)} time {(float)playable.GetTime()}");
+            // Debug.Log($"{this} {nameof(OnGraphStop)} time {(float)playable.GetTime()}");
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Sonosthesia.Audio
         /// <param name="playable">The Playable that owns the current PlayableBehaviour.</param>
         public override void OnPlayableCreate(Playable playable)
         {
-            Debug.Log($"{this} {nameof(OnPlayableCreate)} time {(float)playable.GetTime()}");
+            // Debug.Log($"{this} {nameof(OnPlayableCreate)} time {(float)playable.GetTime()}");
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Sonosthesia.Audio
         /// <param name="playable">The Playable that owns the current PlayableBehaviour.</param>
         public override void OnPlayableDestroy(Playable playable)
         {
-            Debug.Log($"{this} {nameof(OnPlayableDestroy)} time {(float)playable.GetTime()}");
+            // Debug.Log($"{this} {nameof(OnPlayableDestroy)} time {(float)playable.GetTime()}");
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace Sonosthesia.Audio
         /// <param name="info">A FrameData structure that contains information about the current frame context.</param>
         public override void OnBehaviourPlay(Playable playable, FrameData info)
         {
-            Debug.Log($"{this} {nameof(OnBehaviourPlay)} time {(float)playable.GetTime()}");
+            // Debug.Log($"{this} {nameof(OnBehaviourPlay)} time {(float)playable.GetTime()}");
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Sonosthesia.Audio
         /// <param name="info">A FrameData structure that contains information about the current frame context.</param>
         public override void OnBehaviourPause(Playable playable, FrameData info)
         {
-            Debug.Log($"{this} {nameof(OnBehaviourPause)} time {(float)playable.GetTime()}");
+            // Debug.Log($"{this} {nameof(OnBehaviourPause)} time {(float)playable.GetTime()}");
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Sonosthesia.Audio
         /// <param name="info">A FrameData structure that contains information about the current frame context.</param>
         public override void PrepareData(Playable playable, FrameData info)
         {
-            Debug.Log($"{this} {nameof(PrepareData)} time {(float)playable.GetTime()}");
+            // Debug.Log($"{this} {nameof(PrepareData)} time {(float)playable.GetTime()}");
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Sonosthesia.Audio
         /// <param name="info">A FrameData structure that contains information about the current frame context.</param>
         public override void PrepareFrame(Playable playable, FrameData info)
         {
-            Debug.Log($"{this} {nameof(PrepareFrame)} time {(float)playable.GetTime()}");
+            // Debug.Log($"{this} {nameof(PrepareFrame)} time {(float)playable.GetTime()}");
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace Sonosthesia.Audio
         {
             float time = (float)playable.GetTime();
             
-            Debug.Log($"{this} {nameof(ProcessFrame)} time {time}");
+            // Debug.Log($"{this} {nameof(ProcessFrame)} time {time}");
             
             AudioAnalysisSignal signal = playerData as AudioAnalysisSignal;
 

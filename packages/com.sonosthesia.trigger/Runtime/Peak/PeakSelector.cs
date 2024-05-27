@@ -8,6 +8,7 @@ namespace Sonosthesia.Trigger
         private enum Selection
         {
             None,
+            Unit,
             Magnitude,
             Duration
         }
@@ -18,6 +19,7 @@ namespace Sonosthesia.Trigger
         {
             return _selection switch
             {
+                Selection.Unit => 1f,
                 Selection.Magnitude => value.Magnitude,
                 Selection.Duration => value.Duration,
                 _ => 0
