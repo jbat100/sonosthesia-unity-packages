@@ -21,14 +21,10 @@ namespace Sonosthesia.Audio
             }
         }
         
-        // note : used for testing
-        
-        public Color color = Color.white;
-        
         // note : samples needs to be a serializable field so that it appears in inspector and is properly 
         // recorded in Library folder
         
-        public AudioAnalysis[] samples;
+        [HideInInspector] public AudioAnalysis[] samples;
 
         public ClipCaps clipCaps => ClipCaps.None;
         

@@ -254,7 +254,7 @@ namespace Sonosthesia.Scaffold
 #if UNITY_EDITOR
                         DestroyImmediate(_instances[i]);
 #else
-                        Destroy(_Instances[i]);
+                        Destroy(_instances[i]);
 #endif
                     }
                     _instances.RemoveAt(i);
