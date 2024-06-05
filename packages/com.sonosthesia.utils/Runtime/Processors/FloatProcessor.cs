@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Sonosthesia.Utils
 {
     [Serializable]
-    public class FloatProcessor
+    public class FloatProcessor : IProcessor<float>
     {
         [SerializeField] private bool _abs;
         
