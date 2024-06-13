@@ -23,6 +23,9 @@ namespace Sonosthesia.Trigger
         }
     }
     
+    // note : Had issues when assigning PeakDetector to a Signal<Peak> field in inspector
+    // solution was to drag the component itself (using dual inspector tab with one locked)
+    
     public class PeakDetector : Adaptor<float, Peak>
     {
         [SerializeField] private PeakDetectorSettings _settings;

@@ -11,7 +11,7 @@ namespace Sonosthesia.Flow
     {
         [SerializeField] private Signal<T> _source;
 
-        [SerializeField] private List<Signal<T>> _destinations;
+        [SerializeField] private List<Signal<T>> _destinations = new List<Signal<T>>();
         
         private IDisposable _subscription;
 
