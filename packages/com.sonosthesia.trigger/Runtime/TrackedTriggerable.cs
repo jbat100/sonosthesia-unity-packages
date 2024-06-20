@@ -86,17 +86,13 @@ namespace Sonosthesia.Trigger
 
                 public bool IsComplete => CurrentTime - ReferenceTime > Envelope.Duration * TimeScale;
 
-                public float InitialValue => Envelope.InitialValue * ValueScale;
-                
-                public float FinalValue => Envelope.FinalValue * ValueScale;
-
                 public float CurrentValue
                 {
                     get
                     {
                         if (IsComplete)
                         {
-                            return FinalValue;
+                            return ValueScale * Envelope.FinalValue;;
                         }
                         return ValueScale * Envelope.Evaluate((CurrentTime - ReferenceTime) / TimeScale);
                     }

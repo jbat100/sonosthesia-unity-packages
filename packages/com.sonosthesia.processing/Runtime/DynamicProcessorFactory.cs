@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Sonosthesia.Processing
@@ -18,5 +19,15 @@ namespace Sonosthesia.Processing
         }
         
         protected abstract IDynamicProcessor<T> Make(TSettings settings);
+
+        protected virtual void OnEnable()
+        {
+            _settings?.Setup();
+        }
+
+        protected virtual void OnValidate()
+        {
+            _settings?.Setup();
+        }
     }
 }
