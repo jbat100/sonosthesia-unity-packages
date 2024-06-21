@@ -24,6 +24,10 @@ namespace Sonosthesia.Generator
             // attack phase
             if (t >= attackStart && t < holdStart)
             {
+                if (_attack < 1e-3)
+                {
+                    return 1f;
+                }
                 return t / _attack;
             }
             // hold phase
@@ -34,9 +38,13 @@ namespace Sonosthesia.Generator
             // release phase
             if (t >= releaseStart && t < end)
             {
-                return 1 - (t - releaseStart) / _release;
+                if (_release < 1e-3)
+                {
+                    return 0f;
+                }
+                return 1f - (t - releaseStart) / _release;
             }
-            return 0;
+            return 0f;
         }
     }
 }

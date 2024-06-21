@@ -8,6 +8,25 @@ using UnityEngine;
 
 namespace Sonosthesia.Trigger
 {
+#if UNITY_EDITOR
+    using UnityEditor;
+
+    [CustomEditor(typeof(TrackedTriggerable))]
+    public class TrackedTriggerableEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            DrawDefaultInspector();
+
+            TrackedTriggerable triggerable = (TrackedTriggerable)target;
+            if(GUILayout.Button("End All"))
+            {
+                triggerable.EndAll();
+            }
+        }
+    }
+#endif
+    
     public class TrackedTriggerable : Signal<float>
     {
         [SerializeField] private FloatEnvelope _startEnvelope;
@@ -53,8 +72,24 @@ namespace Sonosthesia.Trigger
                 entry.End(timeScale, _endEnvelope);
             }
         }
+
+        public void EndAll()
+        {
+            foreach (TriggerEntry entry in _entries.Values)
+            {
+                entry.End(_endEnvelope);
+            }
+        }
         
-        protected void Update()
+        public void EndAll(float timeScale)
+        {
+            foreach (TriggerEntry entry in _entries.Values)
+            {
+                entry.End(timeScale, _endEnvelope);
+            }
+        }
+        
+        protected virtual void Update()
         {
             _obsolete.Clear();
             foreach (KeyValuePair<Guid, TriggerEntry> pair in _entries)
@@ -72,7 +107,17 @@ namespace Sonosthesia.Trigger
             float raw = _entries.Values.Aggregate(0f, (current, entry) => entry.Accumulate(_accumulationMode, current));
             Broadcast(_postProcessor.Process(raw));
         }
+
+        protected virtual void OnEnable()
+        {
+            _entries.Clear();
+        }
         
+        protected virtual void OnDisable()
+        {
+            _entries.Clear();
+        }
+
         private class TriggerEntry
         {
             private class PhaseInfo

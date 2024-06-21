@@ -19,6 +19,10 @@ namespace Sonosthesia.Generator
 
         public override float Evaluate(float t)
         {
+            if (_release < 1e-3)
+            {
+                return 0f;
+            }
             if (t < _release)
             {
                 return (1f - t / _release) * _sustain;

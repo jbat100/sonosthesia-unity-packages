@@ -7,15 +7,15 @@ namespace Sonosthesia.Generator
     /// </summary>
     public class ADSEnvelope : FloatEnvelope
     {
-        [SerializeField] private float _attack;
-        [SerializeField] private float _decay;
-        [SerializeField] private float _sustain;
+        [SerializeField] private float _attack = 1f;
+        [SerializeField] private float _decay = 1f;
+        [SerializeField] private float _sustain = 0.5f;
         
         public override float Duration => _attack + _decay;
 
         public override float InitialValue => 0f;
         
-        public override float FinalValue => 0f;
+        public override float FinalValue => _sustain;
 
         public override float Evaluate(float t)
         {
@@ -26,14 +26,22 @@ namespace Sonosthesia.Generator
             // attack phase
             if (t >= attackStart && t < decayStart)
             {
+                if (_attack < 1e-3)
+                {
+                    return 1f;
+                }
                 return t / _attack;
             }
             // decay phase
             if (t >= decayStart && t < end)
             {
+                if (_decay < 1e-3)
+                {
+                    return _sustain;
+                }
                 return 1 - (((t - decayStart) / _decay) * (1 - _sustain));
             }
-            return 0;
+            return _sustain;
         }
     }
 }
