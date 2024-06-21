@@ -1,0 +1,16 @@
+{
+  "author": "Jonathan Thorpe",
+  "dependencies": {
+    "com.neuecc.unirx": "7.1.0"
+  },
+  "description": "Sonosthesia unity ease",
+  "displayName": "Sonosthesia Ease",
+  "keywords": [
+    "unity"
+  ],
+  "license": "MIT",
+  "name": "com.sonosthesia.ease",
+  "repository": "github:jbat100/sonosthesia-unity-packages",
+  "unity": "2022.3",
+  "version": "1.7.0"
+}
