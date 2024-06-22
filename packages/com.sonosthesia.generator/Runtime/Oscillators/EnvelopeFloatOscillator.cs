@@ -4,7 +4,7 @@ namespace Sonosthesia.Generator
 {
     public class EnvelopeFloatOscillator : FloatOscillator
     {
-        [SerializeField] private FloatEnvelope _envelope;
+        [SerializeField] private ValueEnvelope<float> _envelope;
 
         protected override float Duration => _envelope.Duration;
 

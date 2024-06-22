@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Generator
 {
-    public class ADSREnvelope : FloatEnvelope
+    public class ADSREnvelope : ValueEnvelope<float>
     {
         [SerializeField] private float _attack = 1f;
         [SerializeField] private float _decay = 0.5f;
@@ -29,11 +29,19 @@ namespace Sonosthesia.Generator
             // attack phase
             if (t >= attackStart && t < decayStart)
             {
+                if (_attack < 1e-3)
+                {
+                    return 1;
+                }
                 return t / _attack;
             }
             // decay phase
             if (t >= decayStart && t < holdStart)
             {
+                if (_decay < 1e-3)
+                {
+                    return _sustain;
+                }
                 return 1 - (((t - decayStart) / _decay) * (1 - _sustain));
             }
             // hold phase
@@ -44,6 +52,10 @@ namespace Sonosthesia.Generator
             // release phase
             if (t >= releaseStart && t < end)
             {
+                if (_release < 1e-3)
+                {
+                    return 0;
+                }
                 return (1 - (t - releaseStart) / _release) * _sustain;
             }
             return 0;

@@ -5,7 +5,7 @@ namespace Sonosthesia.Generator
     /// <summary>
     /// Used in tandem with ADSEnvelope for TrackedTriggerables
     /// </summary>
-    public class SREnvelope : FloatEnvelope
+    public class SREnvelope : ValueEnvelope<float>
     {
         [SerializeField] private float _sustain = 1f;
         

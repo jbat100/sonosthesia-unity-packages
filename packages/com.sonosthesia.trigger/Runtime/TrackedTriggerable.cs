@@ -29,9 +29,9 @@ namespace Sonosthesia.Trigger
     
     public class TrackedTriggerable : Signal<float>
     {
-        [SerializeField] private FloatEnvelope _startEnvelope;
+        [SerializeField] private ValueEnvelope<float> _startEnvelope;
         
-        [SerializeField] private FloatEnvelope _endEnvelope;
+        [SerializeField] private ValueEnvelope<float> _endEnvelope;
         
         [SerializeField] private AccumulationMode _accumulationMode = AccumulationMode.Max;
 
@@ -127,7 +127,7 @@ namespace Sonosthesia.Trigger
                 public float ReferenceTime;
                 public float ValueScale;
                 public float TimeScale;
-                public FloatEnvelope Envelope;
+                public ValueEnvelope<float> Envelope;
 
                 public bool IsComplete => CurrentTime - ReferenceTime > Envelope.Duration * TimeScale;
 
@@ -149,7 +149,7 @@ namespace Sonosthesia.Trigger
 
             private PhaseInfo CurrentPhase => _end ?? _start;
             
-            public TriggerEntry(float valueScale, float timeScale, FloatEnvelope envelope)
+            public TriggerEntry(float valueScale, float timeScale, ValueEnvelope<float> envelope)
             {
                 _start = new PhaseInfo
                 {
@@ -165,14 +165,14 @@ namespace Sonosthesia.Trigger
                 _start.ValueScale = valueScale;
             }
             
-            public void End(FloatEnvelope envelope) => End(_start.TimeScale, envelope);
+            public void End(ValueEnvelope<float> envelope) => End(_start.TimeScale, envelope);
 
             /// <summary>
             /// Note value scale is computed automatically to allow smooth transition down from current value
             /// </summary>
             /// <param name="timeScale"></param>
             /// <param name="envelope"></param>
-            public void End(float timeScale, FloatEnvelope envelope)
+            public void End(float timeScale, ValueEnvelope<float> envelope)
             {
                 if (_end != null)
                 {

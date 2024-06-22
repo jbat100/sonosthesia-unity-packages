@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Generator
 {
-    public class AHREnvelope : FloatEnvelope
+    public class AHREnvelope : ValueEnvelope<float>
     {
         [SerializeField] private float _attack;
         [SerializeField] private float _hold;

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Generator
 {
-    public class LinearFloatEnvelope : FloatEnvelope
+    public class LinearFloatEnvelope : ValueEnvelope<float>
     {
         [SerializeField] private float _start = 0;
         
