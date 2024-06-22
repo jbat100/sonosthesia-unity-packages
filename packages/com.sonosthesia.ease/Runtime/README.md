@@ -25,15 +25,18 @@ $a_1 = v_1 - 2a_2 t_1 - 3a_3 t_1^2$
 From equation 4:
 $a_1 = v_2 - 2a_2 t_2 - 3a_3 t_2^2$
 
-Equating these two expressions for \( a_1 \):
+Equating these two expressions for $a_1$:
 $v_1 - v_2 = 2a_2 (t_2 - t_1) + 3a_3 (t_2^2 - t_1^2)$
 
-Solving for \( a_2 \):
+Solving for $a_2$:
 $a_2 = \frac{v_1 - v_2 - 3a_3 (t_2^2 - t_1^2)}{2(t_2 - t_1)}$
 
-Substitute \( a_2 \) into equation 1:
+Substitute $a_2$ into equation 1:
 $$
 p_1 = a_0 + v_1 t_1 - 2a_2 t_1^2 - 3a_3 t_1^3 + a_2 t_1^2 + a_3 t_1^3
+$$
+
+$$
 p_1 = a_0 + v_1 t_1 - a_2 t_1^2 - 2a_3 t_1^3
 $$
 
