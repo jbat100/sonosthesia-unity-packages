@@ -40,12 +40,11 @@ $$
 
 We set up the following equations:
 
-$$
-1. p_1 = a_0 + a_1 t_1 + a_2 t_1^2 + a_3 t_1^3
-2. v_1 = a_1 + 2a_2 t_1 + 3a_3 t_1^2
-3. p_2 = a_0 + a_1 t_2 + a_2 t_2^2 + a_3 t_2^3
-4. v_2 = a_1 + 2a_2 t_2 + 3a_3 t_2^2
-$$
+1. $p_1 = a_0 + a_1 t_1 + a_2 t_1^2 + a_3 t_1^3$
+2. $v_1 = a_1 + 2a_2 t_1 + 3a_3 t_1^2$
+3. $p_2 = a_0 + a_1 t_2 + a_2 t_2^2 + a_3 t_2^3$
+4. $v_2 = a_1 + 2a_2 t_2 + 3a_3 t_2^2$
+
 
 Solving these equations step-by-step:
 
