@@ -1,3 +1,5 @@
+Using a cubic polynomial trajectory planning method, which ensures smooth changes in both position and velocity.
+
 Here are the final equations:
 
 $$
@@ -31,6 +33,7 @@ v(t) = \frac{dp(t)}{dt} = a_1 + 2a_2 t + 3a_3 t^2
 $$
 
 Using the boundary conditions:
+
 $$
 p(t_1) = p_1
 v(t_1) = v_1
