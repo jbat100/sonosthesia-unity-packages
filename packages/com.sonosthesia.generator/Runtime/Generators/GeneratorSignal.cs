@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 using Sonosthesia.Signal;
+using UniRx;
 
 namespace Sonosthesia.Generator
 {
@@ -7,21 +9,29 @@ namespace Sonosthesia.Generator
     {
         [SerializeField] private Generator<T> _generator;
 
-        [SerializeField] private float _timeFactor = 1f;
-        
-        private float _time;
-        
-        protected void OnEnable() => ResetTime();
-        
-        protected void Update()
+        [SerializeField] private Signal<float> _timeSignal;
+
+        private IDisposable _subscription;
+
+        protected virtual void OnEnable()
         {
-            _time += _timeFactor * Time.deltaTime;
-            T raw = _generator.Evaluate(_time);
-            Broadcast(PostProcess(raw));
+            _subscription?.Dispose();
+            if (_timeSignal)
+            {
+                _timeSignal.SignalObservable.Subscribe(time =>
+                {
+                    T raw = _generator.Evaluate(time);
+                    Broadcast(PostProcess(raw));
+                });
+            }
+        }
+
+        protected virtual void OnDisable()
+        {
+            _subscription?.Dispose();
+            _subscription = null;
         }
 
         protected virtual T PostProcess(T value) => value;
-
-        public void ResetTime() => _time = 0;
     }
 }

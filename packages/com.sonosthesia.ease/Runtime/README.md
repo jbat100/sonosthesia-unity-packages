@@ -60,27 +60,23 @@ $$
 
 And C code:
 
-a_0:
-
 ```
+// a_0:
 (3*p1*t1*pow(t2, 2) - p1*pow(t2, 3) + p2*pow(t1, 3) - 3*p2*pow(t1, 2)*t2 - pow(t1, 3)*t2*v2 - pow(t1, 2)*pow(t2, 2)*v1 + pow(t1, 2)*pow(t2, 2)*v2 + t1*pow(t2, 3)*v1)/(pow(t1, 3) - 3*pow(t1, 2)*t2 + 3*t1*pow(t2, 2) - pow(t2, 3))
 ```
 
-a_1:
-
 ```
+// a_1:
 (-6*p1*t1*t2 + 6*p2*t1*t2 + pow(t1, 3)*v2 + 2*pow(t1, 2)*t2*v1 + pow(t1, 2)*t2*v2 - t1*pow(t2, 2)*v1 - 2*t1*pow(t2, 2)*v2 - pow(t2, 3)*v1)/(pow(t1, 3) - 3*pow(t1, 2)*t2 + 3*t1*pow(t2, 2) - pow(t2, 3))
 ```
 
-a_2:
-
 ```
+// a_2:
 (3*p1*t1 + 3*p1*t2 - 3*p2*t1 - 3*p2*t2 - pow(t1, 2)*v1 - 2*pow(t1, 2)*v2 - t1*t2*v1 + t1*t2*v2 + 2*pow(t2, 2)*v1 + pow(t2, 2)*v2)/(pow(t1, 3) - 3*pow(t1, 2)*t2 + 3*t1*pow(t2, 2) - pow(t2, 3))
 ```
 
-a_3:
-
 ```
+// a_3:
 (-2*p1 + 2*p2 + t1*v1 + t1*v2 - t2*v1 - t2*v2)/(pow(t1, 3) - 3*pow(t1, 2)*t2 + 3*t1*pow(t2, 2) - pow(t2, 3))
 ```
 
