@@ -28,13 +28,13 @@ namespace Sonosthesia.Trigger
         
         [SerializeField] private float _timeScale = 1f;
 
-        private Triggerable _signal;
+        private Triggerable _triggerable;
 
-        protected void Awake() => _signal = GetComponent<Triggerable>();
+        protected void Awake() => _triggerable = GetComponent<Triggerable>();
 
         public void Trigger()
         {
-            _signal.Trigger(_valueScale, _timeScale);
+            _triggerable.Trigger(_valueScale, _timeScale);
         }
     }
 }

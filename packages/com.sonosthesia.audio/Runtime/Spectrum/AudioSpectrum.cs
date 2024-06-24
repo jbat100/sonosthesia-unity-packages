@@ -45,10 +45,13 @@ namespace Sonosthesia.Audio
         };
 
         [SerializeField] private int _numberOfSamples = 1024;
-        [SerializeField] private FFTWindow _fftWindow = FFTWindow.BlackmanHarris;
         [SerializeField] private BandType _bandType = BandType.TenBand;
         [SerializeField] private float _fallSpeed = 0.08f;
         [SerializeField] private float _sensitivity = 8.0f;
+
+        protected int NumberOfSamples => _numberOfSamples;
+        
+        protected abstract float OutputSampleRate { get; }
 
         private float[] _rawSpectrum;
 
@@ -84,32 +87,36 @@ namespace Sonosthesia.Audio
 
         private int FrequencyToSpectrumIndex (float f)
         {
-            int i = Mathf.FloorToInt (f / AudioSettings.outputSampleRate * 2.0f * _rawSpectrum.Length);
+            int i = Mathf.FloorToInt (f / OutputSampleRate * 2.0f * _rawSpectrum.Length);
             return Mathf.Clamp (i, 0, _rawSpectrum.Length - 1);
         }
 
-        protected abstract void GetSpectrumData(float[] spectrum, int channel, FFTWindow window);
+        protected abstract bool GetSpectrumData(float[] spectrum, int channel);
 
         protected virtual void Awake ()
         {
             CheckBuffers ();
         }
 
-        protected void Update ()
+        protected virtual void Update ()
         {
             CheckBuffers ();
 
-            GetSpectrumData(_rawSpectrum, 0, FFTWindow.BlackmanHarris);
+            if (!GetSpectrumData(_rawSpectrum, 0))
+            {
+                // TODO : clear values ?
+                return;
+            }
 
-            float[] middlefrequencies = _middleFrequenciesForBands [(int)_bandType];
+            float[] middleFrequencies = _middleFrequenciesForBands [(int)_bandType];
             float bandwidth = _bandwidthForBands [(int)_bandType];
             float falldown = _fallSpeed * Time.deltaTime;
             float filter = Mathf.Exp (-_sensitivity * Time.deltaTime);
 
             for (var bi = 0; bi < Levels.Length; bi++) 
             {
-                int imin = FrequencyToSpectrumIndex (middlefrequencies [bi] / bandwidth);
-                int imax = FrequencyToSpectrumIndex (middlefrequencies [bi] * bandwidth);
+                int imin = FrequencyToSpectrumIndex (middleFrequencies [bi] / bandwidth);
+                int imax = FrequencyToSpectrumIndex (middleFrequencies [bi] * bandwidth);
 
                 float bandMax = 0.0f;
                 for (int fi = imin; fi <= imax; fi++) 

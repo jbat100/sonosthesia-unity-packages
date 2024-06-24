@@ -10,7 +10,7 @@ namespace Sonosthesia.Trigger
 {
     public class Triggerable : Signal<float>
     {
-        [SerializeField] private FloatEnvelope _envelope;
+        [SerializeField] private ValueEnvelope<float> _envelope;
         
         [SerializeField] private AccumulationMode _accumulationMode = AccumulationMode.Max;
 
@@ -94,7 +94,7 @@ namespace Sonosthesia.Trigger
             private readonly float _startTime;
             private readonly float _valueScale;
             private readonly float _timeScale;
-            private readonly FloatEnvelope _envelope;
+            private readonly ValueEnvelope<float> _envelope;
             private readonly float _endTime;
 
             public override string ToString()
@@ -102,7 +102,7 @@ namespace Sonosthesia.Trigger
                 return $"{nameof(TriggerEntry)} start {_startTime} value {_valueScale} time {_timeScale} end {_endTime}";
             }
 
-            public TriggerEntry(float valueScale, float timeScale, FloatEnvelope envelope)
+            public TriggerEntry(float valueScale, float timeScale, ValueEnvelope<float> envelope)
             {
                 _startTime = CurrentTime;
                 _valueScale = valueScale;

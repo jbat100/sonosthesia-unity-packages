@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Sonosthesia.Audio
 {
     [RequireComponent(typeof(AudioSource))]
-    public class AudioSourceSpectrum : AudioSpectrum
+    public class AudioSourceSpectrum : UnityAudioSpectrum
     {
         private AudioSource _source;
         
@@ -13,9 +13,10 @@ namespace Sonosthesia.Audio
             _source = GetComponent<AudioSource>();
         }
 
-        protected override void GetSpectrumData(float[] spectrum, int channel, FFTWindow window)
+        protected override bool GetSpectrumData(float[] spectrum, int channel, FFTWindow window)
         {
             _source.GetSpectrumData(spectrum, channel, window);
+            return true;
         }
     }
 }

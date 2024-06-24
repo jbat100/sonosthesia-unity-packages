@@ -32,12 +32,27 @@ namespace Sonosthesia.Audio
             {
                 _subscription = _source.SignalObservable.Subscribe(a =>
                 {
-                    _rms.Broadcast(a.rms);
-                    _lows.Broadcast(a.lows);
-                    _mids.Broadcast(a.mids);
-                    _highs.Broadcast(a.highs);
-                    _centroid.Broadcast(a.centroid);
-                    if (a.offset)
+                    if (_rms)
+                    {
+                        _rms.Broadcast(a.rms);
+                    }
+                    if (_lows)
+                    {
+                        _lows.Broadcast(a.lows);    
+                    }
+                    if (_mids)
+                    {
+                        _mids.Broadcast(a.mids);    
+                    }
+                    if (_highs)
+                    {
+                        _highs.Broadcast(a.highs);    
+                    }
+                    if (_centroid)
+                    {
+                        _centroid.Broadcast(a.centroid);    
+                    }
+                    if (a.offset && _peaks)
                     {
                         // audio analysis contains no info on peaks, just offset detection
                         // note it probably didn't have much meaning anyway

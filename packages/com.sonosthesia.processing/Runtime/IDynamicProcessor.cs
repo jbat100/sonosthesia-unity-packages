@@ -13,6 +13,11 @@ namespace Sonosthesia.Processing
     public interface IDynamicProcessorSettings
     {
         bool Bypass { get; }
+        
+        /// <summary>
+        /// Called when settings change if there is expensive setup to only do once
+        /// </summary>
+        void Setup();
     }
 
     // settings should be reference type as the idea is that they are inspector settings which can change on the fly
@@ -42,5 +47,7 @@ namespace Sonosthesia.Processing
     {
         [SerializeField] private bool _bypass;
         public bool Bypass => _bypass;
+        
+        public virtual void Setup() { }
     }
 }
