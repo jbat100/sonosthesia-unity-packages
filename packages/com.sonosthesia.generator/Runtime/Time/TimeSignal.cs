@@ -4,8 +4,9 @@ using Sonosthesia.Signal;
 namespace Sonosthesia.Generator
 {
     /// <summary>
-    /// Allows for smoothly changing time warp, simplification of TimeFloatGenerator + FloatGeneratorSignal
-    /// Often used for controlling time warp in VFX/Shader graph
+    /// Allows for smoothly changing time, used to 
+    /// - drive Generators
+    /// - controlling time in VFX/Shader graph
     /// </summary>
     public class TimeSignal : Signal<float>
     {

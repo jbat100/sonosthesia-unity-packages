@@ -1,12 +1,40 @@
+using UnityEngine;
 using Unity.Mathematics;
 
 namespace Sonosthesia.Ease
 {
+    public readonly struct TrajectoryBoundary<T> where T : struct
+    {
+        public readonly float Time;
+        public readonly T Position;
+        public readonly T Velocity;
+
+        public TrajectoryBoundary(float time, T position, T velocity)
+        {
+            Time = time;
+            Position = position;
+            Velocity = velocity;
+        }
+
+        public override string ToString()
+        {
+            return $"<{nameof(Time)}: {Time}, {nameof(Position)}: {Position}, {nameof(Velocity)}: {Velocity}>";
+        }
+    }
+    
+    public interface ITrajectory<T> where T : struct
+    {
+        void Evaluate(float t, out T position, out T velocity);
+        
+        TrajectoryBoundary<T> Start { get; }
+        TrajectoryBoundary<T> End { get; }
+    }
+    
     // Allows a trajectory from position p1, velocity v1 at time t1
     // to position p2, velocity v2 at time t2 to be computed allowing
     // smooth transition from one procedural movement function to another
 
-    public abstract class CubicPolynomialTrajectory<T> where T : struct
+    public abstract class CubicPolynomialTrajectory<T> : ITrajectory<T> where T : struct
     {
         protected readonly struct Coefficients
         {
@@ -31,43 +59,38 @@ namespace Sonosthesia.Ease
                 velocity = A1 + 2 * A2 * t + 3 * A3 * t_2;
             }
         }
-        
-        public readonly struct Boundary
-        {
-            public readonly float Time;
-            public readonly T Position;
-            public readonly T Velocity;
 
-            public Boundary(float time, T position, T velocity)
+        private readonly TrajectoryBoundary<T> _start;
+        public TrajectoryBoundary<T> Start => _start;
+        
+        private readonly TrajectoryBoundary<T> _end;
+        public TrajectoryBoundary<T> End => _end;
+        
+        public CubicPolynomialTrajectory(TrajectoryBoundary<T> start, TrajectoryBoundary<T> end)
+        {
+            _start = start;
+            _end = end;
+        }
+
+        public void Evaluate(float t, out T position, out T velocity)
+        {
+            if (t < Start.Time)
             {
-                Time = time;
-                Position = position;
-                Velocity = velocity;
+                position = Start.Position;
+                velocity = Start.Velocity;
+            }
+            else if (t > End.Time)
+            {
+                position = End.Position;
+                velocity = End.Velocity;
+            }
+            else
+            {
+                Compute(t, out position, out velocity);   
             }
         }
 
-        public readonly Boundary Start;
-        public readonly Boundary End;
-        
-        public CubicPolynomialTrajectory(Boundary start, Boundary end)
-        {
-            Start = start;
-            End = end;
-        }
-
-        public bool Evaluate(float t, out T position, out T velocity)
-        {
-            if (t < Start.Time || t > End.Time)
-            {
-                position = default;
-                velocity = default;
-                return false;
-            }
-
-            return Compute(t, out position, out velocity);
-        }
-
-        protected abstract bool Compute(float t, out T position, out T velocity);
+        internal abstract void Compute(float t, out T position, out T velocity);
 
         // See README for derivation
         protected Coefficients ComputeCoefficients(float t1, float p1, float v1, float t2, float p2, float v2)
@@ -99,17 +122,16 @@ namespace Sonosthesia.Ease
     {
         private readonly Coefficients _coefficients;
         
-        public CubicPolynomialTrajectory1D(Boundary start, Boundary end) : base(start, end)
+        public CubicPolynomialTrajectory1D(TrajectoryBoundary<float> start, TrajectoryBoundary<float> end) : base(start, end)
         {
             _coefficients = ComputeCoefficients(
                 start.Time, start.Position, start.Velocity, 
                 end.Time, end.Position, end.Velocity);
         }
 
-        protected override bool Compute(float t, out float position, out float velocity)
+        internal override void Compute(float t, out float position, out float velocity)
         {
             _coefficients.Compute(t, out position, out velocity);
-            return true;
         }
     }
     
@@ -118,7 +140,7 @@ namespace Sonosthesia.Ease
         private readonly Coefficients _xCoefficients;
         private readonly Coefficients _yCoefficients;
         
-        public CubicPolynomialTrajectory2D(Boundary start, Boundary end) : base(start, end)
+        public CubicPolynomialTrajectory2D(TrajectoryBoundary<float2> start, TrajectoryBoundary<float2> end) : base(start, end)
         {
             _xCoefficients = ComputeCoefficients(
                 start.Time, start.Position.x, start.Velocity.x, 
@@ -129,13 +151,12 @@ namespace Sonosthesia.Ease
                 end.Time, end.Position.y, end.Velocity.y);
         }
 
-        protected override bool Compute(float t, out float2 position, out float2 velocity)
+        internal override void Compute(float t, out float2 position, out float2 velocity)
         {
             _xCoefficients.Compute(t, out float px, out float vx);
             _yCoefficients.Compute(t, out float py, out float vy);
             position = new float2(px, py);
             velocity = new float2(vx, vy);
-            return true;
         }
     }
     
@@ -145,7 +166,7 @@ namespace Sonosthesia.Ease
         private readonly Coefficients _yCoefficients;
         private readonly Coefficients _zCoefficients;
         
-        public CubicPolynomialTrajectory3D(Boundary start, Boundary end) : base(start, end)
+        public CubicPolynomialTrajectory3D(TrajectoryBoundary<float3> start, TrajectoryBoundary<float3> end) : base(start, end)
         {
             _xCoefficients = ComputeCoefficients(
                 start.Time, start.Position.x, start.Velocity.x, 
@@ -160,14 +181,53 @@ namespace Sonosthesia.Ease
                 end.Time, end.Position.z, end.Velocity.z);
         }
 
-        protected override bool Compute(float t, out float3 position, out float3 velocity)
+        internal override void Compute(float t, out float3 position, out float3 velocity)
         {
             _xCoefficients.Compute(t, out float px, out float vx);
             _yCoefficients.Compute(t, out float py, out float vy);
-            _yCoefficients.Compute(t, out float pz, out float vz);
+            _zCoefficients.Compute(t, out float pz, out float vz);
             position = new float3(px, py, pz);
             velocity = new float3(vx, vy, vz);
-            return true;
+        }
+    }
+    
+    public class CubicPolynomialTrajectoryVector2 : CubicPolynomialTrajectory<Vector2>
+    {
+        private readonly CubicPolynomialTrajectory2D _trajectory;
+            
+        public CubicPolynomialTrajectoryVector2(TrajectoryBoundary<Vector2> start, TrajectoryBoundary<Vector2> end) : base(start, end)
+        {
+            _trajectory = new CubicPolynomialTrajectory2D(
+                new TrajectoryBoundary<float2>(start.Time, start.Position, start.Velocity),
+                new TrajectoryBoundary<float2>(end.Time, end.Position, end.Velocity)
+            );
+        }
+
+        internal override void Compute(float t, out Vector2 position, out Vector2 velocity)
+        {
+            _trajectory.Compute(t, out float2 p, out float2 v);
+            position = p;
+            velocity = v;
+        }
+    }
+        
+    public class CubicPolynomialTrajectoryVector3 : CubicPolynomialTrajectory<Vector3>
+    {
+        private readonly CubicPolynomialTrajectory3D _trajectory;
+            
+        public CubicPolynomialTrajectoryVector3(TrajectoryBoundary<Vector3> start, TrajectoryBoundary<Vector3> end) : base(start, end)
+        {
+            _trajectory = new CubicPolynomialTrajectory3D(
+                new TrajectoryBoundary<float3>(start.Time, start.Position, start.Velocity),
+                new TrajectoryBoundary<float3>(end.Time, end.Position, end.Velocity)
+            );
+        }
+
+        internal override void Compute(float t, out Vector3 position, out Vector3 velocity)
+        {
+            _trajectory.Compute(t, out float3 p, out float3 v);
+            position = p;
+            velocity = v;
         }
     }
 }
