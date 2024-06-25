@@ -36,14 +36,16 @@ namespace Sonosthesia.Ease
 
     public abstract class CubicPolynomialTrajectory<T> : ITrajectory<T> where T : struct
     {
+        // using doubles as numerical errors quickly become noticeable with increasing time
+        
         protected readonly struct Coefficients
         {
-            public readonly float A0;
-            public readonly float A1;
-            public readonly float A2;
-            public readonly float A3;
+            public readonly double A0;
+            public readonly double A1;
+            public readonly double A2;
+            public readonly double A3;
 
-            public Coefficients(float a0, float a1, float a2, float a3)
+            public Coefficients(double a0, double a1, double a2, double a3)
             {
                 A0 = a0;
                 A1 = a1;
@@ -51,12 +53,19 @@ namespace Sonosthesia.Ease
                 A3 = a3;
             }
 
-            public void Compute(float t, out float position, out float velocity)
+            public void Compute(double t, out double position, out double velocity)
             {
-                float t_2 = t * t;
-                float t_3 = t_2 * t;
+                double t_2 = t * t;
+                double t_3 = t_2 * t;
                 position = A0 + A1 * t + A2 * t_2 + A3 * t_3;
                 velocity = A1 + 2 * A2 * t + 3 * A3 * t_2;
+            }
+            
+            public void Compute(float t, out float position, out float velocity)
+            {
+                Compute((double)t, out double p, out double v);
+                position = (float)p;
+                velocity = (float)v;
             }
         }
 
@@ -93,26 +102,26 @@ namespace Sonosthesia.Ease
         internal abstract void Compute(float t, out T position, out T velocity);
 
         // See README for derivation
-        protected Coefficients ComputeCoefficients(float t1, float p1, float v1, float t2, float p2, float v2)
+        protected Coefficients ComputeCoefficients(double t1, double p1, double v1, double t2, double p2, double v2)
         {
-            float t1_2 = t1 * t1;
-            float t1_3 = t1_2 * t1;
-            float t2_2 = t2 * t2;
-            float t2_3 = t2_2 * t2;
+            double t1_2 = t1 * t1;
+            double t1_3 = t1_2 * t1;
+            double t2_2 = t2 * t2;
+            double t2_3 = t2_2 * t2;
 
-            float denominator = t1_3 - 3 * t1_2 * t2 + 3 * t1 * t2_2 - t2_3;
+            double denominator = t1_3 - 3 * t1_2 * t2 + 3 * t1 * t2_2 - t2_3;
 
-            float a0 = 3 * p1 * t1 * t2_2 - p1 * t2_3 + p2 * t1_3 - 3 * p2 * t1_2 * t2 -
-                t1_3 * t2 * v2 - t1_2 * t2_2 * v1 + t1_2 * t2_2 * v2 +
-                t1 * t2_3 * v1;
+            double a0 = 3 * p1 * t1 * t2_2 - p1 * t2_3 + p2 * t1_3 - 3 * p2 * t1_2 * t2 -
+                        t1_3 * t2 * v2 - t1_2 * t2_2 * v1 + t1_2 * t2_2 * v2 +
+                        t1 * t2_3 * v1;
 
-            float a1 = -6 * p1 * t1 * t2 + 6 * p2 * t1 * t2 + t1_3 * v2 + 2 * t1_2 * t2 * v1 +
+            double a1 = -6 * p1 * t1 * t2 + 6 * p2 * t1 * t2 + t1_3 * v2 + 2 * t1_2 * t2 * v1 +
                 t1_2 * t2 * v2 - t1 * t2_2 * v1 - 2 * t1 * t2_2 * v2 - t2_3 * v1;
 
-            float a2 = 3 * p1 * t1 + 3 * p1 * t2 - 3 * p2 * t1 - 3 * p2 * t2 - t1_2 * v1 - 2 * t1_2 * v2 -
+            double a2 = 3 * p1 * t1 + 3 * p1 * t2 - 3 * p2 * t1 - 3 * p2 * t2 - t1_2 * v1 - 2 * t1_2 * v2 -
                 t1 * t2 * v1 + t1 * t2 * v2 + 2 * t2_2 * v1 + t2_2 * v2;
 
-            float a3 = -2 * p1 + 2 * p2 + t1 * v1 + t1 * v2 - t2 * v1 - t2 * v2;
+            double a3 = -2 * p1 + 2 * p2 + t1 * v1 + t1 * v2 - t2 * v1 - t2 * v2;
 
             return new Coefficients(a0 / denominator, a1 / denominator, a2 / denominator, a3 / denominator);
         }

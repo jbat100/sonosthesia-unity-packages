@@ -24,7 +24,6 @@ namespace Sonosthesia.Generator
 
         private State _currentState = default;
         private ITrajectory<T> _currentTrajectory;
-        private float _trajectoryStartTime;
 
         public void SetState(T position, T velocity)
         {
@@ -40,12 +39,8 @@ namespace Sonosthesia.Generator
                 return true;
             }
 
-            _trajectoryStartTime = Time.time;
-            
-            // note : as t increases, numerical errors quickly get *really* bad, so offset back to 0
-            
-            TrajectoryBoundary<T> start = new TrajectoryBoundary<T>(0, _currentState.Position, _currentState.Velocity);
-            TrajectoryBoundary<T> end = new TrajectoryBoundary<T>(duration, position, velocity);
+            TrajectoryBoundary<T> start = new TrajectoryBoundary<T>(Time.time, _currentState.Position, _currentState.Velocity);
+            TrajectoryBoundary<T> end = new TrajectoryBoundary<T>(Time.time + duration, position, velocity);
             
             _currentTrajectory = CreateTrajectory(start, end);
             // Debug.LogWarning($"{this} started trajectory with value start {start} end {end}");
@@ -60,11 +55,9 @@ namespace Sonosthesia.Generator
         {
             if (_currentTrajectory != null)
             {
-                float elapsed = Time.time - _trajectoryStartTime;
-                
-                if (_currentTrajectory.End.Time <= elapsed)
+                if (_currentTrajectory.End.Time <= Time.time)
                 {
-                    float deltaTime = elapsed - _currentTrajectory.End.Time;
+                    float deltaTime = Time.time - _currentTrajectory.End.Time;
                     T updated = UpdateState(_currentTrajectory.End.Position, _currentTrajectory.End.Velocity, deltaTime);
                     // Debug.LogWarning($"{this} ended trajectory at time {Time.time} with value {updated}");
                     BroadcastState(updated, _currentTrajectory.End.Velocity);
@@ -72,7 +65,7 @@ namespace Sonosthesia.Generator
                 }
                 else
                 {
-                    _currentTrajectory.Evaluate(elapsed, out T position, out T velocity);
+                    _currentTrajectory.Evaluate(Time.time, out T position, out T velocity);
                     // Debug.Log($"{this} evaluated trajectory with value {position}");
                     BroadcastState(position, velocity);
                 }
