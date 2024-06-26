@@ -3,7 +3,7 @@ using Sonosthesia.Ease;
 namespace Sonosthesia.Generator
 {
     
-    public class FloatTrajectory : Trajectory<float>
+    public class FloatTrajectory : ValueTrajectory<float>
     {
         protected override ITrajectory<float> CreateTrajectory(TrajectoryBoundary<float> start, TrajectoryBoundary<float> end)
         {

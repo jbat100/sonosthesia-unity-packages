@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Generator
 {
-    public class Vector2Trajectory : Trajectory<Vector2>
+    public class Vector2Trajectory : ValueTrajectory<Vector2>
     {
         protected override ITrajectory<Vector2> CreateTrajectory(TrajectoryBoundary<Vector2> start, TrajectoryBoundary<Vector2> end)
         {

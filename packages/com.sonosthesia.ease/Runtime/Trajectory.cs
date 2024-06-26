@@ -3,6 +3,20 @@ using Unity.Mathematics;
 
 namespace Sonosthesia.Ease
 {
+    public interface ITrajectory<T> where T : struct
+    {
+        void Evaluate(float t, out T position, out T velocity);
+        
+        float StartTime { get; }
+        float EndTime { get; }
+    }
+
+    public interface IBoundaryTrajectory<T> where T : struct
+    {
+        public TrajectoryBoundary<T> Start { get; }
+        public TrajectoryBoundary<T> End { get; }
+    }
+    
     public readonly struct TrajectoryBoundary<T> where T : struct
     {
         public readonly float Time;
@@ -21,20 +35,12 @@ namespace Sonosthesia.Ease
             return $"<{nameof(Time)}: {Time}, {nameof(Position)}: {Position}, {nameof(Velocity)}: {Velocity}>";
         }
     }
-    
-    public interface ITrajectory<T> where T : struct
-    {
-        void Evaluate(float t, out T position, out T velocity);
-        
-        TrajectoryBoundary<T> Start { get; }
-        TrajectoryBoundary<T> End { get; }
-    }
-    
+
     // Allows a trajectory from position p1, velocity v1 at time t1
     // to position p2, velocity v2 at time t2 to be computed allowing
     // smooth transition from one procedural movement function to another
 
-    public abstract class CubicPolynomialTrajectory<T> : ITrajectory<T> where T : struct
+    public abstract class CubicPolynomialTrajectory<T> : ITrajectory<T>, IBoundaryTrajectory<T> where T : struct
     {
         // using doubles as numerical errors quickly become noticeable with increasing time
         
@@ -71,9 +77,11 @@ namespace Sonosthesia.Ease
 
         private readonly TrajectoryBoundary<T> _start;
         public TrajectoryBoundary<T> Start => _start;
+        public float StartTime => _start.Time;
         
         private readonly TrajectoryBoundary<T> _end;
         public TrajectoryBoundary<T> End => _end;
+        public float EndTime => _end.Time;
         
         public CubicPolynomialTrajectory(TrajectoryBoundary<T> start, TrajectoryBoundary<T> end)
         {

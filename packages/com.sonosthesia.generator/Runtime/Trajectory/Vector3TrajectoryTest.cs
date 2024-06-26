@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Sonosthesia.Generator
@@ -31,14 +32,15 @@ namespace Sonosthesia.Generator
     [RequireComponent(typeof(Vector3Trajectory))]
     public class Vector3TrajectoryTest : MonoBehaviour
     {
-        [SerializeField] private Transform _target;
+        [SerializeField] private List<Transform> _targets;
 
         [SerializeField] private float _velocity;
         
         [SerializeField] private float _duration;
         
         private Vector3Trajectory _trajectory;
-
+        private int _currentIndex;
+        
         protected virtual void Awake()
         {
             _trajectory = GetComponent<Vector3Trajectory>();
@@ -51,7 +53,14 @@ namespace Sonosthesia.Generator
 
         public void Play()
         {
-            _trajectory.SetTrajectory(_duration, _target.position, _target.forward * _velocity);
+            if (_targets.Count == 0)
+            {
+                return;
+            }
+
+            _currentIndex = (_currentIndex + 1) % _targets.Count;
+            Transform target = _targets[_currentIndex];
+            _trajectory.SetTrajectory(_duration, target.position, target.forward * _velocity);
         }
         
         public void Origin()
