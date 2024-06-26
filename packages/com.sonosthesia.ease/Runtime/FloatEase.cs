@@ -1,8 +1,40 @@
 using System;
-using UnityEngine;
+using Unity.Mathematics;
+
+// Adapted from :
+// https://github.com/PixelWizards/iTween
+// Copyright (c) 2011 - 2018 Bob Berkebile (pixelplacment) 
 
 namespace Sonosthesia.Ease
 {
+	public static class FloatEaseTypeExtensions
+	{
+		public static float Evaluate(this EaseType easeType, float value)
+		{
+			Func<float, float, float, float> func = easeType.FloatEasingFunction();
+			if (func != null)
+			{
+				return func(0, 1, value);
+			}
+			return 0;
+		}
+	    
+		public static float Evaluate(this EaseType easeType, float start, float end, float value)
+		{
+			Func<float, float, float, float> func = easeType.FloatEasingFunction();
+			if (func != null)
+			{
+				return func(start, end, value);
+			}
+			return 0;
+		}
+
+		public static Func<float, float, float, float> FloatEasingFunction(this EaseType easeType)
+		{
+			return FloatEaseCurves.GetEasingFunction(easeType);
+		}
+	}
+	
     public static class FloatEaseCurves
     {
 	    public static Func<float, float, float, float> GetEasingFunction(EaseType type) => type switch 
@@ -43,14 +75,14 @@ namespace Sonosthesia.Ease
 
 	    private static float linear(float start, float end, float value)
 	    {
-		    return Mathf.Lerp(start, end, value);
+		    return math.lerp(start, end, value);
 	    }
 
 	    private static float clerp(float start, float end, float value)
 	    {
 		    float min = 0.0f;
 		    float max = 360.0f;
-		    float half = Mathf.Abs((max - min) * 0.5f);
+		    float half = math.abs((max - min) * 0.5f);
 		    float retval = 0.0f;
 		    float diff = 0.0f;
 		    if ((end - start) < -half)
@@ -70,8 +102,8 @@ namespace Sonosthesia.Ease
 
 	    private static float spring(float start, float end, float value)
 	    {
-		    value = Mathf.Clamp01(value);
-		    value = (Mathf.Sin(value * Mathf.PI * (0.2f + 2.5f * value * value * value)) * Mathf.Pow(1f - value, 2.2f) +
+		    value = math.clamp(value, 0, 1);
+		    value = (math.sin(value * math.PI * (0.2f + 2.5f * value * value * value)) * math.pow(1f - value, 2.2f) +
 		             value) * (1f + (1.2f * (1f - value)));
 		    return start + (end - start) * value;
 	    }
@@ -166,62 +198,62 @@ namespace Sonosthesia.Ease
 	    private static float easeInSine(float start, float end, float value)
 	    {
 		    end -= start;
-		    return -end * Mathf.Cos(value * (Mathf.PI * 0.5f)) + end + start;
+		    return -end * math.cos(value * (math.PI * 0.5f)) + end + start;
 	    }
 
 	    private static float easeOutSine(float start, float end, float value)
 	    {
 		    end -= start;
-		    return end * Mathf.Sin(value * (Mathf.PI * 0.5f)) + start;
+		    return end * math.sin(value * (math.PI * 0.5f)) + start;
 	    }
 
 	    private static float easeInOutSine(float start, float end, float value)
 	    {
 		    end -= start;
-		    return -end * 0.5f * (Mathf.Cos(Mathf.PI * value) - 1) + start;
+		    return -end * 0.5f * (math.cos(math.PI * value) - 1) + start;
 	    }
 
 	    private static float easeInExpo(float start, float end, float value)
 	    {
 		    end -= start;
-		    return end * Mathf.Pow(2, 10 * (value - 1)) + start;
+		    return end * math.pow(2, 10 * (value - 1)) + start;
 	    }
 
 	    private static float easeOutExpo(float start, float end, float value)
 	    {
 		    end -= start;
-		    return end * (-Mathf.Pow(2, -10 * value) + 1) + start;
+		    return end * (-math.pow(2, -10 * value) + 1) + start;
 	    }
 
 	    private static float easeInOutExpo(float start, float end, float value)
 	    {
 		    value /= .5f;
 		    end -= start;
-		    if (value < 1) return end * 0.5f * Mathf.Pow(2, 10 * (value - 1)) + start;
+		    if (value < 1) return end * 0.5f * math.pow(2, 10 * (value - 1)) + start;
 		    value--;
-		    return end * 0.5f * (-Mathf.Pow(2, -10 * value) + 2) + start;
+		    return end * 0.5f * (-math.pow(2, -10 * value) + 2) + start;
 	    }
 
 	    private static float easeInCirc(float start, float end, float value)
 	    {
 		    end -= start;
-		    return -end * (Mathf.Sqrt(1 - value * value) - 1) + start;
+		    return -end * (math.sqrt(1 - value * value) - 1) + start;
 	    }
 
 	    private static float easeOutCirc(float start, float end, float value)
 	    {
 		    value--;
 		    end -= start;
-		    return end * Mathf.Sqrt(1 - value * value) + start;
+		    return end * math.sqrt(1 - value * value) + start;
 	    }
 
 	    private static float easeInOutCirc(float start, float end, float value)
 	    {
 		    value /= .5f;
 		    end -= start;
-		    if (value < 1) return -end * 0.5f * (Mathf.Sqrt(1 - value * value) - 1) + start;
+		    if (value < 1) return -end * 0.5f * (math.sqrt(1 - value * value) - 1) + start;
 		    value -= 2;
-		    return end * 0.5f * (Mathf.Sqrt(1 - value * value) + 1) + start;
+		    return end * 0.5f * (math.sqrt(1 - value * value) + 1) + start;
 	    }
 
 	    /* GFX47 MOD START */
@@ -316,8 +348,8 @@ namespace Sonosthesia.Ease
 		    }
 
 		    float period = 1 * 0.3f;
-		    s = period / (2 * Mathf.PI) * Mathf.Asin(0);
-		    return (amplitude * Mathf.Pow(2, -10 * value) * Mathf.Sin((value * 1 - s) * (2 * Mathf.PI) / period));
+		    s = period / (2 * math.PI) * math.asin(0);
+		    return (amplitude * math.pow(2, -10 * value) * math.sin((value * 1 - s) * (2 * math.PI) / period));
 	    }
 
 	    /* GFX47 MOD START */
@@ -334,17 +366,17 @@ namespace Sonosthesia.Ease
 
 		    if ((value /= d) == 1) return start + end;
 
-		    if (a == 0f || a < Mathf.Abs(end))
+		    if (a == 0f || a < math.abs(end))
 		    {
 			    a = end;
 			    s = p / 4;
 		    }
 		    else
 		    {
-			    s = p / (2 * Mathf.PI) * Mathf.Asin(end / a);
+			    s = p / (2 * math.PI) * math.asin(end / a);
 		    }
 
-		    return -(a * Mathf.Pow(2, 10 * (value -= 1)) * Mathf.Sin((value * d - s) * (2 * Mathf.PI) / p)) + start;
+		    return -(a * math.pow(2, 10 * (value -= 1)) * math.sin((value * d - s) * (2 * math.PI) / p)) + start;
 	    }
 	    /* GFX47 MOD END */
 
@@ -365,17 +397,17 @@ namespace Sonosthesia.Ease
 
 		    if ((value /= d) == 1) return start + end;
 
-		    if (a == 0f || a < Mathf.Abs(end))
+		    if (a == 0f || a < math.abs(end))
 		    {
 			    a = end;
 			    s = p * 0.25f;
 		    }
 		    else
 		    {
-			    s = p / (2 * Mathf.PI) * Mathf.Asin(end / a);
+			    s = p / (2 * math.PI) * math.asin(end / a);
 		    }
 
-		    return (a * Mathf.Pow(2, -10 * value) * Mathf.Sin((value * d - s) * (2 * Mathf.PI) / p) + end + start);
+		    return (a * math.pow(2, -10 * value) * math.sin((value * d - s) * (2 * math.PI) / p) + end + start);
 	    }
 
 	    /* GFX47 MOD START */
@@ -392,20 +424,20 @@ namespace Sonosthesia.Ease
 
 		    if ((value /= d * 0.5f) == 2) return start + end;
 
-		    if (a == 0f || a < Mathf.Abs(end))
+		    if (a == 0f || a < math.abs(end))
 		    {
 			    a = end;
 			    s = p / 4;
 		    }
 		    else
 		    {
-			    s = p / (2 * Mathf.PI) * Mathf.Asin(end / a);
+			    s = p / (2 * math.PI) * math.asin(end / a);
 		    }
 
 		    if (value < 1)
-			    return -0.5f * (a * Mathf.Pow(2, 10 * (value -= 1)) * Mathf.Sin((value * d - s) * (2 * Mathf.PI) / p)) +
+			    return -0.5f * (a * math.pow(2, 10 * (value -= 1)) * math.sin((value * d - s) * (2 * math.PI) / p)) +
 			           start;
-		    return a * Mathf.Pow(2, -10 * (value -= 1)) * Mathf.Sin((value * d - s) * (2 * Mathf.PI) / p) * 0.5f + end +
+		    return a * math.pow(2, -10 * (value -= 1)) * math.sin((value * d - s) * (2 * math.PI) / p) * 0.5f + end +
 		           start;
 	    }
 	    /* GFX47 MOD END */

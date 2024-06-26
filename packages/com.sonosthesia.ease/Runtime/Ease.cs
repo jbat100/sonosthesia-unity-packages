@@ -3,11 +3,8 @@ using UnityEngine;
 
 namespace Sonosthesia.Ease
 {
-    // Adapted from :
-    // https://github.com/PixelWizards/iTween
-    // Copyright (c) 2011 - 2018 Bob Berkebile (pixelplacment) 
 
-    public interface ICurve<T> where T: struct
+	public interface ICurve<T> where T: struct
     {
 	    void Evaluate(float t, out T value);
 	    
@@ -90,33 +87,6 @@ namespace Sonosthesia.Ease
         easeInOutElastic,
     }
 
-    public static class EaseTypeExtensions
-    {
-	    public static float Evaluate(this EaseType easeType, float value)
-	    {
-		    Func<float, float, float, float> func = easeType.EasingFunction();
-		    if (func != null)
-		    {
-			    return func(0, 1, value);
-		    }
-		    return 0;
-	    }
-	    
-	    public static float Evaluate(this EaseType easeType, float start, float end, float value)
-	    {
-		    Func<float, float, float, float> func = easeType.EasingFunction();
-		    if (func != null)
-		    {
-			    return func(start, end, value);
-		    }
-		    return 0;
-	    }
-
-	    public static Func<float, float, float, float> EasingFunction(this EaseType easeType)
-	    {
-		    return FloatEaseCurves.GetEasingFunction(easeType);
-	    }
-    }
 
     
 }
