@@ -7,16 +7,10 @@ namespace Sonosthesia.Ease
     {
         void Evaluate(float t, out T position, out T velocity);
         
-        float StartTime { get; }
-        float EndTime { get; }
-    }
-
-    public interface IBoundaryTrajectory<T> where T : struct
-    {
         public TrajectoryBoundary<T> Start { get; }
         public TrajectoryBoundary<T> End { get; }
     }
-    
+
     public readonly struct TrajectoryBoundary<T> where T : struct
     {
         public readonly float Time;
@@ -40,7 +34,7 @@ namespace Sonosthesia.Ease
     // to position p2, velocity v2 at time t2 to be computed allowing
     // smooth transition from one procedural movement function to another
 
-    public abstract class CubicPolynomialTrajectory<T> : ITrajectory<T>, IBoundaryTrajectory<T> where T : struct
+    public abstract class CubicPolynomialTrajectory<T> : ITrajectory<T> where T : struct
     {
         // using doubles as numerical errors quickly become noticeable with increasing time
         

@@ -1,3 +1,4 @@
+using Sonosthesia.Ease;
 using UnityEngine;
 
 namespace Sonosthesia.Generator
@@ -12,6 +13,10 @@ namespace Sonosthesia.Generator
         {
             DrawDefaultInspector();
             FloatTrajectoryTest test = (FloatTrajectoryTest)target;
+            if(GUILayout.Button("Ease"))
+            {
+                test.Ease();
+            }
             if(GUILayout.Button("Play"))
             {
                 test.Play();
@@ -36,6 +41,7 @@ namespace Sonosthesia.Generator
         [SerializeField] private float _targetPosition;
         [SerializeField] private float _targetVelocity;
         [SerializeField] private float _duration;
+        [SerializeField] private EaseType _velocityEaseType;
         
         protected virtual void Awake()
         {
@@ -50,6 +56,11 @@ namespace Sonosthesia.Generator
         public void Play()
         {
             _trajectory.SetTrajectory(_duration, _targetPosition, _targetVelocity);
+        }
+
+        public void Ease()
+        {
+            _trajectory.SetVelocity(_duration, _velocityEaseType, _targetVelocity);
         }
         
         public void Origin()

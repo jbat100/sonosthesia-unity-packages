@@ -1,3 +1,4 @@
+using System;
 using Sonosthesia.Ease;
 using Sonosthesia.Signal;
 using UnityEngine;
@@ -9,6 +10,8 @@ namespace Sonosthesia.Generator
         [SerializeField] private Signal<T> _positionTarget;
         
         [SerializeField] private Signal<T> _velocityTarget;
+
+        protected abstract Func<T, T, float, T> LerpingFunction { get; }
         
         private readonly struct State
         {
@@ -47,7 +50,9 @@ namespace Sonosthesia.Generator
                 return;
             }
             
-            
+            CurveEndpoint<T> start = new CurveEndpoint<T>(Time.time, _currentState.Velocity);
+            CurveEndpoint<T> end = new CurveEndpoint<T>(Time.time + duration, velocity);
+            _velocityCurve = new EaseCurve<T>(easeType, start, end, LerpingFunction);
         }
         
         public void SetTrajectory(float duration, T position, T velocity)
@@ -76,16 +81,12 @@ namespace Sonosthesia.Generator
         {
             if (_trajectory != null)
             {
-                if (_trajectory.EndTime <= Time.time)
+                if (_trajectory.End.Time <= Time.time)
                 {
-                    float deltaTime = Time.time - _trajectory.EndTime;
-                    if (_trajectory is IBoundaryTrajectory<T> boundaryTrajectory)
-                    {
-                        T updated = UpdateState(boundaryTrajectory.End.Position, boundaryTrajectory.End.Velocity, deltaTime);
-                        // Debug.LogWarning($"{this} ended trajectory at time {Time.time} with value {updated}");
-                        BroadcastState(updated, boundaryTrajectory.End.Velocity);    
-                    }
-                    
+                    float deltaTime = Time.time - _trajectory.End.Time;
+                    T updated = UpdateState(_trajectory.End.Position, _trajectory.End.Velocity, deltaTime);
+                    // Debug.LogWarning($"{this} ended trajectory at time {Time.time} with value {updated}");
+                    BroadcastState(updated, _trajectory.End.Velocity);
                     _trajectory = null;
                 }
                 else
@@ -97,7 +98,20 @@ namespace Sonosthesia.Generator
             }
             else if (_velocityCurve != null)
             {
-                
+                if (_velocityCurve.End.Time <= Time.time)
+                {
+                    float deltaTime = Time.time - _velocityCurve.End.Time;
+                    T updated = UpdateState(_currentState.Position, _velocityCurve.End.Value, deltaTime);
+                    BroadcastState(updated, _velocityCurve.End.Value);
+                    _velocityCurve = null;
+                }
+                else
+                {
+                    _velocityCurve.Evaluate(Time.time, out T velocity);
+                    T updated = UpdateState(_currentState.Position, velocity, Time.deltaTime);
+                    // Debug.Log($"{this} evaluated trajectory with value {position}");
+                    BroadcastState(updated, velocity);
+                }
             }
             else
             {

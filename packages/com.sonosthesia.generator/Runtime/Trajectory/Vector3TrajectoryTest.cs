@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Sonosthesia.Ease;
 using UnityEngine;
 
 namespace Sonosthesia.Generator
@@ -13,6 +14,10 @@ namespace Sonosthesia.Generator
         {
             DrawDefaultInspector();
             Vector3TrajectoryTest test = (Vector3TrajectoryTest)target;
+            if(GUILayout.Button("Ease"))
+            {
+                test.Ease();
+            }
             if(GUILayout.Button("Play"))
             {
                 test.Play();
@@ -33,10 +38,9 @@ namespace Sonosthesia.Generator
     public class Vector3TrajectoryTest : MonoBehaviour
     {
         [SerializeField] private List<Transform> _targets;
-
         [SerializeField] private float _velocity;
-        
         [SerializeField] private float _duration;
+        [SerializeField] private EaseType _velocityEaseType;
         
         private Vector3Trajectory _trajectory;
         private int _currentIndex;
@@ -51,6 +55,18 @@ namespace Sonosthesia.Generator
             _trajectory.SetState(Vector3.zero, Vector3.zero);
         }
 
+        public void Ease()
+        {
+            if (_targets.Count == 0)
+            {
+                return;
+            }
+
+            _currentIndex = (_currentIndex + 1) % _targets.Count;
+            Transform target = _targets[_currentIndex];
+            _trajectory.SetVelocity(_duration, _velocityEaseType, target.forward * _velocity);
+        }
+        
         public void Play()
         {
             if (_targets.Count == 0)

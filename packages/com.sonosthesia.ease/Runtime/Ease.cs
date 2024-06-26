@@ -1,41 +1,43 @@
 using System;
-using UnityEngine;
 
 namespace Sonosthesia.Ease
 {
-
 	public interface ICurve<T> where T: struct
     {
 	    void Evaluate(float t, out T value);
 	    
-	    float StartTime { get; }
-	    float EndTime { get; }
+	    CurveEndpoint<T> Start { get; }
+	    CurveEndpoint<T> End { get; }
     }
 
     public readonly struct CurveEndpoint<T> where T: struct
     {
 	    public readonly float Time;
 	    public readonly T Value;
+
+	    public CurveEndpoint(float time, T value)
+	    {
+		    Time = time;
+		    Value = value;
+	    }
     }
     
     public class EaseCurve<T> : ICurve<T> where T: struct
     {
 	    private readonly CurveEndpoint<T> _start;
 	    public CurveEndpoint<T> Start => _start;
-	    public float StartTime => _start.Time;
 
 	    private readonly CurveEndpoint<T> _end;
 	    public CurveEndpoint<T> End => _end;
-	    public float EndTime => _end.Time;
 
-	    private readonly Func<float, float, float, float> _easingFunction;
-	    private readonly Func<float, T, T, T> _lerpingFunction;
+	    private readonly Func<double, double, double, double> _easingFunction;
+	    private readonly Func<T, T, float, T> _lerpingFunction;
 	    
-	    public EaseCurve(EaseType easeType, CurveEndpoint<T> start, CurveEndpoint<T> end, Func<float, T, T, T> lerpingFunction)
+	    public EaseCurve(EaseType easeType, CurveEndpoint<T> start, CurveEndpoint<T> end, Func<T, T, float, T> lerpingFunction)
 	    {
 		    _start = start;
 		    _end = end;
-		    _easingFunction = FloatEaseCurves.GetEasingFunction(easeType);
+		    _easingFunction = DoubleEaseCurves.GetEasingFunction(easeType);
 		    _lerpingFunction = lerpingFunction;
 	    }
 
@@ -46,8 +48,9 @@ namespace Sonosthesia.Ease
 			    value = End.Value;
 			    return;
 		    }
-		    float lerp = _easingFunction(StartTime, EndTime, t);
-		    value = _lerpingFunction(lerp, _start.Value, _end.Value);
+		    double ease = (t - _start.Time) / (_end.Time - _start.Time);
+		    double lerp = _easingFunction(0, 1, ease);
+		    value = _lerpingFunction(_start.Value, _end.Value, (float)lerp);
 	    }
     }
     
