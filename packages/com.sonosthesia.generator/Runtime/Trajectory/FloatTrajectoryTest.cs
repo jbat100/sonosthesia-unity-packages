@@ -25,6 +25,10 @@ namespace Sonosthesia.Generator
             {
                 test.Origin();
             }
+            if(GUILayout.Button("Grid"))
+            {
+                test.Grid();
+            }
             if(GUILayout.Button("Stop"))
             {
                 test.Stop();
@@ -38,10 +42,24 @@ namespace Sonosthesia.Generator
     {
         private FloatTrajectory _trajectory;
 
+        [SerializeField] private float _duration;
+        
+        [Header("Trajectory")]
+        
         [SerializeField] private float _targetPosition;
         [SerializeField] private float _targetVelocity;
-        [SerializeField] private float _duration;
+        
+        [Header("Ease")]
+        
         [SerializeField] private EaseType _velocityEaseType;
+        [SerializeField] private float _velocityEaseTarget;
+        
+        [Header("Grid")]
+        
+        [SerializeField] private float _gridSize;
+        [SerializeField] private float _gridOffset;
+        [SerializeField] private float _gridVelocity;
+        
         
         protected virtual void Awake()
         {
@@ -57,10 +75,15 @@ namespace Sonosthesia.Generator
         {
             _trajectory.SetTrajectory(_duration, _targetPosition, _targetVelocity);
         }
-
+        
+        public void Grid()
+        {
+            _trajectory.SetGridTrajectory(_duration, _gridOffset, _gridSize, _gridVelocity);
+        }
+        
         public void Ease()
         {
-            _trajectory.SetVelocity(_duration, _velocityEaseType, _targetVelocity);
+            _trajectory.SetVelocity(_duration, _velocityEaseType, _velocityEaseTarget);
         }
         
         public void Origin()

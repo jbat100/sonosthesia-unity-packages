@@ -11,6 +11,9 @@ namespace Sonosthesia.Generator
         
         [SerializeField] private Signal<T> _velocityTarget;
 
+        public T Position => _currentState.Position;
+        public T Velocity => _currentState.Velocity;
+        
         protected abstract Func<T, T, float, T> LerpingFunction { get; }
         
         private readonly struct State
