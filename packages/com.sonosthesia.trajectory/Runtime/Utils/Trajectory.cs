@@ -1,7 +1,7 @@
 using UnityEngine;
 using Unity.Mathematics;
 
-namespace Sonosthesia.Ease
+namespace Sonosthesia.Trajectory
 {
     public interface ITrajectory<T> where T : struct
     {

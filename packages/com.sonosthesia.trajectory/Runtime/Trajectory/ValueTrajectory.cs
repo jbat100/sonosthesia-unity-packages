@@ -1,9 +1,9 @@
 using System;
+using UnityEngine;
 using Sonosthesia.Ease;
 using Sonosthesia.Signal;
-using UnityEngine;
 
-namespace Sonosthesia.Generator
+namespace Sonosthesia.Trajectory
 {
     public abstract class ValueTrajectory<T> : MonoBehaviour where T : struct
     {
@@ -34,7 +34,7 @@ namespace Sonosthesia.Generator
         private ITrajectory<T> _trajectory;
         private ICurve<T> _velocityCurve; 
 
-        public void SetState(T position, T velocity)
+        public void TriggerImmediate(T position, T velocity)
         {
             _trajectory = null;
             _velocityCurve = null;
@@ -42,7 +42,7 @@ namespace Sonosthesia.Generator
             _currentState = new State(position, velocity);
         }
 
-        public void SetVelocity(float duration, EaseType easeType, T velocity)
+        public void TriggerVelocity(float duration, EaseType easeType, T velocity)
         {
             _trajectory = null;
             _velocityCurve = null;
@@ -58,14 +58,14 @@ namespace Sonosthesia.Generator
             _velocityCurve = new EaseCurve<T>(easeType, start, end, LerpingFunction);
         }
         
-        public void SetTrajectory(float duration, T position, T velocity)
+        public void TriggerBounded(float duration, T position, T velocity)
         {
             _trajectory = null;
             _velocityCurve = null;
             
             if (duration <= 0f)
             {
-                SetState(position, velocity);
+                TriggerImmediate(position, velocity);
                 return;
             }
 

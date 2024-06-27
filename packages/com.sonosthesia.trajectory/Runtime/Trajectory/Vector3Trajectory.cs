@@ -2,7 +2,7 @@ using System;
 using Sonosthesia.Ease;
 using UnityEngine;
 
-namespace Sonosthesia.Generator
+namespace Sonosthesia.Trajectory
 {
     public class Vector3Trajectory : ValueTrajectory<Vector3>
     {

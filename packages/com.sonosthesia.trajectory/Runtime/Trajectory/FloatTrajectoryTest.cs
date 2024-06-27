@@ -1,7 +1,7 @@
 using Sonosthesia.Ease;
 using UnityEngine;
 
-namespace Sonosthesia.Generator
+namespace Sonosthesia.Trajectory
 {
 #if UNITY_EDITOR
     using UnityEditor;
@@ -57,8 +57,9 @@ namespace Sonosthesia.Generator
         [Header("Grid")]
         
         [SerializeField] private float _gridSize;
-        [SerializeField] private float _gridOffset;
+        [SerializeField] private float _gridJump;
         [SerializeField] private float _gridVelocity;
+        [SerializeField] private FloatTrajectory.GridSnap _gridSnap;
         
         
         protected virtual void Awake()
@@ -68,27 +69,27 @@ namespace Sonosthesia.Generator
 
         public void Stop()
         {
-            _trajectory.SetState(0, 0);
+            _trajectory.TriggerImmediate(0, 0);
         }
 
         public void Play()
         {
-            _trajectory.SetTrajectory(_duration, _targetPosition, _targetVelocity);
+            _trajectory.TriggerBounded(_duration, _targetPosition, _targetVelocity);
         }
         
         public void Grid()
         {
-            _trajectory.SetGridTrajectory(_duration, _gridOffset, _gridSize, _gridVelocity);
+            _trajectory.TriggerGridBounded(_duration, _gridJump, _gridSize, _gridVelocity, _gridSnap);
         }
         
         public void Ease()
         {
-            _trajectory.SetVelocity(_duration, _velocityEaseType, _velocityEaseTarget);
+            _trajectory.TriggerVelocity(_duration, _velocityEaseType, _velocityEaseTarget);
         }
         
         public void Origin()
         {
-            _trajectory.SetTrajectory(_duration, 0, 0);
+            _trajectory.TriggerBounded(_duration, 0, 0);
         }
     }
 }

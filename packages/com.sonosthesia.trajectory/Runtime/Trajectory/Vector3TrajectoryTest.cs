@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Sonosthesia.Ease;
 using UnityEngine;
 
-namespace Sonosthesia.Generator
+namespace Sonosthesia.Trajectory
 {
 #if UNITY_EDITOR
     using UnityEditor;
@@ -52,7 +52,7 @@ namespace Sonosthesia.Generator
         
         public void Stop()
         {
-            _trajectory.SetState(Vector3.zero, Vector3.zero);
+            _trajectory.TriggerImmediate(Vector3.zero, Vector3.zero);
         }
 
         public void Ease()
@@ -64,7 +64,7 @@ namespace Sonosthesia.Generator
 
             _currentIndex = (_currentIndex + 1) % _targets.Count;
             Transform target = _targets[_currentIndex];
-            _trajectory.SetVelocity(_duration, _velocityEaseType, target.forward * _velocity);
+            _trajectory.TriggerVelocity(_duration, _velocityEaseType, target.forward * _velocity);
         }
         
         public void Play()
@@ -76,12 +76,12 @@ namespace Sonosthesia.Generator
 
             _currentIndex = (_currentIndex + 1) % _targets.Count;
             Transform target = _targets[_currentIndex];
-            _trajectory.SetTrajectory(_duration, target.position, target.forward * _velocity);
+            _trajectory.TriggerBounded(_duration, target.position, target.forward * _velocity);
         }
         
         public void Origin()
         {
-            _trajectory.SetTrajectory(_duration, Vector3.zero, Vector3.zero);
+            _trajectory.TriggerBounded(_duration, Vector3.zero, Vector3.zero);
         }
     }
 }
