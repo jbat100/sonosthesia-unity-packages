@@ -1,35 +1,30 @@
-using System.Collections.Generic;
+using System;
+using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Trajectory
 {
-    public class TrajectoryMultiConfiguration<TValue, TSettings> : ScriptableObject 
+    public class TrajectoryMultiConfiguration<TValue, TSettings> : MultiConfiguration<TSettings> 
         where TValue : struct where TSettings : TrajectorySettings<TValue>
     {
-        private class KeyedSettings
+        [Serializable]
+        public class Controller
         {
-            [SerializeField] private string _key;
-            public string Key => _key;
+            [SerializeField] private TrajectoryMultiConfiguration<TValue, TSettings> _configuration;
+            [SerializeField] private ValueTrajectory<TValue> _trajectory;
 
-            [SerializeField] private TSettings _settings;
-            public TSettings Settings => _settings;
-        }
-
-        [SerializeField] private List<KeyedSettings> _settings;
-
-        private Dictionary<string, TSettings> _settingsMap = new ();
-
-        private void CreateMap()
-        {
-            _settingsMap.Clear();
-            foreach (KeyedSettings settings in _settings)
+            public void Trigger(string key)
             {
-                _settingsMap[settings.Key] = settings.Settings;
+                _configuration.Trigger(key, _trajectory);
             }
         }
-
-        protected virtual void OnEnable() => CreateMap();
-
-        protected virtual void OnValidate() => CreateMap();
+        
+        public void Trigger(string key, ValueTrajectory<TValue> trajectory)
+        {
+            if (TryGet(key, out TSettings settings))
+            {
+                settings.Trigger(trajectory);
+            }
+        }
     }
 }

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sonosthesia.Utils.Configuration
+namespace Sonosthesia.Utils
 {
     public class MultiConfiguration<TSettings> : ScriptableObject
     {
@@ -16,7 +16,7 @@ namespace Sonosthesia.Utils.Configuration
             public TSettings Settings => _settings;
         }
 
-        [SerializeField] private List<KeyedSettings> _settings;
+        [SerializeField] private List<KeyedSettings> _settings = new ();
 
         private readonly Dictionary<string, TSettings> _settingsMap = new ();
 
