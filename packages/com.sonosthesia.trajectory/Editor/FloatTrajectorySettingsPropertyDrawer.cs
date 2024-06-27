@@ -8,6 +8,9 @@ namespace Sonosthesia.Trajectory.Editor
     [CustomPropertyDrawer(typeof(FloatTrajectorySettings))]
     public class FloatTrajectorySettingsPropertyDrawer : TrajectorySettingsPropertyDrawer<float>
     {
+        // note : tried inheritance but calling visibility update required instance variable 
+        // or a lot of code, the cost was greater than the benefit
+        
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             VisualElement root = new VisualElement();
