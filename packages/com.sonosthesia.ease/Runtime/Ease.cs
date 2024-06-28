@@ -70,7 +70,7 @@ namespace Sonosthesia.Ease
 		    _middle = middle;
 	    }
 
-	    public void Evaluate(float t, out T value)
+	    public override void Evaluate(float t, out T value)
 	    {
 		    if (t >= Start.Time && t < Middle.Time)
 		    {
