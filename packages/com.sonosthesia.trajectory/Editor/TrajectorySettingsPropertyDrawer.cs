@@ -39,10 +39,10 @@ namespace Sonosthesia.Trajectory.Editor
             {
                 Debug.Log($"{this} {nameof(UpdateVisibility)}");
                 TrajectoryType type = (TrajectoryType)trajectoryTypeProp.enumValueIndex;
-                easeTypeField.style.display = Show(type is TrajectoryType.Easing);
-                durationField.style.display = Show(type is TrajectoryType.Easing or TrajectoryType.Bounded);
+                easeTypeField.style.display = Show(type is TrajectoryType.Easing or TrajectoryType.Pulse);
+                durationField.style.display = Show(type is TrajectoryType.Easing or TrajectoryType.Bounded or TrajectoryType.Pulse);
                 positionField.style.display = Show(type is TrajectoryType.Bounded or TrajectoryType.Immediate);
-                velocityField.style.display = Show(type is TrajectoryType.Easing or TrajectoryType.Bounded or TrajectoryType.Immediate);
+                velocityField.style.display = Show(type is not TrajectoryType.None);
             }
 
             // Initial visibility update

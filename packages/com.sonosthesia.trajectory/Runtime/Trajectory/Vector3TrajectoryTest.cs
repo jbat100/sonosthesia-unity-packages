@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using Sonosthesia.Ease;
 using UnityEngine;
 
 namespace Sonosthesia.Trajectory
@@ -14,17 +12,9 @@ namespace Sonosthesia.Trajectory
         {
             DrawDefaultInspector();
             Vector3TrajectoryTest test = (Vector3TrajectoryTest)target;
-            if(GUILayout.Button("Ease"))
+            if(GUILayout.Button("Trigger"))
             {
-                test.Ease();
-            }
-            if(GUILayout.Button("Play"))
-            {
-                test.Play();
-            }
-            if(GUILayout.Button("Origin"))
-            {
-                test.Origin();
+                test.Trigger();
             }
             if(GUILayout.Button("Stop"))
             {
@@ -37,13 +27,9 @@ namespace Sonosthesia.Trajectory
     [RequireComponent(typeof(Vector3Trajectory))]
     public class Vector3TrajectoryTest : MonoBehaviour
     {
-        [SerializeField] private List<Transform> _targets;
-        [SerializeField] private float _velocity;
-        [SerializeField] private float _duration;
-        [SerializeField] private EaseType _velocityEaseType;
-        
+        [SerializeField] private TrajectorySettings<Vector3> _settings;
+
         private Vector3Trajectory _trajectory;
-        private int _currentIndex;
         
         protected virtual void Awake()
         {
@@ -55,33 +41,9 @@ namespace Sonosthesia.Trajectory
             _trajectory.TriggerImmediate(Vector3.zero, Vector3.zero);
         }
 
-        public void Ease()
+        public void Trigger()
         {
-            if (_targets.Count == 0)
-            {
-                return;
-            }
-
-            _currentIndex = (_currentIndex + 1) % _targets.Count;
-            Transform target = _targets[_currentIndex];
-            _trajectory.TriggerVelocity(_duration, _velocityEaseType, target.forward * _velocity);
-        }
-        
-        public void Play()
-        {
-            if (_targets.Count == 0)
-            {
-                return;
-            }
-
-            _currentIndex = (_currentIndex + 1) % _targets.Count;
-            Transform target = _targets[_currentIndex];
-            _trajectory.TriggerBounded(_duration, target.position, target.forward * _velocity);
-        }
-        
-        public void Origin()
-        {
-            _trajectory.TriggerBounded(_duration, Vector3.zero, Vector3.zero);
+            _settings.Trigger(_trajectory);
         }
     }
 }

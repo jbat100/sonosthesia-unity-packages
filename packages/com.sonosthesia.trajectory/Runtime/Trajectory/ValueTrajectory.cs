@@ -57,6 +57,23 @@ namespace Sonosthesia.Trajectory
             CurveEndpoint<T> end = new CurveEndpoint<T>(Time.time + duration, velocity);
             _velocityCurve = new EaseCurve<T>(easeType, start, end, LerpingFunction);
         }
+
+        public void TriggerPulse(float duration, EaseType easeType, T velocity)
+        {
+            _trajectory = null;
+            _velocityCurve = null;
+
+            if (duration <= 0)
+            {
+                _currentState = new State(_currentState.Position, velocity);
+                return;
+            }
+            
+            CurveEndpoint<T> start = new CurveEndpoint<T>(Time.time, _currentState.Velocity);
+            CurveEndpoint<T> middle = new CurveEndpoint<T>(Time.time + duration * 0.5f, velocity);
+            CurveEndpoint<T> end = new CurveEndpoint<T>(Time.time + duration , _currentState.Velocity);
+            _velocityCurve = new PulseCurve<T>(easeType, start, middle, end, LerpingFunction);
+        }
         
         public void TriggerBounded(float duration, T position, T velocity)
         {

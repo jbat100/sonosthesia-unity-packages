@@ -48,6 +48,10 @@ namespace Sonosthesia.Trajectory.Editor
             PropertyField gridJumpField = new PropertyField(gridJumpProp);
             root.Add(gridJumpField);
             
+            SerializedProperty gridSnapProp = property.FindPropertyRelative("_gridSnap");
+            PropertyField gridSnapField = new PropertyField(gridSnapProp);
+            root.Add(gridSnapField);
+            
             // Method to update the visibility of fields based on the enum value
             void UpdateVisibility()
             {
@@ -56,14 +60,15 @@ namespace Sonosthesia.Trajectory.Editor
                 TrajectoryType type = (TrajectoryType)trajectoryTypeProp.enumValueIndex;
                 bool grid = gridProp.boolValue;
                 
-                easeTypeField.style.display = Show(type is TrajectoryType.Easing);
-                durationField.style.display = Show(type is TrajectoryType.Easing or TrajectoryType.Bounded);
+                easeTypeField.style.display = Show(type is TrajectoryType.Easing or TrajectoryType.Pulse);
+                durationField.style.display = Show(type is TrajectoryType.Easing or TrajectoryType.Bounded or TrajectoryType.Pulse);
                 positionField.style.display = Show(type is TrajectoryType.Bounded or TrajectoryType.Immediate);
-                velocityField.style.display = Show(type is TrajectoryType.Easing or TrajectoryType.Bounded or TrajectoryType.Immediate);
+                velocityField.style.display = Show(type is not TrajectoryType.None);
                 
                 gridField.style.display = Show(type is TrajectoryType.Bounded);
                 gridSizeField.style.display = Show(type is TrajectoryType.Bounded && grid);
                 gridJumpField.style.display = Show(type is TrajectoryType.Bounded && grid);
+                gridSnapField.style.display = Show(type is TrajectoryType.Bounded && grid);
             }
 
             // Initial visibility update

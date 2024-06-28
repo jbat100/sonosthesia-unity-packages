@@ -2,8 +2,9 @@
     "name": "Sonosthesia.Trajectory",
     "rootNamespace": "Sonosthesia.Trajectory",
     "references": [
-        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
         "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:f06555f75b070af458a003d92f9efb00",
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
         "GUID:eda0e54ec5f2644fe9c828d88900f12b",
         "GUID:0e73a958ea93c4999aae301d99219c62",
         "GUID:25e5e4b6f3916462c92ecc1d0ffca2c2"

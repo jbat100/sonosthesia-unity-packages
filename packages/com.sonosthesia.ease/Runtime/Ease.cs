@@ -21,7 +21,7 @@ namespace Sonosthesia.Ease
 		    Value = value;
 	    }
     }
-    
+
     public class EaseCurve<T> : ICurve<T> where T: struct
     {
 	    private readonly CurveEndpoint<T> _start;
@@ -41,16 +41,45 @@ namespace Sonosthesia.Ease
 		    _lerpingFunction = lerpingFunction;
 	    }
 
-	    public void Evaluate(float t, out T value)
+	    protected void Evaluate(float t, CurveEndpoint<T> lower, CurveEndpoint<T> upper, out T value)
 	    {
 		    if (_lerpingFunction == null)
 		    {
-			    value = End.Value;
+			    value = upper.Value;
 			    return;
 		    }
-		    double ease = (t - _start.Time) / (_end.Time - _start.Time);
+		    double ease = (t - lower.Time) / (upper.Time - lower.Time);
 		    double lerp = _easingFunction(0, 1, ease);
-		    value = _lerpingFunction(_start.Value, _end.Value, (float)lerp);
+		    value = _lerpingFunction(lower.Value, upper.Value, (float)lerp);
+	    }
+
+	    public virtual void Evaluate(float t, out T value)
+	    {
+		    Evaluate(t, _start, _end, out value);
+	    }
+    }
+    
+    public class PulseCurve<T> : EaseCurve<T> where T: struct
+    {
+	    private readonly CurveEndpoint<T> _middle;
+	    public CurveEndpoint<T> Middle => _middle;
+	    
+	    public PulseCurve(EaseType easeType, CurveEndpoint<T> start, CurveEndpoint<T> middle, CurveEndpoint<T> end, Func<T, T, float, T> lerpingFunction) 
+		    : base(easeType, start, end, lerpingFunction)
+	    {
+		    _middle = middle;
+	    }
+
+	    public void Evaluate(float t, out T value)
+	    {
+		    if (t >= Start.Time && t < Middle.Time)
+		    {
+			    Evaluate(t, Start, Middle, out value);
+		    }
+		    else
+		    {
+			    Evaluate(t, Middle, End, out value);
+		    }
 	    }
     }
     
@@ -89,7 +118,4 @@ namespace Sonosthesia.Ease
         easeOutElastic,
         easeInOutElastic,
     }
-
-
-    
 }

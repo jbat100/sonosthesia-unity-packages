@@ -9,6 +9,7 @@ namespace Sonosthesia.Trajectory
         None,
         Bounded,
         Easing,
+        Pulse,
         Immediate
     }
     
@@ -39,6 +40,9 @@ namespace Sonosthesia.Trajectory
                 case TrajectoryType.Easing:
                     TriggerEasing(trajectory);
                     break;
+                case TrajectoryType.Pulse:
+                    TriggerPulse(trajectory);
+                    break;
                 case TrajectoryType.Immediate:
                     TriggerImmediate(trajectory);
                     break;
@@ -53,6 +57,11 @@ namespace Sonosthesia.Trajectory
         protected virtual void TriggerEasing(ValueTrajectory<T> trajectory)
         {
             trajectory.TriggerVelocity(_duration, _easeType, _velocity);
+        }
+
+        protected virtual void TriggerPulse(ValueTrajectory<T> trajectory)
+        {
+            trajectory.TriggerPulse(_duration, _easeType, _velocity);
         }
         
         protected virtual void TriggerImmediate(ValueTrajectory<T> trajectory)
