@@ -1,12 +1,11 @@
+using UnityEngine;
+
 namespace Sonosthesia.Mapping
 {
     public class ConfigurableFader<T> : Fader<T> where T : struct
     {
-        
-        
-        public override T Fade(float fade)
-        {
-            throw new System.NotImplementedException();
-        }
+        [SerializeField] private FaderConfiguration<T> _configuration;
+
+        public override T Fade(float fade) => _configuration.Fade(fade);
     }
 }

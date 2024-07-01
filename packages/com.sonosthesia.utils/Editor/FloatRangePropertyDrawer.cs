@@ -1,11 +1,14 @@
 using UnityEditor;
 using UnityEditor.UIElements;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Sonosthesia.Utils.Editor
 {
-    [CustomPropertyDrawer(typeof(FloatRange))]
+    // TODO : fix alignment issues when using the Drawer in a custom inspector
+    // - the property label does not appear
+    // - when created manually  
+    
+    //[CustomPropertyDrawer(typeof(FloatRange))]
     public class FloatRangePropertyDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -17,13 +20,15 @@ namespace Sonosthesia.Utils.Editor
             var container = new VisualElement();
             container.style.flexDirection = FlexDirection.Row;
             container.style.justifyContent = Justify.SpaceBetween;
+            // container.style.alignContent = Align.;
+            // container.style.alignItems = Align.Center;
 
             // Add the property label
             var propertyLabel = new Label(property.displayName);
             // propertyLabel.style.minWidth = 100; // Set minimum width for the label
             // propertyLabel.style.marginRight = 10; // Add some margin to the right
             // propertyLabel.AddToClassList(FloatField.labelUssClassName);
-            propertyLabel.AddToClassList("unity-base-field__aligned");
+            // propertyLabel.AddToClassList("unity-base-field__aligned");
             
             container.Add(propertyLabel);
             

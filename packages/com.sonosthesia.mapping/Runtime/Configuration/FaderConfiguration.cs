@@ -6,6 +6,7 @@ namespace Sonosthesia.Mapping
 {
     public enum FloatFaderType
     {
+        Constant,
         Remap,
         Curve
     }
@@ -15,6 +16,8 @@ namespace Sonosthesia.Mapping
     {
         [SerializeField] private FloatFaderType _faderType;
 
+        [SerializeField] private float _value;
+        
         [SerializeField] private AnimationCurve _curve;
         
         [SerializeField] private FloatRange _remapInput = new FloatRange(0, 1);
@@ -28,6 +31,7 @@ namespace Sonosthesia.Mapping
         {
             float result = _faderType switch
             {
+                FloatFaderType.Constant => _value,
                 FloatFaderType.Remap => input.Remap(_remapInput, _remapOutput),
                 FloatFaderType.Curve => _curve.Evaluate(input),
                 _ => 0

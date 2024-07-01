@@ -1,5 +1,4 @@
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace Sonosthesia.Mapping.Editor
@@ -10,13 +9,8 @@ namespace Sonosthesia.Mapping.Editor
         public override VisualElement CreateInspectorGUI()
         {
             var root = new VisualElement();
-
-            var settingsProperty = serializedObject.FindProperty("_settings");
-            var settingsField = new PropertyField(settingsProperty);
-            root.Add(settingsField);
-
+            FaderConfigurationUtils.SetupFloatSettings(root, serializedObject, "Settings", "_settings");
             return root;
         }
-        
     }
 }
