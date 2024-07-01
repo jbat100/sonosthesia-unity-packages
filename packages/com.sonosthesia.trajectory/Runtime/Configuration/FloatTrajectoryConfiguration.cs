@@ -26,7 +26,6 @@ namespace Sonosthesia.Trajectory
         }
     }
 
-    
     [CreateAssetMenu(fileName = "FloatTrajectory", menuName = "Sonosthesia/Trajectory/FloatTrajectory")]
     public class FloatTrajectoryConfiguration : TrajectoryConfiguration<float, FloatTrajectorySettings>
     {

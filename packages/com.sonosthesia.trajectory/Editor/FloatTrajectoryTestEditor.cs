@@ -36,9 +36,6 @@ namespace Sonosthesia.Trajectory.Editor
             var buttonContainer = new VisualElement();
             buttonContainer.style.flexDirection = FlexDirection.Row;
             
-            
-            
-            
             buttonContainer.Add(trigger);
             buttonContainer.Add(stop);
             
