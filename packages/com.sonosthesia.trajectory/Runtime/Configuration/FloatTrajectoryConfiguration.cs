@@ -10,16 +10,18 @@ namespace Sonosthesia.Trajectory
         [SerializeField] private float _gridSize;
         [SerializeField] private float _gridJump;
         [SerializeField] private FloatTrajectory.GridSnap _gridSnap;
+        
+        protected override float Invert(float value) => -value;
 
-        protected override void TriggerBounded(ValueTrajectory<float> trajectory)
+        protected override void TriggerBounded(ValueTrajectory<float> trajectory, bool invert)
         {
             if (trajectory is FloatTrajectory floatTrajectory && _grid)
             {
-                floatTrajectory.TriggerGridBounded(Duration, _gridJump, _gridSize, Velocity, _gridSnap);
+                floatTrajectory.TriggerGridBounded(Duration, _gridJump, _gridSize, Process(Velocity, invert), _gridSnap);
             }
             else
             {
-                base.TriggerBounded(trajectory);
+                base.TriggerBounded(trajectory, invert);
             }
         }
     }

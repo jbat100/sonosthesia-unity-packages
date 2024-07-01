@@ -13,17 +13,17 @@ namespace Sonosthesia.Trajectory
             [SerializeField] private TrajectoryMultiConfiguration<TValue, TSettings> _configuration;
             [SerializeField] private ValueTrajectory<TValue> _trajectory;
 
-            public void Trigger(string key)
+            public void Trigger(string key, bool invert)
             {
-                _configuration.Trigger(key, _trajectory);
+                _configuration.Trigger(key, _trajectory, invert);
             }
         }
         
-        public void Trigger(string key, ValueTrajectory<TValue> trajectory)
+        public void Trigger(string key, ValueTrajectory<TValue> trajectory, bool invert)
         {
             if (TryGet(key, out TSettings settings))
             {
-                settings.Trigger(trajectory);
+                settings.Trigger(trajectory, invert);
             }
         }
     }

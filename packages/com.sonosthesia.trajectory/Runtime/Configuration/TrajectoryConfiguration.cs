@@ -18,7 +18,7 @@ namespace Sonosthesia.Trajectory
     /// </summary>
     
     [Serializable]
-    public class TrajectorySettings<T> where T : struct
+    public abstract class TrajectorySettings<T> where T : struct
     {
         [SerializeField] private TrajectoryType _trajectoryType;
         [SerializeField] private EaseType _easeType;
@@ -26,47 +26,59 @@ namespace Sonosthesia.Trajectory
         [SerializeField] private T _position;
         [SerializeField] private T _velocity;
 
+        protected abstract T Invert(T value);
+        
         protected float Duration => _duration;
         protected T Position => _position;
         protected T Velocity => _velocity;
-        
-        public void Trigger(ValueTrajectory<T> trajectory)
+
+        protected T Process(T value, bool invert)
+        {
+            if (invert)
+            {
+                value = Invert(value);
+            }
+
+            return value;
+        }
+
+        public void Trigger(ValueTrajectory<T> trajectory, bool invert = false)
         {
             switch (_trajectoryType)
             {
                 case TrajectoryType.Bounded:
-                    TriggerBounded(trajectory);
+                    TriggerBounded(trajectory, invert);
                     break;
                 case TrajectoryType.Easing:
-                    TriggerEasing(trajectory);
+                    TriggerEasing(trajectory, invert);
                     break;
                 case TrajectoryType.Pulse:
-                    TriggerPulse(trajectory);
+                    TriggerPulse(trajectory, invert);
                     break;
                 case TrajectoryType.Immediate:
-                    TriggerImmediate(trajectory);
+                    TriggerImmediate(trajectory, invert);
                     break;
             }
         }
 
-        protected virtual void TriggerBounded(ValueTrajectory<T> trajectory)
+        protected virtual void TriggerBounded(ValueTrajectory<T> trajectory, bool invert)
         {
-            trajectory.TriggerBounded(_duration, _position, _velocity);
+            trajectory.TriggerBounded(_duration, _position, Process(_velocity, invert));
         }
         
-        protected virtual void TriggerEasing(ValueTrajectory<T> trajectory)
+        protected virtual void TriggerEasing(ValueTrajectory<T> trajectory, bool invert)
         {
-            trajectory.TriggerVelocity(_duration, _easeType, _velocity);
+            trajectory.TriggerVelocity(_duration, _easeType, Process(_velocity, invert));
         }
 
-        protected virtual void TriggerPulse(ValueTrajectory<T> trajectory)
+        protected virtual void TriggerPulse(ValueTrajectory<T> trajectory, bool invert)
         {
-            trajectory.TriggerPulse(_duration, _easeType, _velocity);
+            trajectory.TriggerPulse(_duration, _easeType, Process(_velocity, invert));
         }
         
-        protected virtual void TriggerImmediate(ValueTrajectory<T> trajectory)
+        protected virtual void TriggerImmediate(ValueTrajectory<T> trajectory, bool invert)
         {
-            trajectory.TriggerImmediate(_position, _velocity);
+            trajectory.TriggerImmediate(_position, Process(_velocity, invert));
         }
     }
 
@@ -75,9 +87,9 @@ namespace Sonosthesia.Trajectory
     {
         [SerializeField] private TSettings _settings;
 
-        public void Trigger(ValueTrajectory<TValue> trajectory)
+        public void Trigger(ValueTrajectory<TValue> trajectory, bool invert = false)
         {
-            _settings.Trigger(trajectory);
+            _settings.Trigger(trajectory, invert);
         }
     }
 }

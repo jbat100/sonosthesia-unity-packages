@@ -14,7 +14,7 @@ namespace Sonosthesia.Trajectory
                 return;
             }
             Debug.Log($"{this} received asset with payload key {signalEmitter.key}");
-            _controller.Trigger(signalEmitter.key);
+            _controller.Trigger(signalEmitter.key, signalEmitter.invert);
         }
     }
 }

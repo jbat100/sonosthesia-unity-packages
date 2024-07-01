@@ -8,11 +8,11 @@ namespace Sonosthesia.Trajectory
     {
         [SerializeField] private List<TrajectoryMultiConfiguration<TValue, TSettings>.Controller> _controllers;
         
-        public override void Trigger(string key)
+        public override void Trigger(string key, bool invert)
         {
             foreach (TrajectoryMultiConfiguration<TValue, TSettings>.Controller controller in _controllers)
             {
-                controller.Trigger(key);
+                controller.Trigger(key, invert);
             }
         }
     }
