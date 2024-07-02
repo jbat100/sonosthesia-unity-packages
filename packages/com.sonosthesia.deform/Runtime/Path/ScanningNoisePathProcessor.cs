@@ -21,8 +21,9 @@ namespace Sonosthesia.Deform
 
         private float _time;
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             _time = 0f;
         }
 

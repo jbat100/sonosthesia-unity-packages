@@ -3,7 +3,8 @@
     "rootNamespace": "Sonosthesia.Ease",
     "references": [
         "GUID:560b04d1a97f54a4e82edc0cbbb69285",
-        "GUID:d8b63aba1907145bea998dd612889d6b"
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:0e73a958ea93c4999aae301d99219c62"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

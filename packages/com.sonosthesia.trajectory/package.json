@@ -2,20 +2,20 @@
   "author": "Jonathan Thorpe",
   "dependencies": {
     "com.unity.mathematics": "1.2.6",
+    "com.unity.timeline": "1.2.8",
     "com.neuecc.unirx": "7.1.0",
-    "com.sonosthesia.utils": "1.8.0",
-    "com.sonosthesia.processing": "1.8.0",
     "com.sonosthesia.signal": "1.8.0",
+    "com.sonosthesia.utils": "1.8.0",
     "com.sonosthesia.ease": "1.8.0"
   },
-  "description": "Sonosthesia unity generator",
-  "displayName": "Sonosthesia Generator",
+  "description": "Sonosthesia unity trajectory",
+  "displayName": "Sonosthesia Trajectory",
   "keywords": [
     "unity"
   ],
   "license": "MIT",
-  "name": "com.sonosthesia.generator",
+  "name": "com.sonosthesia.trajectory",
   "repository": "github:jbat100/sonosthesia-unity-packages",
   "unity": "2022.3",
-  "version": "1.8.0"
+  "version": "1.7.0"
 }

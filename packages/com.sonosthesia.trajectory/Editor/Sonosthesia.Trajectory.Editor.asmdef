@@ -1,13 +1,16 @@
 {
-    "name": "Sonosthesia.Mapping",
-    "rootNamespace": "Sonosthesia.Mapping",
+    "name": "Sonosthesia.Trajectory.Editor",
+    "rootNamespace": "Sonosthesia.Trajectory.Editor",
     "references": [
         "GUID:560b04d1a97f54a4e82edc0cbbb69285",
-        "GUID:25e5e4b6f3916462c92ecc1d0ffca2c2",
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:eda0e54ec5f2644fe9c828d88900f12b",
         "GUID:0e73a958ea93c4999aae301d99219c62",
-        "GUID:5e5de655b35d84bd7a36486ee1824671"
+        "GUID:826a2c31a797146b196ea48de4724160"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": true,
     "overrideReferences": false,
