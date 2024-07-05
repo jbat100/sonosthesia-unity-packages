@@ -3,6 +3,7 @@ using UnityEngine;
 using UniRx;
 using Sonosthesia.Signal;
 using Sonosthesia.Flow;
+using Sonosthesia.Processing;
 
 namespace Sonosthesia.Trigger
 {
@@ -28,6 +29,8 @@ namespace Sonosthesia.Trigger
     
     public class PeakDetector : Adaptor<float, Peak>
     {
+        [SerializeField] private DynamicProcessorFactory<float> _preprocessorFactory;
+
         [SerializeField] private PeakDetectorSettings _settings;
         
         private readonly struct Sample
@@ -42,11 +45,15 @@ namespace Sonosthesia.Trigger
             }
         }
         
+        private IDynamicProcessor<float> _preprocessor;
+        
         private Sample? _start;
         private Sample? _previous;
         
         protected override IDisposable Setup(Signal<float> source) => source.SignalObservable.Subscribe(Process);
 
+        protected void Awake() => _preprocessor = _preprocessorFactory ? _preprocessorFactory.Make() : null;
+        
         protected override void OnEnable()
         {
             _start = _previous = null;
@@ -55,6 +62,8 @@ namespace Sonosthesia.Trigger
 
         private void Process(float value)
         {
+            value = _preprocessor?.Process(value, Time.time) ?? value;
+            
             if (!_previous.HasValue)
             {
                 _previous = new Sample(value);

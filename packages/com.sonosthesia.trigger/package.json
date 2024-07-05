@@ -6,7 +6,8 @@
     "com.sonosthesia.signal": "1.8.0",
     "com.sonosthesia.generator": "1.8.0",
     "com.sonosthesia.flow": "1.8.0",
-    "com.sonosthesia.utils": "1.8.0"
+    "com.sonosthesia.utils": "1.8.0",
+    "com.sonosthesia.processing": "1.8.0"
   },
   "description": "Sonosthesia unity trigger",
   "displayName": "Sonosthesia Trigger",
