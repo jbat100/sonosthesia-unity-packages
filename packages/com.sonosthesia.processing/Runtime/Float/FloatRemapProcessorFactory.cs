@@ -7,6 +7,9 @@ namespace Sonosthesia.Processing
     [Serializable]
     public class FloatRemapSettings : DynamicProcessorSettings
     {
+        [SerializeField] private bool _clamp;
+        public bool Clamp => _clamp;
+        
         [SerializeField] private float _fromMin;
         public float FromMin => _fromMin;
 
@@ -31,7 +34,13 @@ namespace Sonosthesia.Processing
                 return settings.ToMin;
             }
             float t = math.unlerp(settings.FromMin, settings.FromMax, input);
-            return math.lerp(settings.ToMin, settings.ToMax, t);
+            float result = math.lerp(settings.ToMin, settings.ToMax, t);
+            if (settings.Clamp)
+            {
+                result = math.clamp(result, math.min(settings.ToMin, settings.ToMax), math.max(settings.ToMin, settings.ToMax));
+            }
+
+            return result;
         }
     }
     
