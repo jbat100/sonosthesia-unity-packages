@@ -23,16 +23,9 @@ namespace Sonosthesia.Trigger
             return $"AudioPeak (Magnitude : {Magnitude}, Duration : {Duration})";
         }
     }
-    
-    // note : Had issues when assigning PeakDetector to a Signal<Peak> field in inspector
-    // solution was to drag the component itself (using dual inspector tab with one locked)
-    
-    public class PeakDetector : Adaptor<float, Peak>
-    {
-        [SerializeField] private DynamicProcessorFactory<float> _preprocessorFactory;
 
-        [SerializeField] private PeakDetectorSettings _settings;
-        
+    internal class PeakDetectorImplementation
+    {
         private readonly struct Sample
         {
             public readonly float Value;
@@ -45,22 +38,26 @@ namespace Sonosthesia.Trigger
             }
         }
         
-        private IDynamicProcessor<float> _preprocessor;
+        private readonly IDynamicProcessor<float> _preprocessor;
+        private readonly PeakDetectorSettings _settings;
+        private readonly Action<Peak> _broadcast;
         
         private Sample? _start;
         private Sample? _previous;
         
-        protected override IDisposable Setup(Signal<float> source) => source.SignalObservable.Subscribe(Process);
-
-        protected void Awake() => _preprocessor = _preprocessorFactory ? _preprocessorFactory.Make() : null;
-        
-        protected override void OnEnable()
+        public PeakDetectorImplementation(IDynamicProcessor<float> preprocessor, PeakDetectorSettings settings, Action<Peak> broadcast)
         {
-            _start = _previous = null;
-            base.OnEnable();
+            _preprocessor = preprocessor;
+            _settings = settings;
+            _broadcast = broadcast;
         }
 
-        private void Process(float value)
+        public void Reset()
+        {
+            _start = _previous = null;
+        }
+        
+        public void Process(float value)
         {
             value = _preprocessor?.Process(value, Time.time) ?? value;
             
@@ -88,12 +85,42 @@ namespace Sonosthesia.Trigger
                 float duration = _previous.Value.Time - _start.Value.Time;
                 if (magnitude > _settings.MagnitudeThreshold && duration < _settings.MaximumDuration)
                 {
-                    Broadcast(new Peak(_settings.ValuePostProcessor.Process(magnitude), duration));
+                    _broadcast(new Peak(_settings.ValuePostProcessor.Process(magnitude), duration));
                 }
                 _start = null;
             }
             
             _previous = new Sample(value);
+        }
+    }
+    
+    // note : Had issues when assigning PeakDetector to a Signal<Peak> field in inspector
+    // solution was to drag the component itself (using dual inspector tab with one locked)
+    
+    public class PeakDetector : Adaptor<float, Peak>
+    {
+        [SerializeField] private DynamicProcessorFactory<float> _preprocessorFactory;
+
+        [SerializeField] private BasePeakDetectorConfiguration _settings;
+
+        private PeakDetectorImplementation _implementation;
+        
+        protected override IDisposable Setup(Signal<float> source) => source.SignalObservable.Subscribe(value => _implementation?.Process(value));
+
+        protected override void OnEnable()
+        {
+            RefreshImplementation();
+            base.OnEnable();
+        }
+
+        protected virtual void OnValidate() => RefreshImplementation();
+
+        private void RefreshImplementation()
+        {
+            _implementation = new PeakDetectorImplementation(
+                _preprocessorFactory ? _preprocessorFactory.Make() : null, 
+                _settings ? _settings.Settings : null, 
+                Broadcast);
         }
     }
 }
