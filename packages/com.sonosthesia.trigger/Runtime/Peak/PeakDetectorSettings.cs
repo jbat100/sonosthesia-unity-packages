@@ -34,9 +34,9 @@ namespace Sonosthesia.Trigger
         [SerializeField] private DynamicProcessorFactory<float> _preprocessorFactory;
         private DynamicProcessorFactory<float> PreprocessorFactory => _preprocessorFactory;
 
-        internal PeakDetectorImplementation MakeImplementation(Action<Peak> broadcast)
+        internal PeakDetectorImplementation MakeImplementation(Action<Peak> broadcast, bool log = false)
         {
-            return new PeakDetectorImplementation(_preprocessorFactory ? _preprocessorFactory.Make() : null, _settings, broadcast);
+            return new PeakDetectorImplementation(_preprocessorFactory ? _preprocessorFactory.Make() : null, _settings, broadcast, log);
         }
     }
 }

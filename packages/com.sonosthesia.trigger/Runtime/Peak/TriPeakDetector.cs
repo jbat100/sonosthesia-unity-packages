@@ -36,7 +36,7 @@ namespace Sonosthesia.Trigger
                 return;
             }
             
-            _lowsImplementation = _configuration.Lows.MakeImplementation(_lows.Broadcast);
+            _lowsImplementation = _configuration.Lows.MakeImplementation(_lows.Broadcast, true);
             _midsImplementation = _configuration.Mids.MakeImplementation(_mids.Broadcast);
             _highsImplementation = _configuration.Highs.MakeImplementation(_highs.Broadcast);
             

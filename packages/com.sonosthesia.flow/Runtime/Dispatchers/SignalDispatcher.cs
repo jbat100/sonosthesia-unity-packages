@@ -15,9 +15,8 @@ namespace Sonosthesia.Flow
         
         private IDisposable _subscription;
 
-        protected override void OnEnable()
+        private void Setup()
         {
-            base.OnEnable();
             _subscription?.Dispose();
             _subscription = _source.SignalObservable.Subscribe(value =>
             {
@@ -27,6 +26,18 @@ namespace Sonosthesia.Flow
                 }
                 _destinations[StepIndex()].Broadcast(value);
             });
+        }
+
+        protected virtual void OnValidate()
+        {
+            base.OnEnable();
+            Setup();
+        }
+        
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            Setup();
         }
 
         protected override void OnDisable()

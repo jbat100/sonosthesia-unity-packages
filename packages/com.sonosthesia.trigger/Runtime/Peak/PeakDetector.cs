@@ -41,15 +41,17 @@ namespace Sonosthesia.Trigger
         private readonly IDynamicProcessor<float> _preprocessor;
         private readonly PeakDetectorSettings _settings;
         private readonly Action<Peak> _broadcast;
+        private readonly bool _log;
         
         private Sample? _start;
         private Sample? _previous;
         
-        public PeakDetectorImplementation(IDynamicProcessor<float> preprocessor, PeakDetectorSettings settings, Action<Peak> broadcast)
+        public PeakDetectorImplementation(IDynamicProcessor<float> preprocessor, PeakDetectorSettings settings, Action<Peak> broadcast, bool log = false)
         {
             _preprocessor = preprocessor;
             _settings = settings;
             _broadcast = broadcast;
+            _log = log;
         }
 
         public void Reset()
@@ -85,7 +87,18 @@ namespace Sonosthesia.Trigger
                 float duration = _previous.Value.Time - _start.Value.Time;
                 if (magnitude > _settings.MagnitudeThreshold && duration < _settings.MaximumDuration)
                 {
+                    if (_log)
+                    {
+                        Debug.LogWarning($"{this} broadcasting peak {nameof(magnitude)} {magnitude} {nameof(duration)} {duration}");   
+                    }
                     _broadcast(new Peak(_settings.ValuePostProcessor.Process(magnitude), duration));
+                }
+                else
+                {
+                    if (_log)
+                    {
+                        Debug.Log($"{this} no peak detected {nameof(magnitude)} {magnitude} {nameof(duration)} {duration}");   
+                    }
                 }
                 _start = null;
             }

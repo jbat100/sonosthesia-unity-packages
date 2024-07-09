@@ -12,5 +12,10 @@
             Mid = mid;
             High = high;
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(TriBand<T>)} {nameof(Low)} {Low} {nameof(Mid)} {Mid} {nameof(High)} {High}";
+        }
     }
 }
