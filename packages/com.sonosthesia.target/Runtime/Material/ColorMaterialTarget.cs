@@ -6,9 +6,10 @@ namespace Sonosthesia.Target
     {
         protected override string DefaultName => "_BaseColor";
 
-        protected override void Apply(Color value, Material material)
-        {
-            material.SetColor(Name, value);
-        }
+        protected override bool CheckTarget(Material material) => material.HasColor(NameID);
+
+        protected override void Apply(Color value, Material material) => material.SetColor(NameID, value);
+
+        protected override void ConfigureBlock(Color value, MaterialPropertyBlock block) => block.SetColor(NameID, value);
     }
 }

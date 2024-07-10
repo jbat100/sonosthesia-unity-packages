@@ -9,6 +9,8 @@ namespace Sonosthesia.Signal
     {
         [SerializeField] private Signal<T> _source;
 
+        [SerializeField] private bool _distinct = true; 
+
         [SerializeField] private DynamicProcessorFactory<T> _processingFactory;
 
         private IDisposable _subscription;
@@ -22,27 +24,32 @@ namespace Sonosthesia.Signal
             }
         }
         
-        protected virtual void OnEnable()
+        protected virtual void OnEnable() 
         {
+            _subscription?.Dispose();
+            _processor = null;
+            
             if (!_source)
             {
                 return;
             }
             
             _processor = _processingFactory ? _processingFactory.Make() : null;
-            _subscription?.Dispose();
+
+            IObservable<T> observable =
+                _distinct ? _source.SignalObservable.DistinctUntilChanged() : _source.SignalObservable;
 
             if (_processor != null)
             {
                 float startTime = Time.time;
-                _subscription = _source.SignalObservable.Subscribe(value =>
+                _subscription = observable.Subscribe(value =>
                 {
                     Apply(_processor.Process(value, Time.time - startTime));
                 });    
             }
             else
             {
-                _subscription = _source.SignalObservable.Subscribe(Apply); 
+                _subscription = observable.Subscribe(Apply); 
             }
         }
 

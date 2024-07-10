@@ -1,3 +1,4 @@
+using Sonosthesia.Utils.Editor;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -13,27 +14,12 @@ namespace Sonosthesia.Trajectory.Editor
         {
             VisualElement root = new VisualElement();
 
-            // Create property fields for each field in the settings class
-            SerializedProperty trajectoryTypeProp = property.FindPropertyRelative("_trajectoryType");
-            PropertyField trajectoryTypeField = new PropertyField(trajectoryTypeProp);
-            root.Add(trajectoryTypeField);
+            root.AddRelativeField(property, "_trajectoryType", out SerializedProperty trajectoryTypeProp, out PropertyField trajectoryTypeField);
+            root.AddRelativeField(property, "_easeType", out _, out PropertyField easeTypeField);
+            root.AddRelativeField(property, "_duration", out _, out PropertyField durationField);
+            root.AddRelativeField(property, "_position", out _, out PropertyField positionField);
+            root.AddRelativeField(property, "_velocity", out _, out PropertyField velocityField);
 
-            SerializedProperty easeTypeProp = property.FindPropertyRelative("_easeType");
-            PropertyField easeTypeField = new PropertyField(easeTypeProp);
-            root.Add(easeTypeField);
-
-            SerializedProperty durationProp = property.FindPropertyRelative("_duration");
-            PropertyField durationField = new PropertyField(durationProp);
-            root.Add(durationField);
-
-            SerializedProperty positionProp = property.FindPropertyRelative("_position");
-            PropertyField positionField = new PropertyField(positionProp);
-            root.Add(positionField);
-            
-            SerializedProperty velocityProp = property.FindPropertyRelative("_velocity");
-            PropertyField velocityField = new PropertyField(velocityProp);
-            root.Add(velocityField);
-            
             // Method to update the visibility of fields based on the enum value
             void UpdateVisibility()
             {

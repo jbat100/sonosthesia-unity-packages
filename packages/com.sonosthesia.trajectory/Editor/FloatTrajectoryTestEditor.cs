@@ -1,6 +1,6 @@
+using Sonosthesia.Utils.Editor;
 using UnityEditor;
 using UnityEditor.UIElements;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Sonosthesia.Trajectory.Editor
@@ -18,13 +18,7 @@ namespace Sonosthesia.Trajectory.Editor
 
             FloatTrajectoryTest test = (FloatTrajectoryTest)target;
 
-            // Add a separator
-            var separator = new VisualElement();
-            separator.style.height = 1;
-            separator.style.marginTop = 10;
-            separator.style.marginBottom = 10;
-            separator.style.backgroundColor = Color.gray;
-            root.Add(separator);
+            root.AddSeparator();
             
             var trigger = new Button(() => test.Trigger()) { text = "Trigger" };
             var stop = new Button(() => test.Stop()) { text = "Stop" };
