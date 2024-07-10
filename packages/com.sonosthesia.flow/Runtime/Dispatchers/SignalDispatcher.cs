@@ -11,13 +11,19 @@ namespace Sonosthesia.Flow
     {
         [SerializeField] private Signal<T> _source;
 
-        [SerializeField] private List<Signal<T>> _destinations = new List<Signal<T>>();
+        [SerializeField] private List<Signal<T>> _destinations = new ();
         
         private IDisposable _subscription;
 
         private void Setup()
         {
             _subscription?.Dispose();
+
+            if (!_source)
+            {
+                return;
+            }
+            
             _subscription = _source.SignalObservable.Subscribe(value =>
             {
                 if (_destinations.Count == 0)
