@@ -1,0 +1,23 @@
+{
+    "name": "Sonosthesia.Timeline.Editor",
+    "rootNamespace": "Sonosthesia.Timeline.Editor",
+    "references": [
+        "GUID:f06555f75b070af458a003d92f9efb00",
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:0e73a958ea93c4999aae301d99219c62",
+        "GUID:00053512b7993443db285a1ae1060dfd",
+        "GUID:498c457a28fe846f5ba1ebcda0de25e6",
+        "GUID:da4dcb349cd2457b9de2fe9f9ea29a3d"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

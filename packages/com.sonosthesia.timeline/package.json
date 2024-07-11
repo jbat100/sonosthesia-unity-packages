@@ -4,7 +4,8 @@
     "com.unity.timeline": "1.8.2",
     "com.neuecc.unirx": "7.1.0",
     "com.sonosthesia.signal": "1.8.0",
-    "com.sonosthesia.trigger": "1.8.0"
+    "com.sonosthesia.trigger": "1.8.0",
+    "com.sonosthesia.utils": "1.8.0"
   },
   "description": "Sonosthesia unity timeline",
   "displayName": "Sonosthesia Timeline",
