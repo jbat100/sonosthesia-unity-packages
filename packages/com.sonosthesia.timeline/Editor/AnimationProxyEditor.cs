@@ -65,80 +65,94 @@ namespace Sonosthesia.Timeline.Editor
 
             return fieldName;
         }
-        
-        private void CreateProxySignal(AnimationProxy.Proxy proxy, FieldInfo field, Transform parent)
-        {
-            string fieldName = ConvertToPascalCase(field.Name);
-            GameObject child = new GameObject(fieldName);
-            child.transform.parent = parent;
-            proxy.signal = child.AddComponent<FloatSignal>();
-        }
 
-        private void CreateProxySignals(object obj, Transform parent)
+         private void CreateProxySignals(object obj, Transform parent)
         {
             Type type = obj.GetType();
-            
-            // Get all fields (public, non-public, instance)
-            FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
-            foreach (FieldInfo field in fields)
+            Signal<float> CreateSignal(FieldInfo field, Transform parent)
             {
-                if (field.FieldType == typeof(AnimationProxy.Proxy))
+                string fieldName = ConvertToPascalCase(field.Name);
+                GameObject child = new GameObject(fieldName);
+                child.transform.parent = parent;
+                return child.AddComponent<FloatSignal>();
+            }
+
+            while (type != null && type != typeof(MonoBehaviour))
+            {
+                FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                foreach (FieldInfo field in fields)
                 {
-                    AnimationProxy.Proxy proxy = (AnimationProxy.Proxy)field.GetValue(obj);
-                    CreateProxySignal(proxy, field, parent);
+                    if (field.FieldType == typeof(AnimationProxy.Proxy))
+                    {
+                        // Proxy is a struct which makes things a little harder, but no choice
+                        AnimationProxy.Proxy proxy = (AnimationProxy.Proxy)field.GetValue(obj);
+                        if (proxy.signal)
+                        {
+                            continue;
+                        }
+
+                        proxy.signal = CreateSignal(field, parent);
+                        field.SetValue(obj, proxy);
+                    }
+                    else if (typeof(IProxyContainer).IsAssignableFrom(field.FieldType))
+                    {
+                        string containerName = ConvertToPascalCase(field.Name);
+                        object container = field.GetValue(obj);
+                        GameObject child = new GameObject(containerName);
+                        child.transform.parent = parent;
+                        CreateProxySignals(container, child.transform);
+                    }
                 }
-                else if (typeof(AnimationProxy.IProxyContainer).IsAssignableFrom(field.FieldType))
-                {
-                    string containerName = ConvertToPascalCase(field.Name);
-                    object container = field.GetValue(obj);
-                    GameObject child = new GameObject(containerName);
-                    child.transform.parent = parent;
-                    CreateProxySignals(container, child.transform);
-                }
+                type = type.BaseType;
             }
         }
         
-        internal void CreateSignals(AnimationProxy proxy)
+        private void CreateSignals(AnimationProxy proxy)
         {
             CreateProxySignals(proxy, proxy.transform);
         }
-        
-        private void ClearProxySignal(AnimationProxy.Proxy proxy)
-        {
-            if (proxy.signal)
-            {
-                DestroyImmediate(proxy.signal.gameObject);
-                proxy.signal = null;
-            }
-        }
-        
+
         private void ClearProxySignals(object obj, Transform parent)
         {
-            Type type = obj.GetType();
-            
-            // Get all fields (public, non-public, instance)
-            FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-
-            foreach (FieldInfo field in fields)
+            if (obj == null)
             {
-                if (field.FieldType == typeof(AnimationProxy.Proxy))
+                return;
+            }
+            
+            Type type = obj.GetType();
+
+            while (type != null && type != typeof(MonoBehaviour))
+            {
+                FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                foreach (FieldInfo field in fields)
                 {
-                    AnimationProxy.Proxy proxy = (AnimationProxy.Proxy)field.GetValue(obj);
-                    ClearProxySignal(proxy);
+                    if (field.FieldType == typeof(AnimationProxy.Proxy))
+                    {
+                        // Proxy is a struct which makes things a little harder, but no choice
+                        AnimationProxy.Proxy proxy = (AnimationProxy.Proxy)field.GetValue(obj);
+                        if (!proxy.signal)
+                        {
+                            continue;
+                        }
+                        DestroyImmediate(proxy.signal.gameObject);
+                        proxy.signal = null;
+                        field.SetValue(obj, proxy);
+                    }
+                    else if (typeof(IProxyContainer).IsAssignableFrom(field.FieldType))
+                    {
+                        string containerName = ConvertToPascalCase(field.Name);
+                        object container = field.GetValue(obj);
+                        GameObject child = new GameObject(containerName);
+                        child.transform.parent = parent;
+                        ClearProxySignals(container, child.transform);
+                    }
                 }
-                else if (typeof(AnimationProxy.IProxyContainer).IsAssignableFrom(field.FieldType))
-                {
-                    string containerName = ConvertToPascalCase(field.Name);
-                    object container = field.GetValue(obj);
-                    GameObject child = new GameObject(containerName);
-                    child.transform.parent = parent;
-                    ClearProxySignals(container, child.transform);
-                }
+                type = type.BaseType;
             }
         }
         
-        internal void ClearSignals(AnimationProxy proxy, bool all)
+        private void ClearSignals(AnimationProxy proxy, bool all)
         {
             ClearProxySignals(proxy, proxy.transform);
 

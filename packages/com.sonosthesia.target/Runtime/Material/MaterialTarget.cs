@@ -118,7 +118,7 @@ namespace Sonosthesia.Target
 
             foreach (Material material in _cachedMaterials)
             {
-                if (CheckTarget(material))
+                if (!CheckTarget(material))
                 {
                     Debug.LogError($"{this} {nameof(Material)} does not have target with name {_name}");
                 }

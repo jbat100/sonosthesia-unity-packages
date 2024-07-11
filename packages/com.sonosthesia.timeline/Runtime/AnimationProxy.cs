@@ -1,23 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using Sonosthesia.Signal;
 
 namespace Sonosthesia.Timeline
 {
-    public class AnimationProxy : MonoBehaviour
+    // Used to mark proxy containing objects for automatic signal creation nested IProxyContainers are supported
+    // and will result in nested hierarchy of GameObjects with FloatSignal components 
+    // Also used for recursive field discovery for automatic update call
+    public interface IProxyContainer
     {
-        // Used to mark proxy containing objects for automatic signal creation, nested IProxyContainers are supported
-        // and will result in nested hierarchy of GameObjects with FloatSignal components 
-        public interface IProxyContainer
-        {
             
-        }
-        
-        // Note Proxy is a class not a struct, this is so that it can be modified by editor scripts to like the 
-        // signal field to dynamically created FloatSignal components
+    }
+    
+    public class AnimationProxy : MonoBehaviour, IProxyContainer
+    {
+        // Proxy must be a struct to allow for animator access
+        // Tried to use ISerializationCallbackReceiver to intercept Timeline modifications but callbacks don't get called
         
         [Serializable]
-        public class Proxy
+        public struct Proxy
         {
             public float value;
             public Signal<float> signal;
@@ -28,6 +31,70 @@ namespace Sonosthesia.Timeline
                 {
                     signal.Broadcast(value);
                 }
+            }
+        }
+        
+        private static readonly Dictionary<Type, List<FieldInfo>> typeToProxyFieldsCache = new ();
+        
+        private List<FieldInfo> _proxyFields = new ();
+        
+        protected virtual void Awake()
+        {
+            _proxyFields = GetOrCacheProxyFields(this.GetType());
+        }
+
+        protected virtual void Update()
+        {
+            foreach (FieldInfo field in _proxyFields)
+            {
+                Proxy proxy = (Proxy)field.GetValue(this);
+                proxy.Update();
+            }
+        }
+        
+        private List<FieldInfo> GetOrCacheProxyFields(Type type)
+        {
+            if (!typeToProxyFieldsCache.TryGetValue(type, out var fields))
+            {
+                fields = DiscoverProxyFields(type);
+                typeToProxyFieldsCache[type] = fields;
+            }
+            return fields;
+        }
+
+        private List<FieldInfo> DiscoverProxyFields(Type type)
+        {
+            List<FieldInfo> fields = new List<FieldInfo>();
+            DiscoverProxyFieldsRecursive(type, fields);
+            return fields;
+        }
+
+        private void DiscoverProxyFieldsRecursive(object obj, List<FieldInfo> fields)
+        {
+            if (obj == null)
+            {
+                return;
+            }
+
+            Type type = obj.GetType();
+
+            while (type != null && type != typeof(MonoBehaviour))
+            {
+                FieldInfo[] fieldInfos = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                foreach (var field in fieldInfos)
+                {
+                    if (field.FieldType == typeof(Proxy))
+                    {
+                        fields.Add(field);
+                    }
+                    else if (typeof(IProxyContainer).IsAssignableFrom(field.FieldType))
+                    {
+                        // If the field is of a type that implements IProxyContainer, recursively discover its Proxy fields
+                        object nestedObj = field.GetValue(obj);
+                        DiscoverProxyFieldsRecursive(nestedObj, fields);
+                    }
+                }
+                type = type.BaseType;
             }
         }
     }
