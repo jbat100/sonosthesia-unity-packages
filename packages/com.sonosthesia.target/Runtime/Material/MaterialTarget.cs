@@ -70,6 +70,11 @@ namespace Sonosthesia.Target
                 return;
             }
             
+            if (!isActiveAndEnabled)
+            {
+                return;
+            }
+            
             if (string.IsNullOrEmpty(_name))
             {
                 _name = DefaultName;
@@ -130,11 +135,8 @@ namespace Sonosthesia.Target
             }
         }
 
-        protected virtual void OnValidate()
-        {
-            SetupCaches();
-        }
-        
+        protected virtual void OnValidate() => SetupCaches();
+
         protected override void OnEnable()
         {
             SetupCaches();
