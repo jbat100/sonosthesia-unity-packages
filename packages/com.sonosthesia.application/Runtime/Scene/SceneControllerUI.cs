@@ -4,7 +4,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Sonosthesia
+namespace Sonosthesia.Application
 {
     public class SceneControllerUI : MonoBehaviour
     {

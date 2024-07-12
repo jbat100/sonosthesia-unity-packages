@@ -3,7 +3,7 @@ using System.Linq;
 using Sonosthesia.Signal;
 using UnityEngine;
 
-namespace Sonosthesia
+namespace Sonosthesia.Application
 {
     public class SceneController : MonoBehaviour
     {

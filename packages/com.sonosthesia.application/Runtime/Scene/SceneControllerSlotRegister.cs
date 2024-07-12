@@ -1,6 +1,6 @@
 ﻿using Sonosthesia.Utils;
 
-namespace Sonosthesia
+namespace Sonosthesia.Application
 {
     public class SceneControllerSlotRegister : ScriptableSlotRegister<SceneController>
     {

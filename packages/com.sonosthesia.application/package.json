@@ -2,7 +2,7 @@
   "author": "Jonathan Thorpe",
   "dependencies": {
     "com.neuecc.unirx": "7.1.0",
-    "com.cysharp.unitask": "2.3.3",
+    "com.cysharp.unitask": "2.5.5",
     "com.sonosthesia.signal": "1.8.0",
     "com.sonosthesia.utils": "1.8.0"
   },
