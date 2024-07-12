@@ -16,6 +16,12 @@ namespace Sonosthesia.Timeline
     
     public class AnimationProxy : MonoBehaviour, IProxyContainer
     {
+        /// <summary>
+        /// Subclasses can register for auto update which will use reflection to call Update on Proxy fields
+        /// Current implementation uses boxing however, so best avoided
+        /// </summary>
+        protected virtual bool AutoUpdate => false;
+        
         // Proxy must be a struct to allow for animator access
         // Tried to use ISerializationCallbackReceiver to intercept Timeline modifications but callbacks don't get called
         
@@ -40,11 +46,19 @@ namespace Sonosthesia.Timeline
         
         protected virtual void Awake()
         {
-            _proxyFields = GetOrCacheProxyFields(this.GetType());
+            if (AutoUpdate)
+            {
+                _proxyFields = GetOrCacheProxyFields();   
+            }
         }
 
         protected virtual void Update()
         {
+            if (!AutoUpdate)
+            {
+                return;
+            }
+            // Debug.Log($"{this} auto updating {_proxyFields.Count} proxies");
             foreach (FieldInfo field in _proxyFields)
             {
                 Proxy proxy = (Proxy)field.GetValue(this);
@@ -52,20 +66,21 @@ namespace Sonosthesia.Timeline
             }
         }
         
-        private List<FieldInfo> GetOrCacheProxyFields(Type type)
+        private List<FieldInfo> GetOrCacheProxyFields()
         {
+            Type type = this.GetType();
             if (!typeToProxyFieldsCache.TryGetValue(type, out var fields))
             {
-                fields = DiscoverProxyFields(type);
+                fields = DiscoverProxyFields(this);
                 typeToProxyFieldsCache[type] = fields;
             }
             return fields;
         }
 
-        private List<FieldInfo> DiscoverProxyFields(Type type)
+        private List<FieldInfo> DiscoverProxyFields(object obj)
         {
             List<FieldInfo> fields = new List<FieldInfo>();
-            DiscoverProxyFieldsRecursive(type, fields);
+            DiscoverProxyFieldsRecursive(obj, fields);
             return fields;
         }
 

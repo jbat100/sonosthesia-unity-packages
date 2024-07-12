@@ -45,6 +45,16 @@ namespace Sonosthesia.Target
         };
     }
 
+    public struct ColorBlender : IBlender<Color>
+    {
+        public Color Blend(TargetBlend blend, Color reference, Color value) => blend switch
+        {
+            TargetBlend.Override => value,
+            TargetBlend.Add => reference + value,
+            _ => Color.black
+        };
+    }
+
     public abstract class BlendTarget<T, B> : Target<T> where T : struct where B : struct, IBlender<T>
     {
         [SerializeField] private TargetBlend _targetBlend = TargetBlend.Override;

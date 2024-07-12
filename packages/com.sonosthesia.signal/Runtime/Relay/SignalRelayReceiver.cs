@@ -1,22 +1,31 @@
 using System;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Sonosthesia.Signal
 {
     public class SignalRelayReceiver<T> : Signal<T> where T : struct
     {
-        [SerializeField] private SignalRelay<T> signalRelay;
+        [FormerlySerializedAs("signalRelay")] 
+        [SerializeField] private SignalRelay<T> _signalRelay;
 
         private IDisposable _subscription;
 
-        protected void OnEnable()
+        private void SetupRelay()
         {
             _subscription?.Dispose();
-            _subscription = signalRelay.Observable.Subscribe(Broadcast);
+            if (_signalRelay)
+            {
+                _subscription = _signalRelay.Observable.Subscribe(Broadcast);    
+            }
         }
 
-        protected void OnDisable()
+        protected virtual void OnValidate() => SetupRelay();
+        
+        protected virtual void OnEnable() => SetupRelay();
+
+        protected virtual void OnDisable()
         {
             _subscription?.Dispose();
             _subscription = null;

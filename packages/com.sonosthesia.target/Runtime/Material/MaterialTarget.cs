@@ -5,8 +5,13 @@ using UnityEngine;
 
 namespace Sonosthesia.Target
 {
-    /// Note : consider also using Material.Lerp
-    
+    /// Notes :
+    /// - cannot be a BlendTarget multiple materials would cause reference ambiguity
+    /// - if it becomes necessary, MultiBlendTarget could be made to hold references per target
+    /// - consider also using Material.Lerp
+    ///
+    /// TODO : stress test scene to identify the impact of MaterialPropertyBlock on URP / SRP batcher 
+     
     public enum MaterialSelector
     {
         None,
@@ -15,7 +20,7 @@ namespace Sonosthesia.Target
         Indexed,
         All
     }
-    
+
     public abstract class MaterialTarget<T> : Target<T> where T : struct
     {
         [SerializeField] private string _name;
@@ -44,11 +49,11 @@ namespace Sonosthesia.Target
         
         protected override void Awake()
         {
-            base.Awake();
             if (!_renderer)
             {
                 _renderer = GetComponent<Renderer>();
             }
+            base.Awake();
         }
 
         private void SetupCaches()
@@ -148,7 +153,7 @@ namespace Sonosthesia.Target
             }
             else
             {
-                Debug.Log($"{this} {nameof(Apply)} {value} to {_cachedMaterials.Count} materials");
+                // Debug.Log($"{this} {nameof(Apply)} {value} to {_cachedMaterials.Count} materials");
                 foreach (Material m in _cachedMaterials)
                 {
                     Apply(value, m);

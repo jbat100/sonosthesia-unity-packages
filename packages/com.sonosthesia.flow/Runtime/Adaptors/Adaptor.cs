@@ -15,7 +15,10 @@ namespace Sonosthesia.Flow
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = Setup(_source);
+            if (_source)
+            {
+                _subscription = Setup(_source);   
+            }
         }
         
         protected virtual void OnDisable()

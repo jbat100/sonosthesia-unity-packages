@@ -91,7 +91,6 @@ namespace Sonosthesia.Timeline.Editor
                         {
                             continue;
                         }
-
                         proxy.signal = CreateSignal(field, parent);
                         field.SetValue(obj, proxy);
                     }

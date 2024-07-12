@@ -1,6 +1,7 @@
 using System;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Sonosthesia.Signal
 {
@@ -8,20 +9,29 @@ namespace Sonosthesia.Signal
     {
         [SerializeField] private Signal<T> _source;
 
-        [SerializeField] private SignalRelay<T> signalRelay;
+        [FormerlySerializedAs("signalRelay")] 
+        [SerializeField] private SignalRelay<T> _signalRelay;
 
         private IDisposable _subscription;
 
-        protected void OnEnable()
-        {
-            _subscription?.Dispose();
-            _subscription = _source.SignalObservable.Subscribe(value => signalRelay.Broadcast(value));
-        }
+        protected virtual void OnValidate() => SetupRelay();
+        
+        protected virtual void OnEnable() => SetupRelay();
 
-        protected void OnDisable()
+        protected virtual void OnDisable()
         {
             _subscription?.Dispose();
             _subscription = null;
         }
+        
+        private void SetupRelay()
+        {
+            _subscription?.Dispose();
+            if (_source && _signalRelay)
+            {
+                _subscription = _source.SignalObservable.Subscribe(value => _signalRelay.Broadcast(value));   
+            }
+        }
+
     }
 }
