@@ -1,0 +1,20 @@
+{
+    "name": "Sonosthesia.Palette.Editor",
+    "rootNamespace": "Sonosthesia.Palette.Editor",
+    "references": [
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:432e7b3e05a2ac44b98ecc2cd0367bf6",
+        "GUID:da4dcb349cd2457b9de2fe9f9ea29a3d"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

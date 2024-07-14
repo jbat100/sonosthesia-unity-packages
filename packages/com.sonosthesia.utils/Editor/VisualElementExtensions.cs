@@ -19,6 +19,16 @@ namespace Sonosthesia.Utils.Editor
         }
 
 
+        public static void AddSpace(this VisualElement visualElement) => visualElement.AddSpace(10);
+        
+        public static void AddSpace(this VisualElement visualElement, StyleLength styleLength)
+        {
+            // Create a spacer element
+            VisualElement spacer = new VisualElement();
+            spacer.style.height = styleLength; 
+            visualElement.Add(spacer);
+        }
+        
         public static void AddSeparator(this VisualElement visualElement)
         {
             var separator = new VisualElement();
