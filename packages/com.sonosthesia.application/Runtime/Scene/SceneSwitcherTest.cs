@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Sonosthesia.Application
@@ -18,7 +19,7 @@ namespace Sonosthesia.Application
                 return;
             }
             _currentIndex = (_currentIndex + 1) % _scenes.Count;
-            _switcher.SwitchToScene(_scenes[_currentIndex]);
+            _switcher.SwitchToScene(_scenes[_currentIndex]).Forget();
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using Cysharp.Threading.Tasks;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -38,7 +39,7 @@ namespace Sonosthesia.Application
             
             foreach (Choice choice in _choices)
             {
-                choice.Button.onClick.AddListener(() => _switcher.SwitchToScene(choice.Name));
+                choice.Button.onClick.AddListener(() => _switcher.SwitchToScene(choice.Name).Forget());
             }            
         }
 

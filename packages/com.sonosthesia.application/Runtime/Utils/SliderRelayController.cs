@@ -1,5 +1,4 @@
-﻿using System;
-using Sonosthesia.Signal;
+﻿using Sonosthesia.Signal;
 using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
@@ -13,16 +12,20 @@ namespace Sonosthesia.Application
     [RequireComponent(typeof(Slider))]
     public class SliderRelayController : MonoBehaviour, IPointerUpHandler, IPointerDownHandler
     {
-        [SerializeField] private Slider _slider;
-        
         [SerializeField] private IntentSignalRelay _intent;
 
         [SerializeField] private FloatSignalRelay _value;
         
         [SerializeField] private FloatSignalRelay _duration;
 
+        private Slider _slider;
         private bool _isDown;
         private readonly CompositeDisposable _subscriptions = new();
+
+        protected virtual void Awake()
+        {
+            _slider = GetComponent<Slider>();
+        }
         
         protected virtual void OnEnable()
         {
@@ -67,7 +70,7 @@ namespace Sonosthesia.Application
                 return;
             }
             
-            _intent.Broadcast(new Intent(ApplicationIntentKeys.JUMP, _slider.value));
+            _intent.Broadcast(new Intent(ApplicationIntentKeys.TIME, _slider.value));
         }
 
         public void OnPointerDown(PointerEventData eventData)

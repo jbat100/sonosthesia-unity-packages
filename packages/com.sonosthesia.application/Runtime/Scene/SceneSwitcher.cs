@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using Sonosthesia.Signal;
 using UniRx;
@@ -12,8 +11,10 @@ namespace Sonosthesia.Application
     public enum SceneSwitcherState
     {
         Empty,
+        FadeOut,
         Unloading,
         Loading,
+        FadeIn,
         Idle
     }
 
@@ -32,9 +33,12 @@ namespace Sonosthesia.Application
     public class SceneSwitcher : MonoBehaviour
     {
         [SerializeField] private IntentSignalRelay _intents;
-        [SerializeField] private bool _strict = true;
+        
         [SerializeField] private float _fadeIn = 1f;
+        public float FadeIn => _fadeIn;
+        
         [SerializeField] private float _fadeOut = 1f;
+        public float FadeOut => _fadeOut;
         
         private readonly BehaviorSubject<SceneSwitcherState> _stateSubject = new (SceneSwitcherState.Empty);
         public IObservable<SceneSwitcherState> StateObservable => _stateSubject.AsObservable();
@@ -44,13 +48,6 @@ namespace Sonosthesia.Application
             private set => _stateSubject.OnNext(value);
         }
         
-        private readonly Subject<SceneSwitcherFade> _fadeSubject = new ();
-        public IObservable<SceneSwitcherFade> FadeObservable => _fadeSubject.AsObservable();
-        private UniTask Fade(bool fadeIn, float duration, CancellationToken cancellationToken)
-        {
-            _fadeSubject.OnNext(new SceneSwitcherFade(fadeIn, duration));
-            return UniTask.Delay(TimeSpan.FromSeconds(duration), cancellationToken: cancellationToken);
-        }
 
         private readonly BehaviorSubject<string> _currentSubject = new(null);
         public IObservable<string> CurrentObservable => _currentSubject.AsObservable();
@@ -60,10 +57,7 @@ namespace Sonosthesia.Application
             private set => _currentSubject.OnNext(value);
         }
         
-
         private IDisposable _intentSubscription;
-        private readonly SemaphoreSlim _semaphore = new (1);
-        private CancellationTokenSource _cancellationTokenSource = new ();
 
         protected virtual void Start()
         {
@@ -77,61 +71,37 @@ namespace Sonosthesia.Application
             {
                 _intentSubscription = _intents.Observable.Subscribe(i =>
                 {
-                    if (string.IsNullOrEmpty(i.Key))
-                    {
-                        return;
-                    }
-                    if (_strict && State != SceneSwitcherState.Idle)
+                    if (State != SceneSwitcherState.Idle)
                     {
                         Debug.LogWarning($"{this} dropped scene switch intent {i}");
                         return;
                     }
-                    SwitchToScene(i.Key);
+                    SwitchToScene(i.Key).Forget();
                 });
             }
         }
 
         protected virtual void OnDisable() => _intentSubscription?.Dispose();
-        
-        public void SwitchToScene(string sceneName)
-        {
-            if (_strict && State != SceneSwitcherState.Idle)
-            {
-                throw new Exception($"{nameof(SwitchToScene)} called during invalid state {State}");
-            }
-            
-            // Note : once the switch to R3 is made, we can use it as a synchronization mechanism
-            
-            _cancellationTokenSource.Cancel();
-            _cancellationTokenSource = new CancellationTokenSource();
-            PerformSwitchToScene(sceneName, _cancellationTokenSource.Token).Forget();
-        }
 
-        private async UniTask PerformSwitchToScene(string sceneName, CancellationToken cancellationToken)
+        public async UniTask SwitchToScene(string sceneName)
         {
+            if (sceneName == Current)
+            {
+                return;
+            }
+
             try
             {
-                if (sceneName == Current)
-                {
-                    return;
-                }
-                
-                Debug.Log($"{this} waiting for scene switch ");
-                
-                await _semaphore.WaitAsync(cancellationToken);
-                
-                cancellationToken.ThrowIfCancellationRequested();
-
-                await Fade(true, _fadeIn, cancellationToken);
+                State = SceneSwitcherState.FadeOut;
+            
+                await UniTask.Delay(TimeSpan.FromSeconds(_fadeOut));
 
                 if (!string.IsNullOrEmpty(Current))
                 {
                     State = SceneSwitcherState.Unloading;
                     await SceneManager.UnloadSceneAsync(Current);
                 }
-                
-                cancellationToken.ThrowIfCancellationRequested();
-
+            
                 if (!string.IsNullOrEmpty(sceneName))
                 {
                     State = SceneSwitcherState.Loading;
@@ -139,20 +109,17 @@ namespace Sonosthesia.Application
                 }
 
                 Current = sceneName;
-                
-                cancellationToken.ThrowIfCancellationRequested();
             }
             catch (Exception e)
             {
                 // notify error
             }
-            finally
-            {
-                // we want to fade out no matter what
-                Fade(false, _fadeOut, cancellationToken).Forget();
-                State = SceneSwitcherState.Idle;
-                _semaphore.Release();
-            }
+            
+            State = SceneSwitcherState.FadeIn;
+            
+            await UniTask.Delay(TimeSpan.FromSeconds(_fadeIn));
+            
+            State = SceneSwitcherState.Idle;
         }
     }
 }

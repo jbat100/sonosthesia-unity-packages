@@ -26,7 +26,7 @@ namespace Sonosthesia.Application
             _subscription?.Dispose();
             if (_switch)
             {
-                _switch.Observable.Subscribe(on =>
+                _switch.Observable.DistinctUntilChanged().Subscribe(on =>
                 {
                     Sprite sprite = on ? _on : _off;
                     if (!sprite)
