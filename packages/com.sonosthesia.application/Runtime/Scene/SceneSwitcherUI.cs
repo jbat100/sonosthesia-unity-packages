@@ -1,4 +1,5 @@
 using System;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,6 +7,10 @@ namespace Sonosthesia.Application
 {
     public class SceneSwitcherUI : MonoBehaviour
     {
+        [SerializeField] private Text _nameText;
+
+        [SerializeField] private bool _lastNameComponentOnly;
+        
         [SerializeField] private Text _stateText;
 
         [SerializeField] private SceneSwitcher _switcher;
@@ -22,6 +27,8 @@ namespace Sonosthesia.Application
         
         [SerializeField] private Choice[] _choices;
 
+        private IDisposable _nameSubscription;
+        
         protected virtual void Start()
         {
             if (!_switcher)
@@ -34,6 +41,31 @@ namespace Sonosthesia.Application
                 choice.Button.onClick.AddListener(() => _switcher.SwitchToScene(choice.Name));
             }            
         }
+
+        protected virtual void OnEnable()
+        {
+            _nameSubscription?.Dispose();
+            if (_switcher && _nameText)
+            {
+                _nameSubscription = _switcher.CurrentObservable.Subscribe(current =>
+                {
+                    if (_lastNameComponentOnly)
+                    {
+                        string[] components = current.Split("/");
+                        if (components.Length > 0)
+                        {
+                            _nameText.text = components[^1];
+                            return;
+                        }
+                    }
+
+                    _nameText.text = current;
+                });
+            }
+        }
+
+        protected virtual void OnDisable() => _nameSubscription?.Dispose();
+        
     }
 }
 

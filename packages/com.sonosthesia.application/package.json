@@ -1,6 +1,7 @@
 {
   "author": "Jonathan Thorpe",
   "dependencies": {
+    "com.unity.timeline": "1.8.7",
     "com.neuecc.unirx": "7.1.0",
     "com.cysharp.unitask": "2.5.5",
     "com.sonosthesia.signal": "1.8.0",

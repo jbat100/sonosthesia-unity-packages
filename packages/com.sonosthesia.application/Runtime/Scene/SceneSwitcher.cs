@@ -38,7 +38,6 @@ namespace Sonosthesia.Application
         
         private readonly BehaviorSubject<SceneSwitcherState> _stateSubject = new (SceneSwitcherState.Empty);
         public IObservable<SceneSwitcherState> StateObservable => _stateSubject.AsObservable();
-
         public SceneSwitcherState State
         {
             get => _stateSubject.Value;
@@ -47,15 +46,22 @@ namespace Sonosthesia.Application
         
         private readonly Subject<SceneSwitcherFade> _fadeSubject = new ();
         public IObservable<SceneSwitcherFade> FadeObservable => _fadeSubject.AsObservable();
-
         private UniTask Fade(bool fadeIn, float duration, CancellationToken cancellationToken)
         {
             _fadeSubject.OnNext(new SceneSwitcherFade(fadeIn, duration));
             return UniTask.Delay(TimeSpan.FromSeconds(duration), cancellationToken: cancellationToken);
         }
 
+        private readonly BehaviorSubject<string> _currentSubject = new(null);
+        public IObservable<string> CurrentObservable => _currentSubject.AsObservable();
+        public string Current
+        {
+            get => _currentSubject.Value;
+            private set => _currentSubject.OnNext(value);
+        }
+        
+
         private IDisposable _intentSubscription;
-        private string _current;
         private readonly SemaphoreSlim _semaphore = new (1);
         private CancellationTokenSource _cancellationTokenSource = new ();
 
@@ -105,7 +111,7 @@ namespace Sonosthesia.Application
         {
             try
             {
-                if (sceneName == _current)
+                if (sceneName == Current)
                 {
                     return;
                 }
@@ -118,12 +124,10 @@ namespace Sonosthesia.Application
 
                 await Fade(true, _fadeIn, cancellationToken);
 
-                // visual animation
-
-                if (!string.IsNullOrEmpty(_current))
+                if (!string.IsNullOrEmpty(Current))
                 {
                     State = SceneSwitcherState.Unloading;
-                    await SceneManager.UnloadSceneAsync(_current);
+                    await SceneManager.UnloadSceneAsync(Current);
                 }
                 
                 cancellationToken.ThrowIfCancellationRequested();
@@ -134,9 +138,7 @@ namespace Sonosthesia.Application
                     await SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
                 }
 
-                // visual animation
-
-                _current = sceneName;
+                Current = sceneName;
                 
                 cancellationToken.ThrowIfCancellationRequested();
             }
