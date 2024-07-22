@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Utils
 {
-    public class Register<T> : MonoBehaviour
+    public class RegisterBehaviour<T> : MonoBehaviour
     {
         private readonly HashSet<T> _register = new();
 
