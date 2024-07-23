@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 
 namespace Sonosthesia.Application
 {
-
     public enum SceneSwitcherState
     {
         Empty,
@@ -45,9 +44,13 @@ namespace Sonosthesia.Application
         public SceneSwitcherState State
         {
             get => _stateSubject.Value;
-            private set => _stateSubject.OnNext(value);
+            private set
+            {
+                Debug.Log($"{this} state {value}");
+                _stateSubject.OnNext(value);
+            }
         }
-        
+
 
         private readonly BehaviorSubject<string> _currentSubject = new(null);
         public IObservable<string> CurrentObservable => _currentSubject.AsObservable();
@@ -112,7 +115,8 @@ namespace Sonosthesia.Application
             }
             catch (Exception e)
             {
-                // notify error
+                // TODO: have observable for error UI
+                Debug.LogException(e);
             }
             
             State = SceneSwitcherState.FadeIn;

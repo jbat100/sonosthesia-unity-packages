@@ -15,8 +15,8 @@ namespace Sonosthesia.Application
         
         // TODO : investigate possible Tween library dependency
         
-        private float _currentValue = 1f;
-        private float _targetValue = 1f;
+        private float _currentValue = 0f;
+        private float _targetValue = 0f;
         private float _targetTime = 0f;
         
         protected virtual void Awake()
@@ -34,14 +34,12 @@ namespace Sonosthesia.Application
                     switch (state)
                     {
                         case SceneSwitcherState.FadeOut:
-                            _targetValue = 0f;
+                            _targetValue = 1f;
                             _targetTime = Time.time + _switcher.FadeOut;
                             break;
                         case SceneSwitcherState.FadeIn:
-                            _targetValue = 1f;
+                            _targetValue = 0f;
                             _targetTime = Time.time + _switcher.FadeIn;
-                            break;
-                        default:
                             break;
                     }
                 });
@@ -60,7 +58,7 @@ namespace Sonosthesia.Application
             {
                 float distance = _targetValue - _currentValue;
                 float duration = _targetTime - Time.time;
-                _currentValue = (distance / duration) * Time.deltaTime;
+                _currentValue += (distance / duration) * Time.deltaTime;
             }
             
             _fade.Broadcast(_currentValue);
