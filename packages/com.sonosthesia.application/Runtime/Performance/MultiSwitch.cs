@@ -19,12 +19,18 @@ namespace Sonosthesia.Application
         {
             base.OnChanged();
             _targetSubscriptions.Clear();
-            foreach (GameObject target in _targets)
+            
+            // we don't want to do this in edit mode as it adds ObservableEnableTrigger components to targets
+            // and is not needed
+            if (UnityEngine.Application.isPlaying)
             {
-                _targetSubscriptions.Add(
-                    target.OnEnableAsObservable().Merge(target.OnDisableAsObservable())
-                        .Subscribe(_ => BroadcastChange())
+                foreach (GameObject target in _targets)
+                {
+                    _targetSubscriptions.Add(
+                        target.OnEnableAsObservable().Merge(target.OnDisableAsObservable())
+                            .Subscribe(_ => BroadcastChange())
                     );
+                }   
             }
         }
 
