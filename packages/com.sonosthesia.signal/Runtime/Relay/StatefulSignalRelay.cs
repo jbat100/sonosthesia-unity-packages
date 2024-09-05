@@ -10,6 +10,7 @@ namespace Sonosthesia.Signal
         
         private readonly BehaviorSubject<TValue> _subject = new BehaviorSubject<TValue>(default);
         public override IObservable<TValue> Observable => _subject.AsObservable();
+        public TValue Value => _subject.Value;
 
         public override void Broadcast(TValue value)
         {

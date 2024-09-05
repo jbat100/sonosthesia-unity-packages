@@ -23,7 +23,7 @@ namespace Sonosthesia.Application
             _subscription?.Dispose();
             if (_fade && _audioSource)
             {
-                _fade.Observable.Subscribe(f =>
+                _subscription = _fade.Observable.Subscribe(f =>
                 {
                     _audioSource.volume = 1f - f;
                 });

@@ -35,7 +35,7 @@ namespace Sonosthesia.Application
             _intentSubscription?.Dispose();
             if (_intent && _playableDirector)
             {
-                _intent.Observable.Subscribe(intent =>
+                _intentSubscription = _intent.Observable.Subscribe(intent =>
                 {
                     Debug.Log($"{this} process intent {intent}");
                     switch (intent.Key)

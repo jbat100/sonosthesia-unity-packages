@@ -1,6 +1,7 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
 using Sonosthesia.Signal;
+using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -32,6 +33,8 @@ namespace Sonosthesia.Application
     public class SceneSwitcher : MonoBehaviour
     {
         [SerializeField] private IntentSignalRelay _intents;
+
+        [SerializeField] private StateSignalRelay _current;
         
         [SerializeField] private float _fadeIn = 1f;
         public float FadeIn => _fadeIn;
@@ -51,15 +54,21 @@ namespace Sonosthesia.Application
             }
         }
 
-
         private readonly BehaviorSubject<string> _currentSubject = new(null);
         public IObservable<string> CurrentObservable => _currentSubject.AsObservable();
         public string Current
         {
             get => _currentSubject.Value;
-            private set => _currentSubject.OnNext(value);
+            private set
+            {
+                if (_current)
+                {
+                    _current.Broadcast(new State(value));
+                } 
+                _currentSubject.OnNext(value);
+            }
         }
-        
+
         private IDisposable _intentSubscription;
 
         protected virtual void Start()

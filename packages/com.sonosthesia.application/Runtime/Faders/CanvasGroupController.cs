@@ -58,7 +58,7 @@ namespace Sonosthesia.Application
             _cancellationTokenSource = new CancellationTokenSource();
             _active = true;
             _canvasGroup.gameObject.SetActive(true);
-            return Fade(duration, false, _cancellationTokenSource.Token);
+            return Fade(duration, true, _cancellationTokenSource.Token);
         }
 
         private async UniTask<bool> Fade(float duration, bool fadeIn, CancellationToken cancellationToken)
@@ -73,7 +73,7 @@ namespace Sonosthesia.Application
             float startTime = Time.time;
             float endTime = startTime + duration;
 
-            while (Time.time > endTime)
+            while (Time.time < endTime)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {

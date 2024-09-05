@@ -12,6 +12,12 @@
             Key = key;
             Payload = payload;
         }
+        
+        public State(string key)
+        {
+            Key = key;
+            Payload = null;
+        }
 
         public override string ToString()
         {

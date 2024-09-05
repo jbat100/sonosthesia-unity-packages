@@ -4,6 +4,8 @@
     
     public readonly struct Intent
     {
+        public static readonly Intent Empty = new Intent(null, null);
+        
         public readonly string Key;
         public readonly object Payload;
 
@@ -11,6 +13,12 @@
         {
             Key = key;
             Payload = payload;
+        }
+        
+        public Intent(string key)
+        {
+            Key = key;
+            Payload = null;
         }
 
         public override string ToString()
