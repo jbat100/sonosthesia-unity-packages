@@ -67,9 +67,9 @@ namespace Sonosthesia.Deform
             UVSphere
         };
 
-        [SerializeField] MeshType _meshType;
+        [SerializeField] private MeshType _meshType;
 
-        [SerializeField, Range(1, 50)] int _resolution = 1;
+        [SerializeField, Range(1, 50)] private int _resolution = 1;
 
         [SerializeField] private GizmoMode _gizmoMode;
         
