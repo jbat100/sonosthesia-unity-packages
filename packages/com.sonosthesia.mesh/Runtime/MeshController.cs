@@ -11,15 +11,20 @@ namespace Sonosthesia.Mesh
     [RequireComponent(typeof(MeshFilter))]
     public abstract class MeshController : MonoBehaviour
     {
-        private UnityEngine.Mesh m_Mesh;
-        
         [Flags]
         private enum GizmoMode
         {
             Vertices = 1 << 1, 
             Normals = 1 << 2
         }
-
+        
+        [Flags]
+        private enum MeshOptimizationMode 
+        {
+            ReorderIndices = 1 << 0, 
+            ReorderVertices = 1 << 1
+        }
+        
         [SerializeField] private GizmoMode _gizmoMode;
 
         [SerializeField] private bool _rebuildOnUpdate;
@@ -27,7 +32,12 @@ namespace Sonosthesia.Mesh
         [SerializeField] private float _rebuildFrequency;
         
         [SerializeField] bool _recalculateNormals;
-         
+        
+        [SerializeField] bool _recalculateTangents;
+
+        [SerializeField] private MeshOptimizationMode _meshOptimization = 0;
+        
+        private UnityEngine.Mesh _mesh;
         private bool _rebuildRequested;
         private float _nextScheduledRebuild;
         private Vector3[] _vertices, _normals;
@@ -38,14 +48,12 @@ namespace Sonosthesia.Mesh
         {
             get
             {
-                if (m_Mesh != null)
+                if (_mesh != null)
                 {
-                    return m_Mesh;
+                    return _mesh;
                 }
-
-                m_Mesh = new UnityEngine.Mesh { name = MeshName };
-                GetComponent<MeshFilter>().mesh = m_Mesh;
-                return m_Mesh;
+                _mesh = new UnityEngine.Mesh { name = MeshName };
+                return _mesh;
             }
         }
 
@@ -80,6 +88,28 @@ namespace Sonosthesia.Mesh
             {
                 Mesh.RecalculateNormals();
             }
+            
+            {
+                _mesh.RecalculateTangents();                
+            }
+
+            switch (_meshOptimization)
+            {
+                case MeshOptimizationMode.ReorderIndices:
+                    _mesh.OptimizeIndexBuffers();
+                    break;
+                case MeshOptimizationMode.ReorderVertices:
+                    _mesh.OptimizeReorderVertexBuffer();
+                    break;
+                default:
+                {
+                    if (_meshOptimization != 0) 
+                    {
+                        _mesh.Optimize();
+                    }
+                    break;
+                }
+            }
 
             // Debug.Log($"{this} mesh now has {Mesh.vertexCount} vertices and {Mesh.triangles.Length} indices");
             
@@ -87,6 +117,11 @@ namespace Sonosthesia.Mesh
         }
 
         protected abstract void PopulateMeshData(UnityEngine.Mesh.MeshData data);
+        
+        protected virtual void Awake()
+        {
+            GetComponent<MeshFilter>().mesh = Mesh;
+        }
         
         protected virtual void Update()
         {
