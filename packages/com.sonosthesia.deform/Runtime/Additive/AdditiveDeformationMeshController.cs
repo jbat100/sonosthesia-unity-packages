@@ -11,7 +11,7 @@ namespace Sonosthesia.Deform
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public class AdditiveDeformationMeshController : MeshController
     {
-        private static int materialIsPlaneId = Shader.PropertyToID("_IsPlane");
+        private static readonly int materialIsPlaneId = Shader.PropertyToID("_IsPlane");
 
         bool IsPlane => _meshType < MeshType.CubeSphere;
 
