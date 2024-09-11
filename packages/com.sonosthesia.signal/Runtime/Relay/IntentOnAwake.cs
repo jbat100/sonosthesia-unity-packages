@@ -13,10 +13,17 @@ namespace Sonosthesia.Signal
 
         [SerializeField] private float _delay;
 
+        [SerializeField] private bool _mute;
+
         protected virtual void Awake()
         {
             Observable.Timer(TimeSpan.FromSeconds(Mathf.Max(0, _delay))).Subscribe(_ =>
             {
+                if (_mute)
+                {
+                    return;
+                }
+                
                 _intent.Broadcast(new Intent(_key));
             });
         }

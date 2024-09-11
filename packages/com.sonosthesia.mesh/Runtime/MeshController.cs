@@ -31,9 +31,11 @@ namespace Sonosthesia.Mesh
 
         [SerializeField] private float _rebuildFrequency;
         
-        [SerializeField] bool _recalculateNormals;
+        [SerializeField] private bool _recalculateBounds;
         
-        [SerializeField] bool _recalculateTangents;
+        [SerializeField] private bool _recalculateNormals;
+        
+        [SerializeField] private bool _recalculateTangents;
 
         [SerializeField] private MeshOptimizationMode _meshOptimization = 0;
         
@@ -82,13 +84,15 @@ namespace Sonosthesia.Mesh
 
             UnityEngine.Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, Mesh);
 
-            Mesh.RecalculateBounds();
-
+            if (_recalculateBounds)
+            {
+                Mesh.RecalculateBounds();
+            }
             if (_recalculateNormals)
             {
                 Mesh.RecalculateNormals();
             }
-            
+            if (_recalculateTangents)
             {
                 _mesh.RecalculateTangents();                
             }
