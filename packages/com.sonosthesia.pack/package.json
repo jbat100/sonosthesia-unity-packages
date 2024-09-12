@@ -3,11 +3,11 @@
   "dependencies": {
     "com.cysharp.unitask": "2.5.2",
     "com.neuecc.unirx": "7.1.0",
-    "com.sonosthesia.channel": "1.8.0",
-    "com.sonosthesia.signal": "1.8.0",
-    "com.sonosthesia.adaptivemidi": "1.8.0",
-    "com.sonosthesia.mapping": "1.8.0",
-    "com.sonosthesia.utils": "1.8.0"
+    "com.sonosthesia.channel": "1.9.0",
+    "com.sonosthesia.signal": "1.9.0",
+    "com.sonosthesia.adaptivemidi": "1.9.0",
+    "com.sonosthesia.mapping": "1.9.0",
+    "com.sonosthesia.utils": "1.9.0"
   },
   "description": "Sonosthesia unity message pack connections",
   "displayName": "Sonosthesia Pack",
@@ -18,5 +18,5 @@
   "name": "com.sonosthesia.pack",
   "repository": "github:jbat100/sonosthesia-unity-packages",
   "unity": "2022.3",
-  "version": "1.8.0"
+  "version": "1.9.0"
 }
