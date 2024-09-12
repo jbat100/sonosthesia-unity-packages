@@ -22,6 +22,7 @@ namespace Sonosthesia.Signal
             {
                 Debug.Log($"{this} {nameof(Broadcast)} {value}");    
             }
+            OnBroadcast(value);
             _signalSubject.OnNext(value);
         }
 
@@ -30,5 +31,8 @@ namespace Sonosthesia.Signal
             _signalSubject.OnCompleted();
             _signalSubject.Dispose();
         }
+        
+        // hook for subclasses to react with predictable order (which is not the case for signal subscription)
+        protected virtual void OnBroadcast(T value) { }
     }
 }

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Generator
 {
-    public class AnimationCurveFloatEnvelope : FloatEnvelope
+    public class AnimationCurveFloatEnvelope : ValueEnvelope<float>
     {
         [SerializeField] private AnimationCurve _animationCurve;
 

@@ -2,7 +2,6 @@
 
 namespace Sonosthesia.Flow
 {
-    
     public class HDRColorIntensityAdapter : MapAdaptor<float, Color>
     {
         [SerializeField, ColorUsage(true, true)] private Color _color;

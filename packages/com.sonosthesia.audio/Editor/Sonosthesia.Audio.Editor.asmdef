@@ -1,0 +1,21 @@
+{
+    "name": "Sonosthesia.Audio.Editor",
+    "rootNamespace": "Sonosthesia.Audio.Editor",
+    "references": [
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:bbde805d927e795439d7a746d1749cab",
+        "GUID:285f4ff540a1a4ccebfd58976cdd5a94",
+        "GUID:9eb6837bd3e454f19a8d5c72f1eda2e1"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

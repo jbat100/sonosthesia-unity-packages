@@ -49,8 +49,18 @@ namespace Sonosthesia.Scaffold
 
         public override void Apply<T>(IEnumerable<T> targets)
         {
-            Spline guideSpline = _configuration.GuideSpline;
-            Spline orientationSpline = _configuration.OrientationSpline;
+            if (!_configuration)
+            {
+                return;
+            }
+            
+            Spline guideSpline = _configuration.Guide.Spline;
+            Spline orientationSpline = _configuration.Orientation.Spline;
+
+            if (guideSpline == null || orientationSpline == null)
+            {
+                return;
+            }
             
             foreach (T element in targets)
             {

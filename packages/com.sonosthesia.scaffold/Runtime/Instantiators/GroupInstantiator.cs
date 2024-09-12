@@ -14,12 +14,19 @@ namespace Sonosthesia.Scaffold
     // Based on object handling sections of SplineInstantiate.cs to ensure that the instantiation is done 
     // and cleaned up correctly
     
-    [ExecuteInEditMode]
+    // Note : we have a root separate from the game object transform to avoid weird behaviour with prefabs 
+    
+    [ExecuteAlways]
     public abstract class GroupInstantiator<TEntry> : BaseGroupInstantiator where TEntry : MonoBehaviour, IIndexed
     {
+        [SerializeField] private bool _autoRefresh = true;
+
+        [SerializeField] private TEntry _prefab;
+
+        [SerializeField] private Transform _root;
+        
         private const string k_InstancesRootName = "root-";
         private GameObject _instancesRoot;
-
         private Transform InstancesRoot
         {
             get
@@ -42,10 +49,6 @@ namespace Sonosthesia.Scaffold
         
         private bool _dirtyInstances = false;
 
-        [SerializeField] private bool _autoRefresh = true;
-
-        [SerializeField] private TEntry _prefab;
-        
         private TEntry _previousPrefab;
 
         private IDisposable _refreshRequestSubscription;
@@ -207,7 +210,7 @@ namespace Sonosthesia.Scaffold
         {
             if (!_dirtyInstances)
             {
-                _dirtyInstances = (_previousPrefab == null || _previousPrefab != _prefab);    
+                _dirtyInstances = _previousPrefab != _prefab;
             }
 
             if (_dirtyInstances)
@@ -234,13 +237,13 @@ namespace Sonosthesia.Scaffold
 
         private void EnsureCount(int count)
         {
+            _previousPrefab = _prefab;
+            
             if (_prefab == null)
             {
                 return;
             }
-            
-            _previousPrefab = _prefab;
-            
+
             if (count < _instances.Count)
             {
                 //removing extra unnecessary instances
@@ -251,7 +254,7 @@ namespace Sonosthesia.Scaffold
 #if UNITY_EDITOR
                         DestroyImmediate(_instances[i]);
 #else
-                        Destroy(_Instances[i]);
+                        Destroy(_instances[i]);
 #endif
                     }
                     _instances.RemoveAt(i);

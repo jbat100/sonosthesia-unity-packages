@@ -6,26 +6,23 @@ namespace Sonosthesia.Scaffold
 {
     public class BiSplineConfiguration : ObservableBehaviour
     {
-        [SerializeField] private SplineContainer _guideSplineContainer;
-
-        [SerializeField] private int _guideSplineIndex;
+        [SerializeField] private SplineReference _guide;
+        public SplineReference Guide => _guide;
         
-        [SerializeField] private SplineContainer _orientationSplineContainer;
-
-        [SerializeField] private int _orientationSplineIndex;
-        
-        public Spline GuideSpline => _guideSplineContainer[_guideSplineIndex];
-        
-        public Spline OrientationSpline => _orientationSplineContainer[_orientationSplineIndex];
+        [SerializeField] private SplineReference _orientation;
+        public SplineReference Orientation => _orientation;
 
         public BiSplineVertices Vertices
         {
             get
             {
-                Vector3 guideStart = GuideSpline.EvaluatePosition(0);
-                Vector3 guideEnd = GuideSpline.EvaluatePosition(1);
-                Vector3 orientationStart = OrientationSpline.EvaluatePosition(0);
-                Vector3 orientationEnd = OrientationSpline.EvaluatePosition(1);
+                Spline guide = _guide.Spline;
+                Spline orientation = _orientation.Spline;
+                
+                Vector3 guideStart = guide.EvaluatePosition(0);
+                Vector3 guideEnd = guide.EvaluatePosition(1);
+                Vector3 orientationStart = orientation.EvaluatePosition(0);
+                Vector3 orientationEnd = orientation.EvaluatePosition(1);
             
                 // force coplanar
 
@@ -60,7 +57,7 @@ namespace Sonosthesia.Scaffold
         private void SplineOnChanged(Spline spline, int knot, SplineModification modification)
         {
             Debug.Log($"{this} {nameof(SplineOnChanged)}");
-            if (GuideSpline == spline || OrientationSpline == spline)
+            if (_guide.Spline == spline || _orientation.Spline == spline)
             {
                 BroadcastChange();
             }

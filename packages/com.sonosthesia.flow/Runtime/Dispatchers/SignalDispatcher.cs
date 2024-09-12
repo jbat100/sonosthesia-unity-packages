@@ -9,24 +9,49 @@ namespace Sonosthesia.Flow
 {
     public class SignalDispatcher<T> : Dispatcher where T : struct
     {
+        [SerializeField] private bool _log;
+        
         [SerializeField] private Signal<T> _source;
 
-        [SerializeField] private List<Signal<T>> _destinations;
+        [SerializeField] private List<Signal<T>> _destinations = new ();
         
         private IDisposable _subscription;
 
-        protected override void OnEnable()
+        private void Setup()
         {
-            base.OnEnable();
             _subscription?.Dispose();
+
+            if (!_source)
+            {
+                return;
+            }
+            
             _subscription = _source.SignalObservable.Subscribe(value =>
             {
                 if (_destinations.Count == 0)
                 {
                     return;
                 }
+
+                if (_log)
+                {
+                    Debug.Log($"{this} dispatching {value}");
+                }
+                
                 _destinations[StepIndex()].Broadcast(value);
             });
+        }
+
+        protected virtual void OnValidate()
+        {
+            base.OnEnable();
+            Setup();
+        }
+        
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            Setup();
         }
 
         protected override void OnDisable()

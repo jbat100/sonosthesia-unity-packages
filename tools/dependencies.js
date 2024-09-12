@@ -83,6 +83,7 @@ function run() {
     let packageNames = getPackageNames()
     //console.log(packageNames)
 
+    // list (sonosthesia dependencies only)
     if (args.list) {
         for (const package of packageNames) {
             const dependencies = getPackageDependencies(package);
@@ -92,8 +93,14 @@ function run() {
         }
     }
 
+    // compare all dependencies in two projects (all not just sonosthesia)
+    if (args.compare) {
+        // TODO
+    }
+
+    // get all the sonosthesia dependenders on a given sonosthesia package
     if (args.dependers) {
-        
+        // TODO
     }
 
     if (args.order) {

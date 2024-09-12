@@ -1,0 +1,26 @@
+{
+    "name": "Sonosthesia.Palette.Flow",
+    "rootNamespace": "Sonosthesia.Palette.Flow",
+    "references": [
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:e34cfbf594f6143eca45627dd2ac29fe",
+        "GUID:0e73a958ea93c4999aae301d99219c62",
+        "GUID:25e5e4b6f3916462c92ecc1d0ffca2c2",
+        "GUID:432e7b3e05a2ac44b98ecc2cd0367bf6"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.sonosthesia.flow",
+            "expression": "",
+            "define": "SONOSTHESIA_FLOW_SUPPORT"
+        }
+    ],
+    "noEngineReferences": false
+}

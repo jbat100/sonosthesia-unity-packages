@@ -8,11 +8,30 @@ using UnityEngine;
 
 namespace Sonosthesia.Trigger
 {
+#if UNITY_EDITOR
+    using UnityEditor;
+
+    [CustomEditor(typeof(TrackedTriggerable))]
+    public class TrackedTriggerableEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            DrawDefaultInspector();
+
+            TrackedTriggerable triggerable = (TrackedTriggerable)target;
+            if(GUILayout.Button("End All"))
+            {
+                triggerable.EndAll();
+            }
+        }
+    }
+#endif
+    
     public class TrackedTriggerable : Signal<float>
     {
-        [SerializeField] private FloatEnvelope _startEnvelope;
+        [SerializeField] private ValueEnvelope<float> _startEnvelope;
         
-        [SerializeField] private FloatEnvelope _endEnvelope;
+        [SerializeField] private ValueEnvelope<float> _endEnvelope;
         
         [SerializeField] private AccumulationMode _accumulationMode = AccumulationMode.Max;
 
@@ -53,8 +72,24 @@ namespace Sonosthesia.Trigger
                 entry.End(timeScale, _endEnvelope);
             }
         }
+
+        public void EndAll()
+        {
+            foreach (TriggerEntry entry in _entries.Values)
+            {
+                entry.End(_endEnvelope);
+            }
+        }
         
-        protected void Update()
+        public void EndAll(float timeScale)
+        {
+            foreach (TriggerEntry entry in _entries.Values)
+            {
+                entry.End(timeScale, _endEnvelope);
+            }
+        }
+        
+        protected virtual void Update()
         {
             _obsolete.Clear();
             foreach (KeyValuePair<Guid, TriggerEntry> pair in _entries)
@@ -72,7 +107,17 @@ namespace Sonosthesia.Trigger
             float raw = _entries.Values.Aggregate(0f, (current, entry) => entry.Accumulate(_accumulationMode, current));
             Broadcast(_postProcessor.Process(raw));
         }
+
+        protected virtual void OnEnable()
+        {
+            _entries.Clear();
+        }
         
+        protected virtual void OnDisable()
+        {
+            _entries.Clear();
+        }
+
         private class TriggerEntry
         {
             private class PhaseInfo
@@ -82,13 +127,9 @@ namespace Sonosthesia.Trigger
                 public float ReferenceTime;
                 public float ValueScale;
                 public float TimeScale;
-                public FloatEnvelope Envelope;
+                public ValueEnvelope<float> Envelope;
 
                 public bool IsComplete => CurrentTime - ReferenceTime > Envelope.Duration * TimeScale;
-
-                public float InitialValue => Envelope.InitialValue * ValueScale;
-                
-                public float FinalValue => Envelope.FinalValue * ValueScale;
 
                 public float CurrentValue
                 {
@@ -96,7 +137,7 @@ namespace Sonosthesia.Trigger
                     {
                         if (IsComplete)
                         {
-                            return FinalValue;
+                            return ValueScale * Envelope.FinalValue;;
                         }
                         return ValueScale * Envelope.Evaluate((CurrentTime - ReferenceTime) / TimeScale);
                     }
@@ -108,7 +149,7 @@ namespace Sonosthesia.Trigger
 
             private PhaseInfo CurrentPhase => _end ?? _start;
             
-            public TriggerEntry(float valueScale, float timeScale, FloatEnvelope envelope)
+            public TriggerEntry(float valueScale, float timeScale, ValueEnvelope<float> envelope)
             {
                 _start = new PhaseInfo
                 {
@@ -124,14 +165,14 @@ namespace Sonosthesia.Trigger
                 _start.ValueScale = valueScale;
             }
             
-            public void End(FloatEnvelope envelope) => End(_start.TimeScale, envelope);
+            public void End(ValueEnvelope<float> envelope) => End(_start.TimeScale, envelope);
 
             /// <summary>
             /// Note value scale is computed automatically to allow smooth transition down from current value
             /// </summary>
             /// <param name="timeScale"></param>
             /// <param name="envelope"></param>
-            public void End(float timeScale, FloatEnvelope envelope)
+            public void End(float timeScale, ValueEnvelope<float> envelope)
             {
                 if (_end != null)
                 {

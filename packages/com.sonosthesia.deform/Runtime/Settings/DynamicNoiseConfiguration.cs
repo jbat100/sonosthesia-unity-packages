@@ -76,13 +76,13 @@ namespace Sonosthesia.Deform
         
         protected virtual void OnEnable()
         {
+            _dirty = true;
+            CheckArrays();
+            
             for (int i = 0; i < _localTimes.Length; i++)
             {
                 _localTimes[i] = 0;
             }
-
-            _dirty = true;
-            CheckArrays();
         }
 
         protected virtual void OnValidate()

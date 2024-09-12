@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Sonosthesia.Utils;
+using UnityEngine;
 using UnityEngine.Splines;
 
 namespace Sonosthesia.Mesh
