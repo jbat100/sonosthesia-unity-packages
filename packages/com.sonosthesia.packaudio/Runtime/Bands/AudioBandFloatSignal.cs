@@ -2,8 +2,9 @@ using System;
 using Sonosthesia.Signal;
 using UniRx;
 using UnityEngine;
+using Sonosthesia.Pack;
 
-namespace Sonosthesia.Pack
+namespace Sonosthesia.PackAudio
 {
     public class AudioBandFloatSignal<T> : Signal<float> where T : IPackedAudioBands
     {

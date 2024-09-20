@@ -1,7 +1,6 @@
-using Sonosthesia.Utils;
 using UnityEngine;
 
-namespace Sonosthesia.PeakDetector
+namespace Sonosthesia.Utils
 {
     public class PeakSelector : Selector<Peak>
     {

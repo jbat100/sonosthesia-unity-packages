@@ -4,7 +4,8 @@
     "com.unity.timeline": "1.8.2",
     "com.neuecc.unirx": "7.1.0",
     "com.sonosthesia.audio": "1.9.0",
-    "com.sonosthesia.pack": "1.9.0"
+    "com.sonosthesia.pack": "1.9.0",
+    "com.sonosthesia.signal": "1.9.0"
   },
   "description": "Sonosthesia unity pack audio",
   "displayName": "Sonosthesia Pack Audio",

@@ -1,9 +1,10 @@
 using System;
+using Sonosthesia.Pack;
 using UniRx;
 using UnityEngine;
 using Sonosthesia.Signal;
 
-namespace Sonosthesia.Pack
+namespace Sonosthesia.PackAudio
 {
     public abstract class AudioBandSplitter<T> : MonoBehaviour where T : IPackedAudioBands
     {

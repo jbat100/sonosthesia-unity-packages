@@ -1,9 +1,11 @@
+using System;
 using System.IO;
 using UnityEditor.AssetImporters;
 using UnityEngine;
 
-namespace Sonosthesia.PackAudio.Editor
+namespace Sonosthesia.PackAudio.Editor.V1
 {
+    [Obsolete("This is for backward compatibility with early versions of the sonosthesia-audio-pipeline")]
     [ScriptedImporter(1, "aadb")]
     public class AudioAnalysisPackImporter : ScriptedImporter
     {

@@ -1,7 +1,6 @@
-using Sonosthesia.Flow;
 using Sonosthesia.Utils;
 
-namespace Sonosthesia.PeakDetector
+namespace Sonosthesia.Flow
 {
     public class PeakDispatcher : SignalDispatcher<Peak>
     {

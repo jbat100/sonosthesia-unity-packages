@@ -1,7 +1,6 @@
-using Sonosthesia.Signal;
 using Sonosthesia.Utils;
 
-namespace Sonosthesia.PeakDetector
+namespace Sonosthesia.Signal
 {
     public class PeakSignal : Signal<Peak>
     {

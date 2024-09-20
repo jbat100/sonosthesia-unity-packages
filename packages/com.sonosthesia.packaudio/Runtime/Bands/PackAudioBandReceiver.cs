@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Sonosthesia.Pack;
 using UniRx;
 using UnityEngine;
 
-namespace Sonosthesia.Pack
+namespace Sonosthesia.PackAudio
 {
     public abstract class PackAudioBandReceiver<T> : MonoBehaviour where T : IPackedAudioBands
     {
