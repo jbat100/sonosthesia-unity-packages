@@ -45,12 +45,4 @@ namespace Sonosthesia.Pack
             };
         }
     }
-
-    public static class PackedAudioQuintBandsExtensions
-    {
-        public static QuintAudioBands Unpack(this PackedAudioQuintBands bands)
-        {
-            return new QuintAudioBands(bands.B1, bands.B2, bands.B3, bands.B4, bands.B5);
-        }
-    }
 }

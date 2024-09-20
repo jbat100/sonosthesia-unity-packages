@@ -26,14 +26,11 @@ namespace Sonosthesia.Pack
         }
 
 #if UNITY_EDITOR
-
-
         [UnityEditor.InitializeOnLoadMethod]
         static void EditorInitialize()
         {
             Initialize();
         }
-
 #endif
     }
 }

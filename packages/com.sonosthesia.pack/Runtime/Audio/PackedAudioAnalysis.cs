@@ -27,20 +27,11 @@ namespace Sonosthesia.Pack
         public bool Offset { get; set; }
     }
     
-    public static class PackedAudioAnalysisExtensions
+    // forces code generation for audio analysis array
+    [MessagePackObject()]
+    public class PackedAudioAnalysisArray
     {
-        public static AudioAnalysis Unpack(this PackedAudioAnalysis analysis)
-        {
-            return new AudioAnalysis
-            {
-                time = analysis.Time,
-                rms = analysis.RMS,
-                lows = analysis.Lows,
-                mids = analysis.Mids,
-                highs = analysis.Highs,
-                centroid = analysis.Centroid,
-                offset = analysis.Offset
-            };
-        }
+        [Key("items")]
+        public PackedAudioAnalysis[] Items { get; set; }
     }
 }

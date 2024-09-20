@@ -40,6 +40,43 @@ namespace Sonosthesia.Utils.Editor
             Debug.Log($"Removed All Missing Scripts from Prefabs");
         }
 
+        [MenuItem("Tools/Editor Extensions/Check Missing Scripts For Prefabs")]
+        private static void CheckPrefabs()
+        {
+            string[] allPrefabGuids = AssetDatabase.FindAssets("t:Prefab");
+            IEnumerable<string> allPrefabsPath = allPrefabGuids.Select(AssetDatabase.GUIDToAssetPath);
+
+            List<string> prefabs = allPrefabGuids
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Where(PrefabContainsMissingScripts)
+                .ToList();
+
+            if (prefabs.Count == 0)
+            {
+                Debug.Log($"Found no prefabs with missing scripts");    
+            }
+            else
+            {
+                Debug.LogWarning($"Found {prefabs.Count} prefabs with missing scripts: {string.Join(", ", prefabs)}");  
+            }
+        }
+
+        private static bool PrefabContainsMissingScripts(string prefabPath)
+        {
+            GameObject[] gameObjects = GetAllChildren(AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath));
+            foreach (GameObject current in gameObjects)
+            {
+                if (current == null) continue;
+
+                int missingCount = GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(current);
+                if (missingCount > 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
         private static int RemoveMissingScriptsFrom(params GameObject[] objects)
         {
             List<GameObject> forceSave = new();
@@ -65,6 +102,11 @@ namespace Sonosthesia.Utils.Editor
             return removedCounter;
         }
 
+        private static GameObject[] GetAllChildren(GameObject gameObject)
+        {
+            return gameObject.GetComponentsInChildren<Transform>(true).Distinct().Select(x => x.gameObject).ToArray();
+        }
+        
         private static GameObject[] GetAllChildren(GameObject[] selection)
         {
             List<Transform> t = new();

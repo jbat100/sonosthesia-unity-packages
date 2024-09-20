@@ -37,7 +37,7 @@ namespace MessagePack.Resolvers
                 {
                     Formatter = (global::MessagePack.Formatters.IMessagePackFormatter<T>)f;
                 }
-            }
+            } 
         }
     }
 

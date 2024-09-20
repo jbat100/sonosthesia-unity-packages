@@ -1,5 +1,4 @@
 using System;
-using Sonosthesia.Pack;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
@@ -21,8 +20,9 @@ namespace Sonosthesia.Audio
             }
         }
         
-        // note : samples needs to be a serializable field so that it appears in inspector and is properly 
-        // recorded in Library folder
+        // note : samples needs to be a serializable field and is properly recorded in Library folder
+        // note : hide in inspector because the very large number of data points kills editor performance
+        // TODO : investigate the size of the resulting asset
         
         [HideInInspector] public AudioAnalysis[] samples;
 

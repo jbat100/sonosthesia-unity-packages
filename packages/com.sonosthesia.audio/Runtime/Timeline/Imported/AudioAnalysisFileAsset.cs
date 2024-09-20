@@ -1,4 +1,3 @@
-using Sonosthesia.Pack;
 using UnityEngine;
 
 namespace Sonosthesia.Audio
