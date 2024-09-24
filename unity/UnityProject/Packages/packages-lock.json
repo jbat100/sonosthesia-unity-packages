@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.cysharp.unitask": {
-      "version": "2.5.2",
+      "version": "2.5.5",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
@@ -22,6 +22,18 @@
         "com.neuecc.unirx": "7.1.0"
       }
     },
+    "com.sonosthesia.application": {
+      "version": "file:../../../packages/com.sonosthesia.application",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.unity.inputsystem": "1.8.1",
+        "com.neuecc.unirx": "7.1.0",
+        "com.cysharp.unitask": "2.5.5",
+        "com.sonosthesia.signal": "1.9.0",
+        "com.sonosthesia.utils": "1.9.0"
+      }
+    },
     "com.sonosthesia.arpeggiator": {
       "version": "file:../../../packages/com.sonosthesia.arpeggiator",
       "depth": 0,
@@ -39,6 +51,7 @@
       "source": "local",
       "dependencies": {
         "com.unity.timeline": "1.8.2",
+        "com.unity.mathematics": "1.2.6",
         "com.neuecc.unirx": "7.1.0",
         "com.sonosthesia.signal": "1.9.0",
         "com.sonosthesia.utils": "1.9.0",
@@ -234,7 +247,8 @@
         "com.unity.timeline": "1.8.2",
         "com.neuecc.unirx": "7.1.0",
         "com.sonosthesia.audio": "1.9.0",
-        "com.sonosthesia.pack": "1.9.0"
+        "com.sonosthesia.pack": "1.9.0",
+        "com.sonosthesia.signal": "1.9.0"
       }
     },
     "com.sonosthesia.packmidi": {
@@ -520,8 +534,8 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.inputsystem": {
-      "version": "1.7.0",
-      "depth": 0,
+      "version": "1.8.1",
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.modules.uielements": "1.0.0"

@@ -6,4 +6,4 @@
 # - did you mark the classes with MessagePackObject
 # - are the classes public
 
-dotnet mpc -i "../../../unity/UnityProject/Sonosthesia.Pack.csproj" -o "../Runtime/MessagePackGenerated.cs"
+dotnet mpc -i "../../../unity/UnityProject/Sonosthesia.Pack.csproj" -o "../Runtime/MessagePackGenerated.cs" -n "Sonosthesia.Pack"

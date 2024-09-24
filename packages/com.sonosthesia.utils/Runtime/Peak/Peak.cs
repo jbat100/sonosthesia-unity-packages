@@ -1,5 +1,7 @@
 ﻿namespace Sonosthesia.Utils
 {
+    // note : general Peak concept, can be reused in many contexts involving signals
+
     public readonly struct Peak
     {
         public readonly float Magnitude;
@@ -13,7 +15,7 @@
             Strength = 0;
         }
         
-        public Peak(float magnitude, float duration, float strength)
+        public Peak(float duration, float magnitude, float strength)
         {
             Magnitude = magnitude;
             Duration = duration;

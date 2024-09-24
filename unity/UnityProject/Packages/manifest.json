@@ -2,6 +2,7 @@
   "dependencies": {
     "com.sonosthesia.adaptivemidi": "file:../../../packages/com.sonosthesia.adaptivemidi",
     "com.sonosthesia.arpeggiator": "file:../../../packages/com.sonosthesia.arpeggiator",
+    "com.sonosthesia.application": "file:../../../packages/com.sonosthesia.application",
     "com.sonosthesia.audio": "file:../../../packages/com.sonosthesia.audio",
     "com.sonosthesia.channel": "file:../../../packages/com.sonosthesia.channel",
     "com.sonosthesia.deform": "file:../../../packages/com.sonosthesia.deform",

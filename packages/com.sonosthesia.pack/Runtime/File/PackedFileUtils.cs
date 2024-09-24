@@ -1,4 +1,6 @@
+using System.Buffers;
 using System.IO;
+using System.Threading;
 using MessagePack;
 
 namespace Sonosthesia.Pack
@@ -8,12 +10,17 @@ namespace Sonosthesia.Pack
         public static T ReadFile<T>(string assetPath)
         {
             byte[] buffer = File.ReadAllBytes(assetPath);
-            return ReadFile<T>(buffer);
+            return ReadBytes<T>(buffer);
         }
         
-        public static T ReadFile<T>(byte[] buffer)
+        public static T ReadBytes<T>(byte[] buffer)
         {
             return MessagePackSerializer.Deserialize<T>(buffer);
+        }
+        
+        public static T ReadFile<T>(ReadOnlySequence<byte> sequence)
+        {
+            return MessagePackSerializer.Deserialize<T>(sequence);
         }
     }
 }

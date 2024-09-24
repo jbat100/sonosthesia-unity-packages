@@ -13,26 +13,26 @@ namespace Sonosthesia.PackAudio
     {
         [HideInInspector] public byte[] data;
 
-        private AudioAnalysis[] _samples;
-        private AudioAnalysis[] samples
+        private ContinuousAnalysis[] _samples;
+        private ContinuousAnalysis[] samples
         {
             get
             {
                 if (_samples == null)
                 {
-                    _samples = PackedFileUtils.ReadFile<PackedAudioAnalysis[]>(data).Select(a => a.Unpack()).ToArray();
+                    _samples = PackedFileUtils.ReadBytes<PackedAudioAnalysis[]>(data).Select(a => a.Unpack()).ToArray();
                 }
 
                 return _samples;
             }
         }
         
-        private AudioAnalysisBehaviour _template;
-        private AudioAnalysisBehaviour template
+        private LegacyAudioAnalysisBehaviour _template;
+        private LegacyAudioAnalysisBehaviour template
         {
             get
             {
-                _template ??= new AudioAnalysisBehaviour();
+                _template ??= new LegacyAudioAnalysisBehaviour();
                 _template.samples = samples;
                 return _template;
             }
@@ -41,7 +41,7 @@ namespace Sonosthesia.PackAudio
         public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
         {
             Debug.Log($"{this} {nameof(CreatePlayable)}");
-            return ScriptPlayable<AudioAnalysisBehaviour>.Create(graph, template);
+            return ScriptPlayable<LegacyAudioAnalysisBehaviour>.Create(graph, template);
         }
 
         public ClipCaps clipCaps => ClipCaps.None;

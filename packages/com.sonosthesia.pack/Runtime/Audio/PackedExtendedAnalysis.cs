@@ -1,5 +1,4 @@
-﻿using System;
-using MessagePack;
+﻿using MessagePack;
 
 namespace Sonosthesia.Pack
 {
@@ -11,6 +10,9 @@ namespace Sonosthesia.Pack
         
         [Key("peaks")]
         public PackedAudioPeak[] Peaks { get; set; }
+        
+        [Key("info")]
+        public PackedAudioAnalysisInfo Info { get; set; }
     }
 
     [MessagePackObject]
@@ -52,5 +54,40 @@ namespace Sonosthesia.Pack
         
         [Key("strength")]
         public float Strength { get; set; }
+    }
+
+    [MessagePackObject]
+    public class PackedAudioAnalysisInfo
+    {
+        [Key("duration")]
+        public float Duration { get; set; }
+        
+        [Key("main")]
+        public PackedAudioSignalInfo Main { get; set; }
+        
+        [Key("lows")]
+        public PackedAudioSignalInfo Lows { get; set; }
+        
+        [Key("mids")]
+        public PackedAudioSignalInfo Mids { get; set; }
+        
+        [Key("highs")]
+        public PackedAudioSignalInfo Highs { get; set; }
+
+        [Key("centroid")]
+        public PackedRange Centroid { get; set; }
+    }
+    
+    [MessagePackObject]
+    public class PackedAudioSignalInfo
+    {
+        [Key("band")]
+        public PackedRange Band { get; set; }
+        
+        [Key("magnitude")]
+        public PackedRange Magnitude { get; set; }
+        
+        [Key("peaks")]
+        public int Peaks { get; set; }
     }
 }

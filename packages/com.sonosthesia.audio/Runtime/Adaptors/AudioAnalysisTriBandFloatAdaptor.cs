@@ -3,9 +3,9 @@ using Sonosthesia.Signal;
 
 namespace Sonosthesia.Audio
 {
-    public class AudioAnalysisTriBandFloatAdaptor : MapAdaptor<AudioAnalysis, TriBand<float>>
+    public class AudioAnalysisTriBandFloatAdaptor : MapAdaptor<ContinuousAnalysis, TriBand<float>>
     {
-        protected override TriBand<float> Map(AudioAnalysis source)
+        protected override TriBand<float> Map(ContinuousAnalysis source)
         {
             return new TriBand<float>(source.lows, source.mids, source.highs);
         }
