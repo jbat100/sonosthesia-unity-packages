@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace Sonosthesia.Audio
 {
-    [CreateAssetMenu(fileName = "ExtendedAudioAnalysisRelay", menuName = "Sonosthesia/Relays/ExtendedAudioAnalysisRelay")]
-    public class ExtendedAudioAnalysisRelay : ScriptableObject
+    [CreateAssetMenu(fileName = "XAARelay", menuName = "Sonosthesia/Relays/XAARelay")]
+    public class XAARelay : ScriptableObject
     {
         private readonly BehaviorSubject<ContinuousAnalysis> _analysisSubject = new(default);
         private readonly Subject<PeakAnalysis> _peakSubject = new();

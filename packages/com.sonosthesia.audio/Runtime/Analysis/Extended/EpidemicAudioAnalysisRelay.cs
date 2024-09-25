@@ -10,11 +10,11 @@ namespace Sonosthesia.Audio
     // [CreateAssetMenu(fileName = "EpidemicAudioAnalysisRelay", menuName = "Sonosthesia/Relays/EpidemicAudioAnalysisRelay")]
     public class EpidemicAudioAnalysisRelay : ScriptableObject
     {
-        [SerializeField] private ExtendedAudioAnalysisRelay _all;
-        [SerializeField] private ExtendedAudioAnalysisRelay _bass;
-        [SerializeField] private ExtendedAudioAnalysisRelay _drums;
-        [SerializeField] private ExtendedAudioAnalysisRelay _melody;
-        [SerializeField] private ExtendedAudioAnalysisRelay _instruments;
+        [SerializeField] private XAARelay _all;
+        [SerializeField] private XAARelay _bass;
+        [SerializeField] private XAARelay _drums;
+        [SerializeField] private XAARelay _melody;
+        [SerializeField] private XAARelay _instruments;
         
         protected virtual void Awake()
         {
@@ -37,9 +37,9 @@ namespace Sonosthesia.Audio
             EditorUtility.SetDirty(this);
         }
         
-        private ExtendedAudioAnalysisRelay CreateChildExtendedAudioAnalysisRelay(string childName)
+        private XAARelay CreateChildExtendedAudioAnalysisRelay(string childName)
         {
-            ExtendedAudioAnalysisRelay relay = CreateInstance<ExtendedAudioAnalysisRelay>();
+            XAARelay relay = CreateInstance<XAARelay>();
             relay.name = childName;
             AssetDatabase.AddObjectToAsset(relay, this);
             return relay;

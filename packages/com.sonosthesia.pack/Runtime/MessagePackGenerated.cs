@@ -50,22 +50,22 @@ namespace Sonosthesia.Pack.Resolvers
             lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(31)
             {
                 { typeof(global::Sonosthesia.Pack.AddressedEnvelope[]), 0 },
-                { typeof(global::Sonosthesia.Pack.PackedAudioAnalysis[]), 1 },
+                { typeof(global::Sonosthesia.Pack.PackedLegacyAudioAnalysis[]), 1 },
                 { typeof(global::Sonosthesia.Pack.PackedAudioPeak[]), 2 },
                 { typeof(global::Sonosthesia.Pack.PackedContinuousAudioAnalysis[]), 3 },
                 { typeof(global::Sonosthesia.Pack.AddressedEnvelope), 4 },
                 { typeof(global::Sonosthesia.Pack.Counting), 5 },
                 { typeof(global::Sonosthesia.Pack.EnvelopeBundle), 6 },
                 { typeof(global::Sonosthesia.Pack.MediapipePose), 7 },
-                { typeof(global::Sonosthesia.Pack.PackedAudioAnalysis), 8 },
-                { typeof(global::Sonosthesia.Pack.PackedAudioAnalysisArray), 9 },
-                { typeof(global::Sonosthesia.Pack.PackedAudioAnalysisInfo), 10 },
+                { typeof(global::Sonosthesia.Pack.PackedLegacyAudioAnalysis), 8 },
+                { typeof(global::Sonosthesia.Pack.PackedLegacyAudioAnalysisArray), 9 },
+                { typeof(global::Sonosthesia.Pack.PackedXAAInfo), 10 },
                 { typeof(global::Sonosthesia.Pack.PackedAudioPeak), 11 },
                 { typeof(global::Sonosthesia.Pack.PackedAudioQuintBands), 12 },
                 { typeof(global::Sonosthesia.Pack.PackedAudioSignalInfo), 13 },
                 { typeof(global::Sonosthesia.Pack.PackedAudioTriBands), 14 },
                 { typeof(global::Sonosthesia.Pack.PackedContinuousAudioAnalysis), 15 },
-                { typeof(global::Sonosthesia.Pack.PackedExtendedAnalysis), 16 },
+                { typeof(global::Sonosthesia.Pack.PackedXAA), 16 },
                 { typeof(global::Sonosthesia.Pack.PackedLiveMIDIChannelAftertouch), 17 },
                 { typeof(global::Sonosthesia.Pack.PackedLiveMIDIControl), 18 },
                 { typeof(global::Sonosthesia.Pack.PackedLiveMIDINote), 19 },
@@ -94,7 +94,7 @@ namespace Sonosthesia.Pack.Resolvers
             switch (key)
             {
                 case 0: return new global::MessagePack.Formatters.ArrayFormatter<global::Sonosthesia.Pack.AddressedEnvelope>();
-                case 1: return new global::MessagePack.Formatters.ArrayFormatter<global::Sonosthesia.Pack.PackedAudioAnalysis>();
+                case 1: return new global::MessagePack.Formatters.ArrayFormatter<global::Sonosthesia.Pack.PackedLegacyAudioAnalysis>();
                 case 2: return new global::MessagePack.Formatters.ArrayFormatter<global::Sonosthesia.Pack.PackedAudioPeak>();
                 case 3: return new global::MessagePack.Formatters.ArrayFormatter<global::Sonosthesia.Pack.PackedContinuousAudioAnalysis>();
                 case 4: return new Sonosthesia.Pack.Formatters.Sonosthesia.Pack.AddressedEnvelopeFormatter();
@@ -719,7 +719,7 @@ namespace Sonosthesia.Pack.Formatters.Sonosthesia.Pack
         }
     }
 
-    public sealed class PackedAudioAnalysisFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Sonosthesia.Pack.PackedAudioAnalysis>
+    public sealed class PackedAudioAnalysisFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Sonosthesia.Pack.PackedLegacyAudioAnalysis>
     {
         // time
         private static global::System.ReadOnlySpan<byte> GetSpan_Time() => new byte[1 + 4] { 164, 116, 105, 109, 101 };
@@ -736,7 +736,7 @@ namespace Sonosthesia.Pack.Formatters.Sonosthesia.Pack
         // offset
         private static global::System.ReadOnlySpan<byte> GetSpan_Offset() => new byte[1 + 6] { 166, 111, 102, 102, 115, 101, 116 };
 
-        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Sonosthesia.Pack.PackedAudioAnalysis value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Sonosthesia.Pack.PackedLegacyAudioAnalysis value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value is null)
             {
@@ -761,7 +761,7 @@ namespace Sonosthesia.Pack.Formatters.Sonosthesia.Pack
             writer.Write(value.Offset);
         }
 
-        public global::Sonosthesia.Pack.PackedAudioAnalysis Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::Sonosthesia.Pack.PackedLegacyAudioAnalysis Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -770,7 +770,7 @@ namespace Sonosthesia.Pack.Formatters.Sonosthesia.Pack
 
             options.Security.DepthStep(ref reader);
             var length = reader.ReadMapHeader();
-            var ____result = new global::Sonosthesia.Pack.PackedAudioAnalysis();
+            var ____result = new global::Sonosthesia.Pack.PackedLegacyAudioAnalysis();
 
             for (int i = 0; i < length; i++)
             {
@@ -824,12 +824,12 @@ namespace Sonosthesia.Pack.Formatters.Sonosthesia.Pack
         }
     }
 
-    public sealed class PackedAudioAnalysisArrayFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Sonosthesia.Pack.PackedAudioAnalysisArray>
+    public sealed class PackedAudioAnalysisArrayFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Sonosthesia.Pack.PackedLegacyAudioAnalysisArray>
     {
         // items
         private static global::System.ReadOnlySpan<byte> GetSpan_Items() => new byte[1 + 5] { 165, 105, 116, 101, 109, 115 };
 
-        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Sonosthesia.Pack.PackedAudioAnalysisArray value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Sonosthesia.Pack.PackedLegacyAudioAnalysisArray value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value is null)
             {
@@ -840,10 +840,10 @@ namespace Sonosthesia.Pack.Formatters.Sonosthesia.Pack
             var formatterResolver = options.Resolver;
             writer.WriteMapHeader(1);
             writer.WriteRaw(GetSpan_Items());
-            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.PackedAudioAnalysis[]>(formatterResolver).Serialize(ref writer, value.Items, options);
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.PackedLegacyAudioAnalysis[]>(formatterResolver).Serialize(ref writer, value.Items, options);
         }
 
-        public global::Sonosthesia.Pack.PackedAudioAnalysisArray Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::Sonosthesia.Pack.PackedLegacyAudioAnalysisArray Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -853,7 +853,7 @@ namespace Sonosthesia.Pack.Formatters.Sonosthesia.Pack
             options.Security.DepthStep(ref reader);
             var formatterResolver = options.Resolver;
             var length = reader.ReadMapHeader();
-            var ____result = new global::Sonosthesia.Pack.PackedAudioAnalysisArray();
+            var ____result = new global::Sonosthesia.Pack.PackedLegacyAudioAnalysisArray();
 
             for (int i = 0; i < length; i++)
             {
@@ -867,7 +867,7 @@ namespace Sonosthesia.Pack.Formatters.Sonosthesia.Pack
                     case 5:
                         if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 495756604521UL) { goto FAIL; }
 
-                        ____result.Items = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.PackedAudioAnalysis[]>(formatterResolver).Deserialize(ref reader, options);
+                        ____result.Items = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.PackedLegacyAudioAnalysis[]>(formatterResolver).Deserialize(ref reader, options);
                         continue;
 
                 }
@@ -878,7 +878,7 @@ namespace Sonosthesia.Pack.Formatters.Sonosthesia.Pack
         }
     }
 
-    public sealed class PackedAudioAnalysisInfoFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Sonosthesia.Pack.PackedAudioAnalysisInfo>
+    public sealed class PackedAudioAnalysisInfoFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Sonosthesia.Pack.PackedXAAInfo>
     {
         // duration
         private static global::System.ReadOnlySpan<byte> GetSpan_Duration() => new byte[1 + 8] { 168, 100, 117, 114, 97, 116, 105, 111, 110 };
@@ -893,7 +893,7 @@ namespace Sonosthesia.Pack.Formatters.Sonosthesia.Pack
         // centroid
         private static global::System.ReadOnlySpan<byte> GetSpan_Centroid() => new byte[1 + 8] { 168, 99, 101, 110, 116, 114, 111, 105, 100 };
 
-        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Sonosthesia.Pack.PackedAudioAnalysisInfo value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Sonosthesia.Pack.PackedXAAInfo value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value is null)
             {
@@ -917,7 +917,7 @@ namespace Sonosthesia.Pack.Formatters.Sonosthesia.Pack
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.PackedRange>(formatterResolver).Serialize(ref writer, value.Centroid, options);
         }
 
-        public global::Sonosthesia.Pack.PackedAudioAnalysisInfo Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::Sonosthesia.Pack.PackedXAAInfo Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -927,7 +927,7 @@ namespace Sonosthesia.Pack.Formatters.Sonosthesia.Pack
             options.Security.DepthStep(ref reader);
             var formatterResolver = options.Resolver;
             var length = reader.ReadMapHeader();
-            var ____result = new global::Sonosthesia.Pack.PackedAudioAnalysisInfo();
+            var ____result = new global::Sonosthesia.Pack.PackedXAAInfo();
 
             for (int i = 0; i < length; i++)
             {
@@ -1408,7 +1408,7 @@ namespace Sonosthesia.Pack.Formatters.Sonosthesia.Pack
         }
     }
 
-    public sealed class PackedExtendedAnalysisFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Sonosthesia.Pack.PackedExtendedAnalysis>
+    public sealed class PackedExtendedAnalysisFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Sonosthesia.Pack.PackedXAA>
     {
         // continuous
         private static global::System.ReadOnlySpan<byte> GetSpan_Continuous() => new byte[1 + 10] { 170, 99, 111, 110, 116, 105, 110, 117, 111, 117, 115 };
@@ -1417,7 +1417,7 @@ namespace Sonosthesia.Pack.Formatters.Sonosthesia.Pack
         // info
         private static global::System.ReadOnlySpan<byte> GetSpan_Info() => new byte[1 + 4] { 164, 105, 110, 102, 111 };
 
-        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Sonosthesia.Pack.PackedExtendedAnalysis value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Sonosthesia.Pack.PackedXAA value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value is null)
             {
@@ -1432,10 +1432,10 @@ namespace Sonosthesia.Pack.Formatters.Sonosthesia.Pack
             writer.WriteRaw(GetSpan_Peaks());
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.PackedAudioPeak[]>(formatterResolver).Serialize(ref writer, value.Peaks, options);
             writer.WriteRaw(GetSpan_Info());
-            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.PackedAudioAnalysisInfo>(formatterResolver).Serialize(ref writer, value.Info, options);
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.PackedXAAInfo>(formatterResolver).Serialize(ref writer, value.Info, options);
         }
 
-        public global::Sonosthesia.Pack.PackedExtendedAnalysis Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::Sonosthesia.Pack.PackedXAA Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -1445,7 +1445,7 @@ namespace Sonosthesia.Pack.Formatters.Sonosthesia.Pack
             options.Security.DepthStep(ref reader);
             var formatterResolver = options.Resolver;
             var length = reader.ReadMapHeader();
-            var ____result = new global::Sonosthesia.Pack.PackedExtendedAnalysis();
+            var ____result = new global::Sonosthesia.Pack.PackedXAA();
 
             for (int i = 0; i < length; i++)
             {
@@ -1469,7 +1469,7 @@ namespace Sonosthesia.Pack.Formatters.Sonosthesia.Pack
                     case 4:
                         if (global::MessagePack.Internal.AutomataKeyGen.GetKey(ref stringKey) != 1868983913UL) { goto FAIL; }
 
-                        ____result.Info = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.PackedAudioAnalysisInfo>(formatterResolver).Deserialize(ref reader, options);
+                        ____result.Info = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Sonosthesia.Pack.PackedXAAInfo>(formatterResolver).Deserialize(ref reader, options);
                         continue;
 
                 }

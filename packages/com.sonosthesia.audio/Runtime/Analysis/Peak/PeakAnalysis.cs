@@ -20,7 +20,14 @@ namespace Sonosthesia.Audio
             this.magnitude = magnitude;
             this.strength = strength;
         }
-        
+
+        public override string ToString()
+        {
+            return $"{nameof(PeakAnalysis)} {nameof(channel)} {channel} " +
+                   $"{nameof(start)} {start:F2} {nameof(duration)} {duration:F2} " +
+                   $"{nameof(magnitude)} {magnitude:F2} {nameof(strength)} {strength:F2}";
+        }
+
         public float GetTime() => start;
 
         public Peak ToPeak() => new Peak(duration, magnitude, strength);

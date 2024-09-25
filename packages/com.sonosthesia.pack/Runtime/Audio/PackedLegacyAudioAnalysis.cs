@@ -3,7 +3,7 @@ using MessagePack;
 namespace Sonosthesia.Pack
 {
     [MessagePackObject()]
-    public class PackedAudioAnalysis
+    public class PackedLegacyAudioAnalysis
     {
         [Key("time")]
         public float Time { get; set; }
@@ -29,9 +29,9 @@ namespace Sonosthesia.Pack
     
     // forces code generation for audio analysis array
     [MessagePackObject()]
-    public class PackedAudioAnalysisArray
+    public class PackedLegacyAudioAnalysisArray
     {
         [Key("items")]
-        public PackedAudioAnalysis[] Items { get; set; }
+        public PackedLegacyAudioAnalysis[] Items { get; set; }
     }
 }

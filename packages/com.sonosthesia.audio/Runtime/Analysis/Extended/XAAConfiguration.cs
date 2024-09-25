@@ -2,7 +2,10 @@ using UnityEngine;
 
 namespace Sonosthesia.Audio
 {
-    public class ExtendedAudioAnalysisConfiguration : ScriptableObject
+    [CreateAssetMenu(
+        fileName = "XAAConfiguration", 
+        menuName = "Sonosthesia/Analysis/XAAConfiguration")]
+    public class XAAConfiguration : ScriptableObject
     {
         [SerializeField] private PeakAnalysisFilterSettings _mainPeakFilter;
         [SerializeField] private PeakAnalysisFilterSettings _lowPeakFilter;

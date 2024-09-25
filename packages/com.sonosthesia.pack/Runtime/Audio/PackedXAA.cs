@@ -3,7 +3,7 @@
 namespace Sonosthesia.Pack
 {
     [MessagePackObject]
-    public class PackedExtendedAnalysis
+    public class PackedXAA
     {
         [Key("continuous")]
         public PackedContinuousAudioAnalysis[] Continuous { get; set; }
@@ -12,7 +12,7 @@ namespace Sonosthesia.Pack
         public PackedAudioPeak[] Peaks { get; set; }
         
         [Key("info")]
-        public PackedAudioAnalysisInfo Info { get; set; }
+        public PackedXAAInfo Info { get; set; }
     }
 
     [MessagePackObject]
@@ -57,7 +57,7 @@ namespace Sonosthesia.Pack
     }
 
     [MessagePackObject]
-    public class PackedAudioAnalysisInfo
+    public class PackedXAAInfo
     {
         [Key("duration")]
         public float Duration { get; set; }

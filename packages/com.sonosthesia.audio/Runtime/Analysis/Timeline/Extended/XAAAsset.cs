@@ -6,15 +6,15 @@ using UnityEngine.Timeline;
 namespace Sonosthesia.Audio
 {
     [Serializable]
-    public class ExtendedAudioAnalysisAsset : PlayableAsset, ITimelineClipAsset
+    public class XAAAsset : PlayableAsset, ITimelineClipAsset
     {
-        private ExtendedAudioAnalysisBehaviour _template;
+        private XAABehaviour _template;
 
-        private ExtendedAudioAnalysisBehaviour template
+        private XAABehaviour template
         {
             get
             {
-                _template ??= new ExtendedAudioAnalysisBehaviour();
+                _template ??= new XAABehaviour();
                 _template.continuous = Continuous;
                 _template.peaks = Peaks;
                 return _template;
@@ -39,8 +39,8 @@ namespace Sonosthesia.Audio
             set => _peaks = value; 
         }
 
-        [SerializeField] private ExtendedAudioAnalysisInfo _info;
-        public ExtendedAudioAnalysisInfo Info
+        [SerializeField] private XAAInfo _info;
+        public XAAInfo Info
         {
             get => _info;
             set => _info = value;
@@ -51,7 +51,7 @@ namespace Sonosthesia.Audio
         public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
         {
             Debug.Log($"{this} {nameof(CreatePlayable)}");
-            return ScriptPlayable<ExtendedAudioAnalysisBehaviour>.Create(graph, template);
+            return ScriptPlayable<XAABehaviour>.Create(graph, template);
         }
 
         public override double duration

@@ -52,7 +52,7 @@ namespace Sonosthesia.Utils
                 return;
             }
 
-            while (_currentIndex <= _info.Count)
+            while (_currentIndex < _info.Count)
             {
                 T sample = _samples[_currentIndex];
                 float sampleTime = sample.GetTime();

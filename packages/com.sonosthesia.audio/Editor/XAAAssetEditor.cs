@@ -3,14 +3,14 @@ using UnityEngine.UIElements;
 
 namespace Sonosthesia.Audio.Editor
 {
-    [CustomEditor(typeof(ExtendedAudioAnalysisAsset))]
-    public class ExtendedAudioAnalysisAssetEditor : UnityEditor.Editor
+    [CustomEditor(typeof(XAAAsset))]
+    public class XAAAssetEditor : UnityEditor.Editor
     {
         private VisualElement rootElement;
 
         public override VisualElement CreateInspectorGUI()
         {
-            ExtendedAudioAnalysisAsset asset = (ExtendedAudioAnalysisAsset)target;
+            XAAAsset asset = (XAAAsset)target;
             rootElement = new VisualElement();
 
             if (asset.Info == null)

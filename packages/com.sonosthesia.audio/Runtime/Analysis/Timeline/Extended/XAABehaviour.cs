@@ -4,7 +4,7 @@ using UnityEngine.Playables;
 
 namespace Sonosthesia.Audio
 {
-    public class ExtendedAudioAnalysisBehaviour : PlayableBehaviour
+    public class XAABehaviour : PlayableBehaviour
     {
         public ContinuousAnalysis[] continuous;
 
@@ -39,7 +39,7 @@ namespace Sonosthesia.Audio
             
             // Debug.Log($"{this} {nameof(ProcessFrame)} time {time}");
             
-            ExtendedAudioAnalysisHost host = playerData as ExtendedAudioAnalysisHost;
+            XAAHost host = playerData as XAAHost;
 
             if (!host)
             {

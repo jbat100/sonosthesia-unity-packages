@@ -3,14 +3,19 @@ using Sonosthesia.Pack;
 
 namespace Sonosthesia.PackAudio
 {
-    public static class PackAudioAnalysisExtensions
+
+    public static class LegacyPackAudioAnalysisExtensions
     {
-        // legacy
-        public static ContinuousAnalysis Unpack(this PackedAudioAnalysis analysis)
+        public static ContinuousAnalysis Unpack(this PackedLegacyAudioAnalysis analysis)
         {
             return new ContinuousAnalysis(analysis.Time, analysis.RMS,
                 analysis.Lows, analysis.Mids, analysis.Highs, analysis.Centroid);
         }
+    }
+    
+    public static class PackAudioAnalysisExtensions
+    {
+
         
         public static ContinuousAnalysis Unpack(this PackedContinuousAudioAnalysis analysis)
         {
@@ -23,9 +28,9 @@ namespace Sonosthesia.PackAudio
             return new PeakAnalysis(peak.Channel, peak.Start, peak.Duration, peak.Magnitude, peak.Strength);
         }
 
-        public static ExtendedAudioAnalysisInfo Unpack(this PackedAudioAnalysisInfo packed)
+        public static XAAInfo Unpack(this PackedXAAInfo packed)
         {
-            return new ExtendedAudioAnalysisInfo(
+            return new XAAInfo(
                 packed.Duration,
                 packed.Main.Unpack(),
                 packed.Lows.Unpack(),
@@ -34,22 +39,22 @@ namespace Sonosthesia.PackAudio
                 packed.Centroid.UnpackFrequencyRange());
         }
 
-        private static ExtendedAudioAnalysisInfo.SignalInfo Unpack(this PackedAudioSignalInfo packed)
+        private static XAAInfo.SignalInfo Unpack(this PackedAudioSignalInfo packed)
         {
-            return new ExtendedAudioAnalysisInfo.SignalInfo(
+            return new XAAInfo.SignalInfo(
                 packed.Band.UnpackFrequencyRange(),
                 packed.Magnitude.UnpackMagnitudeRange(),
                 packed.Peaks);
         }
 
-        private static ExtendedAudioAnalysisInfo.FrequencyRange UnpackFrequencyRange(this PackedRange packed)
+        private static XAAInfo.FrequencyRange UnpackFrequencyRange(this PackedRange packed)
         {
-            return new ExtendedAudioAnalysisInfo.FrequencyRange(packed.Lower, packed.Upper);
+            return new XAAInfo.FrequencyRange(packed.Lower, packed.Upper);
         }
 
-        private static ExtendedAudioAnalysisInfo.MagnitudeRange UnpackMagnitudeRange(this PackedRange packed)
+        private static XAAInfo.MagnitudeRange UnpackMagnitudeRange(this PackedRange packed)
         {
-            return new ExtendedAudioAnalysisInfo.MagnitudeRange(packed.Lower, packed.Upper);
+            return new XAAInfo.MagnitudeRange(packed.Lower, packed.Upper);
         }
         
         

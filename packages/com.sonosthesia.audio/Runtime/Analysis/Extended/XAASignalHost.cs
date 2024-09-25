@@ -3,7 +3,7 @@ using Sonosthesia.Signal;
 
 namespace Sonosthesia.Audio
 {
-    public class ExtendedAudioAnalysisSignalHost : ExtendedAudioAnalysisHost
+    public class XAASignalHost : XAAHost
     {
         [SerializeField] private Signal<ContinuousAnalysis> _continuous;
         public Signal<ContinuousAnalysis> ContinuousAnalysisSignal => _continuous;

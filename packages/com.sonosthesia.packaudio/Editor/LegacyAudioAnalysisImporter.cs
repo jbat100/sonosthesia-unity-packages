@@ -16,7 +16,7 @@ namespace Sonosthesia.PackAudio.Editor
             string assetName = System.IO.Path.GetFileNameWithoutExtension(assetPath);
 
             ContinuousAnalysis[] samples = PackedFileUtils
-                .ReadFile<PackedAudioAnalysis[]>(ctx.assetPath)
+                .ReadFile<PackedLegacyAudioAnalysis[]>(ctx.assetPath)
                 .Select(a => a.Unpack()).ToArray();
             
             LegacyAudioAnalysisAsset asset = ScriptableObject.CreateInstance<LegacyAudioAnalysisAsset>();

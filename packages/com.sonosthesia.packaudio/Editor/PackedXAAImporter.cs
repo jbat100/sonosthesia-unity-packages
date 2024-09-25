@@ -8,8 +8,8 @@ using Sonosthesia.Pack;
 
 namespace Sonosthesia.PackAudio.Editor
 {
-    [ScriptedImporter(1, "xad")]
-    public class ExtendedAudioAnalysisImporter : ScriptedImporter
+    [ScriptedImporter(1, "xaa")]
+    public class PackedXAAImporter : ScriptedImporter
     {
         public override void OnImportAsset(AssetImportContext ctx)
         {
@@ -28,11 +28,11 @@ namespace Sonosthesia.PackAudio.Editor
             
             Debug.Log($"{this} {nameof(OnImportAsset)} read {packedData.Length} packed data bytes");
 
-            ExtendedAudioAnalysisAsset asset = ScriptableObject.CreateInstance<ExtendedAudioAnalysisAsset>();
+            XAAAsset asset = ScriptableObject.CreateInstance<XAAAsset>();
 
             if (version == 2)
             {
-                PackedExtendedAnalysis analysis = PackedFileUtils.ReadBytes<PackedExtendedAnalysis>(packedData);
+                PackedXAA analysis = PackedFileUtils.ReadBytes<PackedXAA>(packedData);
                 if (analysis.Continuous != null)
                 {
                     asset.Continuous = analysis.Continuous.Select(c => c.Unpack()).ToArray();   
@@ -70,7 +70,7 @@ namespace Sonosthesia.PackAudio.Editor
                       $"{asset.Peaks?.Length ?? 0} peaks");
             
             asset.name = assetName;
-            ctx.AddObjectToAsset(nameof(ExtendedAudioAnalysisAsset), asset);
+            ctx.AddObjectToAsset(nameof(XAAAsset), asset);
             ctx.SetMainObject(asset);
         }
     }

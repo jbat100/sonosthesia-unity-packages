@@ -20,7 +20,7 @@ namespace Sonosthesia.PackAudio
             {
                 if (_samples == null)
                 {
-                    _samples = PackedFileUtils.ReadBytes<PackedAudioAnalysis[]>(data).Select(a => a.Unpack()).ToArray();
+                    _samples = PackedFileUtils.ReadBytes<PackedLegacyAudioAnalysis[]>(data).Select(a => a.Unpack()).ToArray();
                 }
 
                 return _samples;

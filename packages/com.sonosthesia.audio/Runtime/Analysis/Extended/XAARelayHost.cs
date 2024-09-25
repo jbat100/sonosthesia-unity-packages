@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace Sonosthesia.Audio
 {
-    public class ExtendedAudioAnalysisRelayHost : ExtendedAudioAnalysisHost
+    public class XAARelayHost : XAAHost
     {
-        [SerializeField] private ExtendedAudioAnalysisRelay _relay;
+        [SerializeField] private XAARelay _relay;
 
         protected override void PerformBroadcast(ContinuousAnalysis analysis) => _relay.Broadcast(analysis);
 

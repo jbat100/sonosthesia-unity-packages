@@ -9,14 +9,12 @@ namespace Sonosthesia.Audio
     {
         [SerializeField] private Signal<ContinuousAnalysis> _source;
 
+        [Header("Outputs")]
+        
         [SerializeField] private Signal<float> _rms;
-        
         [SerializeField] private Signal<float> _lows;
-        
         [SerializeField] private Signal<float> _mids;
-        
         [SerializeField] private Signal<float> _highs;
-        
         [SerializeField] private Signal<float> _centroid;
 
         private IDisposable _subscription;

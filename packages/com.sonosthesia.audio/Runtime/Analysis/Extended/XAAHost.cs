@@ -2,15 +2,18 @@ using UnityEngine;
 
 namespace Sonosthesia.Audio
 {
-    public abstract class ExtendedAudioAnalysisHost : MonoBehaviour
+    public abstract class XAAHost : MonoBehaviour
     {
-        [SerializeField] private ExtendedAudioAnalysisConfiguration _configuration;
+        [SerializeField] private bool _log;
+        
+        [SerializeField] private XAAConfiguration _configuration;
 
         public void Broadcast(ContinuousAnalysis analysis)
         {
             if (!_configuration)
             {
                 PerformBroadcast(analysis);
+                return;
             }
 
             analysis = _configuration.Process(analysis);
@@ -27,6 +30,10 @@ namespace Sonosthesia.Audio
             
             if (!_configuration.Check(analysis))
             {
+                if (_log)
+                {
+                    Debug.LogWarning($"{this} filtered {analysis}");
+                }
                 return false;
             }
 

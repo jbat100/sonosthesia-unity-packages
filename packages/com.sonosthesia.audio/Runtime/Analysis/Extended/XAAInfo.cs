@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Sonosthesia.Audio
 {
     [Serializable]
-    public class ExtendedAudioAnalysisInfo
+    public class XAAInfo
     {
         [Serializable]
         public class Range
@@ -82,7 +82,7 @@ namespace Sonosthesia.Audio
         [SerializeField] private FrequencyRange _centroid;
         public FrequencyRange Centroid => _centroid;
 
-        public ExtendedAudioAnalysisInfo(float duration,
+        public XAAInfo(float duration,
             SignalInfo main, SignalInfo lows, SignalInfo mids, SignalInfo highs,
             FrequencyRange centroid)
         {
