@@ -2,9 +2,9 @@
   "author": "Jonathan Thorpe",
   "dependencies": {
     "com.neuecc.unirx": "7.1.0",
-    "com.sonosthesia.utils": "1.9.0",
-    "com.sonosthesia.channel": "1.9.0",
-    "com.sonosthesia.trigger": "1.9.0"
+    "com.sonosthesia.utils": "1.10.0",
+    "com.sonosthesia.channel": "1.10.0",
+    "com.sonosthesia.trigger": "1.10.0"
   },
   "description": "Sonosthesia unity interaction",
   "displayName": "Sonosthesia Interaction",
@@ -15,5 +15,5 @@
   "name": "com.sonosthesia.interaction",
   "repository": "github:jbat100/sonosthesia-unity-packages",
   "unity": "2022.3",
-  "version": "1.9.0"
+  "version": "1.10.0"
 }
