@@ -24,7 +24,8 @@ const blacklist = new Set([
 //      node publish.js all
 // - Delocalise Ensure no build errors on Unity project
 //      node localize.js version
-// - Push dev, merge to main 
+// - push dev
+// - merge to main 
 // - Create release on github with vx.x.x tag corresponding to the highest package version
 
 
