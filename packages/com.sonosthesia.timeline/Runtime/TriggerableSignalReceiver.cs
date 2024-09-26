@@ -1,9 +1,9 @@
 ﻿using System;
-using Sonosthesia.Trigger;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
+using Sonosthesia.Trigger;
 
 namespace Sonosthesia.Timeline
 {

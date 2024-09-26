@@ -14,8 +14,8 @@ namespace Sonosthesia.Pack
             if (!serializerRegistered)
             {
                 StaticCompositeResolver.Instance.Register(
-                    MessagePack.Resolvers.GeneratedResolver.Instance,
-                    MessagePack.Resolvers.StandardResolver.Instance
+                    Resolvers.GeneratedResolver.Instance,
+                    StandardResolver.Instance
                 );
 
                 var option = MessagePackSerializerOptions.Standard.WithResolver(StaticCompositeResolver.Instance);
@@ -26,14 +26,11 @@ namespace Sonosthesia.Pack
         }
 
 #if UNITY_EDITOR
-
-
         [UnityEditor.InitializeOnLoadMethod]
         static void EditorInitialize()
         {
             Initialize();
         }
-
 #endif
     }
 }

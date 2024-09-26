@@ -1,0 +1,27 @@
+{
+    "name": "Sonosthesia.PackAudio",
+    "rootNamespace": "Sonosthesia.PackAudio",
+    "references": [
+        "GUID:f06555f75b070af458a003d92f9efb00",
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:9eb6837bd3e454f19a8d5c72f1eda2e1",
+        "GUID:285f4ff540a1a4ccebfd58976cdd5a94",
+        "GUID:0e73a958ea93c4999aae301d99219c62",
+        "GUID:04376767bc1f3b428aefa3d20743e819",
+        "GUID:bbde805d927e795439d7a746d1749cab",
+        "GUID:5a46ad82eac024e4fbb6a0516a5def17",
+        "GUID:e34cfbf594f6143eca45627dd2ac29fe",
+        "GUID:f09d8d2cfc85540a095af5db6fd137f0",
+        "GUID:5e5de655b35d84bd7a36486ee1824671",
+        "GUID:25e5e4b6f3916462c92ecc1d0ffca2c2"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -37,12 +37,4 @@ namespace Sonosthesia.Pack
             };
         }
     }
-    
-    public static class PackedAudioTriBandsExtensions
-    {
-        public static TriAudioBands Unpack(this PackedAudioTriBands bands)
-        {
-            return new TriAudioBands(bands.B1, bands.B2, bands.B3);
-        }
-    }
 }

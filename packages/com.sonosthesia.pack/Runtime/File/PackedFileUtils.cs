@@ -1,21 +1,26 @@
+using System.Buffers;
 using System.IO;
-using System.Linq;
+using System.Threading;
 using MessagePack;
 
 namespace Sonosthesia.Pack
 {
     public static class PackedFileUtils
     {
-        public static AudioAnalysis[] ReadAnalysisFile(string assetPath)
+        public static T ReadFile<T>(string assetPath)
         {
             byte[] buffer = File.ReadAllBytes(assetPath);
-            return ReadAnalysisFile(buffer);
+            return ReadBytes<T>(buffer);
         }
         
-        public static AudioAnalysis[] ReadAnalysisFile(byte[] buffer)
+        public static T ReadBytes<T>(byte[] buffer)
         {
-            PackedAudioAnalysis[] samples = MessagePackSerializer.Deserialize<PackedAudioAnalysis[]>(buffer);
-            return samples.Select(s => s.Unpack()).ToArray();
+            return MessagePackSerializer.Deserialize<T>(buffer);
+        }
+        
+        public static T ReadFile<T>(ReadOnlySequence<byte> sequence)
+        {
+            return MessagePackSerializer.Deserialize<T>(sequence);
         }
     }
 }

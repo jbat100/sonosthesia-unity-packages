@@ -34,7 +34,7 @@ namespace Sonosthesia.Application
             }
         }
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
             base.OnEnable();
             _register.Register(this);
