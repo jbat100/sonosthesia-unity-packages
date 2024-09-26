@@ -2,10 +2,10 @@
   "author": "Jonathan Thorpe",
   "dependencies": {
     "com.neuecc.unirx": "7.1.0",
-    "com.sonosthesia.utils": "1.9.0",
-    "com.sonosthesia.adaptivemidi": "1.9.0",
-    "com.sonosthesia.signal": "1.9.0",
-    "com.sonosthesia.flow": "1.9.0"
+    "com.sonosthesia.utils": "1.10.0",
+    "com.sonosthesia.adaptivemidi": "1.10.0",
+    "com.sonosthesia.signal": "1.10.0",
+    "com.sonosthesia.flow": "1.10.0"
   },
   "description": "Sonosthesia unity metronome",
   "displayName": "Sonosthesia Metronome",
@@ -16,5 +16,5 @@
   "name": "com.sonosthesia.metronome",
   "repository": "github:jbat100/sonosthesia-unity-packages",
   "unity": "2022.3",
-  "version": "1.9.0"
+  "version": "1.10.0"
 }
