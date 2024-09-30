@@ -11,8 +11,20 @@ namespace Sonosthesia.Audio
         [SerializeField] private Signal<PeakAnalysis> _peak;
         public Signal<PeakAnalysis> PeakAnalysisSignal => _peak;
 
-        protected override void PerformBroadcast(ContinuousAnalysis analysis) => _continuous.Broadcast(analysis);
+        protected override void PerformBroadcast(ContinuousAnalysis analysis)
+        {
+            if (_continuous)
+            {
+                _continuous.Broadcast(analysis);    
+            }
+        }
 
-        protected override void PerformBroadcast(PeakAnalysis analysis) => _peak.Broadcast(analysis);
+        protected override void PerformBroadcast(PeakAnalysis analysis)
+        {
+            if (_peak)
+            {
+                _peak.Broadcast(analysis);   
+            }
+        }
     }
 }

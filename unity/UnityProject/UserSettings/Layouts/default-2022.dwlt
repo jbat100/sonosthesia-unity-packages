@@ -289,8 +289,8 @@ MonoBehaviour:
     y: 0
     width: 362
     height: 866
-  m_MinSize: {x: 275, y: 100}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 276, y: 121}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 33}
   m_Panes:
   - {fileID: 33}
@@ -8432,7 +8432,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Packages/com.sonosthesia.signal/Runtime/Relay
+    - Packages/com.sonosthesia.packaudio/Editor
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -8440,16 +8440,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Packages/com.sonosthesia.signal/Runtime/Relay
+  - Packages/com.sonosthesia.packaudio/Editor
   m_LastFoldersGridSize: -1
   m_LastProjectPath: /Users/jonathanthorpe/Sonosthesia/sonosthesia-unity-packages/unity/UnityProject
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 1005.0058}
-    m_SelectedIDs: 84870000
-    m_LastClickedID: 34692
-    m_ExpandedIDs: 00000000828400008484000086840000888400004e8700005087000000ca9a3bffffff7f
+    scrollPos: {x: 0, y: 906.98706}
+    m_SelectedIDs: 6c880000
+    m_LastClickedID: 34924
+    m_ExpandedIDs: 0000000094840000988400009a8400009c8400009e8400002a8700002e8700004e870000aa87000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -8477,7 +8477,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 0000000082840000848400008684000088840000
+    m_ExpandedIDs: 000000009484000096840000988400009a8400009c8400009e840000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -8615,9 +8615,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: ae340000
+      m_SelectedIDs: 72880000
       m_LastClickedID: 0
-      m_ExpandedIDs: f6f9ffff
+      m_ExpandedIDs: d2f9ffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -10802,7 +10802,7 @@ MonoBehaviour:
     m_ControlHash: 1412526313
     m_PrefName: Preview_InspectorPreview
   m_LastInspectedObjectInstanceID: -1
-  m_LastVerticalScrollValue: 0
+  m_LastVerticalScrollValue: 542
   m_GlobalObjectId: 
   m_InspectorMode: 0
   m_LockTracker:
@@ -10871,7 +10871,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 1054.3333}
     m_SelectedIDs: ba870000
     m_LastClickedID: 34746
-    m_ExpandedIDs: 0000000082840000848400008684000088840000
+    m_ExpandedIDs: 000000009484000096840000988400009a8400009c8400009e840000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -10899,7 +10899,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 0000000082840000848400008684000088840000
+    m_ExpandedIDs: 000000009484000096840000988400009a8400009c8400009e840000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
