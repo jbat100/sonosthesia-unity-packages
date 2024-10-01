@@ -1,9 +1,9 @@
 using Sonosthesia.Utils;
 using UnityEngine;
 
-namespace Sonosthesia.Touch.Providers
+namespace Sonosthesia.Touch
 {
-    public abstract class DynamicsCollisionValueProvider<T> : CollisionValueProvider<T> where T : struct
+    public abstract class DynamicsCollisionValueGenerator<T> : CollisionValueGenerator<T> where T : struct
     {
         [SerializeField] private TransformDynamics.Domain _domain;
 

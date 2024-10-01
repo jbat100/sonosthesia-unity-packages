@@ -1,9 +1,9 @@
 using Sonosthesia.Utils;
 using UnityEngine;
 
-namespace Sonosthesia.Touch.Providers
+namespace Sonosthesia.Touch
 {
-    public class StaticCollisionValueProvider<T> : CollisionValueProvider<T> where T : struct
+    public class StaticCollisionValueGenerator<T> : CollisionValueGenerator<T> where T : struct
     {
         [SerializeField] private T _value;
         

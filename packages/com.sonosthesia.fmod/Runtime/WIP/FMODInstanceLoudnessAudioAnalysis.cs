@@ -2,6 +2,7 @@ using System;
 using FMOD;
 using FMOD.Studio;
 using FMODUnity;
+using Sonosthesia.Audio;
 using Sonosthesia.Pack;
 using Sonosthesia.Signal;
 using UnityEngine;
@@ -562,7 +563,7 @@ namespace Sonosthesia.FMOD
     
     public class FMODInstanceLoudnessAudioAnalysis : FMODInstanceProcessor
     {
-        [SerializeField] private Signal<AudioAnalysis> _target;
+        [SerializeField] private Signal<ContinuousAnalysis> _target;
 
         [SerializeField] private LoudnessSelector _selector = LoudnessSelector.Momentary;
 
@@ -653,7 +654,7 @@ namespace Sonosthesia.FMOD
 
             float time = Time.time - _startTime;
 
-            AudioAnalysis analysis = new AudioAnalysis
+            ContinuousAnalysis analysis = new ContinuousAnalysis
             {
                 time = time,
                 lows = lows,

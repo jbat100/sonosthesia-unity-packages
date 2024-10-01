@@ -1,9 +1,9 @@
 using Sonosthesia.Utils;
 using UnityEngine;
 
-namespace Sonosthesia.Touch.Providers
+namespace Sonosthesia.Touch
 {
-    public class FloatDynamicsCollisionValueProvider : DynamicsCollisionValueProvider<float>
+    public class FloatDynamicsCollisionValueGenerator : DynamicsCollisionValueGenerator<float>
     {
         [SerializeField] private Vector3Selector _selector;
 

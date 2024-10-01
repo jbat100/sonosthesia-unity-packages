@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 namespace Sonosthesia.Touch
 {
     // note : for use with the new input system the main camera needs to have a PhysicsRaycaster
-    public class PointerTouchDriver : TouchDriver, IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler
+    public class PointerTouchDriver : EventTouchDriver, IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler
     {
         public void OnPointerDown(PointerEventData eventData)
         {
