@@ -2,36 +2,42 @@ using UnityEngine;
 
 namespace Sonosthesia.Generator
 {
-    public class PrimitiveFloatOscillator : FloatOscillator
+    public enum PrimitiveOscillationType
     {
-        private enum PrimitiveType
+        None,
+        Constant,
+        Square,
+        Sine,
+        Cosine,
+        Triangle,
+        Saw,
+        Line
+    }
+
+    public static class PrimitiveOscillation
+    {
+        public static float Evaluate(PrimitiveOscillationType oscillationType, float time)
         {
-            None,
-            Constant,
-            Square,
-            Sine,
-            Cosine,
-            Triangle,
-            Saw,
-            Line
-        }
-
-        [SerializeField] private PrimitiveType _primitiveType;
-
-        protected override float Duration => 1f;
-
-        protected override float EvaluateIteration(float time)
-        {
-            return _primitiveType switch
+            time %= 1f;
+            return oscillationType switch
             {
-                PrimitiveType.Square => (time <= 0.5f) ? 1f : 0f,
-                PrimitiveType.Sine => Mathf.Sin(time * Mathf.PI * 2f) * 0.5f + 0.5f,
-                PrimitiveType.Cosine => Mathf.Cos(time * Mathf.PI * 2f) * 0.5f + 0.5f,
-                PrimitiveType.Triangle => (time <= 0.5f) ? time * 2f : 2f - time * 2f,
-                PrimitiveType.Saw => time,
-                PrimitiveType.Constant => 1f,
+                PrimitiveOscillationType.Square => (time <= 0.5f) ? 1f : 0f,
+                PrimitiveOscillationType.Sine => Mathf.Sin(time * Mathf.PI * 2f) * 0.5f + 0.5f,
+                PrimitiveOscillationType.Cosine => Mathf.Cos(time * Mathf.PI * 2f) * 0.5f + 0.5f,
+                PrimitiveOscillationType.Triangle => (time <= 0.5f) ? time * 2f : 2f - time * 2f,
+                PrimitiveOscillationType.Saw => time,
+                PrimitiveOscillationType.Constant => 1f,
                 _ => 0f
             };
         }
+    }
+    
+    public class PrimitiveFloatOscillator : FloatOscillator
+    {
+        [SerializeField] private PrimitiveOscillationType _primitiveType;
+
+        protected override float Duration => 1f;
+
+        protected override float EvaluateIteration(float time) => PrimitiveOscillation.Evaluate(_primitiveType, time);
     }
 }
