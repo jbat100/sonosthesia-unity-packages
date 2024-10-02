@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sonosthesia.Utils
+namespace Sonosthesia.Dynamic
 {
     public class TransformMonitor : MonoBehaviour
     {

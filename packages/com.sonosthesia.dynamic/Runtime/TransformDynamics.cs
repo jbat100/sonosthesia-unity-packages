@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-namespace Sonosthesia.Utils
+namespace Sonosthesia.Dynamic
 {
     public readonly struct TransformDynamics
     {

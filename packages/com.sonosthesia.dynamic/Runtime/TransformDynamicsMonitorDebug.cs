@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Sonosthesia.Utils
+namespace Sonosthesia.Dynamic
 {
     [RequireComponent(typeof(TransformDynamicsMonitor))]
     public class TransformDynamicsMonitorDebug : MonoBehaviour

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Utils
+namespace Sonosthesia.Dynamic
 {
     public class TransformDynamicsMonitor : MonoBehaviour
     {

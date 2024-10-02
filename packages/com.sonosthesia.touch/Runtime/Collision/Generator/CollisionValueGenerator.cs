@@ -1,4 +1,4 @@
-using Sonosthesia.Utils;
+using Sonosthesia.Dynamic;
 using UnityEngine;
 
 namespace Sonosthesia.Touch

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Sonosthesia.Channel;
-using Sonosthesia.Utils;
+using Sonosthesia.Dynamic;
 using UniRx;
 using UnityEngine;
 
