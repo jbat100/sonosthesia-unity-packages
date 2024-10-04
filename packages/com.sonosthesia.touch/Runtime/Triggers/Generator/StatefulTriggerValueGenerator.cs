@@ -71,6 +71,11 @@ namespace Sonosthesia.Touch
 
         public sealed override void EndTrigger(ITriggerData triggerData)
         {
+            if (triggerData == null)
+            {
+                Debug.LogWarning($"{this} got null trigger data, history has {_history.Count} items");
+                return;
+            }
             _history.Remove(triggerData);
         }
 

@@ -21,7 +21,7 @@ namespace Sonosthesia.Pointer
         
         protected new class Controller : DragAgnosticAffordance<PointerEvent, BasePointerSource, PointerDragAgnosticAffordance>.Controller
         {
-            public Controller(Guid id, PointerDragAgnosticAffordance affordance) : base (id, affordance)
+            public Controller(Guid eventId, PointerDragAgnosticAffordance affordance) : base (eventId, affordance)
             {
                 
             }

@@ -16,6 +16,10 @@ namespace Sonosthesia.Touch
         [SerializeField] private bool _allowSwitching;
         public bool AllowSwitching => _allowSwitching;
         
+        [Tooltip("Calculate concurrent count per collider")]
+        [SerializeField] private bool _perCollider;
+        public bool PerCollider => _perCollider;
+        
         [SerializeField] private TriggerNode _parent;
         public TriggerNode Parent => _parent;
         
@@ -109,7 +113,11 @@ namespace Sonosthesia.Touch
             bool maxReached = false;
             while (current)
             {
-                if (current.EventStreamNode.Values.Count >= current.MaxConcurrent)
+                int count = _perCollider
+                    ? current.EventStreamNode.Values.Count(n => n.Value.TriggerData.Collider == other)
+                    : current.EventStreamNode.Values.Count;
+                
+                if (count >= current.MaxConcurrent)
                 {
                     maxReached = true;
                     break;

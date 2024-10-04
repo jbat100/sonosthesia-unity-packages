@@ -3,7 +3,6 @@ using FMOD;
 using FMOD.Studio;
 using FMODUnity;
 using Sonosthesia.Audio;
-using Sonosthesia.Pack;
 using Sonosthesia.Signal;
 using UnityEngine;
 using Debug = UnityEngine.Debug;

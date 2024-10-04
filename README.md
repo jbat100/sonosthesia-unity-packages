@@ -86,3 +86,24 @@ These packages are hosted on npm and have a dependency on [UniTask](https://gith
     }
   ]
 }
+```
+
+Some packages required additional scoped registeries
+
+- [com.sonosthesia.rtmidi](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.rtmidi)
+
+```json
+{
+  "scopedRegistries": [
+    // ...
+    {
+      "name": "Keijiro",
+      "url": "https://registry.npmjs.com",
+      "scopes": [ 
+        "jp.keijiro" 
+      ]
+    }
+  ]
+}
+```
+

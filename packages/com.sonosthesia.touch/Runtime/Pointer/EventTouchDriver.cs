@@ -7,13 +7,13 @@ namespace Sonosthesia.Touch
 {
     public class EventTouchDriver : MonoBehaviour
     {
-        [SerializeField] private TouchChannel _channel;
+        [SerializeField] private CollisionTouchChannel _channel;
 
-        private BehaviorSubject<TouchPayload> _current;
+        private BehaviorSubject<CollisionTouch> _current;
 
         private readonly TouchPayloadBuilder _builder = new TouchPayloadBuilder();
 
-        protected virtual TouchPayload MakePayload(PointerEventData data)
+        protected virtual CollisionTouch MakePayload(PointerEventData data)
         {
             float3 position = data.pointerCurrentRaycast.worldPosition;
             _builder.Contact = position;
@@ -37,18 +37,18 @@ namespace Sonosthesia.Touch
             }
         }
 
-        protected void Begin(TouchPayload touchPayload)
+        protected void Begin(CollisionTouch collisionTouch)
         {
             Clean();
-            _current = new BehaviorSubject<TouchPayload>(touchPayload);
+            _current = new BehaviorSubject<CollisionTouch>(collisionTouch);
             _channel.Pipe(_current.AsObservable());
         }
 
-        protected void Move(TouchPayload touchPayload)
+        protected void Move(CollisionTouch collisionTouch)
         {
             if (_current != null)
             {
-                _current.OnNext(touchPayload);
+                _current.OnNext(collisionTouch);
             }
         }
         

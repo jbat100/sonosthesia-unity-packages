@@ -11,7 +11,7 @@ namespace Sonosthesia.Trigger
 
         [SerializeField] private Selector<TValue> _timeSelector;
 
-        [SerializeField] private Triggerable _triggerable;
+        [SerializeField] private BuilderTriggerable _triggerable;
 
         public int TriggerCount => _triggerable.TriggerCount;
         

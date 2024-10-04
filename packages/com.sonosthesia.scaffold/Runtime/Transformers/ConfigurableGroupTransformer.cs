@@ -11,8 +11,9 @@ namespace Sonosthesia.Scaffold
 
         private IDisposable _changeSubscription;
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             _changeSubscription?.Dispose();
             _changeSubscription = _configuration.ChangeObservable.Subscribe(_ => BroadcastChange());
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sonosthesia.Dynamic;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
@@ -45,6 +46,9 @@ namespace Sonosthesia.Touch
         [SerializeField] private TriggerNode _node;
         public TriggerNode Node => _node;
 
+        [SerializeField] private TransformDynamicsMonitor _dynamicsMonitor;
+        public TransformDynamicsMonitor DynamicsMonitor => _dynamicsMonitor;
+        
         [SerializeField] private List<TriggerGate> _gates;
 
         public bool CheckGates(TriggerEndpoint source, TriggerEndpoint actor)

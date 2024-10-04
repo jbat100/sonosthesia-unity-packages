@@ -34,7 +34,7 @@ namespace Sonosthesia.Instrument
 
         public override void EndTrigger(ITriggerData triggerData)
         {
-            throw new System.NotImplementedException();
+            
         }
     }
 }

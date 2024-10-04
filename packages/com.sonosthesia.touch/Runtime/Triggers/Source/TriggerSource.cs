@@ -8,6 +8,8 @@ namespace Sonosthesia.Touch
 {
     public abstract class TriggerSource<TValue> : ValueTriggerEndpoint<TValue> where TValue : struct
     {
+        [SerializeField] private bool _log;
+        
         [SerializeField] private ChannelDriver<TValue> _driver;
 
         [SerializeField] private bool _endOnExit = true;
@@ -48,15 +50,28 @@ namespace Sonosthesia.Touch
 
         protected virtual void OnTriggerEnter(Collider other)
         {
-            Debug.Log($"{this} {nameof(OnTriggerEnter)} {other}");
-
+            if (_log)
+            {
+                Debug.Log($"{this} {nameof(OnTriggerEnter)} {other}");    
+            }
+            
             TriggerData triggerData;
             
             TriggerActor<TValue> actor = other.GetComponentInParent<TriggerActor<TValue>>();
-            
-            // if gates fail we don't want to go ahead with stream _endOnReEnter
-            if (!CheckGates(this, actor) || !actor || !actor.CheckGates(this, actor))
+
+            if (!actor)
             {
+                Debug.Log($"{this} {nameof(OnTriggerEnter)} bailed out (no actor)");
+                return;
+            }
+
+            // if gates fail we don't want to go ahead with stream _endOnReEnter
+            if (!CheckGates(this, actor) || !actor.CheckGates(this, actor))
+            {
+                if (_log)
+                {
+                    Debug.Log($"{this} {nameof(OnTriggerEnter)} bailed out (gate block)");
+                }
                 return;
             }
             
@@ -72,6 +87,10 @@ namespace Sonosthesia.Touch
                     {
                         triggerData.Colliding = true;
                         UpdateStream(eventId, triggerData);
+                        if (_log)
+                        {
+                            Debug.Log($"{this} {nameof(OnTriggerEnter)} bailed out (existing stream)");
+                        }
                         return;
                     }
                 }
@@ -79,6 +98,10 @@ namespace Sonosthesia.Touch
 
             if (!actor.RequestPermission(other))
             {
+                if (_log)
+                {
+                    Debug.Log($"{this} {nameof(OnTriggerEnter)} bailed out (actor refused permission)");
+                }
                 return;
             }
 
@@ -110,22 +133,37 @@ namespace Sonosthesia.Touch
 
         protected virtual void OnTriggerExit(Collider other)
         {
-            Debug.Log($"{this} {nameof(OnTriggerExit)} {other}");
+            if (_log)
+            {
+                Debug.Log($"{this} {nameof(OnTriggerExit)} {other}");    
+            }
 
             if (!_triggerEvents.TryGetValue(other, out Guid eventId))
             {
+                if (_log)
+                {
+                    Debug.Log($"{this} {nameof(OnTriggerExit)} bailing out no event");    
+                }
                 return;
             }
 
             if (!_triggerData.TryGetValue(eventId, out TriggerData triggerData))
             {
+                if (_log)
+                {
+                    Debug.Log($"{this} {nameof(OnTriggerExit)} bailing out no data");    
+                }
                 return;
             }
 
             triggerData.Colliding = false;
 
-            if (!_endOnExit)
+            if (_endOnExit)
             {
+                if (_log)
+                {
+                    Debug.Log($"{this} {nameof(OnTriggerExit)} ending stream {eventId}");    
+                }
                 EndStream(eventId, triggerData);
             }
         }
@@ -154,7 +192,7 @@ namespace Sonosthesia.Touch
                 return;
             }
             
-            Guid eventId = _driver.BeginStream(value);
+            Guid eventId = _driver ? _driver.BeginStream(value) : Guid.NewGuid();
 
             _triggerEvents[triggerData.Collider] = eventId;
             _triggerData[eventId] = triggerData;
@@ -195,8 +233,11 @@ namespace Sonosthesia.Touch
             {
                 return;
             }
-            
-            _driver.UpdateStream(eventId, value);
+
+            if (_driver)
+            {
+                _driver.UpdateStream(eventId, value);    
+            }
 
             if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<TriggerValueEvent<TValue>> subject))
             {
@@ -208,7 +249,10 @@ namespace Sonosthesia.Touch
 
         private void EndStream(Guid eventId, TriggerData triggerData)
         {
-            _driver.EndStream(eventId);
+            if (_driver)
+            {
+                _driver.EndStream(eventId);    
+            }
             
             _triggerEvents.Remove(triggerData.Collider);
             _triggerData.Remove(eventId);
@@ -242,6 +286,12 @@ namespace Sonosthesia.Touch
             if (!Application.isPlaying)
             {
                 Debug.LogError("Stream test requires play mode");
+                return;
+            }
+
+            if (!_driver)
+            {
+                Debug.LogError("TestStream requires driver");
                 return;
             }
             Guid id = _driver.BeginStream(value);

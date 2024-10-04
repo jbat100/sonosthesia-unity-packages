@@ -28,11 +28,11 @@ namespace Sonosthesia.Trigger
         
         [SerializeField] private float _timeScale = 1f;
 
-        [SerializeField] private List<Triggerable> _signals;
+        [SerializeField] private List<BuilderTriggerable> _signals;
 
         public void Trigger()
         {
-            foreach (Triggerable triggerable in _signals)
+            foreach (BuilderTriggerable triggerable in _signals)
             {
                 triggerable.Trigger(_valueScale, _timeScale);
             }

@@ -8,7 +8,7 @@ namespace Sonosthesia.Trigger
 {
     public class ChannelTrackedTrigger<T> : MonoBehaviour where T : struct
     {
-        [SerializeField] private TrackedTriggerable _triggerable;
+        [SerializeField] private BuilderTrackedTriggerable _triggerable;
 
         [SerializeField] private Channel<T> _channel;
 
@@ -42,11 +42,7 @@ namespace Sonosthesia.Trigger
                     {
                         lastValue = value;
                         float valueScale = _valueSelector ? _valueSelector.Select(value) : 1f;
-                        if (id.HasValue)
-                        {
-                            _triggerable.UpdateTrigger(id.Value, valueScale);
-                        }
-                        else
+                        if (!id.HasValue)
                         {
                             float timeScale = _timeSelector ? _timeSelector.Select(value) : 1f;
                             id = _triggerable.StartTrigger(valueScale, timeScale);

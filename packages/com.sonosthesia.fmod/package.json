@@ -4,8 +4,7 @@
     "com.neuecc.unirx": "7.1.0",
     "com.sonosthesia.audio": "1.10.0",
     "com.sonosthesia.signal": "1.10.0",
-    "com.sonosthesia.utils": "1.10.0",
-    "com.sonosthesia.pack": "1.10.0"
+    "com.sonosthesia.utils": "1.10.0"
   },
   "description": "Sonosthesia unity fmod",
   "displayName": "Sonosthesia FMOD",

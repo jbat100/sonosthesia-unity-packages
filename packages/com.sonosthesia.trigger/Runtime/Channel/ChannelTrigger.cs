@@ -13,7 +13,7 @@ namespace Sonosthesia.Trigger
     /// <typeparam name="T"></typeparam>
     public class ChannelTrigger<T> : MonoBehaviour where T : struct
     {
-        [SerializeField] private Triggerable _triggerable;
+        [SerializeField] private BuilderTriggerable _triggerable;
 
         [SerializeField] private Channel<T> _channel;
 

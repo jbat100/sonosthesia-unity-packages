@@ -19,7 +19,9 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private FloatProcessor _postProcessor;
 
-        [SerializeField] private AnimationCurve _postEnvelope;
+        [SerializeField] private bool _applyCurve;
+
+        [SerializeField] private AnimationCurve _curve;
 
         protected override bool BeginTrigger(ITriggerData triggerData, State state, out float value)
         {
@@ -52,7 +54,8 @@ namespace Sonosthesia.Touch
 
         protected override float PostProcess(float value)
         {
-            return _postEnvelope.Evaluate(_postProcessor.Process(value));
+            float result = _postProcessor.Process(value);
+            return _applyCurve ? _curve.Evaluate(result) : result;
         }
     }
 }

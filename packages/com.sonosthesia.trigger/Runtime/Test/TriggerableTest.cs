@@ -21,16 +21,16 @@ namespace Sonosthesia.Trigger
     }
 #endif
     
-    [RequireComponent(typeof(Triggerable))]
+    [RequireComponent(typeof(BuilderTriggerable))]
     public class TriggerableTest : MonoBehaviour
     {
         [SerializeField] private float _valueScale = 1f;
         
         [SerializeField] private float _timeScale = 1f;
 
-        private Triggerable _triggerable;
+        private BuilderTriggerable _triggerable;
 
-        protected void Awake() => _triggerable = GetComponent<Triggerable>();
+        protected void Awake() => _triggerable = GetComponent<BuilderTriggerable>();
 
         public void Trigger()
         {

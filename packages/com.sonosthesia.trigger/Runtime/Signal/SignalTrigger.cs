@@ -10,7 +10,7 @@ namespace Sonosthesia.Trigger
     {
         [SerializeField] private Signal<T> _source;
         
-        [SerializeField] private Triggerable _destination;
+        [SerializeField] private BuilderTriggerable _destination;
 
         [SerializeField] private Selector<T> _timeScaleSelector;
 
