@@ -26,7 +26,7 @@ namespace Sonosthesia.Instrument
     }
 #endif
     
-    public class MIDINoteRackTriggerSource : TriggerSource<MIDINote>
+    public class MIDINoteRackTriggerSource : ValueTriggerSource<MIDINote>
     {
         [SerializeField] private string _rackElement;
         
@@ -57,9 +57,9 @@ namespace Sonosthesia.Instrument
             return true;
         }
         
-        protected override void Clean(ITriggerData triggerData)
+        protected override void CleanupStream(Guid eventId, ITriggerData triggerData)
         {
-            base.Clean(triggerData);
+            base.CleanupStream(eventId, triggerData);
             _velocity.EndTrigger(triggerData);
             _pressure.EndTrigger(triggerData);
         }

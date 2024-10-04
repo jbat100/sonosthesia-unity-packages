@@ -2,7 +2,7 @@
 
 namespace Sonosthesia.Touch
 {
-    public class UnitTriggerActor : TriggerActor<Unit>
+    public class UnitTriggerActor : ValueTriggerActor<Unit>
     {
         
     }

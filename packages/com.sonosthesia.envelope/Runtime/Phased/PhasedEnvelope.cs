@@ -56,7 +56,7 @@ namespace Sonosthesia.Envelope
     }
     
     
-    internal class AHREnvelope : IEnvelope
+    public class AHREnvelope : IEnvelope
     {
         private readonly float _hold;
         
@@ -109,7 +109,7 @@ namespace Sonosthesia.Envelope
         }
     }
     
-    internal class ADSREnvelope : IEnvelope
+    public class ADSREnvelope : IEnvelope
     {
         private readonly float _hold;
         private readonly float _sustain;
@@ -168,7 +168,7 @@ namespace Sonosthesia.Envelope
         }
     }
 
-    internal class ADSEnvelope : IEnvelope
+    public class ADSEnvelope : IEnvelope
     {
         private readonly float _sustain;
         
@@ -211,7 +211,7 @@ namespace Sonosthesia.Envelope
         }
     }
 
-    internal class SREnvelope : IEnvelope
+    public class SREnvelope : IEnvelope
     {
         private readonly float _sustain;
         

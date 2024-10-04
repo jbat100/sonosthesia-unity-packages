@@ -11,6 +11,14 @@ namespace Sonosthesia.Touch
         public readonly TValue Value;
         public readonly float StartTime;
 
+        public TriggerValueEvent(TriggerEvent triggerEvent, TValue value)
+        {
+            Id = triggerEvent.Id;
+            StartTime = triggerEvent.StartTime;
+            TriggerData = triggerEvent.TriggerData;
+            Value = value;
+        }
+        
         public TriggerValueEvent(Guid id, ITriggerData triggerData, TValue value, float startTime)
         {
             Id = id;
@@ -26,7 +34,7 @@ namespace Sonosthesia.Touch
         
         public void EndStream()
         {
-            TriggerData.Source.EndStream(Id);
+            TriggerData.Source.RequestKillStream(Id);
         }
 
         public TValue GetValue() => Value;

@@ -1,10 +1,11 @@
+using System;
 using Sonosthesia.MIDI;
 using Sonosthesia.Touch;
 using UnityEngine;
 
 namespace Sonosthesia.Instrument
 {
-    public class MPENoteTriggerSource : TriggerSource<MPENote>
+    public class MPENoteTriggerSource : ValueTriggerSource<MPENote>
     {
         [SerializeField] private TriggerValueGenerator<float> _note;
         
@@ -43,9 +44,9 @@ namespace Sonosthesia.Instrument
             return true;
         }
         
-        protected override void Clean(ITriggerData triggerData)
+        protected override void CleanupStream(Guid eventId, ITriggerData triggerData)
         {
-            base.Clean(triggerData);
+            base.CleanupStream(eventId, triggerData);
             _note.EndTrigger(triggerData);
             _velocity.EndTrigger(triggerData);
             _pressure.EndTrigger(triggerData);

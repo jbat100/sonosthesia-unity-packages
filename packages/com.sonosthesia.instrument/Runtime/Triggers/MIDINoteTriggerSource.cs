@@ -1,10 +1,11 @@
+using System;
 using UnityEngine;
 using Sonosthesia.MIDI;
 using Sonosthesia.Touch;
 
 namespace Sonosthesia.Instrument
 {
-    public class MIDINoteTriggerSource : TriggerSource<MIDINote>
+    public class MIDINoteTriggerSource : ValueTriggerSource<MIDINote>
     {
         [SerializeField] private TriggerValueGenerator<float> _channel;
         
@@ -41,9 +42,9 @@ namespace Sonosthesia.Instrument
             return true;
         }
 
-        protected override void Clean(ITriggerData triggerData)
+        protected override void CleanupStream(Guid eventId, ITriggerData triggerData)
         {
-            base.Clean(triggerData);
+            base.CleanupStream(eventId, triggerData);
             _channel.EndTrigger(triggerData);
             _note.EndTrigger(triggerData);
             _velocity.EndTrigger(triggerData);

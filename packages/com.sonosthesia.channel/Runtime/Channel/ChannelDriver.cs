@@ -20,14 +20,19 @@ namespace Sonosthesia.Channel
             }
             _ongoingSubjects.Clear();
         }
-        
+
         public Guid BeginStream(T value)
         {
             Guid id = Guid.NewGuid();
+            BeginStream(value, id);
+            return id;
+        }
+        
+        public void BeginStream(T value, Guid id)
+        {
             BehaviorSubject<T> subject = new BehaviorSubject<T>(value);
             _ongoingSubjects[id] = subject;
             _channel.Pipe(subject.AsObservable());
-            return id;
         }
 
         public void UpdateStream(Guid id, Func<T, T> update)

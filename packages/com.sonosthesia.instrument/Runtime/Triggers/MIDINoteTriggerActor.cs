@@ -3,7 +3,7 @@ using Sonosthesia.Touch;
 
 namespace Sonosthesia.Instrument
 {
-    public class MIDINoteTriggerActor : TriggerActor<MIDINote>
+    public class MIDINoteTriggerActor : ValueTriggerActor<MIDINote>
     {
         
     }

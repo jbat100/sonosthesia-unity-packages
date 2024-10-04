@@ -1,16 +1,23 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Sonosthesia.Channel;
 using UniRx;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public abstract class TriggerSource<TValue> : ValueTriggerEndpoint<TValue> where TValue : struct
+    // Simpler version of ValueTriggerSource which does not drive a channel, and therefore with no associated value type
+    // TODO: try to avoid code repetition but note that it is hard to do without introducing a big load of complexity
+
+    public interface ITriggerSource
+    {
+        void KillStream(Guid id);
+
+        void KillAllStreams();
+    }
+     
+    public abstract class TriggerSource : TriggerEndpoint, ITriggerSource
     {
         [SerializeField] private bool _log;
-        
-        [SerializeField] private ChannelDriver<TValue> _driver;
 
         [SerializeField] private bool _endOnExit = true;
 
@@ -20,21 +27,30 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private float _autoEndDelay;
 
-        private class TriggerData : ITriggerData
-        {
-            public Collider Collider { get; set; }
-            public bool Colliding { get; set; }
-            public TriggerEndpoint Source { get; set; }
-            public TriggerEndpoint Actor { get; set; }
-        }
-
         // note : we don't want concurrent events from the same collider
 
         private readonly Dictionary<Collider, Guid> _triggerEvents = new();
 
         private readonly Dictionary<Guid, TriggerData> _triggerData = new();
 
-        private readonly Dictionary<Guid, BehaviorSubject<TriggerValueEvent<TValue>>> _valueEventSubjects = new();
+        public void KillAllStreams()
+        {
+            Dictionary<Guid, TriggerData> copy = new Dictionary<Guid, TriggerData>(_triggerData);
+            foreach (KeyValuePair<Guid, TriggerData> pair in copy)
+            {
+                EndStream(pair.Key, pair.Value);
+            }
+        }
+
+        public void KillStream(Guid id)
+        {
+            if (_triggerData.TryGetValue(id, out TriggerData triggerData))
+            {
+                EndStream(id, triggerData);
+            }
+        }
+
+        protected virtual bool IsCompatibleActor(TriggerActor actor) => true;
 
         protected virtual void FixedUpdate()
         {
@@ -57,11 +73,17 @@ namespace Sonosthesia.Touch
             
             TriggerData triggerData;
             
-            TriggerActor<TValue> actor = other.GetComponentInParent<TriggerActor<TValue>>();
+            TriggerActor actor = other.GetComponentInParent<TriggerActor>();
 
             if (!actor)
             {
                 Debug.Log($"{this} {nameof(OnTriggerEnter)} bailed out (no actor)");
+                return;
+            }
+
+            if (!IsCompatibleActor(actor))
+            {
+                Debug.Log($"{this} {nameof(OnTriggerEnter)} bailed out (incompatible actor)");
                 return;
             }
 
@@ -167,136 +189,38 @@ namespace Sonosthesia.Touch
                 EndStream(eventId, triggerData);
             }
         }
-
-        public override void EndAllStreams()
-        {
-            Dictionary<Guid, TriggerData> copy = new Dictionary<Guid, TriggerData>(_triggerData);
-            foreach (KeyValuePair<Guid, TriggerData> pair in copy)
-            {
-                EndStream(pair.Key, pair.Value);
-            }
-        }
-
-        public override void EndStream(Guid id)
-        {
-            if (_triggerData.TryGetValue(id, out TriggerData triggerData))
-            {
-                EndStream(id, triggerData);
-            }
-        }
-
+        
         private void BeginStream(TriggerData triggerData)
         {
-            if (!Extract(true, triggerData, out TValue value))
-            {
-                return;
-            }
+            Guid eventId = Guid.NewGuid();
             
-            Guid eventId = _driver ? _driver.BeginStream(value) : Guid.NewGuid();
-
             _triggerEvents[triggerData.Collider] = eventId;
             _triggerData[eventId] = triggerData;
 
-            float startTime = Time.time;
-            
-            BehaviorSubject<TriggerValueEvent<TValue>> subject = new BehaviorSubject<TriggerValueEvent<TValue>>(new TriggerValueEvent<TValue>(eventId, triggerData, value, startTime));
-            _valueEventSubjects[eventId] = subject;
-
-            TriggerEvent sourceEvent = new TriggerEvent(eventId, triggerData, startTime);
-
-            IObservable<TriggerEvent> sourceObservable = subject.Select(_ => sourceEvent);
-            IObservable<TriggerValueEvent<TValue>> valueObservable = subject.AsObservable();
-            
-            EventStreamNode.Push(eventId, sourceObservable);
-            ValueStreamNode.Push(eventId, valueObservable);
-
-            // push the stream to the actor
-            if (triggerData.Actor)
+            if (!ConfigureStream(eventId, triggerData))
             {
-                triggerData.Actor.EventStreamNode.Push(eventId, sourceObservable);
-            }
-            if (triggerData.Actor is TriggerActor<TValue> actor)
-            {
-                actor.ValueStreamNode.Push(eventId, valueObservable);
-            }
-
-            if (AutoEnd(value, out float delay))
-            {
-                Observable.Timer(TimeSpan.FromSeconds(delay)).Subscribe(_ => sourceEvent.EndStream());
-            }
-            
-        }
-
-        private void UpdateStream(Guid eventId, TriggerData triggerData)
-        {
-            if (!Extract(false, triggerData, out TValue value))
-            {
+                EndStream(eventId, triggerData);
                 return;
             }
 
-            if (_driver)
+            if (_autoEnd)
             {
-                _driver.UpdateStream(eventId, value);    
+                Observable.Timer(TimeSpan.FromSeconds(_autoEndDelay)).Subscribe(_ => EndStream(eventId, triggerData));
             }
-
-            if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<TriggerValueEvent<TValue>> subject))
-            {
-                return;
-            }
-            
-            subject.OnNext(subject.Value.Update(value));
         }
-
+        
         private void EndStream(Guid eventId, TriggerData triggerData)
         {
-            if (_driver)
-            {
-                _driver.EndStream(eventId);    
-            }
-            
             _triggerEvents.Remove(triggerData.Collider);
             _triggerData.Remove(eventId);
             
-            if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<TriggerValueEvent<TValue>> subject))
-            {
-                return;
-            }
-            
-            subject.OnCompleted();
-            subject.Dispose();
-
-            _valueEventSubjects.Remove(eventId);
+            CleanupStream(eventId, triggerData);
         }
 
-        protected abstract bool Extract(bool initial, ITriggerData triggerData, out TValue value);
+        protected abstract bool ConfigureStream(Guid eventId, ITriggerData triggerData);
 
-        protected virtual void Clean(ITriggerData triggerData)
-        {
-            
-        }
+        protected abstract void UpdateStream(Guid eventId, ITriggerData triggerData);
 
-        protected virtual bool AutoEnd(TValue initial, out float delay)
-        {
-            delay = _autoEndDelay;
-            return _autoEnd;
-        }
-
-        public void TestStream(TValue value)
-        {
-            if (!Application.isPlaying)
-            {
-                Debug.LogError("Stream test requires play mode");
-                return;
-            }
-
-            if (!_driver)
-            {
-                Debug.LogError("TestStream requires driver");
-                return;
-            }
-            Guid id = _driver.BeginStream(value);
-            double delay = _autoEnd ? _autoEndDelay : 1f;
-            Observable.Timer(TimeSpan.FromSeconds(delay)).TakeUntilDestroy(this).Subscribe(_ => _driver.EndStream(id));
-        }
+        protected abstract void CleanupStream(Guid eventId, ITriggerData triggerData);
     }
 }

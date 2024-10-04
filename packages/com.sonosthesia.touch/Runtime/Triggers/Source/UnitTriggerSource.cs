@@ -7,7 +7,7 @@ namespace Sonosthesia.Touch
     // and templating on a single type is limiting. Prefer using agnostic affordances as they can be combined
     // to drive heterogeneous processes 
     
-    public class UnitTriggerSource : TriggerSource<Unit>
+    public class UnitTriggerSource : ValueTriggerSource<Unit>
     {
         protected override bool Extract(bool initial, ITriggerData triggerData, out Unit value)
         {

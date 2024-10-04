@@ -3,7 +3,7 @@ using Sonosthesia.Touch;
 
 namespace Sonosthesia.Instrument
 {
-    public class MPENoteTriggerActor : TriggerActor<MPENote>
+    public class MPENoteTriggerActor : ValueTriggerActor<MPENote>
     {
         
     }

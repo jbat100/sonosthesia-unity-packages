@@ -1,4 +1,5 @@
 ﻿using System;
+using Sonosthesia.Envelope;
 using Sonosthesia.Interaction;
 using Sonosthesia.Trigger;
 using UnityEngine;
@@ -7,11 +8,13 @@ namespace Sonosthesia.Touch
 {
     public class TriggerTriggerableAffordance : AgnosticAffordance<TriggerEvent, TriggerEndpoint, TriggerTriggerableAffordance>
     {
-        [SerializeField] private BuilderTriggerable _triggerable;
+        [SerializeField] private Triggerable _triggerable;
 
         [SerializeField] private TriggerValueGenerator<float> _valueScaleGenerator;
         
         [SerializeField] private TriggerValueGenerator<float> _timeScaleGenerator;
+
+        [SerializeField] private EnvelopeFactory _envelopeFactory;
         
         protected new class Controller : 
             AgnosticAffordance<TriggerEvent, TriggerEndpoint, TriggerTriggerableAffordance>.Controller
@@ -45,6 +48,8 @@ namespace Sonosthesia.Touch
                 {
                     affordance._timeScaleGenerator.BeginTrigger(e.TriggerData, out timeScale);
                 }
+
+                IEnvelope envelope = affordance._envelopeFactory ? affordance._envelopeFactory.Build() : null;
                 
                 affordance._triggerable.Trigger(valueScale, timeScale);
             }

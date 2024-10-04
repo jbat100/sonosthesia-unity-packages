@@ -14,8 +14,8 @@ namespace Sonosthesia.Touch
     {
         Collider Collider { get; }
         bool Colliding { get; }
-        TriggerEndpoint Source { get; }
-        TriggerEndpoint Actor { get; }
+        TriggerSource Source { get; }
+        TriggerActor Actor { get; }
     }
     
     // used for affordances
@@ -34,12 +34,20 @@ namespace Sonosthesia.Touch
 
         public void EndStream()
         {
-            TriggerData.Source.EndStream(Id);
+            TriggerData.Source.RequestKillStream(Id);
         }
     }
     
     public abstract class TriggerEndpoint : TriggerStream
     {
+        protected class TriggerData : ITriggerData
+        {
+            public Collider Collider { get; set; }
+            public bool Colliding { get; set; }
+            public TriggerSource Source { get; set; }
+            public TriggerActor Actor { get; set; }
+        }
+        
         // can be used to filter actors or to allow one source to have different responses 
         [SerializeField] private int _domain;
 
@@ -56,9 +64,30 @@ namespace Sonosthesia.Touch
             return _gates.All(gate => gate.AllowTrigger(this, actor));
         }
         
-        public abstract void EndAllStreams();
+        // Only source endpoints can kill streams so endpoints redirect kill requests
+        
+        public void RequestKillAllStreams()
+        {
+            Dictionary<Guid, TriggerEvent> events = new Dictionary<Guid, TriggerEvent>(EventStreamNode.Values);
+            foreach (KeyValuePair<Guid, TriggerEvent> pair in events)
+            {
+                if (pair.Value.TriggerData.Source is ITriggerSource source)
+                {
+                    source.KillStream(pair.Key);   
+                }
+            }
+        }
 
-        public abstract void EndStream(Guid id);
+        public void RequestKillStream(Guid id)
+        {
+            if (EventStreamNode.Values.TryGetValue(id, out TriggerEvent e))
+            {
+                if (e.TriggerData.Source is ITriggerSource source)
+                {
+                    source.KillStream(id);
+                }
+            }
+        }
         
         protected virtual void Awake()
         {
