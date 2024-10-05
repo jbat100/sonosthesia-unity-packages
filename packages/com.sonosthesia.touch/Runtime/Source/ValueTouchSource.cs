@@ -13,17 +13,14 @@ namespace Sonosthesia.Touch
     {
         [SerializeField] private ChannelDriver<TValue> _driver;
 
-        private readonly Dictionary<Guid, BehaviorSubject<TriggerValueEvent<TValue>>> _valueEventSubjects = new();
+        // we use composition with ValueTouchEndpoint so that affordances can apply to both sources and actors
         
-        private StreamNode<TriggerValueEvent<TValue>> _valueStreamNode;
-        public StreamNode<TriggerValueEvent<TValue>> ValueStreamNode => _valueStreamNode ??= new StreamNode<TriggerValueEvent<TValue>>(this);
+        [SerializeField] private ValueTouchEndpoint<TValue> _endpoint;
 
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            _valueStreamNode?.Dispose();
-        }
-        
+        private readonly Dictionary<Guid, BehaviorSubject<TriggerValueEvent<TValue>>> _valueEventSubjects = new();
+
+        public StreamNode<TriggerValueEvent<TValue>> ValueStreamNode => _endpoint ? _endpoint.ValueStreamNode : null;
+
         protected override bool IsCompatibleActor(TouchActor actor) =>
             actor is IValueEventStreamContainer<TValue, TriggerValueEvent<TValue>>;
 

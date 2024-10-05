@@ -1,18 +1,16 @@
 using Sonosthesia.Interaction;
 using Sonosthesia.Utils;
+using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
     public class ValueTouchActor<TValue> : TouchActor, IValueEventStreamContainer<TValue, TriggerValueEvent<TValue>> 
         where TValue : struct
     {
-        private StreamNode<TriggerValueEvent<TValue>> _valueStreamNode;
-        public StreamNode<TriggerValueEvent<TValue>> ValueStreamNode => _valueStreamNode ??= new StreamNode<TriggerValueEvent<TValue>>(this);
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            _valueStreamNode?.Dispose();
-        }
+        // we use composition with ValueTouchEndpoint so that affordances can apply to both sources and actors
+        
+        [SerializeField] private ValueTouchEndpoint<TValue> _endpoint;
+        
+        public StreamNode<TriggerValueEvent<TValue>> ValueStreamNode => _endpoint ? _endpoint.ValueStreamNode : null;
     }
 }
