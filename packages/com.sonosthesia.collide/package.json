@@ -1,0 +1,21 @@
+{
+  "author": "Jonathan Thorpe",
+  "dependencies": {
+    "com.unity.mathematics": "1.2.6",
+    "com.neuecc.unirx": "7.1.0",
+    "com.sonosthesia.utils": "1.10.0",
+    "com.sonosthesia.dynamic": "1.10.0",
+    "com.sonosthesia.interaction": "1.10.0",
+    "com.sonosthesia.channel": "1.10.0"
+  },
+  "description": "Sonosthesia unity collide",
+  "displayName": "Sonosthesia Collide",
+  "keywords": [
+    "unity"
+  ],
+  "license": "MIT",
+  "name": "com.sonosthesia.collide",
+  "repository": "github:jbat100/sonosthesia-unity-packages",
+  "unity": "2022.3",
+  "version": "1.10.0"
+}
