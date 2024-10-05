@@ -20,7 +20,7 @@ namespace Sonosthesia.Trigger
         
         [Header("Trigger")]
         
-        [SerializeField] private Triggerable _triggerable;
+        [SerializeField] private Trigger trigger;
 
         [SerializeField] private ValueTriggerSettings<T> _settings;
 
@@ -33,7 +33,7 @@ namespace Sonosthesia.Trigger
                 .SelectMany(stream => stream.First())
                 .Subscribe(value =>
                 {
-                    _triggerable.Trigger(_settings, value);
+                    trigger.Trigger(_settings, value);
                 });
         }
 

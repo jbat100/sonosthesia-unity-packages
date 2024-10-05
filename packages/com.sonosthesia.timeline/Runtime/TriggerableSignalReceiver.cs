@@ -16,10 +16,10 @@ namespace Sonosthesia.Timeline
         {
             public SignalAsset signalAsset;
             public ParameterizedEvent events;
-            public BuilderTriggerable.Payload payload;
+            public BuilderTrigger.Payload payload;
 
             [Serializable]
-            public class ParameterizedEvent : UnityEvent<BuilderTriggerable.Payload> { }
+            public class ParameterizedEvent : UnityEvent<BuilderTrigger.Payload> { }
         }
         
         public void OnNotify(Playable origin, INotification notification, object context)

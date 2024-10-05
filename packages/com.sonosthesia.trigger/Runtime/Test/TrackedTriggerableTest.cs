@@ -26,19 +26,19 @@ namespace Sonosthesia.Trigger
     }
 #endif
     
-    [RequireComponent(typeof(BuilderTrackedTriggerable))]
+    [RequireComponent(typeof(BuilderTrackedTrigger))]
     public class TrackedTriggerableTest : MonoBehaviour
     {
         [SerializeField] private float _valueScale = 1f;
         
         [SerializeField] private float _timeScale = 1f;
 
-        private BuilderTrackedTriggerable _triggerable;
+        private BuilderTrackedTrigger _trigger;
         private Guid _current;
 
         protected virtual void Awake()
         {
-            _triggerable = GetComponent<BuilderTrackedTriggerable>();
+            _trigger = GetComponent<BuilderTrackedTrigger>();
         }
 
         public void StartTrigger() => StartTrigger(_valueScale, _timeScale);
@@ -50,7 +50,7 @@ namespace Sonosthesia.Trigger
                 EndTrigger(_timeScale);
             }
             
-            _current = _triggerable.StartTrigger(valueScale, timeScale);
+            _current = _trigger.StartTrigger(valueScale, timeScale);
         }
 
         public void EndTrigger() => EndTrigger(_timeScale);
@@ -62,7 +62,7 @@ namespace Sonosthesia.Trigger
                 return;
             }
 
-            _triggerable.EndTrigger(_current, timeScale);
+            _trigger.EndTrigger(_current, timeScale);
             
             _current = Guid.Empty;
         }

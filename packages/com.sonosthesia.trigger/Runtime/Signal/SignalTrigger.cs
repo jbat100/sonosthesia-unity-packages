@@ -10,7 +10,7 @@ namespace Sonosthesia.Trigger
     {
         [SerializeField] private Signal<T> _source;
         
-        [SerializeField] private BuilderTriggerable _destination;
+        [SerializeField] private BuilderTrigger _destination;
 
         [SerializeField] private Selector<T> _timeScaleSelector;
 
@@ -25,7 +25,7 @@ namespace Sonosthesia.Trigger
             {
                 float timeScale = _timeScaleSelector ? _timeScaleSelector.Select(source) : 1f;
                 float valueScale = _valueScaleSelector ? _valueScaleSelector.Select(source) : 1f;
-                _destination.Trigger(valueScale, timeScale);
+                _destination.StartTrigger(valueScale, timeScale);
             });
         }
 
