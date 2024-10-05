@@ -8,17 +8,59 @@ namespace Sonosthesia.Touch
 {
     public class TriggerTrackedTriggerableAffordance : AgnosticAffordance<TriggerEvent, TriggerEndpoint, TriggerTrackedTriggerableAffordance>
     {
-        [SerializeField] private Triggerable _triggerable;
+        [SerializeField] private TrackedTriggerable _triggerable;
 
-        [SerializeField] private TriggerValueGenerator<float> _valueScaleGenerator;
+        [Serializable]
+        private class StartSettings
+        {
+            [SerializeField] private TriggerValueGenerator<float> _valueScaleGenerator;
+            [SerializeField] private TriggerValueGenerator<float> _timeScaleGenerator;
+            [SerializeField] private EnvelopeFactory _envelopeFactory;
+
+            public Guid StartTrigger(TriggerTrackedTriggerableAffordance affordance, TriggerEvent e)
+            {
+                float valueScale = 1f;
+                if (_valueScaleGenerator)
+                {
+                    _valueScaleGenerator.BeginTrigger(e.TriggerData, out valueScale);
+                }
+                float timeScale = 1f;
+                if (_timeScaleGenerator)
+                {
+                    _timeScaleGenerator.BeginTrigger(e.TriggerData, out timeScale);
+                }
+                IEnvelope envelope = _envelopeFactory ? _envelopeFactory.Build() : null;
+                return affordance._triggerable.StartTrigger(envelope, valueScale, timeScale);
+            }
+        }
+
+        [SerializeField] private StartSettings _start;
         
-        [SerializeField] private TriggerValueGenerator<float> _timeScaleGenerator;
+        [Serializable]
+        private class EndSettings
+        {
+            [SerializeField] private TriggerValueGenerator<float> _timeScaleGenerator;
+            [SerializeField] private EnvelopeFactory _envelopeFactory;
 
-        [SerializeField] private EnvelopeFactory _envelopeFactory;
+            public void EndTrigger(TriggerTrackedTriggerableAffordance affordance, Guid id, TriggerEvent e)
+            {
+                float timeScale = 1f;
+                if (_timeScaleGenerator)
+                {
+                    _timeScaleGenerator.BeginTrigger(e.TriggerData, out timeScale);
+                }
+                IEnvelope envelope = _envelopeFactory ? _envelopeFactory.Build() : null;
+                affordance._triggerable.EndTrigger(envelope, id, timeScale);
+            }
+        }
+
+        [SerializeField] private EndSettings _end;
         
         protected new class Controller : 
             AgnosticAffordance<TriggerEvent, TriggerEndpoint, TriggerTrackedTriggerableAffordance>.Controller
         {
+            private Guid _triggerId;
+            
             public Controller(Guid eventId, TriggerTrackedTriggerableAffordance affordance) : base(eventId, affordance)
             {
             }
@@ -37,35 +79,23 @@ namespace Sonosthesia.Touch
                     }
                     return;
                 }
-                
-                float valueScale = 1f;
-                if (affordance._valueScaleGenerator)
-                {
-                    affordance._valueScaleGenerator.BeginTrigger(e.TriggerData, out valueScale);
-                }
-                float timeScale = 1f;
-                if (affordance._timeScaleGenerator)
-                {
-                    affordance._timeScaleGenerator.BeginTrigger(e.TriggerData, out timeScale);
-                }
 
-                IEnvelope envelope = affordance._envelopeFactory ? affordance._envelopeFactory.Build() : null;
-                
-                affordance._triggerable.Trigger(envelope, valueScale, timeScale);
+                _triggerId = affordance._start.StartTrigger(affordance, e);
             }
 
             protected override void Teardown(TriggerEvent e)
             {
                 base.Teardown(e);
                 TriggerTrackedTriggerableAffordance affordance = Affordance;
-                if (affordance._valueScaleGenerator)
+                if (!affordance._triggerable)
                 {
-                    affordance._valueScaleGenerator.EndTrigger(e.TriggerData);
+                    if (affordance.Log)
+                    {
+                        Debug.Log($"{this} {nameof(Teardown)} bailing out (no triggerable)");
+                    }
+                    return;
                 }
-                if (affordance._timeScaleGenerator)
-                {
-                    affordance._timeScaleGenerator.EndTrigger(e.TriggerData);
-                }
+                affordance._end.EndTrigger(affordance, _triggerId, e);
             }
         }
 

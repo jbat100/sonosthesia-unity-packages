@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using Sonosthesia.Utils;
 using Sonosthesia.Channel;
 using UniRx;
 
@@ -8,14 +7,19 @@ namespace Sonosthesia.Trigger
 {
     public class ChannelTrackedTrigger<T> : MonoBehaviour where T : struct
     {
-        [SerializeField] private BuilderTrackedTriggerable _triggerable;
-
-        [SerializeField] private Channel<T> _channel;
-
-        [SerializeField] private Selector<T> _valueSelector;
-
-        [SerializeField] private Selector<T> _timeSelector;
+        [Header("Source")]
         
+        [SerializeField] private Channel<T> _channel;
+        
+        [Header("Trigger")]
+        
+        [SerializeField] private TrackedTriggerable _triggerable;
+
+        [SerializeField] private ValueStartTriggerSettings<T> _start;
+
+        [SerializeField] private ValueEndTriggerSettings<T> _end;
+
+
         private IDisposable _subscription;
     
         protected void OnEnable()
@@ -34,18 +38,15 @@ namespace Sonosthesia.Trigger
                         {
                             return;
                         }
-                        float timeScale = _timeSelector ? _timeSelector.Select(lastValue.Value) : 1f;
-                        _triggerable.EndTrigger(id.Value, timeScale);
+                        _triggerable.EndTrigger(_end, id.Value, lastValue.Value);
                     }
                     
                     stream.TakeUntilDisable(this).Subscribe(value =>
                     {
                         lastValue = value;
-                        float valueScale = _valueSelector ? _valueSelector.Select(value) : 1f;
                         if (!id.HasValue)
                         {
-                            float timeScale = _timeSelector ? _timeSelector.Select(value) : 1f;
-                            id = _triggerable.StartTrigger(valueScale, timeScale);
+                            id = _triggerable.StartTrigger(_start, value);
                         }
                     }, error =>
                     {
