@@ -9,6 +9,7 @@ namespace Sonosthesia.Interaction
     /// </summary>
     /// <typeparam name="TEvent"></typeparam>
     /// <typeparam name="TContainer"></typeparam>
+    /// <typeparam name="TAffordance"></typeparam>
     public class AgnosticAffordance<TEvent, TContainer, TAffordance> : MonoBehaviour 
         where TEvent : struct 
         where TContainer : MonoBehaviour, IEventStreamContainer<TEvent>
@@ -55,6 +56,8 @@ namespace Sonosthesia.Interaction
         }
 
         protected virtual void OnDisable() => _subscriptions.Clear();
+        
+        // For convenience, subclasses can inherit Controller
         
         protected abstract class Controller : IObserver<TEvent>
         {

@@ -51,7 +51,7 @@ namespace Sonosthesia.Touch
 
                 IEnvelope envelope = affordance._envelopeFactory ? affordance._envelopeFactory.Build() : null;
                 
-                affordance._triggerable.Trigger(valueScale, timeScale);
+                affordance._triggerable.Trigger(envelope, valueScale, timeScale);
             }
 
             protected override void Teardown(TriggerEvent e)
