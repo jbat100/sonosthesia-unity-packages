@@ -74,42 +74,26 @@ namespace Sonosthesia.Touch
             _children.Remove(node);
         }
 
-        public void EndStream(Guid id)
-        {
-            if (StreamNode.Values.TryGetValue(id, out TouchEvent e))
-            {
-                e.EndStream();
-            }
-        }
-
         public void EndOldestStream()
         {
             float lowestStartTime = float.MaxValue;
-            TouchEvent? oldest = null;
+            Guid oldest = Guid.Empty;
             foreach (KeyValuePair<Guid, TouchEvent> pair in StreamNode.Values)
             {
                 float startTime = pair.Value.StartTime;
                 if (startTime < lowestStartTime)
                 {
-                    oldest = pair.Value;
+                    oldest = pair.Key;
                     lowestStartTime = startTime;
                 }
             }
 
-            if (oldest.HasValue)
+            if (oldest != Guid.Empty)
             {
-                oldest.Value.EndStream();
+                KillStream(oldest);
             }
         }
 
-        public void EndAllStreams()
-        {
-            foreach (KeyValuePair<Guid, TouchEvent> pair in StreamNode.Values.ToList())
-            {
-                pair.Value.EndStream();
-            }
-        }
-        
         public virtual bool RequestPermission(Collider other)
         {
             if (!isActiveAndEnabled)

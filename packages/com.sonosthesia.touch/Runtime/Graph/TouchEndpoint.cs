@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sonosthesia.Dynamic;
@@ -8,14 +7,6 @@ namespace Sonosthesia.Touch
 {
     public abstract class TouchEndpoint : MonoBehaviour
     {
-        protected class TouchData : ITouchData
-        {
-            public Collider Collider { get; set; }
-            public bool Colliding { get; set; }
-            public TouchSource Source { get; set; }
-            public TouchActor Actor { get; set; }
-        }
-        
         // can be used to filter actors or to allow one source to have different responses 
         [SerializeField] private int _domain;
 

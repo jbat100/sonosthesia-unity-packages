@@ -7,6 +7,14 @@ namespace Sonosthesia.Touch
 {
     public abstract class TouchSource : TouchEndpoint
     {
+        private class TouchData : ITouchData
+        {
+            public Collider Collider { get; set; }
+            public bool Colliding { get; set; }
+            public TouchSource Source { get; set; }
+            public TouchActor Actor { get; set; }
+        }
+        
         [SerializeField] private bool _log;
 
         [SerializeField] private bool _endOnExit = true;
@@ -182,35 +190,35 @@ namespace Sonosthesia.Touch
         
         private void BeginStream(TouchData touchData)
         {
-            Guid eventId = Guid.NewGuid();
+            Guid id = Guid.NewGuid();
             
-            _triggerEvents[touchData.Collider] = eventId;
-            _triggerData[eventId] = touchData;
+            _triggerEvents[touchData.Collider] = id;
+            _triggerData[id] = touchData;
 
-            if (!ConfigureStream(eventId, touchData))
+            if (!ConfigureStream(id, touchData))
             {
-                EndStream(eventId, touchData);
+                EndStream(id, touchData);
                 return;
             }
 
             if (_autoEnd)
             {
-                Observable.Timer(TimeSpan.FromSeconds(_autoEndDelay)).Subscribe(_ => EndStream(eventId, touchData));
+                Observable.Timer(TimeSpan.FromSeconds(_autoEndDelay)).Subscribe(_ => EndStream(id, touchData));
             }
         }
         
-        private void EndStream(Guid eventId, TouchData touchData)
+        private void EndStream(Guid id, TouchData touchData)
         {
             _triggerEvents.Remove(touchData.Collider);
-            _triggerData.Remove(eventId);
+            _triggerData.Remove(id);
             
-            CleanupStream(eventId, touchData);
+            CleanupStream(id, touchData);
         }
 
-        protected abstract bool ConfigureStream(Guid eventId, ITouchData touchData);
+        protected abstract bool ConfigureStream(Guid id, ITouchData touchData);
 
-        protected abstract void UpdateStream(Guid eventId, ITouchData touchData);
+        protected abstract void UpdateStream(Guid id, ITouchData touchData);
 
-        protected abstract void CleanupStream(Guid eventId, ITouchData touchData);
+        protected abstract void CleanupStream(Guid id, ITouchData touchData);
     }
 }

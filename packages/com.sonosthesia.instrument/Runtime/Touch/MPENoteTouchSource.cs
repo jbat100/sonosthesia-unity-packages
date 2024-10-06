@@ -44,9 +44,9 @@ namespace Sonosthesia.Instrument
             return true;
         }
         
-        protected override void CleanupStream(Guid eventId, ITouchData touchData)
+        protected override void CleanupStream(Guid id, ITouchData touchData)
         {
-            base.CleanupStream(eventId, touchData);
+            base.CleanupStream(id, touchData);
             _note.EndTouch(touchData);
             _velocity.EndTouch(touchData);
             _pressure.EndTouch(touchData);

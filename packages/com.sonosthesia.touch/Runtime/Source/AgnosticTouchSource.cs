@@ -9,36 +9,36 @@ namespace Sonosthesia.Touch
     {
         private readonly Dictionary<Guid, BehaviorSubject<TouchEvent>> _eventSubjects = new();
 
-        protected override bool ConfigureStream(Guid eventId, ITouchData touchData)
+        protected override bool ConfigureStream(Guid id, ITouchData touchData)
         {
-            TouchEvent sourceEvent = new TouchEvent(eventId, touchData, Time.time);
+            TouchEvent sourceEvent = new TouchEvent(touchData, Time.time);
             BehaviorSubject<TouchEvent> eventSubject = new BehaviorSubject<TouchEvent>(sourceEvent);
-            _eventSubjects[sourceEvent.Id] = eventSubject;
+            _eventSubjects[id] = eventSubject;
             IObservable<TouchEvent> sourceObservable = eventSubject.AsObservable();
             if (Node)
             {
-                Node.StreamNode.Push(sourceEvent.Id, sourceObservable);
+                Node.StreamNode.Push(id, sourceObservable);
             }
             // push the stream to the actor
             if (sourceEvent.TouchData.Actor && sourceEvent.TouchData.Actor.Node)
             {
-                sourceEvent.TouchData.Actor.Node.StreamNode.Push(sourceEvent.Id, sourceObservable);
+                sourceEvent.TouchData.Actor.Node.StreamNode.Push(id, sourceObservable);
             }
             return true;
         }
 
-        protected override void UpdateStream(Guid eventId, ITouchData touchData)
+        protected override void UpdateStream(Guid id, ITouchData touchData)
         {
-            if (!_eventSubjects.TryGetValue(eventId, out BehaviorSubject<TouchEvent> subject))
+            if (!_eventSubjects.TryGetValue(id, out BehaviorSubject<TouchEvent> subject))
             {
                 return;
             }
             subject.OnNext(subject.Value);
         }
 
-        protected override void CleanupStream(Guid eventId, ITouchData touchData)
+        protected override void CleanupStream(Guid id, ITouchData touchData)
         {
-            if (!_eventSubjects.TryGetValue(eventId, out BehaviorSubject<TouchEvent> subject))
+            if (!_eventSubjects.TryGetValue(id, out BehaviorSubject<TouchEvent> subject))
             {
                 return;
             }
@@ -46,7 +46,7 @@ namespace Sonosthesia.Touch
             subject.OnCompleted();
             subject.Dispose();
 
-            _eventSubjects.Remove(eventId);
+            _eventSubjects.Remove(id);
         }
     }
 }

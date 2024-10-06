@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using Sonosthesia.Channel;
-using Sonosthesia.Interaction;
 using UniRx;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public abstract class ValueTouchSource<TValue> : TouchSource
-        where TValue : struct
+    public abstract class ValueTouchSource<TValue> : TouchSource where TValue : struct
     {
         [SerializeField] private ChannelDriver<TValue> _driver;
 
@@ -21,9 +19,9 @@ namespace Sonosthesia.Touch
 
         protected override bool IsCompatibleActor(TouchActor actor) => actor is ValueTouchActor<TValue>;
 
-        protected override bool ConfigureStream(Guid eventId, ITouchData touchData)
+        protected override bool ConfigureStream(Guid id, ITouchData touchData)
         {
-            TouchEvent sourceEvent = new TouchEvent(eventId, touchData, Time.time);
+            TouchEvent sourceEvent = new TouchEvent(touchData, Time.time);
             if (!Extract(true, sourceEvent.TouchData, out TValue value))
             {
                 return false;
@@ -31,39 +29,39 @@ namespace Sonosthesia.Touch
 
             if (_driver)
             {
-                _driver.BeginStream(value, sourceEvent.Id);
+                _driver.BeginStream(value, id);
             }
             
             BehaviorSubject<TriggerValueEvent<TValue>> subject = new BehaviorSubject<TriggerValueEvent<TValue>>(new TriggerValueEvent<TValue>(sourceEvent, value));
-            _valueEventSubjects[sourceEvent.Id] = subject;
+            _valueEventSubjects[id] = subject;
 
             IObservable<TouchEvent> eventObservable = subject.Select(_ => sourceEvent);
             IObservable<TriggerValueEvent<TValue>> valueObservable = subject.AsObservable();
 
             if (Node)
             {
-                Node.StreamNode.Push(sourceEvent.Id, eventObservable);
+                Node.StreamNode.Push(id, eventObservable);
             }
             if (Values)
             {
-                Values.StreamNode.Push(sourceEvent.Id, valueObservable);    
+                Values.StreamNode.Push(id, valueObservable);    
             }
             
             // push the stream to the actor
             
             if (sourceEvent.TouchData.Actor && sourceEvent.TouchData.Actor.Node)
             {
-                sourceEvent.TouchData.Actor.Node.StreamNode.Push(sourceEvent.Id, eventObservable);
+                sourceEvent.TouchData.Actor.Node.StreamNode.Push(id, eventObservable);
             }
             if (sourceEvent.TouchData.Actor is ValueTouchActor<TValue> valueActor && valueActor.ValueEventStreamContainer)
             {
-                valueActor.ValueEventStreamContainer.StreamNode.Push(sourceEvent.Id, valueObservable);
+                valueActor.ValueEventStreamContainer.StreamNode.Push(id, valueObservable);
             }
 
             return true;
         }
 
-        protected override void UpdateStream(Guid eventId, ITouchData touchData)
+        protected override void UpdateStream(Guid id, ITouchData touchData)
         {
             if (!Extract(false, touchData, out TValue value))
             {
@@ -72,10 +70,10 @@ namespace Sonosthesia.Touch
 
             if (_driver)
             {
-                _driver.UpdateStream(eventId, value);    
+                _driver.UpdateStream(id, value);    
             }
 
-            if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<TriggerValueEvent<TValue>> subject))
+            if (!_valueEventSubjects.TryGetValue(id, out BehaviorSubject<TriggerValueEvent<TValue>> subject))
             {
                 return;
             }
@@ -83,14 +81,14 @@ namespace Sonosthesia.Touch
             subject.OnNext(subject.Value.Update(value));
         }
 
-        protected override void CleanupStream(Guid eventId, ITouchData touchData)
+        protected override void CleanupStream(Guid id, ITouchData touchData)
         {
             if (_driver)
             {
-                _driver.EndStream(eventId);    
+                _driver.EndStream(id);    
             }
 
-            if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<TriggerValueEvent<TValue>> subject))
+            if (!_valueEventSubjects.TryGetValue(id, out BehaviorSubject<TriggerValueEvent<TValue>> subject))
             {
                 return;
             }
@@ -98,7 +96,7 @@ namespace Sonosthesia.Touch
             subject.OnCompleted();
             subject.Dispose();
 
-            _valueEventSubjects.Remove(eventId);
+            _valueEventSubjects.Remove(id);
         }
 
         protected abstract bool Extract(bool initial, ITouchData touchData, out TValue value);

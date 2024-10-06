@@ -28,7 +28,7 @@ namespace Sonosthesia.Pointer
 
         [SerializeField] private bool _endOnExit;
         
-        private readonly Dictionary<int, Guid> _pointerEvents = new();
+        private readonly Dictionary<int, Guid> _pointerStreams = new();
         
         private readonly Dictionary<Guid, BehaviorSubject<PointerValueEvent<TValue>>> _valueEventSubjects = new();
 
@@ -39,25 +39,25 @@ namespace Sonosthesia.Pointer
                 return;
             }
             
-            Guid eventId = _driver.BeginStream(value);
-            _pointerEvents[eventData.pointerId] = eventId; 
+            Guid id = _driver.BeginStream(value);
+            _pointerStreams[eventData.pointerId] = id; 
 
-            BehaviorSubject<PointerValueEvent<TValue>> subject = new BehaviorSubject<PointerValueEvent<TValue>>(new PointerValueEvent<TValue>(eventId, value, eventData));
-            _valueEventSubjects[eventId] = subject;
+            BehaviorSubject<PointerValueEvent<TValue>> subject = new BehaviorSubject<PointerValueEvent<TValue>>(new PointerValueEvent<TValue>(id, value, eventData));
+            _valueEventSubjects[id] = subject;
 
             if (EventStreamContainer)
             {
-                EventStreamContainer.StreamNode.Push(eventId, subject.Select(valueEvent => new PointerEvent(valueEvent.Id, eventData))); 
+                EventStreamContainer.StreamNode.Push(id, subject.Select(valueEvent => new PointerEvent(eventData))); 
             }
             if (ValueEventStreamContainer)
             {
-                ValueEventStreamContainer.StreamNode.Push(eventId, subject.AsObservable()); 
+                ValueEventStreamContainer.StreamNode.Push(id, subject.AsObservable()); 
             }
         }
 
         private void UpdateEvent(PointerEventData eventData)
         {
-            if (!_pointerEvents.TryGetValue(eventData.pointerId, out Guid eventId))
+            if (!_pointerStreams.TryGetValue(eventData.pointerId, out Guid id))
             {
                 return;
             }
@@ -67,27 +67,27 @@ namespace Sonosthesia.Pointer
                 return;
             }
             
-            _driver.UpdateStream(eventId, value);
+            _driver.UpdateStream(id, value);
             
-            if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<PointerValueEvent<TValue>> subject))
+            if (!_valueEventSubjects.TryGetValue(id, out BehaviorSubject<PointerValueEvent<TValue>> subject))
             {
                 return;
             }
             
-            subject.OnNext(new PointerValueEvent<TValue>(eventId, value, eventData));
+            subject.OnNext(new PointerValueEvent<TValue>(id, value, eventData));
         }
         
         private void EndEvent(PointerEventData eventData)
         {
             End(eventData);
             
-            if (!_pointerEvents.TryGetValue(eventData.pointerId, out Guid eventId))
+            if (!_pointerStreams.TryGetValue(eventData.pointerId, out Guid eventId))
             {
                 return;
             }
             
             _driver.EndStream(eventId);
-            _pointerEvents.Remove(eventData.pointerId);
+            _pointerStreams.Remove(eventData.pointerId);
 
             if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<PointerValueEvent<TValue>> subject))
             {

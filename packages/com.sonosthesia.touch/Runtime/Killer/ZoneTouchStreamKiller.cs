@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class ZoneTouchStreamKiller : TouchStreamKiller
+    public class ZoneTouchStreamKiller : MonoBehaviour
     {
         protected virtual void OnTriggerEnter(Collider other)
         {
@@ -10,7 +10,7 @@ namespace Sonosthesia.Touch
 
             if (_eventStreamContainer)
             {
-                Kill(_eventStreamContainer);
+                _eventStreamContainer.KillAllStreams();
             }
         }
 
