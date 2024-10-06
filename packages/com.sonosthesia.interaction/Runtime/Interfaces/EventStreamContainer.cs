@@ -8,7 +8,7 @@ namespace Sonosthesia.Interaction
         private StreamNode<TEvent> _StreamNode;
         public StreamNode<TEvent> StreamNode => _StreamNode ??= new StreamNode<TEvent>(this);
 
-        protected void OnDestroy()
+        protected virtual void OnDestroy()
         {
             _StreamNode?.Dispose();
         }

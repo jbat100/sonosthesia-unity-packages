@@ -1,7 +1,5 @@
 using System;
 using Sonosthesia.Interaction;
-using Sonosthesia.Utils;
-using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
@@ -41,16 +39,9 @@ namespace Sonosthesia.Touch
         public TValue GetValue() => Value;
     }
     
-    public class TouchValueEventStreamContainer<TValue> : MonoBehaviour,
-        IValueEventStreamContainer<TValue, TriggerValueEvent<TValue>> 
+    public class TouchValueEventStreamContainer<TValue> : ValueEventStreamContainer<TValue, TriggerValueEvent<TValue>>
         where TValue : struct
     {
-        private StreamNode<TriggerValueEvent<TValue>> _streamNode;
-        public StreamNode<TriggerValueEvent<TValue>> StreamNode => _streamNode ??= new StreamNode<TriggerValueEvent<TValue>>(this);
         
-        protected virtual void OnDestroy()
-        {
-            _streamNode?.Dispose();
-        }
     }
 }
