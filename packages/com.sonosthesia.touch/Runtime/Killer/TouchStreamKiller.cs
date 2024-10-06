@@ -9,11 +9,11 @@ namespace Sonosthesia.Touch
     {
         private readonly Dictionary<Guid, TouchEvent> _kill = new ();
 
-        protected void Kill(TouchStream streams)
+        protected void Kill(TouchEventStreamContainer container)
         {
             // make a copy as ending streams will cause the SourceStreamNode.Values to change during iteration
             _kill.Clear();
-            _kill.Import(streams.EventStreamNode.Values);
+            _kill.Import(container.StreamNode.Values);
             foreach (KeyValuePair<Guid, TouchEvent> pair in _kill)
             {
                 pair.Value.EndStream();

@@ -4,7 +4,7 @@ using Sonosthesia.Touch;
 namespace Sonosthesia.Instrument
 {
     public class MPENoteTouchInstantiatorValueAffordance : 
-        TouchInstantiatorValueAffordance<MPENote, ValueTouchEndpoint<MPENote>>
+        TouchInstantiatorValueAffordance<MPENote, TouchValueEventStreamContainer<MPENote>>
     {
         
     }

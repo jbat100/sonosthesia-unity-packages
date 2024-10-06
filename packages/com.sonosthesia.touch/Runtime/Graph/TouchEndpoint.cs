@@ -34,11 +34,11 @@ namespace Sonosthesia.Touch
 
         public void EndStream()
         {
-            TouchData.Source.RequestKillStream(Id);
+            TouchData.Source.KillStream(Id);
         }
     }
     
-    public abstract class TouchEndpoint : TouchStream
+    public abstract class TouchEndpoint : MonoBehaviour
     {
         protected class TouchData : ITouchData
         {
@@ -63,40 +63,7 @@ namespace Sonosthesia.Touch
         {
             return _gates.All(gate => gate.AllowTrigger(this, actor));
         }
-        
-        // Only source endpoints can kill streams so endpoints redirect kill requests
-        
-        public void RequestKillAllStreams()
-        {
-            Dictionary<Guid, TouchEvent> events = new Dictionary<Guid, TouchEvent>(EventStreamNode.Values);
-            foreach (KeyValuePair<Guid, TouchEvent> pair in events)
-            {
-                if (pair.Value.TouchData.Source is ITriggerSource source)
-                {
-                    source.KillStream(pair.Key);   
-                }
-            }
-        }
 
-        public void RequestKillStream(Guid id)
-        {
-            if (EventStreamNode.Values.TryGetValue(id, out TouchEvent e))
-            {
-                if (e.TouchData.Source is ITriggerSource source)
-                {
-                    source.KillStream(id);
-                }
-            }
-        }
-        
-        protected virtual void Awake()
-        {
-            if (_node)
-            {
-                _node.EventStreamNode.Pipe(EventStreamNode);    
-            }
-        }
-        
         public virtual bool RequestPermission(Collider other)
         {
             if (!isActiveAndEnabled)

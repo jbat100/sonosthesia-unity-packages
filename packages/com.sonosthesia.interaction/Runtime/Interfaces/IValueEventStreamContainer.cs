@@ -12,6 +12,6 @@ namespace Sonosthesia.Interaction
         where TValue : struct 
         where TEvent : struct, IValueEvent<TValue>
     {
-        StreamNode<TEvent> ValueStreamNode { get; }
+        StreamNode<TEvent> StreamNode { get; }
     }
 }

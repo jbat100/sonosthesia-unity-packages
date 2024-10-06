@@ -8,18 +8,17 @@ namespace Sonosthesia.Interaction
     /// Affordance for a given event stream container, agnostic of value 
     /// </summary>
     /// <typeparam name="TEvent"></typeparam>
-    /// <typeparam name="TContainer"></typeparam>
+    /// <typeparam name="TStreamContainer"></typeparam>
     /// <typeparam name="TAffordance"></typeparam>
-    public class AgnosticAffordance<TEvent, TContainer, TAffordance> : MonoBehaviour 
+    public class AgnosticAffordance<TEvent, TStreamContainer, TAffordance> : MonoBehaviour 
         where TEvent : struct 
-        where TContainer : MonoBehaviour, IEventStreamContainer<TEvent>
-        where TAffordance : AgnosticAffordance<TEvent, TContainer, TAffordance>
+        where TStreamContainer : MonoBehaviour, IEventStreamContainer<TEvent>
+        where TAffordance : AgnosticAffordance<TEvent, TStreamContainer, TAffordance>
     {
         [SerializeField] private bool _log;
         protected bool Log => _log;
         
-        // TODO : relink in editor
-        [SerializeField] private TContainer _container;
+        [SerializeField] private TStreamContainer _streamContainer;
 
         private readonly CompositeDisposable _subscriptions = new();
 
@@ -37,8 +36,8 @@ namespace Sonosthesia.Interaction
 
         protected virtual void OnEnable()
         {
-            _subscriptions.Add(_container.EventStreamNode.Values.ObserveCountChanged().Subscribe(OnEventCountChanged));
-            _subscriptions.Add(_container.EventStreamNode.StreamObservable.Subscribe(pair =>
+            _subscriptions.Add(_streamContainer.StreamNode.Values.ObserveCountChanged().Subscribe(OnEventCountChanged));
+            _subscriptions.Add(_streamContainer.StreamNode.StreamObservable.Subscribe(pair =>
             {
                 Guid id = pair.Key;
                 if (_log)

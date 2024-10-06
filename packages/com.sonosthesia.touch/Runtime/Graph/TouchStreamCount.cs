@@ -10,14 +10,14 @@ namespace Sonosthesia.Touch
     /// </summary>
     public class TouchStreamCount : Signal<float>
     {
-        [SerializeField] private TouchStream _stream;
+        [SerializeField] private TouchEventStreamContainer _eventStreamContainer;
 
         private IDisposable _subscription;
 
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = _stream.EventStreamNode.Values.ObserveCountChanged(true)
+            _subscription = _eventStreamContainer.StreamNode.Values.ObserveCountChanged(true)
                 .Subscribe(count => Broadcast((float)count));
         }
 

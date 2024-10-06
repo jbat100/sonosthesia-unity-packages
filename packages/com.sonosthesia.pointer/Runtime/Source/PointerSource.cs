@@ -1,34 +1,13 @@
 using System;
 using System.Collections.Generic;
-using Sonosthesia.Channel;
-using Sonosthesia.Interaction;
-using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Sonosthesia.Channel;
 
 namespace Sonosthesia.Pointer
 {
-    
-    // used for affordances
-    public readonly struct PointerValueEvent<TValue> : IValueEvent<TValue> where TValue : struct
-    {
-        public readonly Guid Id;
-        public readonly TValue Value;
-        public readonly PointerEventData Data;
-
-        public PointerValueEvent(Guid id, TValue value, PointerEventData data)
-        {
-            Id = id;
-            Value = value;
-            Data = data;
-        }
-
-        public TValue GetValue() => Value;
-    }
-    
     public abstract class PointerSource<TValue> : BasePointerSource, 
-        IValueEventStreamContainer<TValue, PointerValueEvent<TValue>>,
         IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler, IPointerExitHandler,
         IScrollHandler,
         IDragHandler, IInitializePotentialDragHandler
@@ -42,6 +21,9 @@ namespace Sonosthesia.Pointer
 
         [SerializeField] private ChannelDriver<TValue> _driver;
 
+        [SerializeField] private PointerValueEventStreamContainer<TValue> _valueEventStreamContainer;
+        public PointerValueEventStreamContainer<TValue> ValueEventStreamContainer => _valueEventStreamContainer;
+        
         [SerializeField] private TrackingMode _trackingMode;
 
         [SerializeField] private bool _endOnExit;
@@ -49,15 +31,6 @@ namespace Sonosthesia.Pointer
         private readonly Dictionary<int, Guid> _pointerEvents = new();
         
         private readonly Dictionary<Guid, BehaviorSubject<PointerValueEvent<TValue>>> _valueEventSubjects = new();
-        
-        private StreamNode<PointerValueEvent<TValue>> _valueStreamNode;
-        public StreamNode<PointerValueEvent<TValue>> ValueStreamNode => _valueStreamNode ??= new StreamNode<PointerValueEvent<TValue>>(this);
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            _valueStreamNode?.Dispose();
-        }
 
         private void BeginEvent(PointerEventData eventData)
         {
@@ -72,8 +45,14 @@ namespace Sonosthesia.Pointer
             BehaviorSubject<PointerValueEvent<TValue>> subject = new BehaviorSubject<PointerValueEvent<TValue>>(new PointerValueEvent<TValue>(eventId, value, eventData));
             _valueEventSubjects[eventId] = subject;
 
-            ValueStreamNode.Push(eventId, subject.AsObservable());
-            EventStreamNode.Push(eventId, subject.Select(valueEvent => new PointerEvent(valueEvent.Id, eventData)));
+            if (EventStreamContainer)
+            {
+                EventStreamContainer.StreamNode.Push(eventId, subject.Select(valueEvent => new PointerEvent(valueEvent.Id, eventData))); 
+            }
+            if (ValueEventStreamContainer)
+            {
+                ValueEventStreamContainer.StreamNode.Push(eventId, subject.AsObservable()); 
+            }
         }
 
         private void UpdateEvent(PointerEventData eventData)

@@ -2,24 +2,22 @@ using System;
 using System.Collections.Generic;
 using Sonosthesia.Channel;
 using Sonosthesia.Interaction;
-using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public abstract class ValueTouchSource<TValue> : TouchSource, IValueEventStreamContainer<TValue, TriggerValueEvent<TValue>> 
+    public abstract class ValueTouchSource<TValue> : TouchSource
         where TValue : struct
     {
         [SerializeField] private ChannelDriver<TValue> _driver;
 
         // we use composition with ValueTouchEndpoint so that affordances can apply to both sources and actors
         
-        [SerializeField] private ValueTouchEndpoint<TValue> _endpoint;
+        [SerializeField] private TouchValueEventStreamContainer<TValue> _valueEventStreamContainer;
+        public TouchValueEventStreamContainer<TValue> ValueEventStreamContainer => _valueEventStreamContainer;
 
         private readonly Dictionary<Guid, BehaviorSubject<TriggerValueEvent<TValue>>> _valueEventSubjects = new();
-
-        public StreamNode<TriggerValueEvent<TValue>> ValueStreamNode => _endpoint ? _endpoint.ValueStreamNode : null;
 
         protected override bool IsCompatibleActor(TouchActor actor) =>
             actor is IValueEventStreamContainer<TValue, TriggerValueEvent<TValue>>;
@@ -42,18 +40,25 @@ namespace Sonosthesia.Touch
 
             IObservable<TouchEvent> sourceObservable = subject.Select(_ => sourceEvent);
             IObservable<TriggerValueEvent<TValue>> valueObservable = subject.AsObservable();
-            
-            EventStreamNode.Push(sourceEvent.Id, sourceObservable);
-            ValueStreamNode.Push(sourceEvent.Id, valueObservable);
 
-            // push the stream to the actor
-            if (sourceEvent.TouchData.Actor)
+            if (Node)
             {
-                sourceEvent.TouchData.Actor.EventStreamNode.Push(sourceEvent.Id, sourceObservable);
+                Node.StreamNode.Push(sourceEvent.Id, sourceObservable);
             }
-            if (sourceEvent.TouchData.Actor is IValueEventStreamContainer<TValue, TriggerValueEvent<TValue>> actor)
+            if (ValueEventStreamContainer)
             {
-                actor.ValueStreamNode.Push(sourceEvent.Id, valueObservable);
+                ValueEventStreamContainer.StreamNode.Push(sourceEvent.Id, valueObservable);    
+            }
+            
+            // push the stream to the actor
+            
+            if (sourceEvent.TouchData.Actor && sourceEvent.TouchData.Actor.Node)
+            {
+                sourceEvent.TouchData.Actor.Node.StreamNode.Push(sourceEvent.Id, sourceObservable);
+            }
+            if (sourceEvent.TouchData.Actor is ValueTouchActor<TValue> valueActor && valueActor.ValueEventStreamContainer)
+            {
+                valueActor.ValueEventStreamContainer.StreamNode.Push(sourceEvent.Id, valueObservable);
             }
 
             return true;

@@ -2,7 +2,8 @@
 
 namespace Sonosthesia.Pointer
 {
-    public class PointerAgnosticAffordance : AgnosticAffordance<PointerEvent, BasePointerSource, PointerAgnosticAffordance>
+    public class PointerAgnosticAffordance : 
+        AgnosticAffordance<PointerEvent, PointerEventStreamContainer, PointerAgnosticAffordance>
     {
         
     }

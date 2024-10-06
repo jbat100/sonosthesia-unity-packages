@@ -5,17 +5,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    // Simpler version of ValueTriggerSource which does not drive a channel, and therefore with no associated value type
-    // TODO: try to avoid code repetition but note that it is hard to do without introducing a big load of complexity
-
-    public interface ITriggerSource
-    {
-        void KillStream(Guid id);
-
-        void KillAllStreams();
-    }
-     
-    public abstract class TouchSource : TouchEndpoint, ITriggerSource
+    public abstract class TouchSource : TouchEndpoint
     {
         [SerializeField] private bool _log;
 

@@ -37,8 +37,8 @@ namespace Sonosthesia.Interaction
         protected virtual void OnEnable()
         {
             
-            _subscriptions.Add(_container.ValueStreamNode.Values.ObserveCountChanged().Subscribe(OnEventCountChanged));
-            _subscriptions.Add(_container.ValueStreamNode.StreamObservable.Subscribe(pair =>
+            _subscriptions.Add(_container.StreamNode.Values.ObserveCountChanged().Subscribe(OnEventCountChanged));
+            _subscriptions.Add(_container.StreamNode.StreamObservable.Subscribe(pair =>
             {
                 IObservable<TEvent> stream = pair.Value.TakeUntilDisable(this);
                 LinkController(pair.Key, stream);    

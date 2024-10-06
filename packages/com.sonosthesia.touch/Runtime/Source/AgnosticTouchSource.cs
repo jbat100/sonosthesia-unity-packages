@@ -15,11 +15,14 @@ namespace Sonosthesia.Touch
             BehaviorSubject<TouchEvent> eventSubject = new BehaviorSubject<TouchEvent>(sourceEvent);
             _eventSubjects[sourceEvent.Id] = eventSubject;
             IObservable<TouchEvent> sourceObservable = eventSubject.AsObservable();
-            EventStreamNode.Push(sourceEvent.Id, sourceObservable);
-            // push the stream to the actor
-            if (sourceEvent.TouchData.Actor)
+            if (Node)
             {
-                sourceEvent.TouchData.Actor.EventStreamNode.Push(sourceEvent.Id, sourceObservable);
+                Node.StreamNode.Push(sourceEvent.Id, sourceObservable);
+            }
+            // push the stream to the actor
+            if (sourceEvent.TouchData.Actor && sourceEvent.TouchData.Actor.Node)
+            {
+                sourceEvent.TouchData.Actor.Node.StreamNode.Push(sourceEvent.Id, sourceObservable);
             }
             return true;
         }

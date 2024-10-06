@@ -6,10 +6,10 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class TouchNode : TouchStream
+    public class TouchNode : TouchEventStreamContainer
     {
         [Tooltip("Maximum concurrent streams for this node and descendents")]
-        [SerializeField] private int _maxConcurrent;
+        [SerializeField] private int _maxConcurrent = 1;
         public int MaxConcurrent => _maxConcurrent;
         
         [Tooltip("Allow ending one stream to create another while on max concurrent")]
@@ -38,11 +38,11 @@ namespace Sonosthesia.Touch
                 _parent.RegisterChildNode(this);
                 
                 // used to relay streams up the node hierarchy
-                _parentSubscriptions.Add(_parent.EventStreamNode.Pipe(EventStreamNode));
+                _parentSubscriptions.Add(_parent.StreamNode.Pipe(StreamNode));
                 
                 // used to send events when something changed updstream
                 _parentSubscriptions.Add(_parent
-                    .EventStreamNode.Values.ObserveCountChanged().AsUnitObservable()
+                    .StreamNode.Values.ObserveCountChanged().AsUnitObservable()
                     .Merge(_parent.UpstreamObservable)
                     .Subscribe(_upstreamSubject));
             }
@@ -74,11 +74,19 @@ namespace Sonosthesia.Touch
             _children.Remove(node);
         }
 
+        public void EndStream(Guid id)
+        {
+            if (StreamNode.Values.TryGetValue(id, out TouchEvent e))
+            {
+                e.EndStream();
+            }
+        }
+
         public void EndOldestStream()
         {
             float lowestStartTime = float.MaxValue;
             TouchEvent? oldest = null;
-            foreach (KeyValuePair<Guid, TouchEvent> pair in EventStreamNode.Values)
+            foreach (KeyValuePair<Guid, TouchEvent> pair in StreamNode.Values)
             {
                 float startTime = pair.Value.StartTime;
                 if (startTime < lowestStartTime)
@@ -96,7 +104,7 @@ namespace Sonosthesia.Touch
 
         public void EndAllStreams()
         {
-            foreach (KeyValuePair<Guid, TouchEvent> pair in EventStreamNode.Values.ToList())
+            foreach (KeyValuePair<Guid, TouchEvent> pair in StreamNode.Values.ToList())
             {
                 pair.Value.EndStream();
             }
@@ -114,8 +122,8 @@ namespace Sonosthesia.Touch
             while (current)
             {
                 int count = _perCollider
-                    ? current.EventStreamNode.Values.Count(n => n.Value.TouchData.Collider == other)
-                    : current.EventStreamNode.Values.Count;
+                    ? current.StreamNode.Values.Count(n => n.Value.TouchData.Collider == other)
+                    : current.StreamNode.Values.Count;
                 
                 if (count >= current.MaxConcurrent)
                 {

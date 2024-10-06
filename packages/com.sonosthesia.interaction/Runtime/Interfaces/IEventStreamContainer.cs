@@ -8,6 +8,6 @@ namespace Sonosthesia.Interaction
     /// <typeparam name="TEvent"></typeparam>
     public interface IEventStreamContainer<TEvent> where TEvent : struct
     {
-        StreamNode<TEvent> EventStreamNode { get; }
+        StreamNode<TEvent> StreamNode { get; }
     }
 }
