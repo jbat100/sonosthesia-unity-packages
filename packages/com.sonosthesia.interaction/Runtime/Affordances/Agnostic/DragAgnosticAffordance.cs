@@ -4,10 +4,9 @@ using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
-    public class DragAgnosticAffordance<TEvent, TStreamContainer, TAffordance> : AgnosticAffordance<TEvent, TStreamContainer, TAffordance> 
+    public class DragAgnosticAffordance<TEvent, TAffordance> : AgnosticAffordance<TEvent, TAffordance> 
         where TEvent : struct 
-        where TStreamContainer : MonoBehaviour, IStreamContainer<TEvent>
-        where TAffordance : DragAgnosticAffordance<TEvent, TStreamContainer, TAffordance> 
+        where TAffordance : DragAgnosticAffordance<TEvent, TAffordance> 
     {
         // TODO : use pools 
 
@@ -17,7 +16,7 @@ namespace Sonosthesia.Interaction
         
         [SerializeField] private LineRenderer _lineRendererPrefab;
         
-        protected new abstract class Controller : AgnosticAffordance<TEvent, TStreamContainer, TAffordance>.Controller
+        protected new abstract class Controller : AgnosticAffordance<TEvent, TAffordance>.Controller
         {
             private GameObject _root;
             private Transform _origin;

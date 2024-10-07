@@ -2,8 +2,7 @@
 
 namespace Sonosthesia.Pointer
 {
-    public class PointerActivationAffordance : 
-        ActivationAffordance<PointerEvent, PointerEventStreamContainer, PointerActivationAffordance>
+    public class PointerActivationAffordance : ActivationAffordance<PointerEvent, PointerActivationAffordance>
     {
         
     }

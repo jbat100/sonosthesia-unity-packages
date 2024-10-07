@@ -11,15 +11,14 @@ namespace Sonosthesia.Interaction
     /// <typeparam name="TEvent"></typeparam>
     /// <typeparam name="TStreamContainer"></typeparam>
     /// <typeparam name="TAffordance"></typeparam>
-    public class AgnosticAffordance<TEvent, TStreamContainer, TAffordance> : MonoBehaviour 
+    public class AgnosticAffordance<TEvent, TAffordance> : MonoBehaviour 
         where TEvent : struct 
-        where TStreamContainer : MonoBehaviour, IStreamContainer<TEvent>
-        where TAffordance : AgnosticAffordance<TEvent, TStreamContainer, TAffordance>
+        where TAffordance : AgnosticAffordance<TEvent, TAffordance>
     {
         [SerializeField] private bool _log;
         protected bool Log => _log;
         
-        [SerializeField] private TStreamContainer _streamContainer;
+        [SerializeField] private StreamContainer<TEvent> _streamContainer;
 
         private readonly CompositeDisposable _subscriptions = new();
 

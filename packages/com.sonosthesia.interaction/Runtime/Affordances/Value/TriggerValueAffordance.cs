@@ -6,11 +6,9 @@ using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
-    public class TriggerValueAffordance<TValue, TEvent, TStreamContainer> 
-        : ValueAffordance<TValue, TEvent, TStreamContainer> 
+    public class TriggerValueAffordance<TValue, TEvent> : ValueAffordance<TValue, TEvent> 
         where TValue : struct
         where TEvent : struct
-        where TStreamContainer : MonoBehaviour, IStreamContainer<ValueEvent<TValue, TEvent>>
     {
         [SerializeField] private ValueTrigger<TValue> trigger;
         

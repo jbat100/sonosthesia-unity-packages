@@ -5,12 +5,11 @@ using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
-    public class ValueAffordance<TValue, TEvent, TStreamContainer> : MonoBehaviour 
+    public class ValueAffordance<TValue, TEvent> : MonoBehaviour 
         where TValue : struct
         where TEvent : struct
-        where TStreamContainer : MonoBehaviour, IStreamContainer<ValueEvent<TValue, TEvent>>
     {
-        [SerializeField] private TStreamContainer _container;
+        [SerializeField] private StreamContainer<ValueEvent<TValue, TEvent>> _container;
 
         private readonly CompositeDisposable _subscriptions = new();
 

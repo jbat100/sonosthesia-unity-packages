@@ -7,10 +7,8 @@ using UnityEngine.VFX;
 
 namespace Sonosthesia.Touch
 {
-    public class TouchVFXEventValueAffordance<TValue, TContainer> : 
-        ValueAffordance<TValue, TouchEvent, TContainer>
+    public class TouchVFXEventValueAffordance<TValue> : ValueAffordance<TValue, TouchEvent>
         where TValue : struct
-        where TContainer : MonoBehaviour, IStreamContainer<ValueEvent<TValue, TouchEvent>>
     {
         [SerializeField] private VisualEffect _visualEffect;
         

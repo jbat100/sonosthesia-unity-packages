@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class TouchTrackedTriggerAffordance : AgnosticAffordance<TouchEvent, TouchEventStreamContainer, TouchTrackedTriggerAffordance>
+    public class TouchTrackedTriggerAffordance : AgnosticAffordance<TouchEvent, TouchTrackedTriggerAffordance>
     {
         [SerializeField] private TrackedTrigger trigger;
 
@@ -56,8 +56,7 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private EndSettings _end;
         
-        protected new class Controller : 
-            AgnosticAffordance<TouchEvent, TouchEventStreamContainer, TouchTrackedTriggerAffordance>.Controller
+        protected new class Controller : AgnosticAffordance<TouchEvent, TouchTrackedTriggerAffordance>.Controller
         {
             private Guid _triggerId;
             

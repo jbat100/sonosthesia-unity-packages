@@ -3,8 +3,7 @@ using Sonosthesia.Touch;
 
 namespace Sonosthesia.Instrument
 {
-    public class MIDINoteTouchInstantiatorValueAffordance : 
-        TouchInstantiatorValueAffordance<MIDINote, TouchValueEventStreamContainer<MIDINote>>
+    public class MIDINoteTouchInstantiatorValueAffordance : TouchInstantiatorValueAffordance<MIDINote>
     {
         
     }

@@ -1,4 +1,4 @@
-using Sonosthesia.Interaction;
+using Sonosthesia.Utils;
 using UnityEngine.EventSystems;
 
 namespace Sonosthesia.Pointer
@@ -13,7 +13,7 @@ namespace Sonosthesia.Pointer
         }
     }
     
-    public class PointerEventStreamContainer : EventStreamContainer<PointerEvent>
+    public class PointerEventStreamContainer : StreamContainer<PointerEvent>
     {
         
     }

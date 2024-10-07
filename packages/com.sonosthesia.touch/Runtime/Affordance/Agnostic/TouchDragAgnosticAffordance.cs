@@ -4,11 +4,9 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class TouchDragAgnosticAffordance 
-        : DragAgnosticAffordance<TouchEvent, TouchEventStreamContainer, TouchDragAgnosticAffordance>
+    public class TouchDragAgnosticAffordance : DragAgnosticAffordance<TouchEvent, TouchDragAgnosticAffordance>
     {
-        protected new class Controller 
-            : DragAgnosticAffordance<TouchEvent, TouchEventStreamContainer, TouchDragAgnosticAffordance>.Controller
+        protected new class Controller : DragAgnosticAffordance<TouchEvent, TouchDragAgnosticAffordance>.Controller
         {
             public Controller(Guid eventId, TouchDragAgnosticAffordance affordance) : base (eventId, affordance)
             {

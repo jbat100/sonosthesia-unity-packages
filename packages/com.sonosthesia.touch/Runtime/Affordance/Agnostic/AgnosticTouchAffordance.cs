@@ -2,7 +2,7 @@ using Sonosthesia.Interaction;
 
 namespace Sonosthesia.Touch
 {
-    public class AgnosticTouchAffordance : AgnosticAffordance<TouchEvent, TouchEventStreamContainer, AgnosticTouchAffordance>
+    public class AgnosticTouchAffordance : AgnosticAffordance<TouchEvent, AgnosticTouchAffordance>
     {
         
     }

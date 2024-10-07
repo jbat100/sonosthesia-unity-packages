@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Sonosthesia.Interaction;
+using Sonosthesia.Utils;
 
 namespace Sonosthesia.Touch
 {
-    public class TouchEventStreamContainer : EventStreamContainer<TouchEvent>
+    public class TouchEventStreamContainer : StreamContainer<TouchEvent>
     {
         public void KillStream(Guid id)
         {

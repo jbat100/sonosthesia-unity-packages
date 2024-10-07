@@ -7,11 +7,9 @@ using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
-    public class InstantiatorValueAffordance<TValue, TEvent, TStreamContainer> 
-        : ValueAffordance<TValue, TEvent, TStreamContainer>
+    public class InstantiatorValueAffordance<TValue, TEvent> : ValueAffordance<TValue, TEvent>
         where TValue : struct
         where TEvent : struct
-        where TStreamContainer : MonoBehaviour, IStreamContainer<ValueEvent<TValue, TEvent>>
     {
         [SerializeField] private ScriptablePool<GameObject> _pool;
 
