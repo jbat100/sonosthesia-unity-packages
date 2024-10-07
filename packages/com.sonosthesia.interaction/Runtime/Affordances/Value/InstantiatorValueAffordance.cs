@@ -7,16 +7,17 @@ using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
-    public class InstantiatorValueAffordance<TValue, TEvent, TContainer> : ValueAffordance<TValue, TEvent, TContainer>
+    public class InstantiatorValueAffordance<TValue, TEvent, TStreamContainer> 
+        : ValueAffordance<TValue, TEvent, TStreamContainer>
         where TValue : struct
-        where TEvent : struct, IValueEvent<TValue>
-        where TContainer : MonoBehaviour, IValueEventStreamContainer<TValue, TEvent>
+        where TEvent : struct
+        where TStreamContainer : MonoBehaviour, IStreamContainer<ValueEvent<TValue, TEvent>>
     {
         [SerializeField] private ScriptablePool<GameObject> _pool;
 
         [SerializeField] private Transform _attach;
 
-        protected override void HandleStream(Guid id, IObservable<TEvent> stream)
+        protected override void HandleStream(Guid id, IObservable<ValueEvent<TValue, TEvent>> stream)
         {
             base.HandleStream(id, stream);
             
@@ -34,17 +35,17 @@ namespace Sonosthesia.Interaction
             {
                 if (doneAffordanceSetup)
                 {
-                    UpdateAfforfanceInstance(id, instance, valueStreamHandlers, valueEvent);    
+                    UpdateAffordanceInstance(id, instance, valueStreamHandlers, valueEvent);    
                 }
                 else
                 {
                     doneAffordanceSetup = true;
-                    SetupAfforfanceInstance(id, instance, valueStreamHandlers, valueEvent);    
+                    SetupAffordanceInstance(id, instance, valueStreamHandlers, valueEvent);    
                 }
                 
             });
             
-            IObservable<TValue> valueStream = stream.Select(e => e.GetValue());
+            IObservable<TValue> valueStream = stream.Select(e => e.Value);
             valueStreamHandlers.Select(handler => handler.HandleStream(valueStream))
                 .Merge().Subscribe(_ => { }, exception => { }, () =>
                 {
@@ -52,12 +53,12 @@ namespace Sonosthesia.Interaction
                 });
         }
         
-        protected virtual void SetupAfforfanceInstance(Guid id, GameObject instance, IStreamHandler<TValue>[] handlers, TEvent valueEvent)
+        protected virtual void SetupAffordanceInstance(Guid id, GameObject instance, IStreamHandler<TValue>[] handlers, ValueEvent<TValue, TEvent> valueEvent)
         {
             
         }
         
-        protected virtual void UpdateAfforfanceInstance(Guid id, GameObject instance, IStreamHandler<TValue>[] handlers, TEvent valueEvent)
+        protected virtual void UpdateAffordanceInstance(Guid id, GameObject instance, IStreamHandler<TValue>[] handlers, ValueEvent<TValue, TEvent> valueEvent)
         {
             
         }

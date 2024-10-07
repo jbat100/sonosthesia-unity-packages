@@ -1,4 +1,5 @@
 using System;
+using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ namespace Sonosthesia.Interaction
     /// <typeparam name="TAffordance"></typeparam>
     public class AgnosticAffordance<TEvent, TStreamContainer, TAffordance> : MonoBehaviour 
         where TEvent : struct 
-        where TStreamContainer : MonoBehaviour, IEventStreamContainer<TEvent>
+        where TStreamContainer : MonoBehaviour, IStreamContainer<TEvent>
         where TAffordance : AgnosticAffordance<TEvent, TStreamContainer, TAffordance>
     {
         [SerializeField] private bool _log;

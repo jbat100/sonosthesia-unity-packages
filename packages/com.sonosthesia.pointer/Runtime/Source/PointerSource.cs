@@ -4,6 +4,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Sonosthesia.Channel;
+using Sonosthesia.Interaction;
 
 namespace Sonosthesia.Pointer
 {
@@ -30,7 +31,7 @@ namespace Sonosthesia.Pointer
         
         private readonly Dictionary<int, Guid> _pointerStreams = new();
         
-        private readonly Dictionary<Guid, BehaviorSubject<PointerValueEvent<TValue>>> _valueEventSubjects = new();
+        private readonly Dictionary<Guid, BehaviorSubject<ValueEvent<TValue, PointerEvent>>> _valueEventSubjects = new();
 
         private void BeginEvent(PointerEventData eventData)
         {
@@ -40,14 +41,15 @@ namespace Sonosthesia.Pointer
             }
             
             Guid id = _driver.BeginStream(value);
-            _pointerStreams[eventData.pointerId] = id; 
+            _pointerStreams[eventData.pointerId] = id;
 
-            BehaviorSubject<PointerValueEvent<TValue>> subject = new BehaviorSubject<PointerValueEvent<TValue>>(new PointerValueEvent<TValue>(id, value, eventData));
+            PointerEvent pointerEvent = new PointerEvent(eventData);
+            BehaviorSubject<ValueEvent<TValue, PointerEvent>> subject = new (new ValueEvent<TValue, PointerEvent>(value, pointerEvent));
             _valueEventSubjects[id] = subject;
 
             if (EventStreamContainer)
             {
-                EventStreamContainer.StreamNode.Push(id, subject.Select(valueEvent => new PointerEvent(eventData))); 
+                EventStreamContainer.StreamNode.Push(id, subject.Select(valueEvent => valueEvent.Event)); 
             }
             if (ValueEventStreamContainer)
             {
@@ -69,12 +71,12 @@ namespace Sonosthesia.Pointer
             
             _driver.UpdateStream(id, value);
             
-            if (!_valueEventSubjects.TryGetValue(id, out BehaviorSubject<PointerValueEvent<TValue>> subject))
+            if (!_valueEventSubjects.TryGetValue(id, out BehaviorSubject<ValueEvent<TValue, PointerEvent>> subject))
             {
                 return;
             }
             
-            subject.OnNext(new PointerValueEvent<TValue>(id, value, eventData));
+            subject.OnNext(new ValueEvent<TValue, PointerEvent>(value, new PointerEvent(eventData)));
         }
         
         private void EndEvent(PointerEventData eventData)
@@ -89,7 +91,7 @@ namespace Sonosthesia.Pointer
             _driver.EndStream(eventId);
             _pointerStreams.Remove(eventData.pointerId);
 
-            if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<PointerValueEvent<TValue>> subject))
+            if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<ValueEvent<TValue, PointerEvent>> subject))
             {
                 return;
             }

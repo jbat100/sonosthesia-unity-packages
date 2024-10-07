@@ -1,5 +1,6 @@
 ﻿using System;
 using Sonosthesia.Interaction;
+using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 using UnityEngine.VFX;
@@ -7,20 +8,20 @@ using UnityEngine.VFX;
 namespace Sonosthesia.Touch
 {
     public class TouchVFXEventValueAffordance<TValue, TContainer> : 
-        ValueAffordance<TValue, TriggerValueEvent<TValue>, TContainer>
+        ValueAffordance<TValue, TouchEvent, TContainer>
         where TValue : struct
-        where TContainer : MonoBehaviour, IValueEventStreamContainer<TValue, TriggerValueEvent<TValue>>
+        where TContainer : MonoBehaviour, IStreamContainer<ValueEvent<TValue, TouchEvent>>
     {
         [SerializeField] private VisualEffect _visualEffect;
         
         [SerializeField] private string _eventName;
 
-        protected virtual void ConfigureEventAttribute(VFXEventAttribute eventAttribute, TriggerValueEvent<TValue> valueEvent)
+        protected virtual void ConfigureEventAttribute(VFXEventAttribute eventAttribute, ValueEvent<TValue, TouchEvent> valueEvent)
         {
             
         }
         
-        protected override void HandleStream(Guid id, IObservable<TriggerValueEvent<TValue>> stream)
+        protected override void HandleStream(Guid id, IObservable<ValueEvent<TValue, TouchEvent>> stream)
         {
             base.HandleStream(id, stream);
             stream.Take(1).Subscribe(e =>

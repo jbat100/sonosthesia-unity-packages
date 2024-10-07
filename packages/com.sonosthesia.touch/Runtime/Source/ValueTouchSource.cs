@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Sonosthesia.Channel;
+using Sonosthesia.Interaction;
 using UniRx;
 using UnityEngine;
 
@@ -15,7 +16,7 @@ namespace Sonosthesia.Touch
         [SerializeField] private TouchValueEventStreamContainer<TValue> _values;
         public TouchValueEventStreamContainer<TValue> Values => _values;
 
-        private readonly Dictionary<Guid, BehaviorSubject<TriggerValueEvent<TValue>>> _valueEventSubjects = new();
+        private readonly Dictionary<Guid, BehaviorSubject<ValueEvent<TValue, TouchEvent>>> _valueEventSubjects = new();
 
         protected override bool IsCompatibleActor(TouchActor actor) => actor is ValueTouchActor<TValue>;
 
@@ -32,11 +33,11 @@ namespace Sonosthesia.Touch
                 _driver.BeginStream(value, id);
             }
             
-            BehaviorSubject<TriggerValueEvent<TValue>> subject = new BehaviorSubject<TriggerValueEvent<TValue>>(new TriggerValueEvent<TValue>(sourceEvent, value));
+            BehaviorSubject<ValueEvent<TValue, TouchEvent>> subject = new (new ValueEvent<TValue, TouchEvent>(value, sourceEvent));
             _valueEventSubjects[id] = subject;
 
             IObservable<TouchEvent> eventObservable = subject.Select(_ => sourceEvent);
-            IObservable<TriggerValueEvent<TValue>> valueObservable = subject.AsObservable();
+            IObservable<ValueEvent<TValue, TouchEvent>> valueObservable = subject.AsObservable();
 
             if (Node)
             {
@@ -73,12 +74,13 @@ namespace Sonosthesia.Touch
                 _driver.UpdateStream(id, value);    
             }
 
-            if (!_valueEventSubjects.TryGetValue(id, out BehaviorSubject<TriggerValueEvent<TValue>> subject))
+            if (!_valueEventSubjects.TryGetValue(id, out BehaviorSubject<ValueEvent<TValue, TouchEvent>> subject))
             {
                 return;
             }
-            
-            subject.OnNext(subject.Value.Update(value));
+
+            ValueEvent<TValue, TouchEvent> current = subject.Value;
+            subject.OnNext(new ValueEvent<TValue, TouchEvent>(value, current.Event));
         }
 
         protected override void CleanupStream(Guid id, ITouchData touchData)
@@ -88,7 +90,7 @@ namespace Sonosthesia.Touch
                 _driver.EndStream(id);    
             }
 
-            if (!_valueEventSubjects.TryGetValue(id, out BehaviorSubject<TriggerValueEvent<TValue>> subject))
+            if (!_valueEventSubjects.TryGetValue(id, out BehaviorSubject<ValueEvent<TValue, TouchEvent>> subject))
             {
                 return;
             }

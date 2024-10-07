@@ -1,15 +1,16 @@
 using System;
+using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
-    public class ValueAffordance<TValue, TEvent, TContainer> : MonoBehaviour 
+    public class ValueAffordance<TValue, TEvent, TStreamContainer> : MonoBehaviour 
         where TValue : struct
-        where TEvent : struct, IValueEvent<TValue>
-        where TContainer : MonoBehaviour, IValueEventStreamContainer<TValue, TEvent>
+        where TEvent : struct
+        where TStreamContainer : MonoBehaviour, IStreamContainer<ValueEvent<TValue, TEvent>>
     {
-        [SerializeField] private TContainer _container;
+        [SerializeField] private TStreamContainer _container;
 
         private readonly CompositeDisposable _subscriptions = new();
 
@@ -18,18 +19,18 @@ namespace Sonosthesia.Interaction
             
         }
 
-        protected virtual IObserver<TEvent> MakeController(Guid id) => null;
+        protected virtual IObserver<ValueEvent<TValue, TEvent>> MakeController(Guid id) => null;
         
-        private void LinkController(Guid id, IObservable<TEvent> stream)
+        private void LinkController(Guid id, IObservable<ValueEvent<TValue, TEvent>> stream)
         {
-            IObserver<TEvent> controller = MakeController(id);
+            IObserver<ValueEvent<TValue, TEvent>> controller = MakeController(id);
             if (controller != null)
             {
                 stream.Subscribe(controller);
             }
         }
 
-        protected virtual void HandleStream(Guid id, IObservable<TEvent> stream)
+        protected virtual void HandleStream(Guid id, IObservable<ValueEvent<TValue, TEvent>> stream)
         {
             
         }
@@ -40,7 +41,7 @@ namespace Sonosthesia.Interaction
             _subscriptions.Add(_container.StreamNode.Values.ObserveCountChanged().Subscribe(OnEventCountChanged));
             _subscriptions.Add(_container.StreamNode.StreamObservable.Subscribe(pair =>
             {
-                IObservable<TEvent> stream = pair.Value.TakeUntilDisable(this);
+                IObservable<ValueEvent<TValue, TEvent>> stream = pair.Value.TakeUntilDisable(this);
                 LinkController(pair.Key, stream);    
                 HandleStream(pair.Key, stream);
             }));

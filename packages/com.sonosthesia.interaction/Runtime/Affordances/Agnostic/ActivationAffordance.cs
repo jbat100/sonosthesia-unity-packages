@@ -1,12 +1,13 @@
 using System.Collections.Generic;
+using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
-    public class ActivationAffordance<TEvent, TContainer, TAffordance> : AgnosticAffordance<TEvent, TContainer, TAffordance> 
+    public class ActivationAffordance<TEvent, TStreamContainer, TAffordance> : AgnosticAffordance<TEvent, TStreamContainer, TAffordance> 
         where TEvent : struct 
-        where TContainer : MonoBehaviour, IEventStreamContainer<TEvent>
-        where TAffordance : ActivationAffordance<TEvent, TContainer, TAffordance>
+        where TStreamContainer : MonoBehaviour, IStreamContainer<TEvent>
+        where TAffordance : ActivationAffordance<TEvent, TStreamContainer, TAffordance>
     {
         [SerializeField] private List<GameObject> _targets;
         

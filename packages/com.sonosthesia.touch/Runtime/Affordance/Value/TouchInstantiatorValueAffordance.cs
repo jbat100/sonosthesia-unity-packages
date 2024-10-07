@@ -1,12 +1,13 @@
 using Sonosthesia.Interaction;
+using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
     public class TouchInstantiatorValueAffordance<TValue, TContainer> : 
-        InstantiatorValueAffordance<TValue, TriggerValueEvent<TValue>, TContainer>
+        InstantiatorValueAffordance<TValue, TouchEvent, TContainer>
         where TValue : struct
-        where TContainer : MonoBehaviour, IValueEventStreamContainer<TValue, TriggerValueEvent<TValue>>
+        where TContainer : MonoBehaviour, IStreamContainer<ValueEvent<TValue, TouchEvent>>
     {
         
     }
