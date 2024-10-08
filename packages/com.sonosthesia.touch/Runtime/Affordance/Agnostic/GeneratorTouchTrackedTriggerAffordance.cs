@@ -6,7 +6,10 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class TouchTrackedTriggerAffordance : AgnosticAffordance<TouchEvent, TouchTrackedTriggerAffordance>
+    // mostly for testing purposes, use configuration ScriptableObject
+    
+    [Obsolete("Use Extractors instead of Generators")]
+    public class GeneratorTouchTrackedTriggerAffordance : AgnosticAffordance<TouchEvent, GeneratorTouchTrackedTriggerAffordance>
     {
         [SerializeField] private TrackedTrigger trigger;
 
@@ -17,7 +20,7 @@ namespace Sonosthesia.Touch
             [SerializeField] private TouchValueGenerator<float> _timeScaleGenerator;
             [SerializeField] private EnvelopeFactory _envelopeFactory;
 
-            public Guid StartTrigger(TouchTrackedTriggerAffordance affordance, TouchEvent e)
+            public Guid StartTrigger(GeneratorTouchTrackedTriggerAffordance affordance, TouchEvent e)
             {
                 float valueScale = 1f;
                 if (_valueScaleGenerator)
@@ -42,7 +45,7 @@ namespace Sonosthesia.Touch
             [SerializeField] private TouchValueGenerator<float> _timeScaleGenerator;
             [SerializeField] private EnvelopeFactory _envelopeFactory;
 
-            public void EndTrigger(TouchTrackedTriggerAffordance affordance, Guid id, TouchEvent e)
+            public void EndTrigger(GeneratorTouchTrackedTriggerAffordance affordance, Guid id, TouchEvent e)
             {
                 float timeScale = 1f;
                 if (_timeScaleGenerator)
@@ -56,11 +59,11 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private EndSettings _end;
         
-        protected new class Controller : AgnosticAffordance<TouchEvent, TouchTrackedTriggerAffordance>.Controller
+        protected new class Controller : AgnosticAffordance<TouchEvent, GeneratorTouchTrackedTriggerAffordance>.Controller
         {
             private Guid _triggerId;
             
-            public Controller(Guid eventId, TouchTrackedTriggerAffordance affordance) : base(eventId, affordance)
+            public Controller(Guid eventId, GeneratorTouchTrackedTriggerAffordance affordance) : base(eventId, affordance)
             {
             }
 
@@ -68,7 +71,7 @@ namespace Sonosthesia.Touch
             {
                 base.Setup(e);
                 
-                TouchTrackedTriggerAffordance affordance = Affordance;
+                GeneratorTouchTrackedTriggerAffordance affordance = Affordance;
 
                 if (!affordance.trigger)
                 {
@@ -85,7 +88,7 @@ namespace Sonosthesia.Touch
             protected override void Teardown(TouchEvent e)
             {
                 base.Teardown(e);
-                TouchTrackedTriggerAffordance affordance = Affordance;
+                GeneratorTouchTrackedTriggerAffordance affordance = Affordance;
                 if (!affordance.trigger)
                 {
                     if (affordance.Log)

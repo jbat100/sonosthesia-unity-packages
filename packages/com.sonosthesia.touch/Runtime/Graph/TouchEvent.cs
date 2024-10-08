@@ -22,4 +22,13 @@ namespace Sonosthesia.Touch
             StartTime = startTime;
         }
     }
+    
+    public static class TouchEventExtensions
+    {
+        public static Vector3 ActorPositionInSourceSpace(this TouchEvent touchEvent)
+        {
+            return touchEvent.TouchData.Source.transform
+                .InverseTransformPoint(touchEvent.TouchData.Actor.transform.position);
+        }
+    }
 }

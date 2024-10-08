@@ -18,6 +18,15 @@ namespace Sonosthesia.Touch
         
         [SerializeField] private List<TouchGate> _gates;
 
+        protected virtual void Awake()
+        {
+            if (!_dynamicsMonitor)
+            {
+                // TODO: Auto add ?
+                _dynamicsMonitor = GetComponent<TransformDynamicsMonitor>();
+            }
+        }
+        
         public bool CheckGates(TouchEndpoint source, TouchEndpoint actor)
         {
             return _gates.All(gate => gate.AllowTrigger(this, actor));
