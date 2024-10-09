@@ -1,6 +1,5 @@
 using System;
 using Sonosthesia.Dynamic;
-using Sonosthesia.Interaction;
 using Sonosthesia.Utils;
 using UnityEngine;
 
@@ -11,6 +10,7 @@ namespace Sonosthesia.Touch
     {
         public enum ExtractorType
         {
+            Custom,
             Static,
             Dynamic,
             Distance
@@ -38,6 +38,8 @@ namespace Sonosthesia.Touch
         
         [SerializeField] private ExtractorType _extractorType = ExtractorType.Static;
 
+        [SerializeField] private TouchExtractor<float> _extractor;
+        
         [SerializeField] private float _staticValue;
 
         [SerializeField] private DynamicType _dynamicType = DynamicType.Actor;
@@ -45,7 +47,7 @@ namespace Sonosthesia.Touch
         [SerializeField] private TransformDynamics.Order _dynamicsOrder = TransformDynamics.Order.Velocity;
 
         [SerializeField] private DistanceType _distanceType = DistanceType.Actor;
-        [SerializeField] private Axes _distanceAxes;
+        [SerializeField] private Axes _distanceAxes = Axes.X | Axes.Y | Axes.Z;
 
         [SerializeField] private PostProcessingType _postProcessing;
         [SerializeField] private AnimationCurve _curve;

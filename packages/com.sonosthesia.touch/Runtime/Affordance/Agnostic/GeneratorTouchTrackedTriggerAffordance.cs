@@ -53,7 +53,7 @@ namespace Sonosthesia.Touch
                     _timeScaleGenerator.BeginTouch(e.TouchData, out timeScale);
                 }
                 IEnvelope envelope = _envelopeFactory ? _envelopeFactory.Build() : null;
-                affordance.trigger.EndTrigger(envelope, id, timeScale);
+                affordance.trigger.EndTrigger(id, envelope, timeScale);
             }
         }
 

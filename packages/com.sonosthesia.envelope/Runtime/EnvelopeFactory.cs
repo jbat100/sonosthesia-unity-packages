@@ -2,8 +2,14 @@
 
 namespace Sonosthesia.Envelope
 {
-    public abstract class EnvelopeFactory : ScriptableObject
+    [CreateAssetMenu(fileName = "EnvelopeFactory", menuName = "Sonosthesia/Envelope/EnvelopeFactory")]
+    public class EnvelopeFactory : AbstractEnvelopeFactory
     {
-        public abstract IEnvelope Build();
+        [SerializeField] private EnvelopeSettings _settings;
+
+        public override IEnvelope Build()
+        {
+            return _settings?.Build();
+        }
     }
 }

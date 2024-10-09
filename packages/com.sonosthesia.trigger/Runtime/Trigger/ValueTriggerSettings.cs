@@ -47,7 +47,7 @@ namespace Sonosthesia.Trigger
         {
             IEnvelope envelope = _envelopeFactory ? _envelopeFactory.Build() : null;
             float timeScale = _timeSelector ? _timeSelector.Select(value) : 1f;
-            trigger.EndTrigger(envelope, id, timeScale);
+            trigger.EndTrigger(id, envelope, timeScale);
         }
     }
 

@@ -3,8 +3,14 @@
     public class WarpedEnvelope : IEnvelope
     {
         private readonly IEnvelope _envelope;
-        private readonly float _valueScale;
         private readonly float _timeScale;
+        private float _valueScale;
+
+        public float ValueScale
+        {
+            get => _valueScale;
+            set => _valueScale = value;
+        }
 
         public WarpedEnvelope(IEnvelope envelope, float valueScale, float timeScale)
         {

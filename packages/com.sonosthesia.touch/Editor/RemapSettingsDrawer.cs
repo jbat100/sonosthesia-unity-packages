@@ -1,5 +1,8 @@
+using Sonosthesia.Utils;
+using Sonosthesia.Utils.Editor;
 using UnityEditor;
 using UnityEditor.UIElements;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Sonosthesia.Touch.Editor
@@ -7,46 +10,11 @@ namespace Sonosthesia.Touch.Editor
     [CustomPropertyDrawer(typeof(RemapSettings))]
     public class RemapSettingsDrawer : PropertyDrawer
     {
-        private static Label CreateLabel(string title, int minWidth)
-        {
-            return new Label(title)
-            {
-                style =
-                {
-                    width = minWidth,
-                    //alignSelf = Align.Center,
-                    paddingLeft = 5,
-                    paddingTop = 2
-                }
-            };
-        }
-
-        private static FloatField CreateFloatField(float value)
-        {
-            return new FloatField
-            {
-                value = value,
-                style =
-                {
-                    flexGrow = 1f,
-                    paddingLeft = 5
-                    //alignSelf = Align.Center
-                }
-            };
-        }
-
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
-            VisualElement container = new VisualElement
-            {
-                style =
-                {
-                    flexDirection = FlexDirection.Row,
-                    justifyContent = Justify.SpaceBetween,
-                    //alignItems = Align.Center,
-                    flexGrow = 1
-                }
-            };
+            VisualElement container = UIHorizontalUtils.CreateContainer(10);
+
+            Label titleLabel = UIHorizontalUtils.CreateLabel(property.name.PropertyNameToLabel(), 50, 5);
 
             SerializedProperty fromMinProp = property.FindPropertyRelative("_fromMin");
             SerializedProperty fromMaxProp = property.FindPropertyRelative("_fromMax");
@@ -54,30 +22,39 @@ namespace Sonosthesia.Touch.Editor
             SerializedProperty toMaxProp = property.FindPropertyRelative("_toMax");
             SerializedProperty clampProp = property.FindPropertyRelative("_clamp");
 
-            Label fromLabel = CreateLabel("From", 40);
-            FloatField fromMinField = CreateFloatField(fromMinProp.floatValue);
-            fromMinField.BindProperty(fromMinProp);
-            FloatField fromMaxField = CreateFloatField(fromMaxProp.floatValue);
-            fromMaxField.BindProperty(fromMaxProp);
+            // Label fromLabel = UIHorizontalUtils.CreateLabel("", 10);
+            FloatField fromMinField = UIHorizontalUtils.CreateFloatField(fromMinProp);
+            FloatField fromMaxField = UIHorizontalUtils.CreateFloatField(fromMaxProp);
 
+            // Label middleLabel = new Label("-")
+            // {
+            //     style =
+            //     {
+            //         width = 20,
+            //         //justifyContent = Justify.Center,
+            //         paddingTop = 2,
+            //         unityTextAlign = TextAnchor.MiddleCenter
+            //     }
+            // };
             
-            Label toLabel = CreateLabel("To", 30);
-            FloatField toMinField = CreateFloatField(toMinProp.floatValue);
-            toMinField.BindProperty(toMinProp);
-            FloatField toMaxField = CreateFloatField(toMaxProp.floatValue);
+            Label toLabel = UIHorizontalUtils.CreateLabel("To", 20);
+            FloatField toMinField = UIHorizontalUtils.CreateFloatField(toMinProp);
+            FloatField toMaxField = UIHorizontalUtils.CreateFloatField(toMaxProp);
             toMaxField.BindProperty(toMaxProp);
 
-            Label clampLabel = CreateLabel("Clamp", 50);
+            Label clampLabel = UIHorizontalUtils.CreateLabel("Clamp", 42);
             Toggle clampToggle = new Toggle()
             {
                 value = clampProp.boolValue
             };
             clampToggle.BindProperty(clampProp);
 
-            container.Add(fromLabel);
+            container.Add(titleLabel);
+            //container.Add(fromLabel);
             container.Add(fromMinField);
             container.Add(fromMaxField);
             container.Add(toLabel);
+            //container.Add(middleLabel);
             container.Add(toMinField);
             container.Add(toMaxField);
             container.Add(clampLabel);

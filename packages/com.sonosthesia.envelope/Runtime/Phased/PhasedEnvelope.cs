@@ -27,35 +27,6 @@ namespace Sonosthesia.Envelope
         public float Evaluate(float time) => _duration < 1e-3 ? 1f : _easeType.Evaluate(time / _duration);
     }
     
-    public enum PhasedEnvelopeType
-    {
-        AHR,
-        ADSR,
-        ADS,
-        SR
-    }
-
-    public static class PhasedEnvelopeUtils
-    {
-        public static IEnvelope Build(this PhasedEnvelopeSettings settings)
-        {
-            if (settings == null)
-            {
-                return null;
-            }
-            
-            return settings.Type switch
-            {
-                PhasedEnvelopeType.AHR => new AHREnvelope(settings.Attack, settings.Hold, settings.Release),
-                PhasedEnvelopeType.ADSR => new ADSREnvelope(settings.Attack, settings.Decay, settings.Sustain, settings.Hold, settings.Release),
-                PhasedEnvelopeType.ADS => new ADSEnvelope(settings.Attack, settings.Decay, settings.Sustain),
-                PhasedEnvelopeType.SR => new SREnvelope(settings.Sustain, settings.Release),
-                _ => null
-            };
-        }
-    }
-    
-    
     public class AHREnvelope : IEnvelope
     {
         private readonly float _hold;

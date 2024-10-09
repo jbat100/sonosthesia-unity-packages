@@ -56,7 +56,18 @@ namespace Sonosthesia.Trigger
         
         public Guid StartTrigger(float valueScale, float timeScale) => StartTrigger(DefaultStartEnvelope, valueScale, timeScale);
 
-        public void EndTrigger(IEnvelope envelope, Guid id, float timescale = 1f)
+        public bool UpdateTrigger(Guid id, float valueScale)
+        {
+            if (_entries.TryGetValue(id, out TriggerEntry entry))
+            {
+                entry.ValueScale = valueScale;
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool EndTrigger(Guid id, IEnvelope envelope, float timescale = 1f)
         {
             if (_entries.TryGetValue(id, out TriggerEntry entry))
             {
@@ -65,10 +76,14 @@ namespace Sonosthesia.Trigger
                     envelope = new WarpedEnvelope(envelope, 1f, timescale);
                 }
                 entry.End(envelope);
+                // note : don't remove from _entries, the end phase of the trigger must complete
+                return true;
             }
+
+            return false;
         }
         
-        public void EndTrigger(Guid id, float timescale = 1f) => EndTrigger(DefaultEndEnvelope, id, timescale);
+        public void EndTrigger(Guid id, float timescale = 1f) => EndTrigger(id, DefaultEndEnvelope, timescale);
 
         public void EndAll(IEnvelope envelope, float timescale = 1)
         {
@@ -118,7 +133,7 @@ namespace Sonosthesia.Trigger
                 private static float CurrentTime => Time.time;
                 
                 public float ReferenceTime;
-                public IEnvelope Envelope;
+                public WarpedEnvelope Envelope;
 
                 public bool IsComplete => CurrentTime - ReferenceTime > Envelope.Duration;
 
@@ -140,15 +155,20 @@ namespace Sonosthesia.Trigger
 
             private PhaseInfo CurrentPhase => _end ?? _start;
             
-            public TriggerEntry(IEnvelope envelopeBuilder)
+            public TriggerEntry(WarpedEnvelope envelope)
             {
                 _start = new PhaseInfo
                 {
                     ReferenceTime = Time.time,
-                    Envelope = envelopeBuilder
+                    Envelope = envelope
                 };
             }
 
+            public float ValueScale
+            {
+                get => _start.Envelope.ValueScale;
+                set => _start.Envelope.ValueScale = value;
+            }
 
             /// <summary>
             /// Note value scale is computed automatically to allow smooth transition down from current value

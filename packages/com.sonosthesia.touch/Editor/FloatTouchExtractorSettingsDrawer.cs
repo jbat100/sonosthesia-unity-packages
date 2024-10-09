@@ -1,3 +1,4 @@
+using Sonosthesia.Utils;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -13,8 +14,15 @@ namespace Sonosthesia.Touch.Editor
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             VisualElement root = new VisualElement();
+            
+            Label titleLabel = UIElementUtils.TitleLabel(property.name.PropertyNameToLabel());
+            root.Add(titleLabel);
+            
             root.AddRelativeField(property, "_extractorType", 
                 out SerializedProperty extractorTypeProp, out PropertyField extractorTypeField);
+            
+            root.AddRelativeField(property, "_extractor", 
+                out SerializedProperty _, out PropertyField extractorField);
             
             root.AddRelativeField(property, "_staticValue", 
                 out SerializedProperty _, out PropertyField staticValueField);
@@ -50,6 +58,8 @@ namespace Sonosthesia.Touch.Editor
                 
                 FloatTouchExtractorSettings.ExtractorType extratorType = (FloatTouchExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
                 FloatTouchExtractorSettings.PostProcessingType postProcessingType = (FloatTouchExtractorSettings.PostProcessingType)postProcessingProp.enumValueIndex;
+
+                extractorField.style.display = Show(extratorType is FloatTouchExtractorSettings.ExtractorType.Custom);
                 
                 staticValueField.style.display = Show(extratorType is FloatTouchExtractorSettings.ExtractorType.Static);
                 
