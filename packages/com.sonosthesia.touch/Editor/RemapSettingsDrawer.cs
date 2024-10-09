@@ -2,7 +2,6 @@ using Sonosthesia.Utils;
 using Sonosthesia.Utils.Editor;
 using UnityEditor;
 using UnityEditor.UIElements;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Sonosthesia.Touch.Editor

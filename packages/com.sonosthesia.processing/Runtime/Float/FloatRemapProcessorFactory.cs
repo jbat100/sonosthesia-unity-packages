@@ -1,5 +1,5 @@
 using System;
-using Unity.Mathematics;
+using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Processing
@@ -8,19 +8,15 @@ namespace Sonosthesia.Processing
     public class FloatRemapSettings : DynamicProcessorSettings
     {
         [SerializeField] private bool _clamp;
-        public bool Clamp => _clamp;
-        
         [SerializeField] private float _fromMin;
-        public float FromMin => _fromMin;
-
         [SerializeField] private float _fromMax = 1;
-        public float FromMax => _fromMax;
-        
         [SerializeField] private float _toMin;
-        public float ToMin => _toMin;
-
         [SerializeField] private float _toMax = 1;
-        public float ToMax => _toMax;
+
+        public float Remap(float input)
+        {
+            return MathUtils.Remap(input, _fromMin, _fromMax, _toMin, _toMax, _clamp);
+        }
     }
 
     public class FloatRemapProcessor : DynamicProcessor<float, FloatRemapSettings>
@@ -29,18 +25,7 @@ namespace Sonosthesia.Processing
 
         protected override float Process(FloatRemapSettings settings, float input, float time)
         {
-            if (Math.Abs(settings.FromMax - settings.FromMin) < 1e-6)
-            {
-                return settings.ToMin;
-            }
-            float t = math.unlerp(settings.FromMin, settings.FromMax, input);
-            float result = math.lerp(settings.ToMin, settings.ToMax, t);
-            if (settings.Clamp)
-            {
-                result = math.clamp(result, math.min(settings.ToMin, settings.ToMax), math.max(settings.ToMin, settings.ToMax));
-            }
-
-            return result;
+            return settings.Remap(input);
         }
     }
     
