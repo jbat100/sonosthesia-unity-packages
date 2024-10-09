@@ -81,7 +81,7 @@ namespace Sonosthesia.FMOD
                     return;
                 }
 
-                UnityEngine.Debug.LogWarning($"{this} {nameof(RefreshParameterDescription)} succeeded");
+                // UnityEngine.Debug.LogWarning($"{this} {nameof(RefreshParameterDescription)} succeeded");
                 _ready = true;
             }
             else
@@ -112,7 +112,6 @@ namespace Sonosthesia.FMOD
                             throw new ArgumentOutOfRangeException();
                     }
                 }
-                
                 
                 RESULT result = _eventInstance.setParameterByID(_parameterDescription.id, value);
                 if (result != RESULT.OK)
