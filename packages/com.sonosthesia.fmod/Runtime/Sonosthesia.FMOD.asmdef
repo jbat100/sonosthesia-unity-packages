@@ -2,6 +2,7 @@
     "name": "Sonosthesia.FMOD",
     "rootNamespace": "Sonosthesia.FMOD",
     "references": [
+        "GUID:d8b63aba1907145bea998dd612889d6b",
         "GUID:560b04d1a97f54a4e82edc0cbbb69285",
         "GUID:0c752da273b17c547ae705acf0f2adf2",
         "GUID:9eb6837bd3e454f19a8d5c72f1eda2e1",
