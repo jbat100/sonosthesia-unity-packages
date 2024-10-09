@@ -40,7 +40,7 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private TouchExtractor<float> _extractor;
         
-        [SerializeField] private float _staticValue;
+        [SerializeField] private float _staticValue = 1;
 
         [SerializeField] private DynamicType _dynamicType = DynamicType.Actor;
         [SerializeField] private TransformDynamics.Domain _dynamicsDomain = TransformDynamics.Domain.Position;

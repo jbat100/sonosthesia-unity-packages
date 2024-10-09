@@ -19,16 +19,16 @@ namespace Sonosthesia.Envelope.Editor
             SerializedProperty durationProp = property.FindPropertyRelative("_duration");
 
             //Label easeTypeLabel = UIHorizontalUtils.CreateLabel("Type", 40);
-            EnumField easeTypeField = UIHorizontalUtils.CreateEnumField(easeTypeProp);
+            EnumField easeTypeField = UIHorizontalUtils.CreateEnumField(easeTypeProp, 125);
 
-            Label durationLabel = UIHorizontalUtils.CreateLabel("Duration", 50);
+            Label durationLabel = UIHorizontalUtils.CreateLabel("sec", 50);
             FloatField durationField = UIHorizontalUtils.CreateFloatField(durationProp);
 
             container.Add(titleLabel);
             //container.Add(easeTypeLabel);
             container.Add(easeTypeField);
-            container.Add(durationLabel);
             container.Add(durationField);
+            container.Add(durationLabel);
 
             return container;
         }

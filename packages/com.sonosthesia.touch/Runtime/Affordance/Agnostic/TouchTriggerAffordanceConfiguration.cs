@@ -3,7 +3,8 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    [CreateAssetMenu(fileName = "TouchTriggerAffordanceConfiguration", menuName = "Sonosthesia/Touch/TouchTriggerAffordanceConfiguration")]
+    [CreateAssetMenu(fileName = "TouchTriggerAffordanceConfiguration", 
+        menuName = "Sonosthesia/Touch/TouchTriggerAffordanceConfiguration")]
     public class TouchTriggerAffordanceConfiguration : ScriptableObject
     {
         [SerializeField] private FloatTouchExtractorSettings _valueScaleExtractor;

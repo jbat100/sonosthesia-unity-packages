@@ -12,37 +12,11 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private bool _track;
 
-        [Serializable]
-        private class StartSettings
-        {
-            [SerializeField] private TouchExtractor<float> _valueScaleExtractor;
-            public TouchExtractor<float> ValueScaleExtractor => _valueScaleExtractor;
-            
-            [SerializeField] private TouchExtractor<float> _timeScaleExtractor;
-            public TouchExtractor<float> TimeScaleExtractor => _timeScaleExtractor;
-            
-            [SerializeField] private EnvelopeFactory _envelopeFactory;
-            public EnvelopeFactory EnvelopeFactory => _envelopeFactory;
-        }
-
-        [SerializeField] private StartSettings _start;
-        
-        [Serializable]
-        private class EndSettings
-        {
-            [SerializeField] private TouchExtractor<float> _timeScaleExtractor;
-            public TouchExtractor<float> TimeScaleExtractor => _timeScaleExtractor;
-            
-            [SerializeField] private EnvelopeFactory _envelopeFactory;
-            public EnvelopeFactory EnvelopeFactory => _envelopeFactory;
-        }
-
-        [SerializeField] private EndSettings _end;
+        [SerializeField] private TouchTrackedTriggerAffordanceConfiguration _configuration;
         
         protected new class Controller : AgnosticAffordance<TouchEvent, TouchTrackedTriggerAffordance>.Controller
         {
             private Guid _triggerId;
-
             private ITouchExtractorSession<float> _valueScaleSession;
             
             public Controller(Guid eventId, TouchTrackedTriggerAffordance affordance) : base(eventId, affordance)
@@ -56,15 +30,15 @@ namespace Sonosthesia.Touch
 
                 TouchTrackedTriggerAffordance affordance = Affordance;
                 
-                if (affordance._start == null)
+                if (!affordance._configuration)
                 {
                     _triggerId = affordance._trigger.StartTrigger(1f, 1f);
                     return;
                 }
 
-                _valueScaleSession = affordance._start.ValueScaleExtractor.MakeSession(); 
-                ITouchExtractorSession<float> timeScaleSession = affordance._start.TimeScaleExtractor.MakeSession();
-                IEnvelope envelope = affordance._start.EnvelopeFactory ? affordance._start.EnvelopeFactory.Build() : null;
+                _valueScaleSession = affordance._configuration.StartValueScaleExtractor.MakeSession(); 
+                ITouchExtractorSession<float> timeScaleSession = affordance._configuration.StartTimeScaleExtractor.MakeSession();
+                IEnvelope envelope = affordance._configuration.StartEnvelope?.Build();
 
                 if (!(_valueScaleSession?.Setup(e, out float valueScale) ?? false))
                 {
@@ -107,18 +81,18 @@ namespace Sonosthesia.Touch
                 
                 TouchTrackedTriggerAffordance affordance = Affordance;
 
-                if (affordance._end == null)
+                if (!affordance._configuration)
                 {
                     affordance._trigger.EndTrigger(_triggerId);
                     return;
                 }
                 
-                ITouchExtractorSession<float> timeScaleSession = affordance._end.TimeScaleExtractor.MakeSession();
+                ITouchExtractorSession<float> timeScaleSession = affordance._configuration.EndTimeScaleExtractor.MakeSession();
                 if (!(timeScaleSession?.Setup(e, out float timeScale) ?? false))
                 {
                     timeScale = 1f;
                 }
-                IEnvelope envelope = affordance._end.EnvelopeFactory ? affordance._start.EnvelopeFactory.Build() : null;
+                IEnvelope envelope = affordance._configuration.EndEnvelope?.Build();
                 affordance._trigger.EndTrigger(_triggerId, envelope, timeScale);
             }
         }

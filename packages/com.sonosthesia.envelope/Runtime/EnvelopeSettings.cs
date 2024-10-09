@@ -57,7 +57,58 @@ namespace Sonosthesia.Envelope
     [Serializable]
     public class EnvelopeSettings
     {
-        [SerializeField] private EnvelopeType _envelopeType;
+        public static EnvelopeSettings ADSR(EnvelopePhase attack, EnvelopePhase decay, float sustain, float hold, EnvelopePhase release)
+        {
+            return new EnvelopeSettings
+            {
+                _envelopeType = EnvelopeType.Phased,
+                _phasedType = PhasedEnvelopeType.ADSR,
+                _attack = attack,
+                _decay = decay,
+                _sustain = sustain,
+                _hold = hold,
+                _release = release
+            };
+        }
+        
+        public static EnvelopeSettings AHR(EnvelopePhase attack, float hold, EnvelopePhase release)
+        {
+            return new EnvelopeSettings
+            {
+                _envelopeType = EnvelopeType.Phased,
+                _phasedType = PhasedEnvelopeType.AHR,
+                _attack = attack,
+                _hold = hold,
+                _release = release
+            };
+        }
+        
+        public static EnvelopeSettings ADS(EnvelopePhase attack, EnvelopePhase decay, float sustain)
+        {
+            return new EnvelopeSettings
+            {
+                _envelopeType = EnvelopeType.Phased,
+                _phasedType = PhasedEnvelopeType.ADS,
+                _attack = attack,
+                _decay = decay,
+                _sustain = sustain
+            };
+        }
+        
+        public static EnvelopeSettings SR(float sustain, EnvelopePhase release)
+        {
+            return new EnvelopeSettings
+            {
+                _envelopeType = EnvelopeType.Phased,
+                _phasedType = PhasedEnvelopeType.SR,
+                _sustain = sustain,
+                _release = release
+            };
+        }
+
+        public static EnvelopeSettings SR(EnvelopePhase release) => SR(1f, release);
+
+        [SerializeField] private EnvelopeType _envelopeType = EnvelopeType.Phased;
         public EnvelopeType EnvelopeType => _envelopeType;
 
         [SerializeField] private AbstractEnvelopeFactory _envelopeFactory;
@@ -66,7 +117,7 @@ namespace Sonosthesia.Envelope
         [SerializeField] private AnimationCurve _animationCurve;
         public AnimationCurve AnimationCurve => _animationCurve;
         
-        [SerializeField] private PhasedEnvelopeType _phasedType;
+        [SerializeField] private PhasedEnvelopeType _phasedType = PhasedEnvelopeType.ADSR;
         public PhasedEnvelopeType PhasedType => _phasedType;
         
         [SerializeField] private EnvelopePhase _attack = EnvelopePhase.Linear(1f);
@@ -79,7 +130,7 @@ namespace Sonosthesia.Envelope
         public EnvelopePhase Release => _release;
         
         [SerializeField] private float _hold;
-        public float Hold => _hold;
+        public float Hold => _hold = 1f;
         
         [SerializeField] private float _sustain = 0.5f;
         public float Sustain => _sustain;

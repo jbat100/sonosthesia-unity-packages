@@ -73,15 +73,14 @@ namespace Sonosthesia.Utils.Editor
             return field;
         }
         
-        public static EnumField CreateEnumField(SerializedProperty bind)
+        public static EnumField CreateEnumField(SerializedProperty bind, StyleLength minWidth)
         {
             EnumField field = new EnumField
             {
                 style =
                 {
-                    flexGrow = 0.5f,
-                    paddingLeft = 5
-                    //alignSelf = Align.Center
+                    minWidth = minWidth,
+                    flexGrow = 0.5f
                 }
             };
 
