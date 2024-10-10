@@ -1,6 +1,5 @@
 using System;
 using Sonosthesia.Trigger;
-using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 
