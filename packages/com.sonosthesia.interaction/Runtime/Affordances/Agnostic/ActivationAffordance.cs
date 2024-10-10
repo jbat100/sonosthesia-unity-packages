@@ -3,9 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
-    public class ActivationAffordance<TEvent, TAffordance> : AgnosticAffordance<TEvent, TAffordance> 
-        where TEvent : struct, IInteractionEvent
-        where TAffordance : ActivationAffordance<TEvent, TAffordance>
+    public class ActivationAffordance<TEvent> : AbstractAffordance<TEvent> where TEvent : struct, IInteractionEvent
     {
         [SerializeField] private List<GameObject> _targets;
         

@@ -10,6 +10,8 @@ namespace Sonosthesia.Interaction
         where TValue : struct
         where TEvent : struct, IInteractionEvent
     {
+        // TODO : use configuration game object like for agnostic touch trigger, with a Type(Event, Value) enum
+        
         [SerializeField] private ValueTrigger<TValue> trigger;
         
         protected override void HandleStream(Guid id, IObservable<ValueEvent<TValue, TEvent>> stream)

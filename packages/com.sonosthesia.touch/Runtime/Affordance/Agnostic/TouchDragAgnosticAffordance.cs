@@ -1,12 +1,13 @@
 using System;
 using Sonosthesia.Interaction;
+using Sonosthesia.Pointer;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class TouchDragAgnosticAffordance : DragAgnosticAffordance<TouchEvent, TouchDragAgnosticAffordance>
+    public class TouchDragAgnosticAffordance : DragAgnosticAffordance<TouchEvent>
     {
-        protected new class Controller : DragAgnosticAffordance<TouchEvent, TouchDragAgnosticAffordance>.Controller
+        private class Controller : DragAffordanceController<TouchEvent, TouchDragAgnosticAffordance>
         {
             public Controller(Guid eventId, TouchDragAgnosticAffordance affordance) : base (eventId, affordance)
             {

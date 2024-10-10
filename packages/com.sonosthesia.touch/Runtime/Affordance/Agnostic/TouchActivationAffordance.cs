@@ -2,7 +2,7 @@ using Sonosthesia.Interaction;
 
 namespace Sonosthesia.Touch
 {
-    public class TouchActivationAffordance : ActivationAffordance<TouchEvent, TouchActivationAffordance>
+    public class TouchActivationAffordance : ActivationAffordance<TouchEvent>
     {
         
     }

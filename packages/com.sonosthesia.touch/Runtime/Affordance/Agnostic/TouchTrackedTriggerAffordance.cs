@@ -6,7 +6,7 @@ using Sonosthesia.Trigger;
 
 namespace Sonosthesia.Touch
 {
-    public class TouchTrackedTriggerAffordance : AgnosticAffordance<TouchEvent, TouchTrackedTriggerAffordance>
+    public class TouchTrackedTriggerAffordance : AbstractAffordance<TouchEvent>
     {
         [SerializeField] private TrackedTrigger _trigger;
 
@@ -14,7 +14,7 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private TouchTrackedTriggerAffordanceConfiguration _configuration;
         
-        protected new class Controller : AgnosticAffordance<TouchEvent, TouchTrackedTriggerAffordance>.Controller
+        private class Controller : AffordanceController<TouchEvent, TouchTrackedTriggerAffordance>
         {
             private Guid _triggerId;
             private ITouchExtractorSession<float> _valueScaleSession;

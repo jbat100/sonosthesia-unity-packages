@@ -7,7 +7,7 @@ namespace Sonosthesia.Touch
 {
     
     [Obsolete("Use Extractors instead of Generators")]
-    public class GeneratorTouchTriggerAffordance : AgnosticAffordance<TouchEvent, GeneratorTouchTriggerAffordance>
+    public class GeneratorTouchTriggerAffordance : AbstractAffordance<TouchEvent>
     {
         [SerializeField] private Trigger.Trigger trigger;
 
@@ -17,7 +17,7 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private EnvelopeFactory _envelopeFactory;
         
-        protected new class Controller : AgnosticAffordance<TouchEvent, GeneratorTouchTriggerAffordance>.Controller
+        private class Controller : AffordanceController<TouchEvent, GeneratorTouchTriggerAffordance>
         {
             public Controller(Guid eventId, GeneratorTouchTriggerAffordance affordance) : base(eventId, affordance)
             {

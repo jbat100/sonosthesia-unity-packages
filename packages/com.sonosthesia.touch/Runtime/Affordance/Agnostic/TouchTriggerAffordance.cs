@@ -5,13 +5,13 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class TouchTriggerAffordance : AgnosticAffordance<TouchEvent, TouchTriggerAffordance>
+    public class TouchTriggerAffordance : AbstractAffordance<TouchEvent>
     {
         [SerializeField] private Trigger.Trigger _trigger;
 
         [SerializeField] private TouchTriggerAffordanceConfiguration _configuration;
         
-        protected new class Controller : AgnosticAffordance<TouchEvent, TouchTriggerAffordance>.Controller
+        private class Controller : AffordanceController<TouchEvent, TouchTriggerAffordance>
         {
             public Controller(Guid eventId, TouchTriggerAffordance affordance) : base(eventId, affordance)
             {

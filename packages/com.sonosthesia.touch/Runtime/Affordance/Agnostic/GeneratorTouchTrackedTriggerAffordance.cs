@@ -9,7 +9,7 @@ namespace Sonosthesia.Touch
     // mostly for testing purposes, use configuration ScriptableObject
     
     [Obsolete("Use Extractors instead of Generators")]
-    public class GeneratorTouchTrackedTriggerAffordance : AgnosticAffordance<TouchEvent, GeneratorTouchTrackedTriggerAffordance>
+    public class GeneratorTouchTrackedTriggerAffordance : AbstractAffordance<TouchEvent>
     {
         [SerializeField] private TrackedTrigger trigger;
 
@@ -59,7 +59,7 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private EndSettings _end;
         
-        protected new class Controller : AgnosticAffordance<TouchEvent, GeneratorTouchTrackedTriggerAffordance>.Controller
+        private class Controller : AffordanceController<TouchEvent, GeneratorTouchTrackedTriggerAffordance>
         {
             private Guid _triggerId;
             
