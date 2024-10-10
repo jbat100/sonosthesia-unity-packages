@@ -1,6 +1,7 @@
 {
   "author": "Jonathan Thorpe",
   "dependencies": {
+    "com.unity.xr.interaction.toolkit": "2.5.4",
     "com.neuecc.unirx": "7.1.0",
     "com.sonosthesia.utils": "1.10.0",
     "com.sonosthesia.channel": "1.10.0",

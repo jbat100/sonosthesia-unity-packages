@@ -9,7 +9,7 @@ namespace Sonosthesia.Interaction
 {
     public class InstantiatorValueAffordance<TValue, TEvent> : ValueAffordance<TValue, TEvent>
         where TValue : struct
-        where TEvent : struct
+        where TEvent : struct, IInteractionEvent
     {
         [SerializeField] private ScriptablePool<GameObject> _pool;
 

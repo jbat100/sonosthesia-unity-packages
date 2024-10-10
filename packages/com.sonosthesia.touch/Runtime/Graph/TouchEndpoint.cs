@@ -1,14 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using Sonosthesia.Dynamic;
+using Sonosthesia.Interaction;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 
 namespace Sonosthesia.Touch
 {
-    public abstract class TouchEndpoint : MonoBehaviour
+    public abstract class TouchEndpoint : MonoBehaviour, IInteractionEndpoint
     {
-        // can be used to filter actors or to allow one source to have different responses 
-        [SerializeField] private int _domain;
+        [SerializeField] private InteractionLayerMask _interactionLayers = ~0;
+        public InteractionLayerMask InteractionLayers => _interactionLayers;
 
         [SerializeField] private TouchNode _node;
         public TouchNode Node => _node;

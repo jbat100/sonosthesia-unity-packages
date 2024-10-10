@@ -8,7 +8,7 @@ namespace Sonosthesia.Interaction
 {
     public class TriggerValueAffordance<TValue, TEvent> : ValueAffordance<TValue, TEvent> 
         where TValue : struct
-        where TEvent : struct
+        where TEvent : struct, IInteractionEvent
     {
         [SerializeField] private ValueTrigger<TValue> trigger;
         

@@ -1,3 +1,4 @@
+using Sonosthesia.Interaction;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
@@ -11,10 +12,13 @@ namespace Sonosthesia.Touch
     }
     
     // used for affordances
-    public readonly struct TouchEvent
+    public readonly struct TouchEvent : IInteractionEvent
     {
         public readonly ITouchData TouchData;
         public readonly float StartTime;
+        
+        public IInteractionEndpoint Source => TouchData?.Source;
+        public IInteractionEndpoint Actor => TouchData?.Actor;
 
         public TouchEvent(ITouchData touchData, float startTime)
         {

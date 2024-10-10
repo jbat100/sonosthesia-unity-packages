@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Sonosthesia.Interaction;
 using UniRx;
 using UnityEngine;
 

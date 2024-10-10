@@ -1,11 +1,10 @@
 using System;
-using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
     public class DragAgnosticAffordance<TEvent, TAffordance> : AgnosticAffordance<TEvent, TAffordance> 
-        where TEvent : struct 
+        where TEvent : struct, IInteractionEvent
         where TAffordance : DragAgnosticAffordance<TEvent, TAffordance> 
     {
         // TODO : use pools 

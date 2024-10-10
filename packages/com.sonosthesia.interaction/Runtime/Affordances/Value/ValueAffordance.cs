@@ -7,7 +7,7 @@ namespace Sonosthesia.Interaction
 {
     public class ValueAffordance<TValue, TEvent> : MonoBehaviour 
         where TValue : struct
-        where TEvent : struct
+        where TEvent : struct, IInteractionEvent
     {
         [SerializeField] private StreamContainer<ValueEvent<TValue, TEvent>> _container;
 
