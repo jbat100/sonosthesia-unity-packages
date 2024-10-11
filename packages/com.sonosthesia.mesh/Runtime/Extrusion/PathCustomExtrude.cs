@@ -1,5 +1,4 @@
-﻿using System;
-using UniRx;
+﻿using UniRx;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
