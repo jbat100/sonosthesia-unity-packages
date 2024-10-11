@@ -1,14 +1,13 @@
-using System;
+using UnityEngine;
 using Unity.Collections;
 using Unity.Jobs;
-using UnityEngine;
+using Unity.Mathematics;
 using Sonosthesia.Noise;
 using Sonosthesia.Mesh;
-using Unity.Mathematics;
 
 namespace Sonosthesia.Deform
 {
-    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
+    [RequireComponent(typeof(MeshRenderer))]
     public class AdditiveDeformationMeshController : MeshController
     {
         private static readonly int materialIsPlaneId = Shader.PropertyToID("_IsPlane");
@@ -58,57 +57,10 @@ namespace Sonosthesia.Deform
         [SerializeField] private AdditiveDeformationComponent[] _components;
 
         private MeshType? _previousMeshType;
-        private NativeArray<Sample4>[] _deformations;
-        private NativeArray<Sample4> _totalDeformation;
         private Material _material;
         private bool _setIsPlane;
 
-        private int _vertexCount = 0;
-
-        private int VertexCount
-        {
-            get => _vertexCount;
-            set
-            {
-                if (_vertexCount == value)
-                {
-                    return;
-                }
-
-                Debug.LogWarning($"{this} set {nameof(VertexCount)} from {_vertexCount} to {value}");
-                
-                _vertexCount = value;
-                int length = Mathf.CeilToInt(_vertexCount / 4f);
-                int componentCount = _components?.Length ?? 0;
-                
-                
-                if (_deformations == null)
-                {
-                    _deformations = new NativeArray<Sample4>[componentCount];
-                }
-                else
-                {
-                    for (int i = 0; i < _deformations.Length; i++)
-                    {
-                        _deformations[i].Dispose();
-                    }    
-                }
-
-                if (_deformations.Length != componentCount)
-                {
-                    _deformations = new NativeArray<Sample4>[componentCount];
-                }
-
-                _totalDeformation.Dispose();
-                
-                for (int i = 0; i < _deformations.Length; i++)
-                {
-                    _deformations[i] = new NativeArray<Sample4>(length, Allocator.Persistent);
-                }
-
-                _totalDeformation = new NativeArray<Sample4>(length, Allocator.Persistent);
-            }
-        }
+        private readonly UnsafeNativeArraySummationHelper<Sample4> _summationHelper = new ();
 
         protected override void Awake()
         {
@@ -128,7 +80,7 @@ namespace Sonosthesia.Deform
 
         protected void OnDestroy()
         {
-            VertexCount = 0;
+            _summationHelper.Dispose();
         }
 
         protected override void PopulateMeshData(UnityEngine.Mesh.MeshData data)
@@ -146,43 +98,27 @@ namespace Sonosthesia.Deform
 
             meshJob.Complete();
 
-            VertexCount = data.vertexCount;
-
-            if (VertexCount == 0)
+            _summationHelper.Length = Mathf.CeilToInt(data.vertexCount / 4f);
+            _summationHelper.ComponentCount = _components.Length;
+            
+            _summationHelper.Check();
+            
+            if (data.vertexCount == 0)
             {
-                Debug.LogWarning($"Unexpected vertex count {VertexCount} {data.vertexCount}");
+                Debug.LogWarning($"Unexpected vertex count {data.vertexCount} {data.vertexCount}");
                 return;
             }
-
-            if (_deformations == null)
+            
+            NativeArray<JobHandle> deformationJobs = new NativeArray<JobHandle>(_components.Length, Allocator.Temp);
+            for (int i = 0; i < _components.Length; i++)
             {
-                // TODO : this happens on OnValidate rebuild call, work out why...
-                Debug.LogWarning($"Unexpected null _deformations");
-                return;
+                deformationJobs[i] = _components[i].MeshDeformation(data, _summationHelper.terms[i], _resolution, default);
             }
 
-            NativeArray<JobHandle> deformationJobs = new NativeArray<JobHandle>(_deformations.Length, Allocator.Temp);
-            for (int i = 0; i < _deformations.Length; i++)
-            {
-                deformationJobs[i] = _components[i].MeshDeformation(data, _deformations[i], _resolution, default);
-            }
-
-            JobHandle.CombineDependencies(deformationJobs).Complete();
-
-            _totalDeformation.ClearArray(_totalDeformation.Length);
-
-            JobHandle sumDependency = default;
-            for (int i = 0; i < _deformations.Length; i++)
-            {
-                sumDependency = new SumArrayJob<Sample4>()
-                {
-                    source = _deformations[i],
-                    target = _totalDeformation
-                }.ScheduleParallel(_totalDeformation.Length, _resolution, sumDependency);
-            }
-
+            JobHandle sumDependency = _summationHelper.Sum(JobHandle.CombineDependencies(deformationJobs));
+            
             JobHandle deformJob = ApplyMeshDeformationJob.ScheduleParallel(data,
-                _totalDeformation, _displacement, IsPlane, _resolution, sumDependency);
+                _summationHelper.sum, _displacement, IsPlane, _resolution, sumDependency);
 
             deformJob.Complete();
         }

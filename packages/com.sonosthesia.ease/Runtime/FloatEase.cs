@@ -9,68 +9,53 @@ namespace Sonosthesia.Ease
 {
 	public static class FloatEaseTypeExtensions
 	{
-		public static float Evaluate(this EaseType easeType, float value)
-		{
-			Func<float, float, float, float> func = easeType.FloatEasingFunction();
-			if (func != null)
-			{
-				return func(0, 1, value);
-			}
-			return 0;
-		}
-	    
 		public static float Evaluate(this EaseType easeType, float start, float end, float value)
 		{
-			Func<float, float, float, float> func = easeType.FloatEasingFunction();
-			if (func != null)
-			{
-				return func(start, end, value);
-			}
-			return 0;
+			return FloatEaseCurves.Ease(easeType, start, end, value);
 		}
-
-		public static Func<float, float, float, float> FloatEasingFunction(this EaseType easeType)
+		
+		public static float Evaluate(this EaseType easeType, float value)
 		{
-			return FloatEaseCurves.GetEasingFunction(easeType);
+			return FloatEaseCurves.Ease(easeType, 0f, 1f, value);
 		}
 	}
 	
     public static class FloatEaseCurves
     {
-	    public static Func<float, float, float, float> GetEasingFunction(EaseType type) => type switch 
+	    public static float Ease(EaseType type, float start, float end, float value) => type switch 
 	    {
-		    EaseType.easeInQuad => easeInQuad,
-		    EaseType.easeOutQuad => easeOutQuad,
-		    EaseType.easeInOutQuad => easeInOutQuad,
-		    EaseType.easeInCubic => easeInCubic,
-		    EaseType.easeOutCubic => easeOutCubic,
-		    EaseType.easeInOutCubic => easeInOutCubic,
-		    EaseType.easeInQuart => easeInQuart,
-		    EaseType.easeOutQuart => easeOutQuart,
-		    EaseType.easeInOutQuart => easeInOutQuart,
-		    EaseType.easeInQuint => easeInQuint,
-		    EaseType.easeOutQuint => easeOutQuint,
-		    EaseType.easeInOutQuint => easeInOutQuint,
-		    EaseType.easeInSine => easeInSine,
-		    EaseType.easeOutSine => easeOutSine,
-		    EaseType.easeInOutSine => easeInOutSine,
-		    EaseType.easeInExpo => easeInExpo,
-		    EaseType.easeOutExpo => easeOutExpo,
-		    EaseType.easeInOutExpo => easeInOutExpo,
-		    EaseType.easeInCirc => easeInCirc,
-		    EaseType.easeOutCirc => easeOutCirc,
-		    EaseType.easeInOutCirc => easeInOutCirc,
-		    EaseType.spring => spring,
-		    EaseType.easeInBounce => easeInBounce,
-		    EaseType.easeOutBounce => easeOutBounce,
-		    EaseType.easeInOutBounce => easeInOutBounce,
-		    EaseType.easeInBack => easeInBack,
-		    EaseType.easeOutBack => easeOutBack,
-		    EaseType.easeInOutBack => easeInOutBack,
-		    EaseType.easeInElastic => easeInElastic,
-		    EaseType.easeOutElastic => easeOutElastic,
-		    EaseType.easeInOutElastic => easeInOutElastic,
-		    _ => linear
+		    EaseType.easeInQuad => easeInQuad(start, end, value),
+		    EaseType.easeOutQuad => easeOutQuad(start, end, value),
+		    EaseType.easeInOutQuad => easeInOutQuad(start, end, value),
+		    EaseType.easeInCubic => easeInCubic(start, end, value),
+		    EaseType.easeOutCubic => easeOutCubic(start, end, value),
+		    EaseType.easeInOutCubic => easeInOutCubic(start, end, value),
+		    EaseType.easeInQuart => easeInQuart(start, end, value),
+		    EaseType.easeOutQuart => easeOutQuart(start, end, value),
+		    EaseType.easeInOutQuart => easeInOutQuart(start, end, value),
+		    EaseType.easeInQuint => easeInQuint(start, end, value),
+		    EaseType.easeOutQuint => easeOutQuint(start, end, value),
+		    EaseType.easeInOutQuint => easeInOutQuint(start, end, value),
+		    EaseType.easeInSine => easeInSine(start, end, value),
+		    EaseType.easeOutSine => easeOutSine(start, end, value),
+		    EaseType.easeInOutSine => easeInOutSine(start, end, value),
+		    EaseType.easeInExpo => easeInExpo(start, end, value),
+		    EaseType.easeOutExpo => easeOutExpo(start, end, value),
+		    EaseType.easeInOutExpo => easeInOutExpo(start, end, value),
+		    EaseType.easeInCirc => easeInCirc(start, end, value),
+		    EaseType.easeOutCirc => easeOutCirc(start, end, value),
+		    EaseType.easeInOutCirc => easeInOutCirc(start, end, value),
+		    EaseType.spring => spring(start, end, value),
+		    EaseType.easeInBounce => easeInBounce(start, end, value),
+		    EaseType.easeOutBounce => easeOutBounce(start, end, value),
+		    EaseType.easeInOutBounce => easeInOutBounce(start, end, value),
+		    EaseType.easeInBack => easeInBack(start, end, value),
+		    EaseType.easeOutBack => easeOutBack(start, end, value),
+		    EaseType.easeInOutBack => easeInOutBack(start, end, value),
+		    EaseType.easeInElastic => easeInElastic(start, end, value),
+		    EaseType.easeOutElastic => easeOutElastic(start, end, value),
+		    EaseType.easeInOutElastic => easeInOutElastic(start, end, value),
+		    _ => linear(start, end, value),
 	    };
 
 	    private static float linear(float start, float end, float value)

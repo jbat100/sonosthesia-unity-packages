@@ -33,7 +33,7 @@ namespace Sonosthesia.Deform
         }
 
         [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
-        private struct Job : IJob
+        private struct Job : IJobFor
         {
             public NativeArray<RigidTransform> points;
             public float scale;
@@ -42,16 +42,12 @@ namespace Sonosthesia.Deform
             public float3 direction;
             public float time;
 
-            public void Execute()
+            public void Execute(int index)
             {
-                int length = points.Length;
-                for (int index = 0; index < length; ++index)
-                {
-                    RigidTransform point = points[index];
-                    float noise = Unity.Mathematics.noise.snoise(new float4(point.pos * scale + offset, time));
-                    point.pos += math.mul(point.rot, direction) * displacement * noise;
-                    points[index] = point;
-                }
+                RigidTransform point = points[index];
+                float noise = Unity.Mathematics.noise.snoise(new float4(point.pos * scale + offset, time));
+                point.pos += math.mul(point.rot, direction) * displacement * noise;
+                points[index] = point;
             }
         }
         
@@ -66,7 +62,7 @@ namespace Sonosthesia.Deform
                 displacement = _displacement,
                 time = _time
             };
-            job.Schedule().Complete();
+            job.ScheduleParallel(points.Length, 100, default).Complete();
         }
     }
 }

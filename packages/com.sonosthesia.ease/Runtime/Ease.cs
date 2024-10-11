@@ -30,14 +30,14 @@ namespace Sonosthesia.Ease
 	    private readonly CurveEndpoint<T> _end;
 	    public CurveEndpoint<T> End => _end;
 
-	    private readonly Func<double, double, double, double> _easingFunction;
+	    private readonly EaseType _easeType;
 	    private readonly Func<T, T, float, T> _lerpingFunction;
 	    
 	    public EaseCurve(EaseType easeType, CurveEndpoint<T> start, CurveEndpoint<T> end, Func<T, T, float, T> lerpingFunction)
 	    {
 		    _start = start;
 		    _end = end;
-		    _easingFunction = DoubleEaseCurves.GetEasingFunction(easeType);
+		    _easeType = easeType;
 		    _lerpingFunction = lerpingFunction;
 	    }
 
@@ -49,7 +49,7 @@ namespace Sonosthesia.Ease
 			    return;
 		    }
 		    double ease = (t - lower.Time) / (upper.Time - lower.Time);
-		    double lerp = _easingFunction(0, 1, ease);
+		    double lerp = _easeType.Evaluate(0, 1, ease);
 		    value = _lerpingFunction(lower.Value, upper.Value, (float)lerp);
 	    }
 

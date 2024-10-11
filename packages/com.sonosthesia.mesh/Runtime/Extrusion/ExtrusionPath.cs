@@ -18,7 +18,7 @@ namespace Sonosthesia.Mesh
 
     public static class ExtrusionPathExtensions
     {
-        public static void CalculateRotations(this NativeArray<RigidTransform> points, float2 range)
+        public static void RecalculateRotations(this NativeArray<RigidTransform> points, float2 range)
         {
             bool closed = range.x == 0f && Mathf.Abs(range.y - 1f) < 1e-6;
 
