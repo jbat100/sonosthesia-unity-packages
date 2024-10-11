@@ -50,11 +50,24 @@ namespace Sonosthesia.Trigger
         public Guid StartTrigger(IEnvelope envelope, float valueScale, float timeScale)
         {
             Guid id = Guid.NewGuid();
-            _entries[id] = new TriggerEntry(new WarpedEnvelope(DefaultStartEnvelope, valueScale, timeScale));
+            StartTrigger(id, envelope, valueScale, timeScale);
             return id;
         }
         
-        public Guid StartTrigger(float valueScale, float timeScale) => StartTrigger(DefaultStartEnvelope, valueScale, timeScale);
+        public void StartTrigger(Guid id, IEnvelope envelope, float valueScale, float timeScale)
+        {
+            if (_entries.ContainsKey(id))
+            {
+                throw new ArgumentException($"Trigger with id {id} already exists");
+            }
+            _entries[id] = new TriggerEntry(new WarpedEnvelope(DefaultStartEnvelope, valueScale, timeScale));
+        }
+        
+        public Guid StartTrigger(float valueScale, float timeScale) 
+            => StartTrigger(DefaultStartEnvelope, valueScale, timeScale);
+
+        public void StartTrigger(Guid id, float valueScale, float timeScale)
+            => StartTrigger(id, DefaultEndEnvelope, valueScale, timeScale);
 
         public bool UpdateTrigger(Guid id, float valueScale)
         {

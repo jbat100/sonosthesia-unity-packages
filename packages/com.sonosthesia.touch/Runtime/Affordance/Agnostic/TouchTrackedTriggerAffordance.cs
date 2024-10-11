@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Sonosthesia.Envelope;
 using Sonosthesia.Interaction;
@@ -8,7 +9,7 @@ namespace Sonosthesia.Touch
 {
     public class TouchTrackedTriggerAffordance : AbstractAffordance<TouchEvent>
     {
-        [SerializeField] private TrackedTrigger _trigger;
+        [SerializeField] private List<TrackedTrigger> _triggers;
 
         [SerializeField] private bool _track;
 
@@ -30,9 +31,14 @@ namespace Sonosthesia.Touch
 
                 TouchTrackedTriggerAffordance affordance = Affordance;
                 
+                _triggerId = Guid.NewGuid(); 
+                
                 if (!affordance._configuration)
                 {
-                    _triggerId = affordance._trigger.StartTrigger(1f, 1f);
+                    foreach (TrackedTrigger trigger in affordance._triggers)
+                    {
+                        trigger.StartTrigger(_triggerId, 1f, 1f);
+                    }
                     return;
                 }
 
@@ -48,7 +54,11 @@ namespace Sonosthesia.Touch
                 {
                     timeScale = 1f;
                 }
-                _triggerId = affordance._trigger.StartTrigger(envelope, valueScale, timeScale);
+
+                foreach (TrackedTrigger trigger in affordance._triggers)
+                {
+                    trigger.StartTrigger(_triggerId, envelope, valueScale, timeScale);   
+                }
             }
 
             protected override void Update(TouchEvent e)
@@ -72,7 +82,10 @@ namespace Sonosthesia.Touch
                     return;
                 }
 
-                Affordance._trigger.UpdateTrigger(_triggerId, value);
+                foreach (TrackedTrigger trigger in affordance._triggers)
+                {
+                    trigger.UpdateTrigger(_triggerId, value);   
+                }
             }
 
             protected override void Teardown(TouchEvent e)
@@ -83,7 +96,11 @@ namespace Sonosthesia.Touch
 
                 if (!affordance._configuration)
                 {
-                    affordance._trigger.EndTrigger(_triggerId);
+                    foreach (TrackedTrigger trigger in affordance._triggers)
+                    {
+                        trigger.EndTrigger(_triggerId);   
+                    }
+                    
                     return;
                 }
                 
@@ -93,7 +110,11 @@ namespace Sonosthesia.Touch
                     timeScale = 1f;
                 }
                 IEnvelope envelope = affordance._configuration.EndEnvelope?.Build();
-                affordance._trigger.EndTrigger(_triggerId, envelope, timeScale);
+
+                foreach (TrackedTrigger trigger in affordance._triggers)
+                {
+                    trigger.EndTrigger(_triggerId, envelope, timeScale);
+                }
             }
         }
 

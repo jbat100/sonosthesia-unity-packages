@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Sonosthesia.Envelope;
 using Sonosthesia.Interaction;
 using UnityEngine;
@@ -7,7 +8,7 @@ namespace Sonosthesia.Touch
 {
     public class TouchTriggerAffordance : AbstractAffordance<TouchEvent>
     {
-        [SerializeField] private Trigger.Trigger _trigger;
+        [SerializeField] private List<Trigger.Trigger> _triggers;
 
         [SerializeField] private TouchTriggerAffordanceConfiguration _configuration;
         
@@ -41,7 +42,11 @@ namespace Sonosthesia.Touch
                 {
                     timeScale = 1f;
                 }
-                affordance._trigger.StartTrigger(envelope, valueScale, timeScale);
+
+                foreach (Trigger.Trigger trigger in affordance._triggers)
+                {
+                    trigger.StartTrigger(envelope, valueScale, timeScale);
+                }
             }
         }
 
