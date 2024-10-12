@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
-using Sonosthesia.Ease;
-using Sonosthesia.Mesh;
-using Sonosthesia.Noise;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
+using Sonosthesia.Noise;
+using Sonosthesia.Ease;
+using Sonosthesia.Mesh;
 
 namespace Sonosthesia.Deform
 {
@@ -20,6 +20,7 @@ namespace Sonosthesia.Deform
     public readonly struct CompoundPathNoiseInfo
     {
         public readonly CompoundPathNoiseType noiseType;
+        public readonly float displacement;
         public readonly EaseType easeType;
         public readonly float3 center;
         public readonly float radius;
@@ -27,10 +28,12 @@ namespace Sonosthesia.Deform
         public readonly float3 offset;
         public readonly float frequency;
         
-        public CompoundPathNoiseInfo(CompoundPathNoiseType noiseType, EaseType easeType, float3 center, 
-            float radius, float time, float3 offset, float frequency)
+        public CompoundPathNoiseInfo(CompoundPathNoiseType noiseType, float displacement,
+            EaseType easeType, float3 center, float radius, 
+            float time, float3 offset, float frequency)
         {
             this.noiseType = noiseType;
+            this.displacement = displacement;
             this.easeType = easeType;
             this.center = center;
             this.radius = radius;
@@ -38,11 +41,24 @@ namespace Sonosthesia.Deform
             this.offset = offset;
             this.frequency = frequency;
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(CompoundPathNoiseInfo)}(" +
+                   $"{nameof(noiseType)}: {noiseType}, " +
+                   $"{nameof(displacement)}: {displacement}, " +
+                   $"{nameof(easeType)}: {easeType}, " +
+                   $"{nameof(center)}: {center}, " +
+                   $"{nameof(radius)}: {radius}, " +
+                   $"{nameof(time)}: {time}, " +
+                   $"{nameof(offset)}: {offset}, " +
+                   $"{nameof(frequency)}: {frequency})";
+        }
     }
 
     public class CompoundNoisePathProcessor : PathProcessor
     {
-        [SerializeField] private Vector3 _direction; 
+        [SerializeField] private Vector3 _direction = Vector3.up; 
         
         private readonly Dictionary<Guid, CompoundPathNoiseInfo> _components = new();
 
@@ -77,9 +93,10 @@ namespace Sonosthesia.Deform
                 }
                 // now that we know we need it, compute sqrt
                 float distance = math.sqrt(distanceSqr);
-                float falloff = info.easeType.Evaluate(math.unlerp(0, info.radius, distance));
+                float falloff = info.easeType.Evaluate(math.unlerp(info.radius, 0, distance));
                 N noise = default;
-                deformations[index] = noise.Compute(new float4(point * info.frequency + info.offset, info.time)) * falloff;
+                float4 coord = new float4(point * info.frequency + info.offset, info.time);
+                deformations[index] = noise.Compute(coord) * info.displacement * falloff;
             }
 
             public static JobHandle ScheduleParallel(CompoundPathNoiseInfo info, NativeArray<RigidTransform> points,
@@ -104,12 +121,14 @@ namespace Sonosthesia.Deform
         public void Register(Guid id, CompoundPathNoiseInfo info)
         {
             _components[id] = info;
+            // Debug.Log($"{this} {nameof(Register)} (id {id}) : {info}");
             _summationHelper.ComponentCount = _components.Count;
         }
 
         public void Unregister(Guid id)
         {
             _components.Remove(id);
+            // Debug.Log($"{this} {nameof(Unregister)} (id {id})");
             _summationHelper.ComponentCount = _components.Count;
         }
 
@@ -147,6 +166,8 @@ namespace Sonosthesia.Deform
             };
 
             deformPathJob.ScheduleParallel(points.Length, 100, summationDependency).Complete();
+            
+            // Debug.Log($"{this} deformed using {string.Join("; ", _summationHelper.sum.Select(f => $"{f:F2}"))}");
         }
     }
 }
