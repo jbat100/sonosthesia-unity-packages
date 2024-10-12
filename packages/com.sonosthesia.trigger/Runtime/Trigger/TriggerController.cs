@@ -11,9 +11,9 @@ namespace Sonosthesia.Trigger
         private const float THRESHOLD = 1e-6f;
         
         // used to avoid alloc on update
-        private static readonly HashSet<TriggerEntry> _obsolete = new();
+        private static readonly HashSet<Entry> _obsolete = new();
 
-        private readonly HashSet<TriggerEntry> _entries = new ();
+        private readonly HashSet<Entry> _entries = new ();
         private readonly AccumulationMode _accumulationMode;
         
         public TriggerController(AccumulationMode accumulationMode)
@@ -39,13 +39,13 @@ namespace Sonosthesia.Trigger
                 return;
             }
 
-            TriggerEntry entry = new TriggerEntry(new WarpedEnvelope(envelope, valueScale, timeScale));
+            Entry entry = new Entry(new WarpedEnvelope(envelope, valueScale, timeScale));
             _entries.Add(entry);
         }
 
         public int TriggerCount => _entries.Count;
         
-        private class TriggerEntry  
+        private class Entry  
         {
             private static float CurrentTime => Time.time;
             
@@ -55,10 +55,10 @@ namespace Sonosthesia.Trigger
 
             public override string ToString()
             {
-                return $"{nameof(TriggerEntry)} start {_startTime} end {_endTime}";
+                return $"{nameof(Entry)} start {_startTime} end {_endTime}";
             }
 
-            public TriggerEntry(IEnvelope envelope)
+            public Entry(IEnvelope envelope)
             {
                 _startTime = CurrentTime;
                 _envelope = envelope;
