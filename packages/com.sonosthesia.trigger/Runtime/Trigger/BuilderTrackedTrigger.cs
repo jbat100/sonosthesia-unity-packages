@@ -8,8 +8,11 @@ namespace Sonosthesia.Trigger
         [SerializeField] private EnvelopeBuilder _startEnvelopeBuilder;
         
         [SerializeField] private EnvelopeBuilder _endEnvelopeBuilder;
-        
-        
-        
+
+        protected override IEnvelope DefaultStartEnvelope 
+            => _startEnvelopeBuilder ? _startEnvelopeBuilder.Build() : base.DefaultStartEnvelope;
+
+        protected override IEnvelope DefaultEndEnvelope
+            => _endEnvelopeBuilder ? _endEnvelopeBuilder.Build() : base.DefaultEndEnvelope;
     }
 }

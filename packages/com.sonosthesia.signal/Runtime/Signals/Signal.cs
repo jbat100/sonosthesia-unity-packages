@@ -26,7 +26,7 @@ namespace Sonosthesia.Signal
             _signalSubject.OnNext(value);
         }
 
-        protected void OnDestroy()
+        protected virtual void OnDestroy()
         {
             _signalSubject.OnCompleted();
             _signalSubject.Dispose();

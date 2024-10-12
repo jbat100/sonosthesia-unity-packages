@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Sonosthesia.Envelope;
 using Sonosthesia.Signal;
 using Sonosthesia.Utils;
@@ -27,17 +25,13 @@ namespace Sonosthesia.Trigger
     }
 #endif
     
-    
     public class TrackedTrigger : Signal<float>
     {
         [SerializeField] private AccumulationMode _accumulationMode = AccumulationMode.Max;
 
         [SerializeField] private FloatProcessor _postProcessor;
-        
-        private readonly Dictionary<Guid, TriggerEntry> _entries = new ();
 
-        // avoid alloc
-        private static readonly HashSet<Guid> _obsolete = new();
+        private TrackedTriggerController _triggerController;
 
         private IEnvelope _defaultStartEnvelope;
         protected virtual IEnvelope DefaultStartEnvelope => 
@@ -56,11 +50,7 @@ namespace Sonosthesia.Trigger
         
         public void StartTrigger(Guid id, IEnvelope envelope, float valueScale, float timeScale)
         {
-            if (_entries.ContainsKey(id))
-            {
-                throw new ArgumentException($"Trigger with id {id} already exists");
-            }
-            _entries[id] = new TriggerEntry(new WarpedEnvelope(DefaultStartEnvelope, valueScale, timeScale));
+            _triggerController.StartTrigger(id, envelope ?? DefaultStartEnvelope, valueScale, timeScale);
         }
         
         public Guid StartTrigger(float valueScale, float timeScale) 
@@ -70,152 +60,39 @@ namespace Sonosthesia.Trigger
             => StartTrigger(id, DefaultEndEnvelope, valueScale, timeScale);
 
         public bool UpdateTrigger(Guid id, float valueScale)
-        {
-            if (_entries.TryGetValue(id, out TriggerEntry entry))
-            {
-                entry.ValueScale = valueScale;
-                return true;
-            }
+            => _triggerController.UpdateTrigger(id, valueScale);
 
-            return false;
-        }
 
         public bool EndTrigger(Guid id, IEnvelope envelope, float timescale = 1f)
-        {
-            if (_entries.TryGetValue(id, out TriggerEntry entry))
-            {
-                if (Math.Abs(timescale - 1f) > 1e-6)
-                {
-                    envelope = new WarpedEnvelope(envelope, 1f, timescale);
-                }
-                entry.End(envelope);
-                // note : don't remove from _entries, the end phase of the trigger must complete
-                return true;
-            }
-
-            return false;
-        }
+            => _triggerController.EndTrigger(id, envelope ?? DefaultEndEnvelope, timescale);
         
         public void EndTrigger(Guid id, float timescale = 1f) => EndTrigger(id, DefaultEndEnvelope, timescale);
 
-        public void EndAll(IEnvelope envelope, float timescale = 1)
-        {
-            envelope ??= DefaultEndEnvelope;
-            foreach (TriggerEntry entry in _entries.Values)
-            {
-                entry.End(envelope);
-            }
-        }
+        public void EndAll(IEnvelope envelope, float timescale = 1) =>
+            _triggerController.EndAll(envelope ?? DefaultEndEnvelope, timescale);
 
         public void EndAll(float timeScale = 1f) => EndAll(DefaultEndEnvelope, timeScale);
         
         protected virtual void Update()
         {
-            _obsolete.Clear();
-            foreach (KeyValuePair<Guid, TriggerEntry> pair in _entries)
-            {
-                if (pair.Value.IsEnded)
-                {
-                    _obsolete.Add(pair.Key);
-                }
-            }
-            foreach (Guid id in _obsolete)
-            {
-                _entries.Remove(id);
-            }
-
-            float raw = _entries.Values.Aggregate(0f, (current, entry) => entry.Accumulate(_accumulationMode, current));
+            float raw = _triggerController.Update();
             Broadcast(_postProcessor.Process(raw));
         }
 
-        protected virtual void OnEnable()
-        {
-            _entries.Clear();
-        }
+        protected virtual void OnEnable() => SetupState();
+        
+        protected virtual void OnValidate() => SetupState();
         
         protected virtual void OnDisable()
         {
-            _entries.Clear();
+            _triggerController?.Dispose();
             Broadcast(0);
         }
-
-        private class TriggerEntry
+        
+        private void SetupState()
         {
-            private class PhaseInfo
-            {
-                private static float CurrentTime => Time.time;
-                
-                public float ReferenceTime;
-                public WarpedEnvelope Envelope;
-
-                public bool IsComplete => CurrentTime - ReferenceTime > Envelope.Duration;
-
-                public float CurrentValue
-                {
-                    get
-                    {
-                        if (IsComplete)
-                        {
-                            return Envelope.FinalValue;
-                        }
-                        return Envelope.Evaluate(CurrentTime - ReferenceTime);
-                    }
-                }
-            }
-
-            private readonly PhaseInfo _start;
-            private PhaseInfo _end;
-
-            private PhaseInfo CurrentPhase => _end ?? _start;
-            
-            public TriggerEntry(WarpedEnvelope envelope)
-            {
-                _start = new PhaseInfo
-                {
-                    ReferenceTime = Time.time,
-                    Envelope = envelope
-                };
-            }
-
-            public float ValueScale
-            {
-                get => _start.Envelope.ValueScale;
-                set => _start.Envelope.ValueScale = value;
-            }
-
-            /// <summary>
-            /// Note value scale is computed automatically to allow smooth transition down from current value
-            /// </summary>
-            /// <param name="envelope"></param>
-            public void End(IEnvelope envelope)
-            {
-                if (_end != null)
-                {
-                    return;
-                }
-
-                float valueScale = envelope.InitialValue == 0f ? 1f : _start.CurrentValue / envelope.InitialValue;
-                
-                _end = new PhaseInfo
-                {
-                    ReferenceTime = Time.time,
-                    Envelope = new WarpedEnvelope(envelope, valueScale, 1f)
-                };
-            }
-            
-            public bool IsEnded => _end is {IsComplete: true};
-
-            public float Accumulate(AccumulationMode accumulationMode, float seed)
-            {
-                float value = CurrentPhase.CurrentValue;
-                return accumulationMode switch
-                {
-                    AccumulationMode.Sum => seed + value,
-                    AccumulationMode.Max => Mathf.Max(seed, value),
-                    AccumulationMode.Min => Mathf.Min(seed, value),
-                    _ => 0
-                };
-            }
+            _triggerController?.Dispose();
+            _triggerController = new TrackedTriggerController(_accumulationMode);
         }
     }
 }

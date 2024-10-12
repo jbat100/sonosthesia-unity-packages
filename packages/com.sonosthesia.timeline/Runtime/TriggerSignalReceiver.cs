@@ -3,23 +3,30 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
-using Sonosthesia.Trigger;
 
 namespace Sonosthesia.Timeline
 {
-    public class TriggerableSignalReceiver : MonoBehaviour, INotificationReceiver
+    // TODO : rework, find a way to trigger from timeline in a flexible way
+    
+    public class TriggerSignalReceiver : MonoBehaviour, INotificationReceiver
     {
         public SignalAssetEventInfo[] signalAssetEvents;
 
+        [Serializable]
+        public class TestPayload
+        {
+            
+        }
+        
         [Serializable]
         public class SignalAssetEventInfo
         {
             public SignalAsset signalAsset;
             public ParameterizedEvent events;
-            public BuilderTrigger.Payload payload;
+            public TestPayload payload;
 
             [Serializable]
-            public class ParameterizedEvent : UnityEvent<BuilderTrigger.Payload> { }
+            public class ParameterizedEvent : UnityEvent<TestPayload> { }
         }
         
         public void OnNotify(Playable origin, INotification notification, object context)

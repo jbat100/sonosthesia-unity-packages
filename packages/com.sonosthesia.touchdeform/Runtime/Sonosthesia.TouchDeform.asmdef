@@ -1,0 +1,20 @@
+{
+    "name": "Sonosthesia.TouchDeform",
+    "rootNamespace": "Sonosthesia.TouchDeform",
+    "references": [
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:25e5e4b6f3916462c92ecc1d0ffca2c2",
+        "GUID:5498766dc821c4d57a7ccc41bc91fe53",
+        "GUID:84e4dabf4521845c2ba0da98542e684a",
+        "GUID:1fd512b3b6c091f43bedec2c48831e94"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
