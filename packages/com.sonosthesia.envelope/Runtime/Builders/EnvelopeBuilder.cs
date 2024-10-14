@@ -10,12 +10,4 @@ namespace Sonosthesia.Envelope
     {
         public abstract IEnvelope Build();
     }
-
-    public static class EnvelopeExtensions
-    {
-        public static float End<T>(this IEnvelope envelopeBuilder) where T : struct
-        {
-            return envelopeBuilder.Evaluate(envelopeBuilder.Duration);
-        }
-    }
 }

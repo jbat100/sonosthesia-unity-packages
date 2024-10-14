@@ -7,7 +7,8 @@ namespace Sonosthesia.Envelope
     {
         Custom,
         Phased,
-        Curve
+        Curve,
+        Constant
     }
     
     public enum PhasedEnvelopeType
@@ -27,17 +28,7 @@ namespace Sonosthesia.Envelope
                 return null;
             }
 
-            if (settings.EnvelopeType == EnvelopeType.Custom)
-            {
-                return settings.EnvelopeFactory ? settings.EnvelopeFactory.Build() : null;
-            }
-
-            if (settings.EnvelopeType == EnvelopeType.Curve)
-            {
-                return new AnimationCurveEnvelope(settings.AnimationCurve);
-            }
-
-            if (settings.EnvelopeType == EnvelopeType.Phased)
+            IEnvelope PhasedEnvelope()
             {
                 return settings.PhasedType switch
                 {
@@ -46,14 +37,20 @@ namespace Sonosthesia.Envelope
                     PhasedEnvelopeType.ADS => new ADSEnvelope(settings.Attack, settings.Decay, settings.Sustain),
                     PhasedEnvelopeType.SR => new SREnvelope(settings.Sustain, settings.Release),
                     _ => null
-                };       
+                }; 
             }
 
-            return null;
+            return settings.EnvelopeType switch
+            {
+                EnvelopeType.Custom => settings.EnvelopeFactory ? settings.EnvelopeFactory.Build() : null,
+                EnvelopeType.Phased => PhasedEnvelope(),
+                EnvelopeType.Curve => new AnimationCurveEnvelope(settings.AnimationCurve),
+                EnvelopeType.Constant => new ConstantEnvelope(settings.ConstantValue, settings.ConstantDuration),
+                _ => null
+            };
         }
     }
-    
-    
+
     [Serializable]
     public class EnvelopeSettings
     {
@@ -111,6 +108,12 @@ namespace Sonosthesia.Envelope
         [SerializeField] private EnvelopeType _envelopeType = EnvelopeType.Phased;
         public EnvelopeType EnvelopeType => _envelopeType;
 
+        [SerializeField] private float _constantValue = 1f;
+        public float ConstantValue => _constantValue;
+        
+        [SerializeField] private float _constantDuration = 1f;
+        public float ConstantDuration => _constantDuration;
+        
         [SerializeField] private AbstractEnvelopeFactory _envelopeFactory;
         public AbstractEnvelopeFactory EnvelopeFactory => _envelopeFactory;
         

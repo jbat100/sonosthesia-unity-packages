@@ -1,5 +1,4 @@
 ﻿using Sonosthesia.Utils;
-using UnityEngine;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -10,8 +9,6 @@ namespace Sonosthesia.Envelope.Editor
     [CustomPropertyDrawer(typeof(EnvelopeSettings))]
     public class EnvelopeSettingsDrawer : PropertyDrawer
     {
-        protected StyleEnum<DisplayStyle> Show(bool show) => show ? DisplayStyle.Flex : DisplayStyle.None;
-
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             VisualElement root = new VisualElement();
@@ -21,6 +18,12 @@ namespace Sonosthesia.Envelope.Editor
             
             root.AddRelativeField(property, "_envelopeType", 
                 out SerializedProperty envelopeTypeProp, out PropertyField envelopeTypeField);
+            
+            root.AddRelativeField(property, "_constantValue", 
+                out SerializedProperty _, out PropertyField constantValueField);
+            
+            root.AddRelativeField(property, "_constantDuration", 
+                out SerializedProperty _, out PropertyField constantDurationField);
             
             root.AddRelativeField(property, "_envelopeFactory", 
                 out SerializedProperty _, out PropertyField envelopeFactoryField);
@@ -49,32 +52,34 @@ namespace Sonosthesia.Envelope.Editor
             // Method to update the visibility of fields based on the enum value
             void UpdateVisibility()
             {
-                UnityEngine.Debug.Log($"{this} {nameof(UpdateVisibility)}");
+                // UnityEngine.Debug.Log($"{this} {nameof(UpdateVisibility)}");
                 
                 EnvelopeType type = (EnvelopeType)envelopeTypeProp.enumValueIndex;
                 
-                phasedTypeField.style.display = Show(type == EnvelopeType.Phased);
-                animationCurveField.style.display = Show(type == EnvelopeType.Curve);
-                envelopeFactoryField.style.display = Show(type == EnvelopeType.Custom);
+                phasedTypeField.Show(type == EnvelopeType.Phased);
+                animationCurveField.Show(type == EnvelopeType.Curve);
+                envelopeFactoryField.Show(type == EnvelopeType.Custom);
+                constantDurationField.Show(type == EnvelopeType.Constant);
+                constantValueField.Show(type == EnvelopeType.Constant);
                 
                 if (type == EnvelopeType.Phased)
                 {
                     PhasedEnvelopeType phasedType = (PhasedEnvelopeType)phasedTypeProp.enumValueIndex;
-                    attackField.style.display = Show(phasedType is not PhasedEnvelopeType.SR);
-                    decayField.style.display = Show(phasedType is PhasedEnvelopeType.ADSR or PhasedEnvelopeType.ADS);
-                    sustainField.style.display = Show(phasedType is PhasedEnvelopeType.ADSR or PhasedEnvelopeType.ADS or PhasedEnvelopeType.SR);
-                    releaseField.style.display = Show(phasedType is PhasedEnvelopeType.ADSR or PhasedEnvelopeType.AHR or PhasedEnvelopeType.SR);
-                    holdField.style.display = Show(phasedType is PhasedEnvelopeType.ADSR or PhasedEnvelopeType.AHR);
-                    sustainField.style.display = Show(phasedType is PhasedEnvelopeType.ADSR or PhasedEnvelopeType.ADS or PhasedEnvelopeType.SR);
+                    attackField.Show(phasedType is not PhasedEnvelopeType.SR);
+                    decayField.Show(phasedType is PhasedEnvelopeType.ADSR or PhasedEnvelopeType.ADS);
+                    sustainField.Show(phasedType is PhasedEnvelopeType.ADSR or PhasedEnvelopeType.ADS or PhasedEnvelopeType.SR);
+                    releaseField.Show(phasedType is PhasedEnvelopeType.ADSR or PhasedEnvelopeType.AHR or PhasedEnvelopeType.SR);
+                    holdField.Show(phasedType is PhasedEnvelopeType.ADSR or PhasedEnvelopeType.AHR);
+                    sustainField.Show(phasedType is PhasedEnvelopeType.ADSR or PhasedEnvelopeType.ADS or PhasedEnvelopeType.SR);
                 }
                 else
                 {
-                    attackField.style.display = Show(false);
-                    decayField.style.display = Show(false);
-                    sustainField.style.display = Show(false);
-                    releaseField.style.display = Show(false);
-                    holdField.style.display = Show(false);
-                    sustainField.style.display = Show(false);
+                    attackField.Show(false);
+                    decayField.Show(false);
+                    sustainField.Show(false);
+                    releaseField.Show(false);
+                    holdField.Show(false);
+                    sustainField.Show(false);
                 }
             }
 

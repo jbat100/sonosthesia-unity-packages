@@ -9,8 +9,6 @@ namespace Sonosthesia.Touch.Editor
     [CustomPropertyDrawer(typeof(FloatTouchExtractorSettings))]
     public class FloatTouchExtractorSettingsDrawer : PropertyDrawer
     {
-        protected StyleEnum<DisplayStyle> Show(bool show) => show ? DisplayStyle.Flex : DisplayStyle.None;
-
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             VisualElement root = new VisualElement();
@@ -54,24 +52,24 @@ namespace Sonosthesia.Touch.Editor
             // Method to update the visibility of fields based on the enum value
             void UpdateVisibility()
             {
-                UnityEngine.Debug.Log($"{this} {nameof(UpdateVisibility)}");
+                // UnityEngine.Debug.Log($"{this} {nameof(UpdateVisibility)}");
                 
-                FloatTouchExtractorSettings.ExtractorType extratorType = (FloatTouchExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
+                FloatTouchExtractorSettings.ExtractorType extractorType = (FloatTouchExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
                 FloatTouchExtractorSettings.PostProcessingType postProcessingType = (FloatTouchExtractorSettings.PostProcessingType)postProcessingProp.enumValueIndex;
 
-                extractorField.style.display = Show(extratorType is FloatTouchExtractorSettings.ExtractorType.Custom);
+                extractorField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Custom);
                 
-                staticValueField.style.display = Show(extratorType is FloatTouchExtractorSettings.ExtractorType.Static);
+                staticValueField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Static);
                 
-                dynamicTypeField.style.display = Show(extratorType is FloatTouchExtractorSettings.ExtractorType.Dynamic);
-                dynamicsOrderField.style.display = Show(extratorType is FloatTouchExtractorSettings.ExtractorType.Dynamic);
-                dynamicsDomainField.style.display = Show(extratorType is FloatTouchExtractorSettings.ExtractorType.Dynamic);
+                dynamicTypeField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Dynamic);
+                dynamicsOrderField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Dynamic);
+                dynamicsDomainField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Dynamic);
                 
-                distanceTypeField.style.display = Show(extratorType is FloatTouchExtractorSettings.ExtractorType.Distance);
-                distanceAxesField.style.display = Show(extratorType is FloatTouchExtractorSettings.ExtractorType.Distance);
+                distanceTypeField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Distance);
+                distanceAxesField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Distance);
 
-                remapField.style.display = Show(postProcessingType is FloatTouchExtractorSettings.PostProcessingType.Remap);
-                curveField.style.display = Show(postProcessingType is FloatTouchExtractorSettings.PostProcessingType.Curve);
+                remapField.Show(postProcessingType is FloatTouchExtractorSettings.PostProcessingType.Remap);
+                curveField.Show(postProcessingType is FloatTouchExtractorSettings.PostProcessingType.Curve);
             }
 
             // Initial visibility update

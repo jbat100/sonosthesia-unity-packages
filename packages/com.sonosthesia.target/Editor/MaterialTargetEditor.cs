@@ -35,8 +35,8 @@ namespace Sonosthesia.Target.Editor
                 Debug.Log($"{this} {nameof(UpdateVisibility)}");
                 bool usePropertyBlock = usePropertyBlockProperty.boolValue;
                 MaterialSelector selector = (MaterialSelector)materialSelectorProperty.enumValueIndex;
-                materialSelectorField.style.display = UIElementUtils.ShowDisplayStyle(!usePropertyBlock);
-                materialIndexField.style.display = UIElementUtils.ShowDisplayStyle(!usePropertyBlock && selector is MaterialSelector.Indexed);
+                materialSelectorField.Show(!usePropertyBlock);
+                materialIndexField.Show(!usePropertyBlock && selector is MaterialSelector.Indexed);
             }
 
             // Initial visibility update

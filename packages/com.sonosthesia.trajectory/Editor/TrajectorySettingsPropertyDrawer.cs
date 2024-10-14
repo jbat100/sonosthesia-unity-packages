@@ -8,8 +8,6 @@ namespace Sonosthesia.Trajectory.Editor
 {
     public class TrajectorySettingsPropertyDrawer<T> : PropertyDrawer where T : struct
     {
-        protected StyleEnum<DisplayStyle> Show(bool show) => show ? DisplayStyle.Flex : DisplayStyle.None;
-        
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             VisualElement root = new VisualElement();
@@ -20,18 +18,16 @@ namespace Sonosthesia.Trajectory.Editor
             root.AddRelativeField(property, "_position", out _, out PropertyField positionField);
             root.AddRelativeField(property, "_velocity", out _, out PropertyField velocityField);
 
-            // Method to update the visibility of fields based on the enum value
             void UpdateVisibility()
             {
-                Debug.Log($"{this} {nameof(UpdateVisibility)}");
+                // Debug.Log($"{this} {nameof(UpdateVisibility)}");
                 TrajectoryType type = (TrajectoryType)trajectoryTypeProp.enumValueIndex;
-                easeTypeField.style.display = Show(type is TrajectoryType.Easing or TrajectoryType.Pulse);
-                durationField.style.display = Show(type is TrajectoryType.Easing or TrajectoryType.Bounded or TrajectoryType.Pulse);
-                positionField.style.display = Show(type is TrajectoryType.Bounded or TrajectoryType.Immediate);
-                velocityField.style.display = Show(type is not TrajectoryType.None);
+                easeTypeField.Show(type is TrajectoryType.Easing or TrajectoryType.Pulse);
+                durationField.Show(type is TrajectoryType.Easing or TrajectoryType.Bounded or TrajectoryType.Pulse);
+                positionField.Show(type is TrajectoryType.Bounded or TrajectoryType.Immediate);
+                velocityField.Show(type is not TrajectoryType.None);
             }
 
-            // Initial visibility update
             UpdateVisibility();
 
             trajectoryTypeField.RegisterValueChangeCallback(evt => UpdateVisibility());

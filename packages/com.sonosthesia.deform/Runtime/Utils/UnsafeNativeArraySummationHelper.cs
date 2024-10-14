@@ -56,10 +56,11 @@ namespace Sonosthesia.Deform
             if (_dirty)
             {
                 _dirty = false;
-                InitializeArrays();
+                ReuseInitializeArrays();
             }
         }
 
+        // used to try to hunt down reuse bug
         private void InitializeArrays()
         {
             sum.Dispose();

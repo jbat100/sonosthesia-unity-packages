@@ -12,4 +12,12 @@
         float FinalValue { get; }
         float Evaluate(float time);
     }
+    
+    public static class EnvelopeExtensions
+    {
+        public static float End(this IEnvelope envelope)
+        {
+            return envelope.Evaluate(envelope.Duration);
+        }
+    }
 }

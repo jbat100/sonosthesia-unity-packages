@@ -148,14 +148,14 @@ namespace Sonosthesia.Deform
         public void Register(Guid id, CompoundPathNoiseInfo info)
         {
             _components[id] = info;
-            // Debug.Log($"{this} {nameof(Register)} (id {id}) : {info}");
+            Debug.Log($"{this} {nameof(Register)} (id {id}) : {info}");
             _summationHelper.ComponentCount = _components.Count;
         }
 
         public void Unregister(Guid id)
         {
             _components.Remove(id);
-            // Debug.Log($"{this} {nameof(Unregister)} (id {id})");
+            Debug.Log($"{this} {nameof(Unregister)} (id {id})");
             _summationHelper.ComponentCount = _components.Count;
         }
 
@@ -180,13 +180,11 @@ namespace Sonosthesia.Deform
                 i++;
             }
             
-            JobHandle.CombineDependencies(deformationJobs).Complete();
-            
             // Sum the deformations in series
             
             // TODO: passing JobHandle.CombineDependencies(deformationJobs) as a SumFloats dependency breaks
 
-            JobHandle summationDependency = _summationHelper.SumFloats(default);
+            JobHandle summationDependency = _summationHelper.SumFloats(JobHandle.CombineDependencies(deformationJobs));
             
             // Apply the deformations to the path
 

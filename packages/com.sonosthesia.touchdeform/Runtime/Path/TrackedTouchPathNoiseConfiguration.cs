@@ -6,23 +6,22 @@ using Sonosthesia.Touch;
 
 namespace Sonosthesia.TouchDeform
 {
-    
     [CreateAssetMenu(fileName = "TrackedTouchPathNoiseConfiguration", menuName = "Sonosthesia/Touch/TrackedTouchPathNoiseConfiguration")]
     public class TrackedTouchPathNoiseConfiguration : ScriptableObject
     {
-        [SerializeField] private float _speed;
-        public float Speed => _speed = 1f;
+        [SerializeField] private float _speed = 1f;
+        public float Speed => _speed;
         
         [SerializeField] private bool _trackPosition;
         public bool TrackPosition => _trackPosition;
 
-        [SerializeField] private Noise4DType _noiseType;
+        [SerializeField] private Noise4DType _noiseType = Noise4DType.Simplex;
         public Noise4DType NoiseType => _noiseType;
         
-        [SerializeField] private float _frequency;
+        [SerializeField] private float _frequency = 1f;
         public float Frequency => _frequency;
         
-        [SerializeField] private EaseType _falloffType;
+        [SerializeField] private EaseType _falloffType = EaseType.linear;
         public EaseType FalloffType => _falloffType;
         
         [SerializeField] private bool _trackRadius;
@@ -46,7 +45,7 @@ namespace Sonosthesia.TouchDeform
         [SerializeField] private FloatTouchExtractorSettings _displacementReleaseExtractor;
         public FloatTouchExtractorSettings DisplacementReleaseExtractor => _displacementReleaseExtractor;
 
-        [SerializeField] private EaseType _displacementReleaseEaseType;
+        [SerializeField] private EaseType _displacementReleaseEaseType = EaseType.linear;
         public EaseType DisplacementReleaseEaseType => _displacementReleaseEaseType;
     }
 }

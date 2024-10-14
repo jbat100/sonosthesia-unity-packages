@@ -5,8 +5,6 @@ namespace Sonosthesia.Utils.Editor
 {
     public static class UIElementUtils
     {
-        public static StyleEnum<DisplayStyle> ShowDisplayStyle(bool show) => show ? DisplayStyle.Flex : DisplayStyle.None;
-
         public static Label TitleLabel(string text)
         {
             return new Label(text)

@@ -10,17 +10,17 @@ namespace Sonosthesia.TouchDeform
 
     public class TouchPathNoiseConfiguration : ScriptableObject
     {
-        [SerializeField] private float _speed;
-        public float Speed => _speed = 1f;
+        [SerializeField] private float _speed = 1f;
+        public float Speed => _speed;
         
-        [SerializeField] private Noise4DType _noiseType;
-        public Noise4DType NoiseType => _noiseType = Noise4DType.Simplex;
+        [SerializeField] private Noise4DType _noiseType = Noise4DType.Simplex; 
+        public Noise4DType NoiseType => _noiseType;
         
-        [SerializeField] private EaseType _falloffType;
-        public EaseType FalloffType => _falloffType = EaseType.linear;
+        [SerializeField] private EaseType _falloffType = EaseType.linear;
+        public EaseType FalloffType => _falloffType;
         
-        [SerializeField] private float _frequency;
-        public float Frequency => _frequency = 5;
+        [SerializeField] private float _frequency = 5;
+        public float Frequency => _frequency;
         
         [SerializeField] private FloatTouchExtractorSettings _radiusExtractor;
         public FloatTouchExtractorSettings RadiusExtractor => _radiusExtractor;

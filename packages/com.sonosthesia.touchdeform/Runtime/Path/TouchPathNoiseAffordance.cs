@@ -22,11 +22,11 @@ namespace Sonosthesia.TouchDeform
             {
             }
             
-            ~Controller()
-            {
-                // checking for lifetime
-                Debug.LogError("TouchPathNoiseAffordance Controller finalized and ready for garbage collection");
-            }
+            // ~Controller()
+            // {
+            //     // checking for lifetime
+            //     Debug.LogError("TouchPathNoiseAffordance Controller finalized and ready for garbage collection");
+            // }
 
             protected override void Setup(TouchEvent e)
             {
@@ -52,21 +52,27 @@ namespace Sonosthesia.TouchDeform
                 ITouchExtractorSession<float> radiusSession = affordance._configuration.RadiusExtractor.MakeSession();
                 radiusSession.Setup(e, out float radius);
 
-                TriggerController triggerController = new TriggerController(AccumulationMode.Max);
+                TriggerController displacementController = new TriggerController(AccumulationMode.Max);
+                
+                displacementController.StartTrigger(envelope, valueScale, timeScale);
 
+                float time = 0f;
+                float speed = affordance._configuration.Speed;
+                
                 Observable.EveryUpdate()
                     .TakeUntil(Observable.Timer(TimeSpan.FromSeconds(envelope.Duration * timeScale)))
                     .TakeUntilDisable(affordance)
                     .Subscribe(_ =>
                     {
-                        float displacement = triggerController.Update();
+                        float displacement = displacementController.Update();
+                        time += Time.deltaTime * speed;
                         CompoundPathNoiseInfo info = new CompoundPathNoiseInfo(
                             affordance._configuration.NoiseType,
                             displacement,
                             affordance._configuration.FalloffType,
                             center,
                             radius,
-                            Time.time,
+                            time,
                             float3.zero,
                             affordance._configuration.Frequency
                         );
@@ -74,9 +80,11 @@ namespace Sonosthesia.TouchDeform
                     }, err =>
                     {
                         affordance._processor.Unregister(EventId);
+                        displacementController.Dispose();
                     }, () =>
                     {
                         affordance._processor.Unregister(EventId);
+                        displacementController.Dispose();
                     });
             }
         }

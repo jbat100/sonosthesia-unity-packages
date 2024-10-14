@@ -27,8 +27,7 @@ namespace Sonosthesia.TouchDeform
 
             private float3 _center;
             private float _radius;
-            private float _time;
-            
+
             private IDisposable _updateSubscription;
             private ITouchExtractorSession<float> _displacementValueSession;
             private ITouchExtractorSession<float> _radiusSession;
@@ -70,21 +69,22 @@ namespace Sonosthesia.TouchDeform
                 _radiusSession = affordance._configuration.RadiusExtractor.MakeSession();
                 _radiusSession.Setup(e, out _radius);
 
-                float speed = affordance._configuration.Speed;
+                float speed = affordance._configuration.Speed; 
+                float time = 0f;
                 
                 _updateSubscription = Observable.EveryUpdate()
                     .TakeUntilDisable(affordance)
                     .Subscribe(_ =>
                     {
                         float displacement = _displacementController.Update();
-                        _time += Time.deltaTime * speed;
+                        time += Time.deltaTime * speed;
                         CompoundPathNoiseInfo info = new CompoundPathNoiseInfo(
                             affordance._configuration.NoiseType,
                             displacement,
                             affordance._configuration.FalloffType,
                             _center,
                             _radius,
-                            _time,
+                            time,
                             float3.zero,
                             affordance._configuration.Frequency
                         );
