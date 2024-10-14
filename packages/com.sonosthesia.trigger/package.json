@@ -7,7 +7,8 @@
     "com.sonosthesia.generator": "1.10.0",
     "com.sonosthesia.flow": "1.10.0",
     "com.sonosthesia.utils": "1.10.0",
-    "com.sonosthesia.processing": "1.10.0"
+    "com.sonosthesia.processing": "1.10.0",
+    "com.sonosthesia.envelope": "1.10.0"
   },
   "description": "Sonosthesia unity trigger",
   "displayName": "Sonosthesia Trigger",

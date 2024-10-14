@@ -46,6 +46,11 @@ namespace Sonosthesia.Deform
         private const Allocator _allocator = Allocator.Persistent;
         private const NativeArrayOptions _options = NativeArrayOptions.UninitializedMemory;
 
+        public void ForceDirty()
+        {
+            _dirty = true;
+        }
+        
         public void Check()
         {
             if (_dirty)
@@ -54,8 +59,29 @@ namespace Sonosthesia.Deform
                 InitializeArrays();
             }
         }
-        
+
         private void InitializeArrays()
+        {
+            sum.Dispose();
+            if (terms != null)
+            {
+                foreach (NativeArray<T> term in terms)
+                {
+                    term.Dispose();
+                }    
+            }
+
+            terms = new NativeArray<T>[_componentCount];
+
+            for (int i = 0; i < _componentCount; i++)
+            {
+                terms[i] = new NativeArray<T>(_length, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+            }
+            
+            sum = new NativeArray<T>(_length, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+        }
+        
+        private void ReuseInitializeArrays()
         {
             if (terms == null)
             {

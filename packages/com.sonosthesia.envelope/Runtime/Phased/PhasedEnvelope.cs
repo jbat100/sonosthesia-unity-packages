@@ -216,4 +216,12 @@ namespace Sonosthesia.Envelope
             return 0;
         }
     }
+
+    public static class EaseTypeEnvelopeExtensions
+    {
+        public static IEnvelope ReleaseEnvelope(this EaseType easeType, float duration, float sustain = 1f)
+        {
+            return new SREnvelope(sustain, new EnvelopePhase(easeType, duration));
+        }
+    }
 }

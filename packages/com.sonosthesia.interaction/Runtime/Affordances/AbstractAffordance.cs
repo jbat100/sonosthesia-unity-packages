@@ -47,6 +47,8 @@ namespace Sonosthesia.Interaction
                         Debug.Log($"{this} handling new stream {pair.Key}");
                     }
                     IObservable<TEvent> stream = pair.Value.TakeUntilDisable(this);
+                    
+                    // TODO: check what happens in the case of controllers which live beyond the stream
                     System.IObserver<TEvent> controller = MakeController(id);
                     if (controller != null)
                     {

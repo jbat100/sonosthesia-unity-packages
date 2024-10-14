@@ -10,7 +10,7 @@ namespace Sonosthesia.Deform
 
         [Header("Settings")] 
         
-        [SerializeField] private CompoundPathNoiseType _noiseType;
+        [SerializeField] private Noise4DType _noiseType;
         [SerializeField] private EaseType _easeType = EaseType.linear;
         [SerializeField] private float _radius = 1f;
         [SerializeField] private float _displacement = 0.1f;

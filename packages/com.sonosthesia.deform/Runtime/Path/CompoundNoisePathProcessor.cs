@@ -11,7 +11,27 @@ using Sonosthesia.Mesh;
 
 namespace Sonosthesia.Deform
 {
-    public enum CompoundPathNoiseType
+#if UNITY_EDITOR
+    using UnityEditor;
+
+    [CustomEditor(typeof(CompoundNoisePathProcessor), true), CanEditMultipleObjects]
+    public class CompoundNoisePathProcessorEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            DrawDefaultInspector();
+
+            CompoundNoisePathProcessor source = (CompoundNoisePathProcessor)target;
+            if(GUILayout.Button("Force Dirty"))
+            {
+                source.ForceDirty();
+                EditorApplication.QueuePlayerLoopUpdate();
+            }
+        }
+    }
+#endif
+    
+    public enum Noise4DType
     {
         Simplex,
         Perlin
@@ -19,22 +39,22 @@ namespace Sonosthesia.Deform
 
     public readonly struct CompoundPathNoiseInfo
     {
-        public readonly CompoundPathNoiseType noiseType;
+        public readonly Noise4DType noiseType;
         public readonly float displacement;
-        public readonly EaseType easeType;
+        public readonly EaseType falloffType;
         public readonly float3 center;
         public readonly float radius;
         public readonly float time;
         public readonly float3 offset;
         public readonly float frequency;
         
-        public CompoundPathNoiseInfo(CompoundPathNoiseType noiseType, float displacement,
-            EaseType easeType, float3 center, float radius, 
+        public CompoundPathNoiseInfo(Noise4DType noiseType, float displacement,
+            EaseType falloffType, float3 center, float radius, 
             float time, float3 offset, float frequency)
         {
             this.noiseType = noiseType;
             this.displacement = displacement;
-            this.easeType = easeType;
+            this.falloffType = falloffType;
             this.center = center;
             this.radius = radius;
             this.time = time;
@@ -47,7 +67,7 @@ namespace Sonosthesia.Deform
             return $"{nameof(CompoundPathNoiseInfo)}(" +
                    $"{nameof(noiseType)}: {noiseType}, " +
                    $"{nameof(displacement)}: {displacement}, " +
-                   $"{nameof(easeType)}: {easeType}, " +
+                   $"{nameof(falloffType)}: {falloffType}, " +
                    $"{nameof(center)}: {center}, " +
                    $"{nameof(radius)}: {radius}, " +
                    $"{nameof(time)}: {time}, " +
@@ -56,6 +76,8 @@ namespace Sonosthesia.Deform
         }
     }
 
+
+    
     public class CompoundNoisePathProcessor : PathProcessor
     {
         [SerializeField] private Vector3 _direction = Vector3.up; 
@@ -93,7 +115,7 @@ namespace Sonosthesia.Deform
                 }
                 // now that we know we need it, compute sqrt
                 float distance = math.sqrt(distanceSqr);
-                float falloff = info.easeType.Evaluate(math.unlerp(info.radius, 0, distance));
+                float falloff = info.falloffType.Evaluate(math.unlerp(info.radius, 0, distance));
                 N noise = default;
                 float4 coord = new float4(point * info.frequency + info.offset, info.time);
                 deformations[index] = noise.Compute(coord) * info.displacement * falloff;
@@ -117,6 +139,11 @@ namespace Sonosthesia.Deform
             Job<SNoise4D>.ScheduleParallel,
             Job<CNoise4D>.ScheduleParallel
         };
+
+        public void ForceDirty()
+        {
+            
+        }
 
         public void Register(Guid id, CompoundPathNoiseInfo info)
         {
@@ -150,11 +177,16 @@ namespace Sonosthesia.Deform
             {
                 JobScheduleDelegate jobScheduleDelegate = _delegates[(int)info.noiseType];
                 deformationJobs[i] = jobScheduleDelegate(info, points, _summationHelper.terms[i], 100, default);
+                i++;
             }
             
+            JobHandle.CombineDependencies(deformationJobs).Complete();
+            
             // Sum the deformations in series
+            
+            // TODO: passing JobHandle.CombineDependencies(deformationJobs) as a SumFloats dependency breaks
 
-            JobHandle summationDependency = _summationHelper.SumFloats(JobHandle.CombineDependencies(deformationJobs));
+            JobHandle summationDependency = _summationHelper.SumFloats(default);
             
             // Apply the deformations to the path
 
