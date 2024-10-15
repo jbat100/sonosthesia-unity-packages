@@ -33,7 +33,6 @@ namespace Sonosthesia.Trigger
 
         private void SetupState()
         {
-            _triggerController?.Dispose();
             _triggerController = new TriggerController(_accumulationMode);
             _dynamicPostProcessor = _postProcessorFactory ? _postProcessorFactory.Make() : null;
         }

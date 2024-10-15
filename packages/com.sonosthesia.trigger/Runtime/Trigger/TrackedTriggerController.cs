@@ -6,7 +6,7 @@ using Sonosthesia.Envelope;
 
 namespace Sonosthesia.Trigger
 {
-    public class TrackedTriggerController : IDisposable
+    public class TrackedTriggerController
     {
         private readonly Dictionary<Guid, Entry> _entries = new ();
 
@@ -25,11 +25,7 @@ namespace Sonosthesia.Trigger
             _entries.Clear();
             _obsolete.Clear();
         }
-        
-        public void Dispose()
-        {
-        }
-        
+
         public void StartTrigger(Guid id, IEnvelope envelope, float valueScale, float timeScale)
         {
             if (_entries.ContainsKey(id))

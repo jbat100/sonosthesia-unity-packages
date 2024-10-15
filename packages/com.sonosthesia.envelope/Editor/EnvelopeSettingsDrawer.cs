@@ -49,7 +49,6 @@ namespace Sonosthesia.Envelope.Editor
             root.AddRelativeField(property, "_sustain", 
                 out SerializedProperty _, out PropertyField sustainField);
 
-            // Method to update the visibility of fields based on the enum value
             void UpdateVisibility()
             {
                 // UnityEngine.Debug.Log($"{this} {nameof(UpdateVisibility)}");
@@ -83,7 +82,6 @@ namespace Sonosthesia.Envelope.Editor
                 }
             }
 
-            // Initial visibility update
             UpdateVisibility();
 
             envelopeTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());

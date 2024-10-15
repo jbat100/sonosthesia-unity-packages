@@ -132,8 +132,8 @@ namespace Sonosthesia.Envelope
         [SerializeField] private EnvelopePhase _release = EnvelopePhase.Linear(1f);
         public EnvelopePhase Release => _release;
         
-        [SerializeField] private float _hold;
-        public float Hold => _hold = 1f;
+        [SerializeField] private float _hold = 1f;
+        public float Hold => _hold;
         
         [SerializeField] private float _sustain = 0.5f;
         public float Sustain => _sustain;

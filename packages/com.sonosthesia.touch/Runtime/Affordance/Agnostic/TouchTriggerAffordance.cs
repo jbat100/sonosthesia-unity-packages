@@ -10,7 +10,7 @@ namespace Sonosthesia.Touch
     {
         [SerializeField] private List<Trigger.Trigger> _triggers;
 
-        [SerializeField] private TouchTriggerAffordanceConfiguration _configuration;
+        [SerializeField] private TouchEnvelopeConfiguration _configuration;
         
         private class Controller : AffordanceController<TouchEvent, TouchTriggerAffordance>
         {
@@ -30,18 +30,8 @@ namespace Sonosthesia.Touch
                     return;
                 }
                 
-                ITouchExtractorSession<float> valueScaleSession = affordance._configuration.ValueScaleExtractor.MakeSession(); 
-                ITouchExtractorSession<float> timeScaleSession = affordance._configuration.TimeScaleExtractor.MakeSession();
-                IEnvelope envelope = affordance._configuration.Envelope.Build();
-
-                if (!(valueScaleSession?.Setup(e, out float valueScale) ?? false))
-                {
-                    valueScale = 1f;
-                }
-                if (!(timeScaleSession?.Setup(e, out float timeScale) ?? false))
-                {
-                    timeScale = 1f;
-                }
+                affordance._configuration.Settings
+                    .TriggerParameters(e, out IEnvelope envelope, out float valueScale, out float timeScale);
 
                 foreach (Trigger.Trigger trigger in affordance._triggers)
                 {

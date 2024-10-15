@@ -12,7 +12,7 @@ namespace Sonosthesia.Envelope
         public ConstantEnvelope(float value, float duration)
         {
             _duration = duration;
-            _value = _value;
+            _value = value;
         }
 
         public float Evaluate(float time) => _value;

@@ -85,13 +85,11 @@ namespace Sonosthesia.Trigger
         
         protected virtual void OnDisable()
         {
-            _triggerController?.Dispose();
             Broadcast(0);
         }
         
         private void SetupState()
         {
-            _triggerController?.Dispose();
             _triggerController = new TrackedTriggerController(_accumulationMode);
         }
     }

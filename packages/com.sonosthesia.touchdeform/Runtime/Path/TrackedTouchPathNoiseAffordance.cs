@@ -3,10 +3,8 @@ using Unity.Mathematics;
 using UnityEngine;
 using UniRx;
 using Sonosthesia.Deform;
-using Sonosthesia.Envelope;
 using Sonosthesia.Interaction;
 using Sonosthesia.Touch;
-using Sonosthesia.Trigger;
 
 namespace Sonosthesia.TouchDeform
 {
@@ -18,19 +16,19 @@ namespace Sonosthesia.TouchDeform
 
         private class Controller : AffordanceController<TouchEvent, TrackedTouchPathNoiseAffordance>, IDisposable
         {
-            private TrackedTriggerController _displacementController;
-
-            // we can't use the Update callback because:
+            // we can't use the Update(TouchEvent) callback to run the sessions because:
             // - it is not necessarily called on each frame
             // - it is not called beyond teardown
             // feels like this is common enough that it justifies an inbuilt mechanism 
 
-            private float3 _center;
-            private float _radius;
+            private TrackedTouchEnvelopeSession _displacementSession;
+            private TrackedTouchEnvelopeSession _radiusSession;
+            private TrackedTouchEnvelopeSession _frequencySession;
+            private TrackedTouchEnvelopeSession _speedSession;
 
+            private float3 _center;
+            
             private IDisposable _updateSubscription;
-            private ITouchExtractorSession<float> _displacementValueSession;
-            private ITouchExtractorSession<float> _radiusSession;
 
             public Controller(Guid eventId, TrackedTouchPathNoiseAffordance affordance) : base(eventId, affordance)
             {
@@ -46,58 +44,33 @@ namespace Sonosthesia.TouchDeform
                 base.Setup(e);
 
                 TrackedTouchPathNoiseAffordance affordance = Affordance;
-                
-                if (!affordance._configuration)
-                {
-                    return;
-                }
-                
-                _displacementController = new TrackedTriggerController(AccumulationMode.Max);
-
-                _displacementValueSession = affordance._configuration.DisplacementValueExtractor.MakeSession();
-                _displacementValueSession.Setup(e, out float valueScale);
-                
-                ITouchExtractorSession<float> displacementTimeSession = affordance._configuration.DisplacementTimeExtractor.MakeSession();
-                displacementTimeSession.Setup(e, out float timeScale);
-
-                IEnvelope envelope = affordance._configuration.DisplacementEnvelope.Build();
-
-                _displacementController.StartTrigger(EventId, envelope, valueScale, timeScale);
+                TrackedTouchPathNoiseConfiguration configuration = affordance._configuration;
 
                 _center = ExtractPosition(e);
-
-                _radiusSession = affordance._configuration.RadiusExtractor.MakeSession();
-                _radiusSession.Setup(e, out _radius);
-
-                float speed = affordance._configuration.Speed; 
-                float time = 0f;
                 
+                _displacementSession = configuration.Displacement.SetupSession(e);
+                _frequencySession = configuration.Frequency.SetupSession(e);
+                _speedSession = configuration.Speed.SetupSession(e);
+                _radiusSession = configuration.Radius.SetupSession(e);
+
+                float time = 0f;
                 _updateSubscription = Observable.EveryUpdate()
                     .TakeUntilDisable(affordance)
                     .Subscribe(_ =>
                     {
-                        float displacement = _displacementController.Update();
-                        time += Time.deltaTime * speed;
+                        time += Time.deltaTime * _speedSession.Update();
                         CompoundPathNoiseInfo info = new CompoundPathNoiseInfo(
-                            affordance._configuration.NoiseType,
-                            displacement,
-                            affordance._configuration.FalloffType,
+                            configuration.NoiseType,
+                            _displacementSession.Update(),
+                            configuration.FalloffType,
                             _center,
-                            _radius,
+                            _radiusSession.Update(),
                             time,
                             float3.zero,
-                            affordance._configuration.Frequency
+                            _frequencySession.Update()
                         );
                         affordance._processor.Register(EventId, info);
-                    }, err =>
-                    {
-                        affordance._processor.Unregister(EventId);
-                        Dispose();
-                    }, () =>
-                    {
-                        affordance._processor.Unregister(EventId);
-                        Dispose();
-                    });
+                    }, err => Dispose(), Dispose);
                     
             }
 
@@ -105,28 +78,17 @@ namespace Sonosthesia.TouchDeform
             {
                 base.Update(e);
                 
-                TrackedTouchPathNoiseAffordance affordance = Affordance;
+                TrackedTouchPathNoiseConfiguration configuration = Affordance._configuration;
 
-                if (!affordance._configuration)
-                {
-                    return;
-                }
-                
-                if (affordance._configuration.TrackDisplacement)
-                {
-                    _displacementValueSession.Update(e, out float valueScale);
-                    _displacementController.UpdateTrigger(EventId, valueScale);
-                }
-
-                if (affordance._configuration.TrackPosition)
+                if (configuration.TrackPosition)
                 {
                     _center = ExtractPosition(e);
                 }
-
-                if (affordance._configuration.TrackRadius)
-                {
-                    _radiusSession.Update(e, out _radius);
-                }
+                
+                _displacementSession.UpdateTouch(e);
+                _radiusSession.UpdateTouch(e);
+                _frequencySession.UpdateTouch(e);
+                _speedSession.UpdateTouch(e);
             }
 
             protected override void Teardown(TouchEvent e)
@@ -135,43 +97,28 @@ namespace Sonosthesia.TouchDeform
                 
                 TrackedTouchPathNoiseAffordance affordance = Affordance;
 
-                if (!affordance._configuration)
-                {
-                    return;
-                }
+                _displacementSession.EndTouch(e, out float displacementDuration);
+                _radiusSession.EndTouch(e, out float radiusDuration);
+                _frequencySession.EndTouch(e, out float frequencyDuration);
+                _speedSession.EndTouch(e, out float speedDuration);
 
-                ITouchExtractorSession<float> displacementReleaseSession 
-                    = affordance._configuration.DisplacementReleaseExtractor.MakeSession();
-                
-                displacementReleaseSession.Setup(e, out float release);
+                float duration = Mathf.Max(displacementDuration, radiusDuration, frequencyDuration, speedDuration);
 
-                IEnvelope releaseEnvelope = affordance._configuration.DisplacementReleaseEaseType.ReleaseEnvelope(release);
-
-                _displacementController.EndTrigger(EventId, releaseEnvelope);
-
-                Observable.Timer(TimeSpan.FromSeconds(release))
+                Observable.Timer(TimeSpan.FromSeconds(duration))
                     .TakeUntilDisable(affordance)
-                    .Subscribe(_ =>
-                    {
-                        affordance._processor.Unregister(EventId);
-                        Dispose();
-                    }, () =>
-                    {
-                        affordance._processor.Unregister(EventId);
-                        Dispose();
-                    });
+                    .Subscribe(_ => Dispose(), Dispose);
             }
 
             public void Dispose()
             {
-                _displacementController?.Dispose();
                 _updateSubscription?.Dispose();
+                Affordance._processor.Unregister(EventId);
             }
         }
 
         protected override IObserver<TouchEvent> MakeController(Guid id)
         {
-            return new Controller(id, this);
+            return _configuration ? new Controller(id, this) : null;
         }
     }
 }

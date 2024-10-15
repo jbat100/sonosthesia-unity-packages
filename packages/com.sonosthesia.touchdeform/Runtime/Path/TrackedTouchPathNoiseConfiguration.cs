@@ -9,8 +9,7 @@ namespace Sonosthesia.TouchDeform
     [CreateAssetMenu(fileName = "TrackedTouchPathNoiseConfiguration", menuName = "Sonosthesia/Touch/TrackedTouchPathNoiseConfiguration")]
     public class TrackedTouchPathNoiseConfiguration : ScriptableObject
     {
-        [SerializeField] private float _speed = 1f;
-        public float Speed => _speed;
+        [Header("Noise")]
         
         [SerializeField] private bool _trackPosition;
         public bool TrackPosition => _trackPosition;
@@ -18,34 +17,21 @@ namespace Sonosthesia.TouchDeform
         [SerializeField] private Noise4DType _noiseType = Noise4DType.Simplex;
         public Noise4DType NoiseType => _noiseType;
         
-        [SerializeField] private float _frequency = 1f;
-        public float Frequency => _frequency;
-        
         [SerializeField] private EaseType _falloffType = EaseType.linear;
         public EaseType FalloffType => _falloffType;
         
-        [SerializeField] private bool _trackRadius;
-        public bool TrackRadius => _trackRadius;
+        [Header("Touch")]
         
-        [SerializeField] private FloatTouchExtractorSettings _radiusExtractor;
-        public FloatTouchExtractorSettings RadiusExtractor => _radiusExtractor;
+        [SerializeField] private TrackedTouchEnvelopeSettings _radius;
+        public TrackedTouchEnvelopeSettings Radius => _radius;
 
-        [SerializeField] private bool _trackDisplacement;
-        public bool TrackDisplacement => _trackDisplacement;
+        [SerializeField] private TrackedTouchEnvelopeSettings _displacement;
+        public TrackedTouchEnvelopeSettings Displacement => _displacement;
 
-        [SerializeField] private FloatTouchExtractorSettings _displacementValueExtractor;
-        public FloatTouchExtractorSettings DisplacementValueExtractor => _displacementValueExtractor;
-
-        [SerializeField] private FloatTouchExtractorSettings _displacementTimeExtractor;
-        public FloatTouchExtractorSettings DisplacementTimeExtractor => _displacementTimeExtractor;
-
-        [SerializeField] private EnvelopeSettings _displacementEnvelope;
-        public EnvelopeSettings DisplacementEnvelope => _displacementEnvelope;
-
-        [SerializeField] private FloatTouchExtractorSettings _displacementReleaseExtractor;
-        public FloatTouchExtractorSettings DisplacementReleaseExtractor => _displacementReleaseExtractor;
-
-        [SerializeField] private EaseType _displacementReleaseEaseType = EaseType.linear;
-        public EaseType DisplacementReleaseEaseType => _displacementReleaseEaseType;
+        [SerializeField] private TrackedTouchEnvelopeSettings _frequency;
+        public TrackedTouchEnvelopeSettings Frequency => _frequency;
+        
+        [SerializeField] private TrackedTouchEnvelopeSettings _speed;
+        public TrackedTouchEnvelopeSettings Speed => _speed;
     }
 }

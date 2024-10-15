@@ -12,7 +12,8 @@
     "com.sonosthesia.trigger": "1.10.0",
     "com.sonosthesia.interaction": "1.10.0",
     "com.sonosthesia.dynamic": "1.10.0",
-    "com.sonosthesia.envelope": "1.10.0"
+    "com.sonosthesia.envelope": "1.10.0",
+    "com.sonosthesia.ease": "1.10.0"
   },
   "description": "Sonosthesia unity touch",
   "displayName": "Sonosthesia Touch",

@@ -11,14 +11,12 @@ namespace Sonosthesia.Touch
     {
         [SerializeField] private List<TrackedTrigger> _triggers;
 
-        [SerializeField] private bool _track;
-
-        [SerializeField] private TouchTrackedTriggerAffordanceConfiguration _configuration;
+        [SerializeField] private TrackedTouchEnvelopeConfiguration _configuration;
         
         private class Controller : AffordanceController<TouchEvent, TouchTrackedTriggerAffordance>
         {
-            private Guid _triggerId;
             private ITouchExtractorSession<float> _valueScaleSession;
+            private readonly Guid _triggerId = Guid.NewGuid(); 
             
             public Controller(Guid eventId, TouchTrackedTriggerAffordance affordance) : base(eventId, affordance)
             {
@@ -29,33 +27,22 @@ namespace Sonosthesia.Touch
             {
                 base.Setup(e);
 
-                TouchTrackedTriggerAffordance affordance = Affordance;
-                
-                _triggerId = Guid.NewGuid(); 
-                
-                if (!affordance._configuration)
-                {
-                    foreach (TrackedTrigger trigger in affordance._triggers)
-                    {
-                        trigger.StartTrigger(_triggerId, 1f, 1f);
-                    }
-                    return;
-                }
+                TrackedTouchEnvelopeSettings settings = Affordance._configuration.Settings;
 
-                _valueScaleSession = affordance._configuration.StartValueScaleExtractor.MakeSession(); 
-                ITouchExtractorSession<float> timeScaleSession = affordance._configuration.StartTimeScaleExtractor.MakeSession();
-                IEnvelope envelope = affordance._configuration.StartEnvelope?.Build();
+                _valueScaleSession = settings.ValueScaleExtractor.MakeSession(); 
 
-                if (!(_valueScaleSession?.Setup(e, out float valueScale) ?? false))
+                if (!_valueScaleSession.Setup(e, out float valueScale))
                 {
                     valueScale = 1f;
                 }
-                if (!(timeScaleSession?.Setup(e, out float timeScale) ?? false))
+                if (!settings.TimeScaleExtractor.Extract(e, out float timeScale))
                 {
                     timeScale = 1f;
                 }
+                
+                IEnvelope envelope = settings.Envelope.Build();
 
-                foreach (TrackedTrigger trigger in affordance._triggers)
+                foreach (TrackedTrigger trigger in Affordance._triggers)
                 {
                     trigger.StartTrigger(_triggerId, envelope, valueScale, timeScale);   
                 }
@@ -65,62 +52,37 @@ namespace Sonosthesia.Touch
             {
                 base.Update(e);
                 
-                TouchTrackedTriggerAffordance affordance = Affordance;
+                TrackedTouchEnvelopeSettings settings = Affordance._configuration.Settings;
 
-                if (!affordance._track)
+                if (!settings.Track)
                 {
                     return;
                 }
-
-                if (_valueScaleSession == null)
+                
+                if (_valueScaleSession.Update(e, out float value))
                 {
-                    return;
-                }
-
-                if (!_valueScaleSession.Update(e, out float value))
-                {
-                    return;
-                }
-
-                foreach (TrackedTrigger trigger in affordance._triggers)
-                {
-                    trigger.UpdateTrigger(_triggerId, value);   
+                    foreach (TrackedTrigger trigger in Affordance._triggers)
+                    {
+                        trigger.UpdateTrigger(_triggerId, value);   
+                    }
                 }
             }
 
             protected override void Teardown(TouchEvent e)
             {
                 base.Teardown(e);
-                
-                TouchTrackedTriggerAffordance affordance = Affordance;
-
-                if (!affordance._configuration)
+                TrackedTouchEnvelopeSettings settings = Affordance._configuration.Settings;
+                IEnvelope envelope = settings.ReleaseEnvelope(e);
+                foreach (TrackedTrigger trigger in Affordance._triggers)
                 {
-                    foreach (TrackedTrigger trigger in affordance._triggers)
-                    {
-                        trigger.EndTrigger(_triggerId);   
-                    }
-                    
-                    return;
-                }
-                
-                ITouchExtractorSession<float> timeScaleSession = affordance._configuration.EndTimeScaleExtractor.MakeSession();
-                if (!(timeScaleSession?.Setup(e, out float timeScale) ?? false))
-                {
-                    timeScale = 1f;
-                }
-                IEnvelope envelope = affordance._configuration.EndEnvelope?.Build();
-
-                foreach (TrackedTrigger trigger in affordance._triggers)
-                {
-                    trigger.EndTrigger(_triggerId, envelope, timeScale);
+                    trigger.EndTrigger(_triggerId, envelope);
                 }
             }
         }
 
         protected override IObserver<TouchEvent> MakeController(Guid id)
         {
-            return new Controller(id, this);
+            return _configuration ? new Controller(id, this) : null;
         }
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sonosthesia.Envelope;
@@ -6,7 +5,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Trigger
 {
-    public class TriggerController : IDisposable
+    public class TriggerController
     {
         private const float THRESHOLD = 1e-6f;
         
@@ -97,11 +96,6 @@ namespace Sonosthesia.Trigger
             float result = _entries.Aggregate(0f, (current, entry) => entry.Accumulate(_accumulationMode, current));
 
             return result;
-        }
-        
-        public void Dispose()
-        {
-            Clear();
         }
     }
 }

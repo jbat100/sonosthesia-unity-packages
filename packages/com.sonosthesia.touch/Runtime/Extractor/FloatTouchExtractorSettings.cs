@@ -53,6 +53,14 @@ namespace Sonosthesia.Touch
         [SerializeField] private AnimationCurve _curve;
         [SerializeField] private RemapSettings _remap;
 
+        // used when only the initial value is needed, creates a session, sets it up and returns extracted value
+        public bool Extract(TouchEvent e, out float value)
+        {
+            ITouchExtractorSession<float> session = MakeSession();
+            return session.Setup(e, out value);
+        }
+        
+        // used when the value can change with time and may require state, such as relative distance etc...
         public ITouchExtractorSession<float> MakeSession()
         {
             ITouchExtractorSession<float> session = _extractorType switch
@@ -180,7 +188,7 @@ namespace Sonosthesia.Touch
             {
                 FloatTouchExtractorSettings.DistanceType.Actor => (_actorPositionReference - actorPosition).magnitude,
                 FloatTouchExtractorSettings.DistanceType.Relative => actorPosition.magnitude,
-                _ => throw new ArgumentOutOfRangeException()
+                _ => 0
             };
             return true;
         }
