@@ -196,8 +196,6 @@ namespace Sonosthesia.Deform
 
         [SerializeField] private ModulationStrategy _modulationStrategy;
 
-        protected override bool IsDynamic => true;
-
         protected override void Update()
         {
             for (int i = 0; i < _targetSettings.Count; i++)

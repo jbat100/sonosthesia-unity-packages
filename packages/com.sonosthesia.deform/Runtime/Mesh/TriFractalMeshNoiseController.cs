@@ -12,8 +12,6 @@ namespace Sonosthesia.Deform
 {
     public class TriFractalMeshNoiseController : FractalMeshNoiseController
     {
-        protected override bool IsDynamic => true;
-
         [SerializeField] private float _velocity = 1f;
 
         [SerializeField] private AnimationCurve _lerpCurve;

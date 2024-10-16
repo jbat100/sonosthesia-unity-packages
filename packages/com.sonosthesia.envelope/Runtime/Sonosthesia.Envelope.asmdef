@@ -2,6 +2,7 @@
     "name": "Sonosthesia.Envelope",
     "rootNamespace": "Sonosthesia.Envelope",
     "references": [
+        "GUID:d8b63aba1907145bea998dd612889d6b",
         "GUID:560b04d1a97f54a4e82edc0cbbb69285",
         "GUID:25e5e4b6f3916462c92ecc1d0ffca2c2",
         "GUID:eda0e54ec5f2644fe9c828d88900f12b"
