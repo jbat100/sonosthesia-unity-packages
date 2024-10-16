@@ -9,6 +9,10 @@ namespace Sonosthesia.Trigger
     {
         private const float THRESHOLD = 1e-6f;
         
+        private static readonly IEnvelope _defaultEnvelope =
+            new ADSREnvelope(EnvelopePhase.Linear(0.3f), EnvelopePhase.Linear(0.5f), 
+                0.5f, 0.5f, EnvelopePhase.Linear(0.5f));
+        
         // used to avoid alloc on update
         private static readonly HashSet<Entry> _obsolete = new();
 
@@ -26,7 +30,7 @@ namespace Sonosthesia.Trigger
             _entries.Clear();
         }
         
-        public void StartTrigger(IEnvelope envelope, float valueScale, float timeScale)
+        public void PlayTrigger(IEnvelope envelope, float valueScale, float timeScale)
         {
             if (Mathf.Abs(valueScale) < THRESHOLD)
             {
@@ -38,12 +42,10 @@ namespace Sonosthesia.Trigger
                 return;
             }
 
-            Entry entry = new Entry(new WarpedEnvelope(envelope, valueScale, timeScale));
+            Entry entry = new Entry(new WarpedEnvelope(envelope ?? _defaultEnvelope, valueScale, timeScale));
             _entries.Add(entry);
         }
 
-        public int TriggerCount => _entries.Count;
-        
         private class Entry  
         {
             private static float CurrentTime => Time.time;

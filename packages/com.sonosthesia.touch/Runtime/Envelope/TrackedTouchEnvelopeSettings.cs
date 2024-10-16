@@ -1,6 +1,7 @@
 using System;
 using Sonosthesia.Ease;
 using Sonosthesia.Envelope;
+using Sonosthesia.Trigger;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
@@ -30,14 +31,10 @@ namespace Sonosthesia.Touch
 
     public static class TrackedTouchEnvelopeSettingsExtensions
     {
-        public static TrackedTouchEnvelopeSession MakeSession(this TrackedTouchEnvelopeSettings settings)
+        public static TrackedTouchEnvelopeSession SetupSession(this TrackedTouchEnvelopeSettings settings, TouchEvent e,
+            TrackedTriggerController controller = null)
         {
-            return new TrackedTouchEnvelopeSession(settings);
-        }
-
-        public static TrackedTouchEnvelopeSession SetupSession(this TrackedTouchEnvelopeSettings settings, TouchEvent e)
-        {
-            TrackedTouchEnvelopeSession session = settings.MakeSession();
+            TrackedTouchEnvelopeSession session = new TrackedTouchEnvelopeSession(settings, controller);
             session.StartTouch(e);
             return session;
         }

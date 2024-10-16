@@ -17,7 +17,7 @@ namespace Sonosthesia.Trigger
             IEnvelope envelope = _envelopeFactory ? _envelopeFactory.Build() : null;
             float valueScale = _valueSelector ? _valueSelector.Select(value) : 1f;
             float timeScale = _timeSelector ? _timeSelector.Select(value) : 1f;
-            trigger.StartTrigger(envelope, valueScale, timeScale);
+            trigger.TriggerController.PlayTrigger(envelope, valueScale, timeScale);
         }
     }
 
@@ -28,12 +28,12 @@ namespace Sonosthesia.Trigger
         [SerializeField] private Selector<T> _timeSelector;
         [SerializeField] private EnvelopeFactory _envelopeFactory;
 
-        public Guid StartTrigger(TrackedTrigger trigger, T value)
+        public Guid StartTrigger(Trigger trigger, T value)
         {
             IEnvelope envelope = _envelopeFactory ? _envelopeFactory.Build() : null;
             float valueScale = _valueSelector ? _valueSelector.Select(value) : 1f;
             float timeScale = _timeSelector ? _timeSelector.Select(value) : 1f;
-            return trigger.StartTrigger(envelope, valueScale, timeScale);
+            return trigger.TrackedTriggerController.StartTrigger(envelope, valueScale, timeScale);
         }
     }
     
@@ -43,11 +43,11 @@ namespace Sonosthesia.Trigger
         [SerializeField] private Selector<T> _timeSelector;
         [SerializeField] private EnvelopeFactory _envelopeFactory;
         
-        public void EndTrigger(TrackedTrigger trigger, Guid id, T value)
+        public void EndTrigger(Trigger trigger, Guid id, T value)
         {
             IEnvelope envelope = _envelopeFactory ? _envelopeFactory.Build() : null;
             float timeScale = _timeSelector ? _timeSelector.Select(value) : 1f;
-            trigger.EndTrigger(id, envelope, timeScale);
+            trigger.TrackedTriggerController.EndTrigger(id, envelope, timeScale);
         }
     }
 
@@ -59,13 +59,13 @@ namespace Sonosthesia.Trigger
             settings.Trigger(trigger, value);
         }
 
-        public static Guid StartTrigger<T>(this TrackedTrigger trigger, ValueStartTriggerSettings<T> settings, T value)
+        public static Guid StartTrigger<T>(this Trigger trigger, ValueStartTriggerSettings<T> settings, T value)
             where T : struct
         {
             return settings.StartTrigger(trigger, value);
         }
 
-        public static void EndTrigger<T>(this TrackedTrigger trigger, ValueEndTriggerSettings<T> settings, Guid id, T value)
+        public static void EndTrigger<T>(this Trigger trigger, ValueEndTriggerSettings<T> settings, Guid id, T value)
             where T : struct
         {
             settings.EndTrigger(trigger, id, value);

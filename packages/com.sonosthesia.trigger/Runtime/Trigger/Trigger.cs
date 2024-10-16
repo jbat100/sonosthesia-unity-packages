@@ -1,5 +1,4 @@
-﻿using Sonosthesia.Envelope;
-using Sonosthesia.Processing;
+﻿using Sonosthesia.Processing;
 using Sonosthesia.Signal;
 using Sonosthesia.Utils;
 using UnityEngine;
@@ -16,24 +15,14 @@ namespace Sonosthesia.Trigger
         
         private IDynamicProcessor<float> _dynamicPostProcessor;
 
-        private TriggerController _triggerController;
+        public TriggerController TriggerController { get; private set; }
 
-        private IEnvelope _defaultEnvelope;
-        protected virtual IEnvelope DefaultEnvelope =>
-            _defaultEnvelope ??= new AHREnvelope(EnvelopePhase.Linear(0.25f), 0.5f, EnvelopePhase.Linear(0.25f));
-        
-        public void StartTrigger(float valueScale, float timeScale) => StartTrigger(DefaultEnvelope, valueScale, timeScale);
-
-        public void StartTrigger(IEnvelope envelope, float valueScale, float timeScale)
-        {
-            _triggerController.StartTrigger(envelope, valueScale, timeScale);
-        }
-
-        public int TriggerCount => _triggerController.TriggerCount; 
+        public TrackedTriggerController TrackedTriggerController { get; private set; }
 
         private void SetupState()
         {
-            _triggerController = new TriggerController(_accumulationMode);
+            TriggerController = new TriggerController(_accumulationMode);
+            TrackedTriggerController = new TrackedTriggerController(_accumulationMode);
             _dynamicPostProcessor = _postProcessorFactory ? _postProcessorFactory.Make() : null;
         }
 
@@ -43,7 +32,7 @@ namespace Sonosthesia.Trigger
         
         protected virtual void Update()
         {
-            float result = _triggerController.Update();
+            float result = TriggerController.Update() + TrackedTriggerController.Update();
 
             result = _postProcessor.Process(result);
 
@@ -58,9 +47,8 @@ namespace Sonosthesia.Trigger
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            _triggerController?.Clear();
-            _triggerController = null;
+            TriggerController?.Clear();
+            TriggerController = null;
         }
-        
     }
 }

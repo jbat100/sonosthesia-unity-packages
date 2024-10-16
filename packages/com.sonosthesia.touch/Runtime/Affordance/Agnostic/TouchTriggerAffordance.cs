@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using Sonosthesia.Envelope;
 using Sonosthesia.Interaction;
 using UnityEngine;
 
@@ -8,7 +6,7 @@ namespace Sonosthesia.Touch
 {
     public class TouchTriggerAffordance : AbstractAffordance<TouchEvent>
     {
-        [SerializeField] private List<Trigger.Trigger> _triggers;
+        [SerializeField] private Trigger.Trigger _trigger;
 
         [SerializeField] private TouchEnvelopeConfiguration _configuration;
         
@@ -22,27 +20,15 @@ namespace Sonosthesia.Touch
             protected override void Setup(TouchEvent e)
             {
                 base.Setup(e);
-
                 TouchTriggerAffordance affordance = Affordance;
-
-                if (affordance._configuration == null)
-                {
-                    return;
-                }
-                
-                affordance._configuration.Settings
-                    .TriggerParameters(e, out IEnvelope envelope, out float valueScale, out float timeScale);
-
-                foreach (Trigger.Trigger trigger in affordance._triggers)
-                {
-                    trigger.StartTrigger(envelope, valueScale, timeScale);
-                }
+                TouchEnvelopeSession session = affordance._configuration.Settings
+                    .SetupSession(e, out float _, affordance._trigger.TriggerController);
             }
         }
 
         protected override IObserver<TouchEvent> MakeController(Guid id)
         {
-            return new Controller(id, this);
+            return (_trigger && _configuration) ? new Controller(id, this) : null;
         }
     }
 }

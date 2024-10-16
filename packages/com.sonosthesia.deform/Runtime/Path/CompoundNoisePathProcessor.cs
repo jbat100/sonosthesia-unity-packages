@@ -180,10 +180,8 @@ namespace Sonosthesia.Deform
                 i++;
             }
             
-            // Sum the deformations in series
+            // Sum the deformations in series, with the deformation jobs as dependency
             
-            // TODO: passing JobHandle.CombineDependencies(deformationJobs) as a SumFloats dependency breaks
-
             JobHandle summationDependency = _summationHelper.SumFloats(JobHandle.CombineDependencies(deformationJobs));
             
             // Apply the deformations to the path

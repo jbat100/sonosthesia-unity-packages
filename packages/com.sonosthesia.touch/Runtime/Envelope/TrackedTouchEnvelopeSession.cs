@@ -7,14 +7,15 @@ namespace Sonosthesia.Touch
     public class TrackedTouchEnvelopeSession
     {
         private readonly TrackedTouchEnvelopeSettings _settings;
-        private readonly TrackedTriggerController _triggerController = new (AccumulationMode.Max);
+        private readonly TrackedTriggerController _controller;
         private readonly Guid _triggerId;
         
         private ITouchExtractorSession<float> _valueScaleSession;
 
-        public TrackedTouchEnvelopeSession(TrackedTouchEnvelopeSettings settings)
+        public TrackedTouchEnvelopeSession(TrackedTouchEnvelopeSettings settings, TrackedTriggerController controller = null)
         {
             _settings = settings;
+            _controller = controller ?? new TrackedTriggerController(AccumulationMode.Max);
         }
         
         public void StartTouch(TouchEvent e)
@@ -31,7 +32,7 @@ namespace Sonosthesia.Touch
                 timeScale = 1f;
             }
             
-            _triggerController.StartTrigger(_triggerId, envelope, valueScale, timeScale);
+            _controller.StartTrigger(_triggerId, envelope, valueScale, timeScale);
         }
 
         public void UpdateTouch(TouchEvent e)
@@ -43,7 +44,7 @@ namespace Sonosthesia.Touch
             
             if (_valueScaleSession?.Update(e, out float valueScale) ?? false)
             {
-                _triggerController.UpdateTrigger(_triggerId, valueScale);
+                _controller.UpdateTrigger(_triggerId, valueScale);
             }
         }
 
@@ -51,12 +52,12 @@ namespace Sonosthesia.Touch
         {
             IEnvelope envelope = _settings.ReleaseEnvelope(e);
             duration = envelope.Duration;
-            _triggerController.EndTrigger(_triggerId, envelope);
+            _controller.EndTrigger(_triggerId, envelope);
         }
 
         public float Update()
         {
-            return _triggerController.Update();
+            return _controller.Update();
         }
     }
 }

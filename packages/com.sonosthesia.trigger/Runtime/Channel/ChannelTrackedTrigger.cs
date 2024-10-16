@@ -13,7 +13,7 @@ namespace Sonosthesia.Trigger
         
         [Header("Trigger")]
         
-        [SerializeField] private TrackedTrigger trigger;
+        [SerializeField] private Trigger trigger;
 
         [SerializeField] private ValueStartTriggerSettings<T> _start;
 
@@ -25,36 +25,30 @@ namespace Sonosthesia.Trigger
         protected void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = _channel.StreamObservable
+            _subscription = _channel.StreamObservable.TakeUntilDisable(this)
                 .Subscribe(stream =>
                 {
                     
-                    Guid? id = null;
+                    Guid id = Guid.NewGuid();
                     T? lastValue = null;
 
                     void EndTrigger()
                     {
-                        if (!id.HasValue || !lastValue.HasValue)
+                        if (!lastValue.HasValue)
                         {
                             return;
                         }
-                        trigger.EndTrigger(_end, id.Value, lastValue.Value);
+                        trigger.EndTrigger(_end, id, lastValue.Value);
                     }
                     
                     stream.TakeUntilDisable(this).Subscribe(value =>
                     {
-                        lastValue = value;
-                        if (!id.HasValue)
+                        if (!lastValue.HasValue)
                         {
-                            id = trigger.StartTrigger(_start, value);
+                            trigger.StartTrigger(_start, value);
                         }
-                    }, error =>
-                    {
-                        EndTrigger();
-                    }, () =>
-                    {
-                        EndTrigger();
-                    });
+                        lastValue = value;
+                    }, error => EndTrigger(), EndTrigger);
                 });
         }
 

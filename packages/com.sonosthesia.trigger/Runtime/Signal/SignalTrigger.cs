@@ -1,4 +1,5 @@
 using System;
+using Sonosthesia.Envelope;
 using UnityEngine;
 using Sonosthesia.Signal;
 using Sonosthesia.Utils;
@@ -10,11 +11,13 @@ namespace Sonosthesia.Trigger
     {
         [SerializeField] private Signal<T> _source;
         
-        [SerializeField] private BuilderTrigger _destination;
+        [SerializeField] private Trigger _destination;
 
         [SerializeField] private Selector<T> _timeScaleSelector;
 
         [SerializeField] private Selector<T> _valueScaleSelector;
+
+        [SerializeField] private EnvelopeFactory _envelope;
 
         private IDisposable _subscription;
 
@@ -25,7 +28,7 @@ namespace Sonosthesia.Trigger
             {
                 float timeScale = _timeScaleSelector ? _timeScaleSelector.Select(source) : 1f;
                 float valueScale = _valueScaleSelector ? _valueScaleSelector.Select(source) : 1f;
-                _destination.StartTrigger(valueScale, timeScale);
+                _destination.TriggerController.PlayTrigger(_envelope ? _envelope.Build() : null, valueScale, timeScale);
             });
         }
 

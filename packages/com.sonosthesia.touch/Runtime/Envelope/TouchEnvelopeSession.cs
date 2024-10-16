@@ -1,6 +1,4 @@
-using System;
 using Sonosthesia.Envelope;
-using Sonosthesia.Touch;
 using Sonosthesia.Trigger;
 
 namespace Sonosthesia.Touch
@@ -11,23 +9,36 @@ namespace Sonosthesia.Touch
     public class TouchEnvelopeSession
     {
         private readonly TouchEnvelopeSettings _settings;
-        private readonly TriggerController _triggerController = new (AccumulationMode.Max);
+        private readonly TriggerController _controller;
         
-        public TouchEnvelopeSession(TouchEnvelopeSettings settings)
+        public TouchEnvelopeSession(TouchEnvelopeSettings settings, TriggerController controller = null)
         {
             _settings = settings;
+            _controller = controller ?? new TriggerController(AccumulationMode.Max);
         }
 
         public void Setup(TouchEvent e, out float duration)
         {
-            _settings.TriggerParameters(e, out IEnvelope envelope, out float valueScale, out float timeScale);
-            _triggerController.StartTrigger(envelope, valueScale, timeScale);
+            ITouchExtractorSession<float> valueScaleSession = _settings.ValueScaleExtractor.MakeSession(); 
+            ITouchExtractorSession<float> timeScaleSession = _settings.TimeScaleExtractor.MakeSession();
+            IEnvelope envelope = _settings.Envelope.Build();
+
+            if (!(valueScaleSession?.Setup(e, out float valueScale) ?? false))
+            {
+                valueScale = 1f;
+            }
+            if (!(timeScaleSession?.Setup(e, out float timeScale) ?? false))
+            {
+                timeScale = 1f;
+            }
+            
+            _controller.PlayTrigger(envelope, valueScale, timeScale);
             duration = envelope.Duration * timeScale;
         }
 
         public float Update()
         {
-            return _triggerController.Update();
+            return _controller.Update();
         }
     }
 }

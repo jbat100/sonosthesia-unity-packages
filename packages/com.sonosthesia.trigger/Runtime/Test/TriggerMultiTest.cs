@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Sonosthesia.Envelope;
 using UnityEngine;
 
 namespace Sonosthesia.Trigger
@@ -6,14 +7,14 @@ namespace Sonosthesia.Trigger
 #if UNITY_EDITOR
     using UnityEditor;
 
-    [CustomEditor(typeof(TriggerableMultiTest))]
-    public class TriggerableMultiTestEditor : Editor
+    [CustomEditor(typeof(TriggerMultiTest))]
+    public class TriggerMultiTestEditor : Editor
     {
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
 
-            TriggerableMultiTest test = (TriggerableMultiTest)target;
+            TriggerMultiTest test = (TriggerMultiTest)target;
             if(GUILayout.Button("Trigger"))
             {
                 test.Trigger();
@@ -22,19 +23,21 @@ namespace Sonosthesia.Trigger
     }
 #endif
     
-    public class TriggerableMultiTest : MonoBehaviour
+    public class TriggerMultiTest : MonoBehaviour
     {
         [SerializeField] private float _valueScale = 1f;
         
         [SerializeField] private float _timeScale = 1f;
 
-        [SerializeField] private List<BuilderTrigger> _signals;
+        [SerializeField] private EnvelopeFactory _envelope;
+
+        [SerializeField] private List<Trigger> _signals;
 
         public void Trigger()
         {
-            foreach (BuilderTrigger triggerable in _signals)
+            foreach (Trigger trigger in _signals)
             {
-                triggerable.StartTrigger(_valueScale, _timeScale);
+                trigger.TriggerController.PlayTrigger(_envelope?.Build(), _valueScale, _timeScale);
             }
         }
     }

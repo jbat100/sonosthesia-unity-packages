@@ -1,4 +1,5 @@
 using System;
+using Sonosthesia.Envelope;
 using UnityEngine;
 
 namespace Sonosthesia.Trigger
@@ -6,14 +7,14 @@ namespace Sonosthesia.Trigger
 #if UNITY_EDITOR
     using UnityEditor;
 
-    [CustomEditor(typeof(TrackedTriggerableTest))]
-    public class TrackedTriggerableTestEditor : Editor
+    [CustomEditor(typeof(TrackedTriggerTest))]
+    public class TrackedTriggerTestEditor : Editor
     {
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
 
-            TrackedTriggerableTest test = (TrackedTriggerableTest)target;
+            TrackedTriggerTest test = (TrackedTriggerTest)target;
             if(GUILayout.Button("Start"))
             {
                 test.StartTrigger();
@@ -26,19 +27,23 @@ namespace Sonosthesia.Trigger
     }
 #endif
     
-    [RequireComponent(typeof(BuilderTrackedTrigger))]
-    public class TrackedTriggerableTest : MonoBehaviour
+    [RequireComponent(typeof(Trigger))]
+    public class TrackedTriggerTest : MonoBehaviour
     {
         [SerializeField] private float _valueScale = 1f;
         
         [SerializeField] private float _timeScale = 1f;
 
-        private BuilderTrackedTrigger _trigger;
+        [SerializeField] private EnvelopeFactory _startEnvelope;
+        
+        [SerializeField] private EnvelopeFactory _endEnvelope;
+        
         private Guid _current;
+        private Trigger _trigger;
 
         protected virtual void Awake()
         {
-            _trigger = GetComponent<BuilderTrackedTrigger>();
+            _trigger = GetComponent<Trigger>();
         }
 
         public void StartTrigger() => StartTrigger(_valueScale, _timeScale);
@@ -47,10 +52,10 @@ namespace Sonosthesia.Trigger
         {
             if (_current != Guid.Empty)
             {
-                EndTrigger(_timeScale);
+                EndTrigger(timeScale);
             }
-            
-            _current = _trigger.StartTrigger(valueScale, timeScale);
+            IEnvelope envelope = _startEnvelope.Build();
+            _current = _trigger.TrackedTriggerController.StartTrigger(envelope, valueScale, timeScale);
         }
 
         public void EndTrigger() => EndTrigger(_timeScale);
@@ -61,9 +66,8 @@ namespace Sonosthesia.Trigger
             {
                 return;
             }
-
-            _trigger.EndTrigger(_current, timeScale);
-            
+            IEnvelope envelope = _endEnvelope.Build();
+            _trigger.TrackedTriggerController.EndTrigger(_current, envelope, timeScale);
             _current = Guid.Empty;
         }
     }

@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Sonosthesia.Envelope;
+using Sonosthesia.Trigger;
 
 namespace Sonosthesia.Touch
 {
@@ -19,27 +20,10 @@ namespace Sonosthesia.Touch
 
     public static class TouchEnvelopeSettingsExtensions
     {
-        public static void TriggerParameters(this TouchEnvelopeSettings settings, TouchEvent touchEvent,
-            out IEnvelope envelope, out float valueScale, out float timeScale)
-        {
-            ITouchExtractorSession<float> valueScaleSession = settings.ValueScaleExtractor.MakeSession(); 
-            ITouchExtractorSession<float> timeScaleSession = settings.TimeScaleExtractor.MakeSession();
-            envelope = settings.Envelope.Build();
-
-            if (!(valueScaleSession?.Setup(touchEvent, out valueScale) ?? false))
-            {
-                valueScale = 1f;
-            }
-            if (!(timeScaleSession?.Setup(touchEvent, out timeScale) ?? false))
-            {
-                timeScale = 1f;
-            }
-        }
-
         public static TouchEnvelopeSession SetupSession(this TouchEnvelopeSettings settings, TouchEvent touchEvent,
-            out float duration)
+            out float duration, TriggerController controller = null)
         {
-            TouchEnvelopeSession session = new TouchEnvelopeSession(settings);
+            TouchEnvelopeSession session = new TouchEnvelopeSession(settings, controller);
             session.Setup(touchEvent, out duration);
             return session;
         }

@@ -19,12 +19,6 @@ namespace Sonosthesia.TouchDeform
             public Controller(Guid eventId, TouchPathNoiseAffordance affordance) : base(eventId, affordance)
             {
             }
-            
-            // ~Controller()
-            // {
-            //     // checking for lifetime
-            //     Debug.LogError("TouchPathNoiseAffordance Controller finalized and ready for garbage collection");
-            // }
 
             protected override void Setup(TouchEvent e)
             {

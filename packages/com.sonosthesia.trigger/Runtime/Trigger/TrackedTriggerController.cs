@@ -15,6 +15,12 @@ namespace Sonosthesia.Trigger
 
         private readonly AccumulationMode _accumulationMode;
 
+        private static readonly IEnvelope _defaultStartEnvelope =
+            new ADSEnvelope(EnvelopePhase.Linear(0.3f), EnvelopePhase.Linear(0.5f), 0.5f);
+        
+        private static readonly IEnvelope _defaultEndEnvelope =
+            new SREnvelope(1f, EnvelopePhase.Linear(0.5f));
+
         public TrackedTriggerController(AccumulationMode accumulationMode)
         {
             _accumulationMode = accumulationMode;
@@ -26,13 +32,20 @@ namespace Sonosthesia.Trigger
             _obsolete.Clear();
         }
 
+        public Guid StartTrigger(IEnvelope envelope, float valueScale, float timeScale)
+        {
+            Guid id = Guid.NewGuid();
+            StartTrigger(id, envelope, valueScale, timeScale);
+            return id;
+        }
+        
         public void StartTrigger(Guid id, IEnvelope envelope, float valueScale, float timeScale)
         {
             if (_entries.ContainsKey(id))
             {
                 throw new ArgumentException($"Trigger with id {id} already exists");
             }
-            _entries[id] = new Entry(new WarpedEnvelope(envelope, valueScale, timeScale));
+            _entries[id] = new Entry(new WarpedEnvelope(envelope ?? _defaultStartEnvelope, valueScale, timeScale));
         }
         
         public bool UpdateTrigger(Guid id, float valueScale)
@@ -52,7 +65,7 @@ namespace Sonosthesia.Trigger
             {
                 if (Math.Abs(timescale - 1f) > 1e-6)
                 {
-                    envelope = new WarpedEnvelope(envelope, 1f, timescale);
+                    envelope = new WarpedEnvelope(envelope ?? _defaultEndEnvelope, 1f, timescale);
                 }
                 entry.End(envelope);
                 // note : don't remove from _entries, the end phase of the trigger must complete
