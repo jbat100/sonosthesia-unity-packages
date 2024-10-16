@@ -1,4 +1,3 @@
-using System;
 using Unity.Mathematics;
 
 // Adapted from :
@@ -46,15 +45,9 @@ namespace Sonosthesia.Ease
 		    EaseType.easeOutCirc => easeOutCirc(start, end, value),
 		    EaseType.easeInOutCirc => easeInOutCirc(start, end, value),
 		    EaseType.spring => spring(start, end, value),
-		    EaseType.easeInBounce => easeInBounce(start, end, value),
-		    EaseType.easeOutBounce => easeOutBounce(start, end, value),
-		    EaseType.easeInOutBounce => easeInOutBounce(start, end, value),
 		    EaseType.easeInBack => easeInBack(start, end, value),
 		    EaseType.easeOutBack => easeOutBack(start, end, value),
 		    EaseType.easeInOutBack => easeInOutBack(start, end, value),
-		    EaseType.easeInElastic => easeInElastic(start, end, value),
-		    EaseType.easeOutElastic => easeOutElastic(start, end, value),
-		    EaseType.easeInOutElastic => easeInOutElastic(start, end, value),
 		    _ => linear(start, end, value),
 	    };
 
@@ -241,53 +234,6 @@ namespace Sonosthesia.Ease
 		    return end * 0.5f * (math.sqrt(1 - value * value) + 1) + start;
 	    }
 
-	    /* GFX47 MOD START */
-	    private static float easeInBounce(float start, float end, float value)
-	    {
-		    end -= start;
-		    float d = 1f;
-		    return end - easeOutBounce(0, end, d - value) + start;
-	    }
-	    /* GFX47 MOD END */
-
-	    /* GFX47 MOD START */
-	    //private static float bounce(float start, float end, float value){
-	    private static float easeOutBounce(float start, float end, float value)
-	    {
-		    value /= 1f;
-		    end -= start;
-		    if (value < (1 / 2.75f))
-		    {
-			    return end * (7.5625f * value * value) + start;
-		    }
-		    else if (value < (2 / 2.75f))
-		    {
-			    value -= (1.5f / 2.75f);
-			    return end * (7.5625f * (value) * value + .75f) + start;
-		    }
-		    else if (value < (2.5 / 2.75))
-		    {
-			    value -= (2.25f / 2.75f);
-			    return end * (7.5625f * (value) * value + .9375f) + start;
-		    }
-		    else
-		    {
-			    value -= (2.625f / 2.75f);
-			    return end * (7.5625f * (value) * value + .984375f) + start;
-		    }
-	    }
-	    /* GFX47 MOD END */
-
-	    /* GFX47 MOD START */
-	    private static float easeInOutBounce(float start, float end, float value)
-	    {
-		    end -= start;
-		    float d = 1f;
-		    if (value < d * 0.5f) return easeInBounce(0, end, value * 2) * 0.5f + start;
-		    else return easeOutBounce(0, end, value * 2 - d) * 0.5f + end * 0.5f + start;
-	    }
-	    /* GFX47 MOD END */
-
 	    private static float easeInBack(float start, float end, float value)
 	    {
 		    end -= start;
@@ -336,96 +282,5 @@ namespace Sonosthesia.Ease
 		    s = period / (2 * math.PI) * math.asin(0);
 		    return (amplitude * math.pow(2, -10 * value) * math.sin((value * 1 - s) * (2 * math.PI) / period));
 	    }
-
-	    /* GFX47 MOD START */
-	    private static float easeInElastic(float start, float end, float value)
-	    {
-		    end -= start;
-
-		    float d = 1f;
-		    float p = d * .3f;
-		    float s = 0;
-		    float a = 0;
-
-		    if (value == 0) return start;
-
-		    if ((value /= d) == 1) return start + end;
-
-		    if (a == 0f || a < math.abs(end))
-		    {
-			    a = end;
-			    s = p / 4;
-		    }
-		    else
-		    {
-			    s = p / (2 * math.PI) * math.asin(end / a);
-		    }
-
-		    return -(a * math.pow(2, 10 * (value -= 1)) * math.sin((value * d - s) * (2 * math.PI) / p)) + start;
-	    }
-	    /* GFX47 MOD END */
-
-	    /* GFX47 MOD START */
-	    //private static float elastic(float start, float end, float value){
-	    private static float easeOutElastic(float start, float end, float value)
-	    {
-		    /* GFX47 MOD END */
-		    //Thank you to rafael.marteleto for fixing this as a port over from Pedro's UnityTween
-		    end -= start;
-
-		    float d = 1f;
-		    float p = d * .3f;
-		    float s = 0;
-		    float a = 0;
-
-		    if (value == 0) return start;
-
-		    if ((value /= d) == 1) return start + end;
-
-		    if (a == 0f || a < math.abs(end))
-		    {
-			    a = end;
-			    s = p * 0.25f;
-		    }
-		    else
-		    {
-			    s = p / (2 * math.PI) * math.asin(end / a);
-		    }
-
-		    return (a * math.pow(2, -10 * value) * math.sin((value * d - s) * (2 * math.PI) / p) + end + start);
-	    }
-
-	    /* GFX47 MOD START */
-	    private static float easeInOutElastic(float start, float end, float value)
-	    {
-		    end -= start;
-
-		    float d = 1f;
-		    float p = d * .3f;
-		    float s = 0;
-		    float a = 0;
-
-		    if (value == 0) return start;
-
-		    if ((value /= d * 0.5f) == 2) return start + end;
-
-		    if (a == 0f || a < math.abs(end))
-		    {
-			    a = end;
-			    s = p / 4;
-		    }
-		    else
-		    {
-			    s = p / (2 * math.PI) * math.asin(end / a);
-		    }
-
-		    if (value < 1)
-			    return -0.5f * (a * math.pow(2, 10 * (value -= 1)) * math.sin((value * d - s) * (2 * math.PI) / p)) +
-			           start;
-		    return a * math.pow(2, -10 * (value -= 1)) * math.sin((value * d - s) * (2 * math.PI) / p) * 0.5f + end +
-		           start;
-	    }
-	    /* GFX47 MOD END */
-
     }
 }

@@ -108,14 +108,8 @@ namespace Sonosthesia.Ease
         easeInOutCirc,
         linear,
         spring,
-        easeInBounce,
-        easeOutBounce,
-        easeInOutBounce,
         easeInBack,
         easeOutBack,
-        easeInOutBack,
-        easeInElastic,
-        easeOutElastic,
-        easeInOutElastic,
+        easeInOutBack
     }
 }
