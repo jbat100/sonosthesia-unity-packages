@@ -75,8 +75,6 @@ namespace Sonosthesia.Deform
                    $"{nameof(frequency)}: {frequency})";
         }
     }
-
-
     
     public class CompoundNoisePathProcessor : PathProcessor
     {
@@ -88,6 +86,7 @@ namespace Sonosthesia.Deform
 
         private delegate JobHandle JobScheduleDelegate(
             CompoundPathNoiseInfo info,
+            float3 localCenter,
             NativeArray<RigidTransform> points,
             NativeArray<float> deformations,
             int innerloopBatchCount,
@@ -97,8 +96,9 @@ namespace Sonosthesia.Deform
         [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
         private struct Job<N> : IJobFor where N : struct, INoise4D
         {
-            public CompoundPathNoiseInfo info;
-            public float radiusSqr;
+            private CompoundPathNoiseInfo info;
+            private float3 localCenter;
+            private float radiusSqr;
 
             [ReadOnly] public NativeArray<RigidTransform> points;
             [WriteOnly] public NativeArray<float> deformations;
@@ -107,7 +107,7 @@ namespace Sonosthesia.Deform
             {
                 float3 point = points[index].pos;
                 // short cut uses sqr to avoid expensive sqrt
-                float distanceSqr = math.distancesq(point, info.center);
+                float distanceSqr = math.distancesq(point, localCenter);
                 if (distanceSqr > radiusSqr)
                 {
                     deformations[index] = 0f;
@@ -121,15 +121,17 @@ namespace Sonosthesia.Deform
                 deformations[index] = noise.Compute(coord) * info.displacement * falloff;
             }
 
-            public static JobHandle ScheduleParallel(CompoundPathNoiseInfo info, NativeArray<RigidTransform> points,
-                NativeArray<float> deformations, int innerloopBatchCount, JobHandle dependency)
+            public static JobHandle ScheduleParallel(CompoundPathNoiseInfo info, float3 localCenter,
+                NativeArray<RigidTransform> points, NativeArray<float> deformations, 
+                int innerloopBatchCount, JobHandle dependency)
             {
                 return new Job<N>
                 {
                     info = info,
                     points = points,
                     deformations = deformations,
-                    radiusSqr = math.pow(info.radius, 2)
+                    radiusSqr = math.pow(info.radius, 2),
+                    localCenter = localCenter
                 }.ScheduleParallel(points.Length, innerloopBatchCount, dependency);
             }
         }
@@ -175,8 +177,9 @@ namespace Sonosthesia.Deform
             int i = 0;
             foreach (CompoundPathNoiseInfo info in _components.Values)
             {
+                float3 localCenter = transform.InverseTransformPoint(info.center);
                 JobScheduleDelegate jobScheduleDelegate = _delegates[(int)info.noiseType];
-                deformationJobs[i] = jobScheduleDelegate(info, points, _summationHelper.terms[i], 100, default);
+                deformationJobs[i] = jobScheduleDelegate(info, localCenter, points, _summationHelper.terms[i], 100, default);
                 i++;
             }
             
