@@ -8,8 +8,6 @@ namespace Sonosthesia.Deform
 {
     public abstract class AdditiveDeformationComponent : MonoBehaviour
     {
-        public virtual bool IsDynamic => false;
-        
         /// <summary>
         /// Job based deformation computation given input mesh data
         /// </summary>

@@ -13,7 +13,7 @@ namespace Sonosthesia.Deform
         [SerializeField] private int _seed;
         
         protected sealed override JobHandle PerturbMesh(UnityEngine.Mesh.MeshData meshData, int resolution, float displacement,
-            NoiseType noiseType, int dimensions,
+            CatlikeNoiseType noiseType, int dimensions,
             JobHandle dependency)
         {
             return PerturbMesh(meshData, resolution, displacement, noiseType, dimensions, _noiseSettings, _seed, _domain, dependency);
@@ -21,7 +21,7 @@ namespace Sonosthesia.Deform
 
         protected abstract JobHandle PerturbMesh(
             UnityEngine.Mesh.MeshData meshData, int resolution, float displacement,
-            NoiseType noiseType, int dimensions, FractalNoiseSettings settings, int seed, SpaceTRS domain,
+            CatlikeNoiseType noiseType, int dimensions, FractalNoiseSettings settings, int seed, SpaceTRS domain,
             JobHandle dependency);
         
     }

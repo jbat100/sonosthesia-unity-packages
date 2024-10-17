@@ -133,7 +133,7 @@ namespace Sonosthesia.Deform
         
         [SerializeField] private DynamicNoiseConfiguration _configuration;
 
-        protected override JobHandle PerturbMesh(UnityEngine.Mesh.MeshData meshData, int resolution, float displacement, NoiseType noiseType, int dimensions, JobHandle dependency)
+        protected override JobHandle PerturbMesh(UnityEngine.Mesh.MeshData meshData, int resolution, float displacement, CatlikeNoiseType noiseType, int dimensions, JobHandle dependency)
         {
             //Debug.Log($"Scheduling with configs {string.Join(",", _noiseConfigs)}");
             

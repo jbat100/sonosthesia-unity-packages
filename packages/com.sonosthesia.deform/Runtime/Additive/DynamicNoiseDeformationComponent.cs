@@ -233,19 +233,8 @@ namespace Sonosthesia.Deform
                 Job<Voronoi3D<LatticeNormal, Chebyshev, F2MinusF1>>.Compute
             }
         };
-        
-        public enum NoiseType 
-        {
-            Perlin, PerlinSmoothTurbulence, PerlinValue, 
-            Simplex, SimplexTurbulence, SimplexSmoothTurbulence, SimplexValue,
-            VoronoiWorleyF1, VoronoiWorleyF2, VoronoiWorleyF2MinusF1, 
-            VoronoiWorleySmoothLSE, VoronoiWorleySmoothPoly,
-            VoronoiChebyshevF1, VoronoiChebyshevF2, VoronoiChebyshevF2MinusF1
-        }
-        
-        public override bool IsDynamic => true;
-        
-        [SerializeField] private NoiseType _noiseType;
+
+        [SerializeField] private CatlikeNoiseType _noiseType;
         
         [SerializeField, Range(1, 3)] private int _dimensions = 3;
 

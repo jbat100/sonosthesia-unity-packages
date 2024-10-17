@@ -57,8 +57,12 @@ namespace Sonosthesia.Deform
         protected override void Awake()
         {
             base.Awake();
-            _material = GetComponent<MeshRenderer>().material;
-            _setIsPlane = _material.HasFloat(materialIsPlaneId);
+            MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
+            if (meshRenderer)
+            {
+                _material = meshRenderer.material;
+                _setIsPlane = _material.HasFloat(materialIsPlaneId);   
+            }
         }
 
         protected override void Update()

@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using Sonosthesia.Ease;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -91,6 +92,24 @@ namespace Sonosthesia.Deform
             }
 
             return new TriNoiseComponent(settings.Frequency, new TriNoisePhase(GetPhase(0), GetPhase(1), GetPhase(2)));
+        }
+
+        public static TriNoiseComponent GetNoiseComponent(CompoundMeshNoiseInfo info, int seed)
+        {
+            NoisePhase GetPhase(int index)
+            {
+                float time = info.time + index * ONE_THIRD;
+                int flooredTime = Mathf.FloorToInt(time);
+                float fractionalTime = (time - flooredTime) * 2f;
+                float crossFade = fractionalTime < 1f
+                    ? info.crossFadeType.Evaluate(0f, 1f, fractionalTime)
+                    : info.crossFadeType.Evaluate(1f, 0f, fractionalTime - 1f);
+                return new NoisePhase(
+                    seed + flooredTime + index, 
+                    crossFade * info.displacement);
+            }
+
+            return new TriNoiseComponent(info.frequency, new TriNoisePhase(GetPhase(0), GetPhase(1), GetPhase(2)));
         }
     }
 }

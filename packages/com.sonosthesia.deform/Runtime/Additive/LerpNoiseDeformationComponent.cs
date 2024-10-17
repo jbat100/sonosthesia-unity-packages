@@ -12,7 +12,7 @@ namespace Sonosthesia.Deform
 {
     public class LerpNoiseDeformationComponent : AdditiveDeformationComponent
     {
-        [SerializeField] private NoiseType _noiseType;
+        [SerializeField] private CatlikeNoiseType _noiseType;
 
         [SerializeField] private int _seedOffset;
 	
@@ -153,17 +153,6 @@ namespace Sonosthesia.Deform
             }
         };
 
-        public enum NoiseType 
-        {
-            Perlin, PerlinSmoothTurbulence, PerlinValue, 
-            Simplex, SimplexTurbulence, SimplexSmoothTurbulence, SimplexValue,
-            VoronoiWorleyF1, VoronoiWorleyF2, VoronoiWorleyF2MinusF1, 
-            VoronoiWorleySmoothLSE, VoronoiWorleySmoothPoly,
-            VoronoiChebyshevF1, VoronoiChebyshevF2, VoronoiChebyshevF2MinusF1
-        }
-        
-        public override bool IsDynamic => true;
-        
         public override JobHandle MeshDeformation(UnityEngine.Mesh.MeshData meshData, 
             NativeArray<Sample4> deformations, int innerloopBatchCount, JobHandle dependency)
         {

@@ -236,7 +236,7 @@ namespace Sonosthesia.Deform
             base.OnValidate();
         }
 
-        protected override JobHandle PerturbMesh(UnityEngine.Mesh.MeshData meshData, int resolution, float displacement, NoiseType noiseType, int dimensions, JobHandle dependency)
+        protected override JobHandle PerturbMesh(UnityEngine.Mesh.MeshData meshData, int resolution, float displacement, CatlikeNoiseType noiseType, int dimensions, JobHandle dependency)
         {
             for (int i = 0; i < _targetSettings.Count; i++)
             {

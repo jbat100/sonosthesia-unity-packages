@@ -149,7 +149,7 @@ namespace Sonosthesia.Deform
 
         private const float ONE_THIRD = 1f / 3f;
 
-        protected override JobHandle PerturbMesh(UnityEngine.Mesh.MeshData meshData, int resolution, float displacement, NoiseType noiseType, int dimensions, FractalNoiseSettings settings, int seed, SpaceTRS domain, JobHandle dependency)
+        protected override JobHandle PerturbMesh(UnityEngine.Mesh.MeshData meshData, int resolution, float displacement, CatlikeNoiseType noiseType, int dimensions, FractalNoiseSettings settings, int seed, SpaceTRS domain, JobHandle dependency)
         {
             TriNoise.NoisePhase GetPhase(int index)
             {

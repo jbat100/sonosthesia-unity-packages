@@ -7,7 +7,7 @@ namespace Sonosthesia.Deform
     {
         protected override JobHandle PerturbMesh(
             UnityEngine.Mesh.MeshData meshData, int resolution, float displacement, 
-            NoiseType noiseType, int dimensions, FractalNoiseSettings settings, int seed, SpaceTRS domain,
+            CatlikeNoiseType noiseType, int dimensions, FractalNoiseSettings settings, int seed, SpaceTRS domain,
             JobHandle dependency)
         {
             return SurfaceJob.Jobs[(int) noiseType, dimensions - 1](

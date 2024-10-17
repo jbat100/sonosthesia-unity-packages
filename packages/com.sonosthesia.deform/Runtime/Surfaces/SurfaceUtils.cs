@@ -7,6 +7,33 @@ namespace Sonosthesia.Deform
 {
     public static class SurfaceUtils
     {
+        public static Vertex4 SetDeformation(Vertex4 v, float4 noise, bool isPlane)
+        {
+            return isPlane ? SetPlaneDeformation(v, noise) : SetSphereDeformations(v, noise);
+        }
+        
+        public static Vertex4 SetPlaneDeformation(Vertex4 v, float4 noise)
+        {
+            v.v0.position.y = noise.x;
+            v.v1.position.y = noise.y;
+            v.v2.position.y = noise.z;
+            v.v3.position.y = noise.w;
+
+            return v;
+        }
+
+        public static Vertex4 SetSphereDeformations(Vertex4 v, float4 noise)
+        {
+            noise += 1f;
+            
+            v.v0.position *= noise.x;
+            v.v1.position *= noise.y;
+            v.v2.position *= noise.z;
+            v.v3.position *= noise.w;
+
+            return v;
+        }
+        
         public static Vertex4 SetVertices(Vertex4 v, Sample4 noise, bool isPlane)
         {
             return isPlane ? SetPlaneVertices(v, noise) : SetSphereVertices(v, noise);

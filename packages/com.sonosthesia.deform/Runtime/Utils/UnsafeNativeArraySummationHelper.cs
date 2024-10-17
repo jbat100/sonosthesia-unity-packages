@@ -128,12 +128,26 @@ namespace Sonosthesia.Deform
 
     public static class UnsafeNativeArraySummationHelperExtensions
     {
-        public static JobHandle SumFloats(this UnsafeNativeArraySummationHelper<float> helper, JobHandle dependency)
+        public static JobHandle FloatSum(this UnsafeNativeArraySummationHelper<float> helper, JobHandle dependency)
         {
             helper.sum.ClearArray();
             for (int i = 0; i < helper.ComponentCount; i++)
             {
                 dependency = new FloatSumArrayJob
+                {
+                    source = helper.terms[i],
+                    target = helper.sum
+                }.ScheduleParallel(helper.Length, 100, dependency);
+            }
+            return dependency;
+        }
+        
+        public static JobHandle Float4Sum(this UnsafeNativeArraySummationHelper<float4> helper, JobHandle dependency)
+        {
+            helper.sum.ClearArray();
+            for (int i = 0; i < helper.ComponentCount; i++)
+            {
+                dependency = new Float4SumArrayJob
                 {
                     source = helper.terms[i],
                     target = helper.sum
