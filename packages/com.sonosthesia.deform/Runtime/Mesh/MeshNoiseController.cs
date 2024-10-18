@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Deform
 {
-    public abstract class MeshNoiseController : DeformMeshController
+    public abstract class MeshNoiseController : SingleStreamMeshController
     {
         [SerializeField] private CatlikeNoiseType _noiseType;
 

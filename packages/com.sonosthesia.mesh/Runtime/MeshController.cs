@@ -90,10 +90,15 @@ namespace Sonosthesia.Mesh
             }
             if (_recalculateNormals)
             {
+                // expensive but pretty much indispensable (unless the subclasses provide correct normals)
+                // TODO : look at burst compiled normals recalculation 
+                // - https://gist.github.com/unitycoder/81888c54f87b56113f17a5c8eb6bb32b
+                // - https://discussions.unity.com/t/burst-happy-recalculate-normals/753008/5
                 Mesh.RecalculateNormals();
             }
             if (_recalculateTangents)
             {
+                // expensive and often useless, depends on whether the shader uses this info
                 _mesh.RecalculateTangents();                
             }
 

@@ -28,6 +28,7 @@ namespace Sonosthesia.Mesh
             
             int vertexCount = job._generator.VertexCount;
             
+            // ensure vertex count is a multiple of 4
             if (supportVectorization && (vertexCount & 0b11) != 0) 
             {
                 vertexCount += 4 - (vertexCount & 0b11);

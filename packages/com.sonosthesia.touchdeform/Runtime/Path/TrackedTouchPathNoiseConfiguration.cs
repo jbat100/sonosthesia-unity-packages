@@ -1,7 +1,6 @@
 using UnityEngine;
 using Sonosthesia.Deform;
 using Sonosthesia.Ease;
-using Sonosthesia.Envelope;
 using Sonosthesia.Touch;
 
 namespace Sonosthesia.TouchDeform

@@ -9,7 +9,8 @@
     "com.sonosthesia.ease": "1.10.0",
     "com.sonosthesia.trigger": "1.10.0",
     "com.sonosthesia.envelope": "1.10.0",
-    "com.sonosthesia.mesh": "1.10.0"
+    "com.sonosthesia.mesh": "1.10.0",
+    "com.sonosthesia.noise": "1.10.0"
   },
   "description": "Sonosthesia unity touchdeform",
   "displayName": "Sonosthesia TouchDeform",

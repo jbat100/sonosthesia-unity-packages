@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Sonosthesia.Noise;
 using Unity.Collections;
 using Unity.Jobs;
@@ -10,6 +11,16 @@ namespace Sonosthesia.Deform
 
     public class UnsafeNativeArraySummationHelper<T> : IDisposable where T : struct
     {
+        public UnsafeNativeArraySummationHelper(int poolSize = 0)
+        {
+            _poolSize = poolSize;
+            if (_poolSize > 0)
+            {
+                _pool = new Stack<NativeArray<T>>();
+            }
+        }
+
+        private readonly int _poolSize;
         private bool _dirty;
         
         private int _componentCount;
@@ -36,21 +47,19 @@ namespace Sonosthesia.Deform
                 {
                     _length = value;
                     _dirty = true;
+                    ClearPool();
                 }
             }
         }
 
         public NativeArray<T>[] terms;
         public NativeArray<T> sum;
+
+        private readonly Stack<NativeArray<T>> _pool;
         
         private const Allocator _allocator = Allocator.Persistent;
         private const NativeArrayOptions _options = NativeArrayOptions.UninitializedMemory;
 
-        public void ForceDirty()
-        {
-            _dirty = true;
-        }
-        
         public void Check()
         {
             if (_dirty)
@@ -58,6 +67,19 @@ namespace Sonosthesia.Deform
                 _dirty = false;
                 ReuseInitializeArrays();
             }
+        }
+
+        private void ClearPool()
+        {
+            if (_pool == null)
+            {
+                return;
+            }
+            foreach (NativeArray<T> pooled in _pool)
+            {
+                pooled.Dispose();
+            }
+            _pool.Clear();
         }
 
         // used to try to hunt down reuse bug
@@ -103,12 +125,25 @@ namespace Sonosthesia.Deform
                     terms[i] = old[i];
                     terms[i].EnsureNativeArrayLength(_length, _allocator, _options);
                 }
+                // in the case where previous number of terms was higher
                 for (int i = commonSize; i < old.Length; i++)
                 {
-                    old[i].Dispose();
+                    if (_pool != null && _pool.Count < _poolSize)
+                    {
+                        _pool.Push(old[i]);
+                    }
+                    else
+                    {
+                        old[i].Dispose();   
+                    }
                 }
+                // in the case where previous number of terms was lower
                 for (int i = commonSize; i < _componentCount; i++)
                 {
+                    if (_pool != null && _pool.TryPop(out NativeArray<T> reuse))
+                    {
+                        terms[i] = reuse;
+                    }
                     terms[i].EnsureNativeArrayLength(_length, _allocator, _options);
                 }
             }

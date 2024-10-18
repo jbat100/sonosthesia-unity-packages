@@ -74,11 +74,13 @@ namespace Sonosthesia.Deform
         }
     }
 
-    public class CompoundNoiseMeshController : DeformMeshController
+    public class CompoundNoiseMeshController : SingleStreamMeshController
     {
+        [SerializeField] private int _summationPoolSize = 4;
+        
         private readonly Dictionary<Guid, CompoundMeshNoiseInfo> _components = new();
 
-        private readonly UnsafeNativeArraySummationHelper<float4> _summationHelper = new();
+        private UnsafeNativeArraySummationHelper<float4> _summationHelper;
 
         private delegate JobHandle JobScheduleDelegate (
             UnityEngine.Mesh.MeshData meshData, 
@@ -228,15 +230,19 @@ namespace Sonosthesia.Deform
         public void Register(Guid id, CompoundMeshNoiseInfo info)
         {
             _components[id] = info;
-            // Debug.Log($"{this} {nameof(Register)} (id {id}) : {info}");
-            _summationHelper.ComponentCount = _components.Count;
+            Debug.Log($"{this} {nameof(Register)} (id {id}) : {info}");
         }
         
         public void Unregister(Guid id)
         {
             _components.Remove(id);
-            // Debug.Log($"{this} {nameof(Unregister)} (id {id})");
-            _summationHelper.ComponentCount = _components.Count;
+            Debug.Log($"{this} {nameof(Unregister)} (id {id})");
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            _summationHelper = new UnsafeNativeArraySummationHelper<float4>(_summationPoolSize);
         }
         
         protected override JobHandle DeformMesh(UnityEngine.Mesh.MeshData data, int resolution, float displacement, JobHandle dependency)

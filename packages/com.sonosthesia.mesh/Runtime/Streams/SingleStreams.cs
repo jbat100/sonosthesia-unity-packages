@@ -69,6 +69,7 @@ namespace Sonosthesia.Mesh
             };
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetTriangle(int index, int3 triangle)
         {
             _triangles[index] = triangle;

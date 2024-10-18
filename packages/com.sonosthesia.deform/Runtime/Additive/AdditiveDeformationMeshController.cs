@@ -7,7 +7,7 @@ using Sonosthesia.Noise;
 namespace Sonosthesia.Deform
 {
     [RequireComponent(typeof(MeshRenderer))]
-    public class AdditiveDeformationMeshController : DeformMeshController
+    public class AdditiveDeformationMeshController : SingleStreamMeshController
     {
         [SerializeField] private AdditiveDeformationComponent[] _components;
 

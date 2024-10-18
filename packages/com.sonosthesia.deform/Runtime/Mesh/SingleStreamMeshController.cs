@@ -4,7 +4,10 @@ using UnityEngine;
 
 namespace Sonosthesia.Deform
 {
-    public abstract class DeformMeshController : MeshController
+    // all meshes use SingleStreams layout, which allows deforming subclasses to access the raw data 
+    // directly
+    
+    public abstract class SingleStreamMeshController : MeshController
     {
         private static readonly int materialIsPlaneId = Shader.PropertyToID("_IsPlane");
 

@@ -5,6 +5,8 @@ using UnityEngine;
 
 namespace Sonosthesia.Deform
 {
+    // TODO: Think about having TriNoise with each phase having a separate TRS controlled by brownian motion or anything
+    
     public static class TriNoise
     {
         [StructLayout(LayoutKind.Sequential)]
