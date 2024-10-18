@@ -6,7 +6,7 @@ using Sonosthesia.Envelope;
 
 namespace Sonosthesia.Trigger
 {
-    public class TrackedTriggerController
+    public class TrackedTriggerImplementation
     {
         private readonly Dictionary<Guid, Entry> _entries = new ();
 
@@ -21,7 +21,7 @@ namespace Sonosthesia.Trigger
         private static readonly IEnvelope _defaultEndEnvelope =
             new SREnvelope(1f, EnvelopePhase.Linear(0.5f));
 
-        public TrackedTriggerController(AccumulationMode accumulationMode)
+        public TrackedTriggerImplementation(AccumulationMode accumulationMode)
         {
             _accumulationMode = accumulationMode;
         }

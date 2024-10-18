@@ -27,7 +27,7 @@ namespace Sonosthesia.Interaction
         {
             if (_affordance.Log)
             {
-                Debug.Log($"{_affordance} controller {nameof(Setup)} {e}");
+                Debug.LogWarning($"{_affordance} controller {nameof(Setup)} {EventId} {e}");
             }
         }
 
@@ -43,7 +43,7 @@ namespace Sonosthesia.Interaction
         {
             if (_affordance.Log)
             {
-                Debug.Log($"{_affordance} controller {nameof(Teardown)} {e}");
+                Debug.LogWarning($"{_affordance} controller {nameof(Teardown)} {EventId} {e}");
             }
         }
 

@@ -33,7 +33,7 @@ namespace Sonosthesia.Trigger
             IEnvelope envelope = _envelopeFactory ? _envelopeFactory.Build() : null;
             float valueScale = _valueSelector ? _valueSelector.Select(value) : 1f;
             float timeScale = _timeSelector ? _timeSelector.Select(value) : 1f;
-            return trigger.TrackedTriggerController.StartTrigger(envelope, valueScale, timeScale);
+            return trigger.TriggerController.StartTrigger(envelope, valueScale, timeScale);
         }
     }
     
@@ -47,7 +47,7 @@ namespace Sonosthesia.Trigger
         {
             IEnvelope envelope = _envelopeFactory ? _envelopeFactory.Build() : null;
             float timeScale = _timeSelector ? _timeSelector.Select(value) : 1f;
-            trigger.TrackedTriggerController.EndTrigger(id, envelope, timeScale);
+            trigger.TriggerController.EndTrigger(id, envelope, timeScale);
         }
     }
 

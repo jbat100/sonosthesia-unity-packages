@@ -1,10 +1,10 @@
 using System;
+using Unity.Mathematics;
+using UnityEngine;
+using UniRx;
 using Sonosthesia.Deform;
 using Sonosthesia.Interaction;
 using Sonosthesia.Touch;
-using UniRx;
-using Unity.Mathematics;
-using UnityEngine;
 
 namespace Sonosthesia.TouchDeform
 {
@@ -14,12 +14,31 @@ namespace Sonosthesia.TouchDeform
 
         [SerializeField] private CompoundNoisePathProcessor _processor;
 
-        private class Controller : AffordanceController<TouchEvent, TouchPathNoiseAffordance>
+        private class Controller : AffordanceController<TouchEvent, TouchPathNoiseAffordance>, IDisposable
         {
+            // we can't use the Update(TouchEvent) callback to run the sessions because:
+            // - it is not necessarily called on each frame
+            // - it is not called beyond teardown
+            // feels like this is common enough that it justifies an inbuilt mechanism 
+
+            private ITouchEnvelopeSession _displacementSession;
+            private ITouchEnvelopeSession _radiusSession;
+            private ITouchEnvelopeSession _frequencySession;
+            private ITouchEnvelopeSession _speedSession;
+
+            private float3 _center;
+            
+            private IDisposable _updateSubscription;
+
             public Controller(Guid eventId, TouchPathNoiseAffordance affordance) : base(eventId, affordance)
             {
             }
 
+            private float3 ExtractPosition(TouchEvent e)
+            {
+                return e.TouchData.Actor.transform.position;
+            }
+            
             protected override void Setup(TouchEvent e)
             {
                 base.Setup(e);
@@ -27,40 +46,74 @@ namespace Sonosthesia.TouchDeform
                 TouchPathNoiseAffordance affordance = Affordance;
                 TouchPathNoiseConfiguration configuration = affordance._configuration;
 
-                float3 center = e.TouchData.Actor.transform.position;
-
-                TouchEnvelopeSession displacementSession = configuration.Displacement.SetupSession(e, out float displacementDuration);
-                TouchEnvelopeSession radiusSession = configuration.Radius.SetupSession(e, out float radiusDuration);
-                TouchEnvelopeSession frequencySession = configuration.Frequency.SetupSession(e, out float frequencyDuration);
-                TouchEnvelopeSession speedSession = configuration.Speed.SetupSession(e, out float speedDuration);
-
-                float duration = Mathf.Min(displacementDuration, radiusDuration, frequencyDuration, speedDuration);
+                _center = ExtractPosition(e);
                 
+                _displacementSession = configuration.Displacement.SetupSession(e);
+                _frequencySession = configuration.Frequency.SetupSession(e);
+                _speedSession = configuration.Speed.SetupSession(e);
+                _radiusSession = configuration.Radius.SetupSession(e);
+
                 float time = 0f;
-                
-                void Cleanup()
-                {
-                    affordance._processor.Unregister(EventId);
-                }
-                
-                Observable.EveryUpdate()
-                    .TakeUntil(Observable.Timer(TimeSpan.FromSeconds(duration)))
+                _updateSubscription = Observable.EveryUpdate()
                     .TakeUntilDisable(affordance)
                     .Subscribe(_ =>
                     {
-                        time += Time.deltaTime * speedSession.Update();
+                        time += Time.deltaTime * _speedSession.Update();
                         CompoundPathNoiseInfo info = new CompoundPathNoiseInfo(
-                            affordance._configuration.NoiseType,
-                            displacementSession.Update(),
-                            affordance._configuration.FalloffType,
-                            center,
-                            radiusSession.Update(),
+                            configuration.NoiseType,
+                            _displacementSession.Update(),
+                            configuration.FalloffType,
+                            _center,
+                            _radiusSession.Update(),
                             time,
                             float3.zero,
-                            frequencySession.Update()
+                            _frequencySession.Update()
                         );
                         affordance._processor.Register(EventId, info);
-                    }, err => Cleanup(), Cleanup);
+                    }, err => Dispose(), Dispose);
+                    
+            }
+
+            protected override void Update(TouchEvent e)
+            {
+                base.Update(e);
+                
+                if (Affordance._configuration.TrackPosition)
+                {
+                    _center = ExtractPosition(e);
+                }
+                
+                _displacementSession.UpdateTouch(e);
+                _radiusSession.UpdateTouch(e);
+                _frequencySession.UpdateTouch(e);
+                _speedSession.UpdateTouch(e);
+            }
+
+            protected override void Teardown(TouchEvent e)
+            {
+                base.Teardown(e);
+                
+                TouchPathNoiseAffordance affordance = Affordance;
+
+                _displacementSession.EndTouch(e, out float displacementRelease);
+                _radiusSession.EndTouch(e, out float radiusRelease);
+                _frequencySession.EndTouch(e, out float frequencyRelease);
+                _speedSession.EndTouch(e, out float speedRelease);
+
+                float duration = Mathf.Max(displacementRelease, radiusRelease, frequencyRelease, speedRelease);
+
+                Debug.LogWarning($"{this} {nameof(Teardown)} Dispose in {duration} seconds");
+                
+                Observable.Timer(TimeSpan.FromSeconds(duration))
+                    .TakeUntilDisable(affordance)
+                    .Subscribe(_ => {}, Dispose);
+            }
+
+            public void Dispose()
+            {
+                Debug.LogWarning($"{this} Dispose");
+                _updateSubscription?.Dispose();
+                Affordance._processor.Unregister(EventId);
             }
         }
 

@@ -16,13 +16,11 @@ namespace Sonosthesia.Trigger
         private IDynamicProcessor<float> _dynamicPostProcessor;
 
         public TriggerController TriggerController { get; private set; }
-
-        public TrackedTriggerController TrackedTriggerController { get; private set; }
-
+        
         private void SetupState()
         {
+            TriggerController?.Clear();
             TriggerController = new TriggerController(_accumulationMode);
-            TrackedTriggerController = new TrackedTriggerController(_accumulationMode);
             _dynamicPostProcessor = _postProcessorFactory ? _postProcessorFactory.Make() : null;
         }
 
@@ -32,7 +30,7 @@ namespace Sonosthesia.Trigger
         
         protected virtual void Update()
         {
-            float result = TriggerController.Update() + TrackedTriggerController.Update();
+            float result = TriggerController.Update();
 
             result = _postProcessor.Process(result);
 

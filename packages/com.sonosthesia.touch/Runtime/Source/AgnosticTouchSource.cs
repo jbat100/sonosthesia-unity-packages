@@ -11,6 +11,7 @@ namespace Sonosthesia.Touch
 
         protected override bool ConfigureStream(Guid id, ITouchData touchData)
         {
+            Debug.LogWarning($"{this} {nameof(ConfigureStream)} {id} actor {touchData.Actor.gameObject.name} source {touchData.Source.gameObject.name}");
             TouchEvent sourceEvent = new TouchEvent(touchData, Time.time);
             BehaviorSubject<TouchEvent> eventSubject = new BehaviorSubject<TouchEvent>(sourceEvent);
             _eventSubjects[id] = eventSubject;
@@ -22,7 +23,7 @@ namespace Sonosthesia.Touch
             // push the stream to the actor
             if (sourceEvent.TouchData.Actor && sourceEvent.TouchData.Actor.Node)
             {
-                sourceEvent.TouchData.Actor.Node.StreamNode.Push(id, sourceObservable);
+                // sourceEvent.TouchData.Actor.Node.StreamNode.Push(id, sourceObservable);
             }
             return true;
         }

@@ -13,6 +13,8 @@ namespace Sonosthesia.Deform
 {
     public readonly struct CompoundMeshNoiseInfo
     {
+        private const float IMPOTENCE_THRESHOLD = 1e-4f;
+        
         public readonly EaseType crossFadeType;
         public readonly CatlikeNoiseType noiseType;
         public readonly float displacement;
@@ -24,6 +26,27 @@ namespace Sonosthesia.Deform
         public readonly float time;
         public readonly int frequency;
 
+        public bool IsImpotent
+        {
+            get
+            {
+                if (math.abs(displacement) < IMPOTENCE_THRESHOLD)
+                {
+                    return true;
+                }
+                if (falloff && math.abs(radius) < IMPOTENCE_THRESHOLD)
+                {
+                    return true;
+                }
+                if (frequency == 0)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        }
+        
         public static CompoundMeshNoiseInfo Global(CatlikeNoiseType noiseType, 
             float displacement, float3x4 domainTRS,
             float time, int frequency, EaseType crossFadeType = EaseType.easeInOutSine)
@@ -229,14 +252,23 @@ namespace Sonosthesia.Deform
         
         public void Register(Guid id, CompoundMeshNoiseInfo info)
         {
-            _components[id] = info;
-            Debug.Log($"{this} {nameof(Register)} (id {id}) : {info}");
+            if (info.IsImpotent)
+            {
+                Unregister(id);
+            }
+            else
+            {
+                _components[id] = info;
+                Debug.Log($"{this} {nameof(Register)} (id {id}) : {info}");   
+            }
         }
         
         public void Unregister(Guid id)
         {
-            _components.Remove(id);
-            Debug.Log($"{this} {nameof(Unregister)} (id {id})");
+            if (_components.Remove(id))
+            {
+                Debug.LogWarning($"{this} {nameof(Unregister)} (id {id}) component count : {_components.Count}");   
+            }
         }
 
         protected override void OnEnable()

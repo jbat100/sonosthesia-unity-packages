@@ -41,7 +41,7 @@ namespace Sonosthesia
             EndHold();
             float valueScale = _valueScaleSlider ? _valueScaleSlider.value : 1f;
             IEnvelope envelope = _startEnvelope ? _startEnvelope.Build() : null;
-            _holdId = _trigger.TrackedTriggerController.StartTrigger(envelope, valueScale, 1f);
+            _holdId = _trigger.TriggerController.StartTrigger(envelope, valueScale, 1f);
         }
 
         public void EndHold()
@@ -52,7 +52,7 @@ namespace Sonosthesia
             }
             Debug.Log($"{this} {nameof(EndHold)}");
             IEnvelope envelope = _endEnvelope ? _endEnvelope.Build() : null;
-            _trigger.TrackedTriggerController.EndTrigger(_holdId, envelope);
+            _trigger.TriggerController.EndTrigger(_holdId, envelope);
             _holdId = Guid.Empty;
         }
     }

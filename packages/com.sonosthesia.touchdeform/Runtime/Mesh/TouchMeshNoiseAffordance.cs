@@ -17,6 +17,12 @@ namespace Sonosthesia.TouchDeform
         
         private class Controller : AffordanceController<TouchEvent, TouchMeshNoiseAffordance>
         {
+            private ITouchEnvelopeSession _displacementSession;
+            private ITouchEnvelopeSession _radiusSession;
+            private ITouchEnvelopeSession _speedSession;
+
+            private float3 _center;
+            
             public Controller(Guid eventId, TouchMeshNoiseAffordance affordance) : base(eventId, affordance)
             {
             }
@@ -28,13 +34,11 @@ namespace Sonosthesia.TouchDeform
                 TouchMeshNoiseAffordance affordance = Affordance;
                 TouchMeshNoiseConfiguration configuration = affordance._configuration;
 
-                float3 center = e.TouchData.Actor.transform.position;
+                _center = e.TouchData.Actor.transform.position;
 
-                TouchEnvelopeSession displacementSession = configuration.Displacement.SetupSession(e, out float displacementDuration);
-                TouchEnvelopeSession radiusSession = configuration.Radius.SetupSession(e, out float radiusDuration);
-                TouchEnvelopeSession speedSession = configuration.Speed.SetupSession(e, out float speedDuration);
-
-                float duration = Mathf.Min(displacementDuration, radiusDuration, speedDuration);
+                _displacementSession = configuration.Displacement.SetupSession(e);
+                _radiusSession = configuration.Radius.SetupSession(e);
+                _speedSession = configuration.Speed.SetupSession(e);
                 
                 float time = 0f;
                 float3x4 rts = (new SpaceTRS { scale = 1 }).Matrix;
@@ -45,25 +49,33 @@ namespace Sonosthesia.TouchDeform
                 }
 
                 Observable.EveryUpdate()
-                    .TakeUntil(Observable.Timer(TimeSpan.FromSeconds(duration)))
                     .TakeUntilDisable(affordance)
                     .Subscribe(_ =>
                     {
-                        time += Time.deltaTime * speedSession.Update();
+                        time += Time.deltaTime * _speedSession.Update();
                         CompoundMeshNoiseInfo info = new CompoundMeshNoiseInfo(
                             affordance._configuration.CrossFadeType,
                             affordance._configuration.NoiseType,
-                            displacementSession.Update(),
+                            _displacementSession.Update(),
                             rts,
                             affordance._configuration.Falloff,
                             affordance._configuration.FalloffType,
-                            center,
-                            radiusSession.Update(),
+                            _center,
+                            _radiusSession.Update(),
                             time,
                             affordance._configuration.Frequency
                         );
                         affordance._processor.Register(EventId, info);
                     }, err => Cleanup(), Cleanup);
+            }
+
+            protected override void Update(TouchEvent e)
+            {
+                base.Update(e);
+                
+                _displacementSession.UpdateTouch(e);
+                _radiusSession.UpdateTouch(e);
+                _speedSession.UpdateTouch(e);
             }
         }
 

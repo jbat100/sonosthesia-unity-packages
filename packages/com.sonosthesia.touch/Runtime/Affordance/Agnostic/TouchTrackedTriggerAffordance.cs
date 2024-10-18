@@ -8,11 +8,11 @@ namespace Sonosthesia.Touch
     {
         [SerializeField] private Trigger.Trigger _trigger;
 
-        [SerializeField] private TrackedTouchEnvelopeConfiguration _configuration;
+        [SerializeField] private TouchEnvelopeConfiguration _configuration;
         
         private class Controller : AffordanceController<TouchEvent, TouchTrackedTriggerAffordance>
         {
-            private TrackedTouchEnvelopeSession _session; 
+            private ITouchEnvelopeSession _session; 
             
             public Controller(Guid eventId, TouchTrackedTriggerAffordance affordance) : base(eventId, affordance)
             {
@@ -22,8 +22,8 @@ namespace Sonosthesia.Touch
             protected override void Setup(TouchEvent e)
             {
                 base.Setup(e);
-                TrackedTouchEnvelopeSettings settings = Affordance._configuration.Settings;
-                _session = settings.SetupSession(e, Affordance._trigger.TrackedTriggerController);
+                TouchEnvelopeSettings settings = Affordance._configuration.Settings;
+                _session = settings.SetupSession(e, Affordance._trigger.TriggerController);
             }
 
             protected override void Update(TouchEvent e)

@@ -11,26 +11,6 @@ using Sonosthesia.Mesh;
 
 namespace Sonosthesia.Deform
 {
-#if UNITY_EDITOR
-    using UnityEditor;
-
-    [CustomEditor(typeof(CompoundNoisePathProcessor), true), CanEditMultipleObjects]
-    public class CompoundNoisePathProcessorEditor : Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            DrawDefaultInspector();
-
-            CompoundNoisePathProcessor source = (CompoundNoisePathProcessor)target;
-            if(GUILayout.Button("Force Dirty"))
-            {
-                source.ForceDirty();
-                EditorApplication.QueuePlayerLoopUpdate();
-            }
-        }
-    }
-#endif
-    
     public enum Noise4DType
     {
         Simplex,
@@ -39,6 +19,8 @@ namespace Sonosthesia.Deform
 
     public readonly struct CompoundPathNoiseInfo
     {
+        private const float IMPOTENCE_THRESHOLD = 1e-4f;
+        
         public readonly Noise4DType noiseType;
         public readonly float displacement;
         public readonly EaseType falloffType;
@@ -60,6 +42,27 @@ namespace Sonosthesia.Deform
             this.time = time;
             this.offset = offset;
             this.frequency = frequency;
+        }
+
+        public bool IsImpotent
+        {
+            get
+            {
+                if (math.abs(displacement) < IMPOTENCE_THRESHOLD)
+                {
+                    return true;
+                }
+                if (math.abs(radius) < IMPOTENCE_THRESHOLD)
+                {
+                    return true;
+                }
+                if (math.abs(frequency) < IMPOTENCE_THRESHOLD)
+                {
+                    return true;
+                }
+
+                return false;
+            }
         }
 
         public override string ToString()
@@ -142,23 +145,29 @@ namespace Sonosthesia.Deform
             Job<CNoise4D>.ScheduleParallel
         };
 
-        public void ForceDirty()
-        {
-            
-        }
-
         public void Register(Guid id, CompoundPathNoiseInfo info)
         {
-            _components[id] = info;
-            Debug.Log($"{this} {nameof(Register)} (id {id}) : {info}");
-            _summationHelper.ComponentCount = _components.Count;
+            if (info.IsImpotent)
+            {
+                Unregister(id);
+            }
+            else
+            {
+                if (!_components.ContainsKey(id))
+                {
+                    Debug.LogWarning($"{this} {nameof(Register)} (id {id}) : {info}");
+                }
+                
+                _components[id] = info;
+            }
         }
 
         public void Unregister(Guid id)
         {
-            _components.Remove(id);
-            Debug.Log($"{this} {nameof(Unregister)} (id {id})");
-            _summationHelper.ComponentCount = _components.Count;
+            if (_components.Remove(id))
+            {
+                Debug.LogWarning($"{this} {nameof(Unregister)} (id {id})");   
+            }
         }
 
         protected virtual void OnDestroy()
@@ -168,7 +177,13 @@ namespace Sonosthesia.Deform
 
         public override void Process(NativeArray<RigidTransform> points)
         {
+            if (points.Length == 0)
+            {
+                return;
+            }
+            
             _summationHelper.Length = points.Length;
+            _summationHelper.ComponentCount = _components.Count;
             _summationHelper.Check();
             
             // Compute the deformations for each component in parallel

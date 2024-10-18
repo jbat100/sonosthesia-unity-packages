@@ -79,6 +79,16 @@ namespace Sonosthesia.Touch
                 Debug.Log($"{this} {nameof(OnTriggerEnter)} bailed out (no actor)");
                 return;
             }
+            
+            // bail out if the actor is already active through another collider
+
+            foreach (TouchData data in _triggerData.Values)
+            {
+                if (data.Actor == actor)
+                {
+                    return;
+                }
+            }
 
             if (!IsCompatibleActor(actor))
             {
@@ -125,6 +135,8 @@ namespace Sonosthesia.Touch
                 }
                 return;
             }
+            
+            
 
             touchData = new TouchData()
             {
