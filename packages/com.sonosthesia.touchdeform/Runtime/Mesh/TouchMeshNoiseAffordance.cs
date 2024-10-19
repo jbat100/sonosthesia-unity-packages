@@ -13,15 +13,16 @@ namespace Sonosthesia.TouchDeform
     {
         [SerializeField] private TouchMeshNoiseConfiguration _configuration;
 
-        [SerializeField] private CompoundNoiseMeshController _processor;
+        [SerializeField] private CompoundNoiseMeshController _controller;
         
-        private class Controller : AffordanceController<TouchEvent, TouchMeshNoiseAffordance>
+        private class Controller : AffordanceController<TouchEvent, TouchMeshNoiseAffordance>, IDisposable
         {
             private ITouchEnvelopeSession _displacementSession;
             private ITouchEnvelopeSession _radiusSession;
             private ITouchEnvelopeSession _speedSession;
 
             private float3 _center;
+            private IDisposable _updateSubscription;
             
             public Controller(Guid eventId, TouchMeshNoiseAffordance affordance) : base(eventId, affordance)
             {
@@ -45,10 +46,10 @@ namespace Sonosthesia.TouchDeform
                 
                 void Cleanup()
                 {
-                    affordance._processor.Unregister(EventId);
+                    affordance._controller.Unregister(EventId);
                 }
 
-                Observable.EveryUpdate()
+                _updateSubscription = Observable.EveryUpdate()
                     .TakeUntilDisable(affordance)
                     .Subscribe(_ =>
                     {
@@ -65,8 +66,8 @@ namespace Sonosthesia.TouchDeform
                             time,
                             affordance._configuration.Frequency
                         );
-                        affordance._processor.Register(EventId, info);
-                    }, err => Cleanup(), Cleanup);
+                        affordance._controller.Register(EventId, info);
+                    }, err => Dispose(), Dispose);
             }
 
             protected override void Update(TouchEvent e)
@@ -76,6 +77,32 @@ namespace Sonosthesia.TouchDeform
                 _displacementSession.UpdateTouch(e);
                 _radiusSession.UpdateTouch(e);
                 _speedSession.UpdateTouch(e);
+            }
+            
+            protected override void Teardown(TouchEvent e)
+            {
+                base.Teardown(e);
+                
+                TouchMeshNoiseAffordance affordance = Affordance;
+
+                _displacementSession.EndTouch(e, out float displacementRelease);
+                _radiusSession.EndTouch(e, out float radiusRelease);
+                _speedSession.EndTouch(e, out float speedRelease);
+
+                float duration = Mathf.Max(displacementRelease, radiusRelease, speedRelease);
+
+                Debug.LogWarning($"{this} {nameof(Teardown)} Dispose in {duration} seconds");
+                
+                Observable.Timer(TimeSpan.FromSeconds(duration))
+                    .TakeUntilDisable(affordance)
+                    .Subscribe(_ => {}, Dispose);
+            }
+            
+            public void Dispose()
+            {
+                Debug.LogWarning($"{this} Dispose");
+                _updateSubscription?.Dispose();
+                Affordance._controller.Unregister(EventId);
             }
         }
 

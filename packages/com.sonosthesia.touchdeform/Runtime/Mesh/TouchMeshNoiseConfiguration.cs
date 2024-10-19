@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Sonosthesia.TouchDeform
 {
+    [CreateAssetMenu(fileName = "TouchMeshNoiseConfiguration", menuName = "Sonosthesia/Touch/TouchMeshNoiseConfiguration")]
     public class TouchMeshNoiseConfiguration : ScriptableObject
     {
         [SerializeField] private CatlikeNoiseType _noiseType = CatlikeNoiseType.Simplex; 
@@ -19,7 +20,7 @@ namespace Sonosthesia.TouchDeform
         [SerializeField] private EaseType _falloffType = EaseType.linear;
         public EaseType FalloffType => _falloffType;
         
-        [SerializeField] private int _frequency;
+        [SerializeField] private int _frequency = 1;
         public int Frequency => _frequency;
 
         [SerializeField] private TouchEnvelopeSettings _radius;

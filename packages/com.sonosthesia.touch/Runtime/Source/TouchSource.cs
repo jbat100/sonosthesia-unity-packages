@@ -136,8 +136,6 @@ namespace Sonosthesia.Touch
                 return;
             }
             
-            
-
             touchData = new TouchData()
             {
                 Collider = other,

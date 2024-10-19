@@ -276,7 +276,7 @@ namespace Sonosthesia.Deform
             base.OnEnable();
             _summationHelper = new UnsafeNativeArraySummationHelper<float4>(_summationPoolSize);
         }
-        
+
         protected override JobHandle DeformMesh(UnityEngine.Mesh.MeshData data, int resolution, float displacement, JobHandle dependency)
         {
             if (data.vertexCount == 0)
