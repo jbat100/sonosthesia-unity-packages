@@ -43,11 +43,6 @@ namespace Sonosthesia.TouchDeform
                 
                 float time = 0f;
                 float3x4 rts = (new SpaceTRS { scale = 1 }).Matrix;
-                
-                void Cleanup()
-                {
-                    affordance._controller.Unregister(EventId);
-                }
 
                 _updateSubscription = Observable.EveryUpdate()
                     .TakeUntilDisable(affordance)

@@ -4,6 +4,7 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Sonosthesia.Mesh;
 using Sonosthesia.Noise;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using static Unity.Mathematics.math;
 
@@ -22,14 +23,12 @@ namespace Sonosthesia.Deform
             NativeArray<TriNoise.DomainNoiseComponent> configs
         );
         
-        [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
+        [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, OptimizeFor = OptimizeFor.Performance, CompileSynchronously = true)]
         private struct Job<N> : IJobFor where N : struct, ISimpleNoise, INoise
         {
             [ReadOnly] private NativeArray<Vertex4> vertices;
-            
-            [ReadOnly] private NativeArray<TriNoise.DomainNoiseComponent> configs;
-            
-            [WriteOnly] public NativeArray<Sample4> deformations;
+            [NativeDisableContainerSafetyRestriction][ReadOnly] private NativeArray<TriNoise.DomainNoiseComponent> configs;
+            [NativeDisableContainerSafetyRestriction][WriteOnly] private NativeArray<Sample4> deformations;
 
             public void Execute(int i)
             {

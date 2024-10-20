@@ -112,7 +112,7 @@ namespace Sonosthesia.Deform
             int innerloopBatchCount, JobHandle dependency
         );
         
-        [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
+        [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, OptimizeFor = OptimizeFor.Performance, CompileSynchronously = true)]
         private struct Job<N> : IJobFor where N : struct, ISimpleNoise
         {
             [ReadOnly] private NativeArray<Vertex4> vertices;

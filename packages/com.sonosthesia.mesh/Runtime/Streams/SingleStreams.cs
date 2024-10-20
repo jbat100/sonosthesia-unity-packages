@@ -74,5 +74,17 @@ namespace Sonosthesia.Mesh
         {
             _triangles[index] = triangle;
         }
+
+        public void Import(NativeArray<Stream0> stream0, NativeArray<TriangleUInt16> triangles)
+        {
+            _stream0.CopyFrom(stream0);
+            _triangles.CopyFrom(triangles);
+        }
+
+        public void Export(out NativeArray<Stream0> stream0, out NativeArray<TriangleUInt16> triangles)
+        {
+            stream0 = new NativeArray<Stream0>(_stream0, Allocator.Persistent);
+            triangles = new NativeArray<TriangleUInt16>(_triangles, Allocator.Persistent);
+        }
     }
 }
