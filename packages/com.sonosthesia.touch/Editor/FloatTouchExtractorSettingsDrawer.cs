@@ -49,11 +49,8 @@ namespace Sonosthesia.Touch.Editor
             root.AddRelativeField(property, "_remap", 
                 out SerializedProperty _, out PropertyField remapField);
             
-            // Method to update the visibility of fields based on the enum value
             void UpdateVisibility()
             {
-                // UnityEngine.Debug.Log($"{this} {nameof(UpdateVisibility)}");
-                
                 FloatTouchExtractorSettings.ExtractorType extractorType = (FloatTouchExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
                 FloatTouchExtractorSettings.PostProcessingType postProcessingType = (FloatTouchExtractorSettings.PostProcessingType)postProcessingProp.enumValueIndex;
 
@@ -72,7 +69,6 @@ namespace Sonosthesia.Touch.Editor
                 curveField.Show(postProcessingType is FloatTouchExtractorSettings.PostProcessingType.Curve);
             }
 
-            // Initial visibility update
             UpdateVisibility();
 
             extractorTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());

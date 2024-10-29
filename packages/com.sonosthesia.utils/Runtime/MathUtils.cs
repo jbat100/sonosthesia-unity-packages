@@ -1,4 +1,5 @@
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace Sonosthesia.Utils
 {
@@ -24,6 +25,17 @@ namespace Sonosthesia.Utils
             }
 
             return result;
+        }
+        
+        public static Vector3 ChangeLength(this Vector3 vector, float factor)
+        {
+            if (vector == Vector3.zero)
+            {
+                return Vector3.zero;
+            }
+            float currentMagnitude = vector.magnitude;
+            float newMagnitude = currentMagnitude * factor;
+            return vector * (newMagnitude / currentMagnitude);
         }
     }
 }

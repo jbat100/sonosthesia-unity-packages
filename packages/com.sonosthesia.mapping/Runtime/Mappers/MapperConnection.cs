@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Codice.CM.Common.Serialization.Replication;
 using UnityEngine;
 using UniRx;
 using Sonosthesia.Processing;
 using Sonosthesia.Signal;
+using Sonosthesia.Utils;
 
 namespace Sonosthesia.Mapping
 {
-    public class MapperConnection<TValue> : MapperConnectionBase where TValue : struct
+    public class MapperConnection<TValue> : AbstractMapperConnection where TValue : struct
     {
         [Serializable]
         public class Slot
@@ -82,26 +84,9 @@ namespace Sonosthesia.Mapping
 #if UNITY_EDITOR
         public override void AutofillSlots(bool recursive)
         {
-            FillSlots(transform, recursive);
-        }
-
-        private void FillSlots(Transform root, bool recursive)
-        {
-            foreach (Transform child in root)
-            {
-                if (_slots.All(slot => slot.Name != child.name))
-                {
-                    Signal<TValue> signal = child.GetComponent<Signal<TValue>>();
-                    if (signal)
-                    {
-                        _slots.Add(new Slot(child.name, signal));
-                    }
-                }
-                if (recursive)
-                {
-                    FillSlots(child, true);
-                }
-            }
+            transform.ComponentScan<Signal<TValue>>(recursive, 
+                check => _slots.All(slot => slot.Name != check),
+                (childName, component) => _slots.Add(new Slot(childName, component)));
         }
 
         public override void DeleteAllSlots()

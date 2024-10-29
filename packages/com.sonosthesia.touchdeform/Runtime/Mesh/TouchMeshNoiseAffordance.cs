@@ -21,7 +21,8 @@ namespace Sonosthesia.TouchDeform
             private ITouchEnvelopeSession _radiusSession;
             private ITouchEnvelopeSession _speedSession;
 
-            private float3 _center;
+            private IDynamicTrackingSession _centerTrackingSession;
+
             private IDisposable _updateSubscription;
             
             public Controller(Guid eventId, TouchMeshNoiseAffordance affordance) : base(eventId, affordance)
@@ -35,8 +36,10 @@ namespace Sonosthesia.TouchDeform
                 TouchMeshNoiseAffordance affordance = Affordance;
                 TouchMeshNoiseConfiguration configuration = affordance._configuration;
 
-                _center = e.TouchData.Actor.transform.position;
-
+                _centerTrackingSession = DynamicTrackingSessionUtil.CreateSession(
+                    configuration.CenterTracking,
+                    e.TouchData.Actor.DynamicsMonitor);
+                
                 _displacementSession = configuration.Displacement.SetupSession(e);
                 _radiusSession = configuration.Radius.SetupSession(e);
                 _speedSession = configuration.Speed.SetupSession(e);
@@ -56,7 +59,7 @@ namespace Sonosthesia.TouchDeform
                             rts,
                             affordance._configuration.Falloff,
                             affordance._configuration.FalloffType,
-                            _center,
+                            _centerTrackingSession.Update(),
                             _radiusSession.Update(),
                             time,
                             affordance._configuration.Frequency

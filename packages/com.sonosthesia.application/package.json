@@ -4,6 +4,7 @@
     "com.unity.inputsystem": "1.8.1",
     "com.neuecc.unirx": "7.1.0",
     "com.cysharp.unitask": "2.5.5",
+    "jp.hadashikick.vcontainer": "1.14.0",
     "com.sonosthesia.signal": "1.10.0",
     "com.sonosthesia.utils": "1.10.0"
   },

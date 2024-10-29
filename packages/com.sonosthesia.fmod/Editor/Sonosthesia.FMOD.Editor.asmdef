@@ -1,0 +1,25 @@
+{
+    "name": "Sonosthesia.FMOD.Editor",
+    "rootNamespace": "Sonosthesia.FMOD.Editor",
+    "references": [
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:0c752da273b17c547ae705acf0f2adf2",
+        "GUID:da4dcb349cd2457b9de2fe9f9ea29a3d",
+        "GUID:9eb6837bd3e454f19a8d5c72f1eda2e1",
+        "GUID:0e73a958ea93c4999aae301d99219c62",
+        "GUID:25e5e4b6f3916462c92ecc1d0ffca2c2",
+        "GUID:0be39a4ec83e741fd8df792ea7ae6139"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

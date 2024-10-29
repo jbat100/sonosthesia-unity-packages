@@ -100,7 +100,18 @@ function run() {
 
     // get all the sonosthesia dependenders on a given sonosthesia package
     if (args.dependers) {
-        // TODO
+        if (!args.name) {
+            console.error("Requires name arg");
+            return;
+        }
+        const packageName = 'com.sonosthesia.' + args.name.replace(/ /g, '').toLowerCase();
+        console.log(chalk.green("Packages depending on " + args.name));
+        for (const package of packageNames) {
+            const dependencies = getPackageDependencyTree(package);
+            if (dependencies.has(packageName)) {
+                console.log(package);
+            }
+        }
     }
 
     if (args.order) {

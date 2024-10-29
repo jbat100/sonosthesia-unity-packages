@@ -11,10 +11,14 @@ using UnityEngine;
 
 namespace Sonosthesia.Deform
 {
+
+    
+    
     public readonly struct CompoundMeshNoiseInfo
     {
-        private const float IMPOTENCE_THRESHOLD = 1e-4f;
         
+        private const float IMPOTENCE_THRESHOLD = 1e-4f;
+
         public readonly EaseType crossFadeType;
         public readonly CatlikeNoiseType noiseType;
         public readonly float displacement;
@@ -254,11 +258,13 @@ namespace Sonosthesia.Deform
         {
             if (info.IsImpotent)
             {
+                Debug.LogWarning($"{this} {nameof(Unregister)} impotent {info}");
                 Unregister(id);
             }
             else
             {
                 _components[id] = info;
+                Debug.Log($"{this} CENTER {info.center}");
                 Debug.Log($"{this} {nameof(Register)} (id {id}) : {info}");   
             }
         }

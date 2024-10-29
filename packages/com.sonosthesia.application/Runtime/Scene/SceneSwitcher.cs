@@ -1,48 +1,27 @@
-﻿using System;
+using System;
 using Cysharp.Threading.Tasks;
-using Sonosthesia.Signal;
 using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using VContainer.Unity;
 
 namespace Sonosthesia.Application
 {
-    public enum SceneSwitcherState
+    public class SceneSwitcher : ISceneSwitcher, IDisposable
     {
-        Empty,
-        FadeOut,
-        Unloading,
-        Loading,
-        FadeIn,
-        Idle
-    }
+        private readonly SceneSwitcherSettings _settings;
+        public SceneSwitcherSettings Settings => _settings;
 
-    public readonly struct SceneSwitcherFade
-    {
-        public readonly bool In;
-        public readonly float Duration;
-
-        public SceneSwitcherFade(bool fadeIn, float duration = 0f)
+        private LifetimeScope _parentScope;
+        
+        public SceneSwitcher(SceneSwitcherSettings settings, LifetimeScope parentScope)
         {
-            In = fadeIn;
-            Duration = duration;
+            _settings = settings;
+            _parentScope = parentScope;
         }
-    }
-    
-    public class SceneSwitcher : MonoBehaviour
-    {
-        [SerializeField] private IntentSignalRelay _intents;
-
-        [SerializeField] private StateSignalRelay _current;
         
-        [SerializeField] private float _fadeIn = 1f;
-        public float FadeIn => _fadeIn;
-        
-        [SerializeField] private float _fadeOut = 1f;
-        public float FadeOut => _fadeOut;
-        
-        private readonly BehaviorSubject<SceneSwitcherState> _stateSubject = new (SceneSwitcherState.Empty);
+        private BehaviorSubject<SceneSwitcherState> _stateSubject = new (SceneSwitcherState.Idle);
         public IObservable<SceneSwitcherState> StateObservable => _stateSubject.AsObservable();
         public SceneSwitcherState State
         {
@@ -54,46 +33,15 @@ namespace Sonosthesia.Application
             }
         }
 
-        private readonly BehaviorSubject<string> _currentSubject = new(null);
+        private BehaviorSubject<string> _currentSubject = new(null);
         public IObservable<string> CurrentObservable => _currentSubject.AsObservable();
         public string Current
         {
             get => _currentSubject.Value;
-            private set
-            {
-                if (_current)
-                {
-                    _current.Broadcast(new State(value));
-                } 
-                _currentSubject.OnNext(value);
-            }
+            private set => _currentSubject.OnNext(value);
         }
 
         private IDisposable _intentSubscription;
-
-        protected virtual void Start()
-        {
-            State = SceneSwitcherState.Idle;
-        }
-
-        protected virtual void OnEnable()
-        {
-            _intentSubscription?.Dispose();
-            if (_intents)
-            {
-                _intentSubscription = _intents.Observable.Subscribe(i =>
-                {
-                    if (State != SceneSwitcherState.Idle)
-                    {
-                        Debug.LogWarning($"{this} dropped scene switch intent {i}");
-                        return;
-                    }
-                    SwitchToScene(i.Key).Forget();
-                });
-            }
-        }
-
-        protected virtual void OnDisable() => _intentSubscription?.Dispose();
 
         public async UniTask SwitchToScene(string sceneName)
         {
@@ -105,19 +53,30 @@ namespace Sonosthesia.Application
             try
             {
                 State = SceneSwitcherState.FadeOut;
-            
-                await UniTask.Delay(TimeSpan.FromSeconds(_fadeOut));
+
+                await UniTask.Delay(TimeSpan.FromSeconds(Settings.FadeOut));
 
                 if (!string.IsNullOrEmpty(Current))
                 {
                     State = SceneSwitcherState.Unloading;
                     await SceneManager.UnloadSceneAsync(Current);
                 }
+            }
+            catch (Exception e)
+            {
+                // TODO: have observable for error UI
+                Debug.LogException(e);
+            }
             
+            try
+            {
                 if (!string.IsNullOrEmpty(sceneName))
                 {
                     State = SceneSwitcherState.Loading;
-                    await SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+                    using (LifetimeScope.EnqueueParent(_parentScope))
+                    {
+                        await SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+                    }
                 }
 
                 Current = sceneName;
@@ -130,9 +89,16 @@ namespace Sonosthesia.Application
             
             State = SceneSwitcherState.FadeIn;
             
-            await UniTask.Delay(TimeSpan.FromSeconds(_fadeIn));
+            await UniTask.Delay(TimeSpan.FromSeconds(Settings.FadeIn));
             
             State = SceneSwitcherState.Idle;
+        }
+
+        public void Dispose()
+        {
+            Debug.LogWarning($"{this} {nameof(Dispose)}");
+            RxUtils.Cleanup(ref _stateSubject);
+            RxUtils.Cleanup(ref _currentSubject);
         }
     }
 }

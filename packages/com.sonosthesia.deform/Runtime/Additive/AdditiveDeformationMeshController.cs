@@ -13,8 +13,9 @@ namespace Sonosthesia.Deform
 
         private readonly UnsafeNativeArraySummationHelper<Sample4> _summationHelper = new ();
         
-        protected virtual void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
             _summationHelper.Dispose();
         }
 

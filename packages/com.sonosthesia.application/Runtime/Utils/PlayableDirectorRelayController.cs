@@ -7,6 +7,7 @@ using UnityEngine.Playables;
 
 namespace Sonosthesia.Application
 {
+    [Obsolete("Use PlaybackUI")]
     [RequireComponent(typeof(PlayableDirector))]
     public class PlayableDirectorRelayController : MonoBehaviour
     {

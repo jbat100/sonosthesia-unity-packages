@@ -22,6 +22,9 @@ namespace Sonosthesia.TouchDeform
         
         [SerializeField] private int _frequency = 1;
         public int Frequency => _frequency;
+        
+        [SerializeField] private DynamicTrackingSettings _centerTracking;
+        public DynamicTrackingSettings CenterTracking => _centerTracking;
 
         [SerializeField] private TouchEnvelopeSettings _radius;
         public TouchEnvelopeSettings Radius => _radius;

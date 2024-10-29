@@ -3,19 +3,16 @@ using Cysharp.Threading.Tasks;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using VContainer;
 
 namespace Sonosthesia.Application 
 {
     public class SceneSwitcherUI : MonoBehaviour
     {
         [SerializeField] private Text _nameText;
-
         [SerializeField] private bool _lastNameComponentOnly;
-        
         [SerializeField] private Text _stateText;
 
-        [SerializeField] private SceneSwitcher _switcher;
-        
         [Serializable]
         public class Choice
         {
@@ -28,44 +25,62 @@ namespace Sonosthesia.Application
         
         [SerializeField] private Choice[] _choices;
 
-        private IDisposable _nameSubscription;
+        private CompositeDisposable _subscriptions = new ();
+        
+        private SceneSwitcher _switcher;
+        
+        [Inject]
+        public void Construct(SceneSwitcher switcher)
+        {
+            _switcher = switcher;
+        }
         
         protected virtual void Start()
         {
-            if (!_switcher)
-            {
-                return;
-            }
-            
             foreach (Choice choice in _choices)
             {
-                choice.Button.onClick.AddListener(() => _switcher.SwitchToScene(choice.Name).Forget());
+                choice.Button.onClick.AddListener(() =>
+                {
+                    if (_switcher == null)
+                    {
+                        return;
+                    }
+                    _switcher.SwitchToScene(choice.Name).Forget();
+                });
             }            
         }
 
         protected virtual void OnEnable()
         {
-            _nameSubscription?.Dispose();
-            if (_switcher && _nameText)
+            _subscriptions.Clear();
+            _subscriptions.Add(_switcher.CurrentObservable.Subscribe(current =>
             {
-                _nameSubscription = _switcher.CurrentObservable.Subscribe(current =>
+                if (!_nameText)
                 {
-                    if (_lastNameComponentOnly)
+                    return;
+                }
+                if (_lastNameComponentOnly)
+                {
+                    string[] components = current.Split("/");
+                    if (components.Length > 0)
                     {
-                        string[] components = current.Split("/");
-                        if (components.Length > 0)
-                        {
-                            _nameText.text = components[^1];
-                            return;
-                        }
+                        _nameText.text = components[^1];
+                        return;
                     }
-
-                    _nameText.text = current;
-                });
-            }
+                }
+                _nameText.text = current;
+            }));
+            _subscriptions.Add(_switcher.StateObservable.Subscribe(state =>
+            {
+                if (!_stateText)
+                {
+                    return;
+                }
+                _stateText.text = state.ToString();
+            }));
         }
 
-        protected virtual void OnDisable() => _nameSubscription?.Dispose();
+        protected virtual void OnDisable() => _subscriptions.Clear();
         
     }
 }

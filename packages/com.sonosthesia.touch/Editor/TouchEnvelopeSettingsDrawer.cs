@@ -13,8 +13,9 @@ namespace Sonosthesia.Touch.Editor
         {
             VisualElement root = new VisualElement();
             
-            Label titleLabel = UIElementUtils.TitleLabel(property.name.PropertyNameToLabel());
-            root.Add(titleLabel);
+            root.Add(UIElementUtils.Separator());
+            
+            root.Add(UIElementUtils.SectionLabel(property.name.PropertyNameToLabel()));
             
             root.AddRelativeField(property, "_type", 
                 out SerializedProperty typeProp, out PropertyField typeField);

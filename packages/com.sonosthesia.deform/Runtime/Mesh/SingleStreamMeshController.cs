@@ -218,6 +218,9 @@ namespace Sonosthesia.Deform
         {
             _meshBuildCache?.Dispose();
             _meshBuildCache = null;
+            
+            _normalComputeHelper?.Dispose();
+            _normalComputeHelper = null;
         }
 
         private JobHandle BuildMesh(UnityEngine.Mesh.MeshData data)
@@ -304,8 +307,8 @@ namespace Sonosthesia.Deform
             JobHandle deformJob = DeformMesh(data, _resolution, _displacement, default);
             deformJob.Complete();
             
-            // vertexTrisJob reads only from tris, deform job uses only verts, the two can run in parallel
-            
+            // vertexTrisJob reads only from tris, deform job uses only verts, should be able to run parallel but
+            // job system isn't happy, so run them separately...
             // JobHandle.CombineDependencies(vertexTrisJob, deformJob).Complete();
 
             // once the mesh deformation is complete we can compute the normals
@@ -342,8 +345,6 @@ namespace Sonosthesia.Deform
                     ComputeFaceNormals(default).Complete();
                     ApplySmoothedFaceNormals(default).Complete();
                 }
-                    break;
-                default:
                     break;
             }
         }
