@@ -38,6 +38,11 @@ namespace Sonosthesia.Interaction
         {
             foreach (StreamContainer<TEvent> streamContainer in _streamContainers)
             {
+                if (!streamContainer)
+                {
+                    continue;
+                }
+                
                 _subscriptions.Add(streamContainer.StreamNode.Values.ObserveCountChanged().Subscribe(OnEventCountChanged));
                 _subscriptions.Add(streamContainer.StreamNode.StreamObservable.Subscribe(pair =>
                 {

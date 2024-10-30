@@ -8,6 +8,7 @@ namespace Sonosthesia.Generator
     {
         [SerializeField] private PrimitiveOscillationType _oscillationType = PrimitiveOscillationType.Sine;
         [SerializeField] private float _frequency = 1f;
+        [SerializeField] [Range(0, 1)] private float _offset = 0f;
         [SerializeField] private bool _fixedUpdate = true;
 
         // tracking current time avoids discontinuities when disabling / re-enabling oscillator
@@ -27,7 +28,7 @@ namespace Sonosthesia.Generator
             if (_fixedUpdate)
             {
                 _currentTime += Time.fixedDeltaTime * _frequency;
-                Apply(PrimitiveOscillation.Evaluate(_oscillationType, _currentTime));
+                Apply(PrimitiveOscillation.Evaluate(_oscillationType, _currentTime + _offset));
             }
         }
 

@@ -43,8 +43,12 @@ namespace Sonosthesia.TouchDeform
                 _displacementSession = configuration.Displacement.SetupSession(e);
                 _radiusSession = configuration.Radius.SetupSession(e);
                 _speedSession = configuration.Speed.SetupSession(e);
+
+                // don't start time from 0 or we get always the same noise effect, the choice of Time.time 
+                // is arbitrary, it could be a random number
                 
-                float time = 0f;
+                float time = Time.time;
+                
                 float3x4 rts = (new SpaceTRS { scale = 1 }).Matrix;
 
                 _updateSubscription = Observable.EveryUpdate()

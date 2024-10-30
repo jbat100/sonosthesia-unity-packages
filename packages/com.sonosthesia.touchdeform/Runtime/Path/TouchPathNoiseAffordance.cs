@@ -5,6 +5,7 @@ using UniRx;
 using Sonosthesia.Deform;
 using Sonosthesia.Interaction;
 using Sonosthesia.Touch;
+using Random = Unity.Mathematics.Random;
 
 namespace Sonosthesia.TouchDeform
 {
@@ -53,7 +54,11 @@ namespace Sonosthesia.TouchDeform
                 _speedSession = configuration.Speed.SetupSession(e);
                 _radiusSession = configuration.Radius.SetupSession(e);
 
-                float time = 0f;
+                // don't start time from 0 or we get always the same noise effect, the choice of Time.time 
+                // is arbitrary, it could be a random number
+                
+                float time = Time.time;
+                
                 _updateSubscription = Observable.EveryUpdate()
                     .TakeUntilDisable(affordance)
                     .Subscribe(_ =>
