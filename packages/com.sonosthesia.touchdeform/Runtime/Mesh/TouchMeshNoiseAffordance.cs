@@ -63,7 +63,7 @@ namespace Sonosthesia.TouchDeform
                             rts,
                             affordance._configuration.Falloff,
                             affordance._configuration.FalloffType,
-                            _centerTrackingSession.Update(),
+                            _centerTrackingSession.Update(Time.deltaTime),
                             _radiusSession.Update(),
                             time,
                             affordance._configuration.Frequency
@@ -112,6 +112,5 @@ namespace Sonosthesia.TouchDeform
         {
             return _configuration ? new Controller(id, this) : null;
         }
-        
     }
 }

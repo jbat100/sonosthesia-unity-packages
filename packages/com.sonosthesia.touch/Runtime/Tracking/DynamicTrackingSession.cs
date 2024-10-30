@@ -3,11 +3,11 @@ using Sonosthesia.Dynamic;
 using Sonosthesia.Utils;
 using UnityEngine;
 
-namespace Sonosthesia.TouchDeform
+namespace Sonosthesia.Touch
 {
     public interface IDynamicTrackingSession
     {
-        Vector3 Update();
+        Vector3 Update(float deltaTime);
     }
     
     public static class DynamicTrackingSessionUtil
@@ -17,8 +17,8 @@ namespace Sonosthesia.TouchDeform
             return settings.Strategy switch 
             {
                 DynamicTrackingStrategy.FreezePosition => new FreezePositionSession(monitor),
-                DynamicTrackingStrategy.FreezeVelocity => new FollowSession(monitor),
-                DynamicTrackingStrategy.Follow => new FreezeVelocitySession(monitor, settings.Drag),
+                DynamicTrackingStrategy.Follow => new FollowSession(monitor),
+                DynamicTrackingStrategy.FreezeVelocity => new FreezeVelocitySession(monitor, settings.Drag),
                 _ => throw new ArgumentOutOfRangeException()
             };
         }
@@ -32,7 +32,7 @@ namespace Sonosthesia.TouchDeform
                 _position = monitor.transform.position;
             }
 
-            public Vector3 Update() => _position;
+            public Vector3 Update(float deltaTime) => _position;
         }
 
         private class FollowSession : IDynamicTrackingSession
@@ -44,7 +44,7 @@ namespace Sonosthesia.TouchDeform
                 _transform = monitor.transform;
             }
 
-            public Vector3 Update() => _transform.position;
+            public Vector3 Update(float deltaTime) => _transform.position;
         }
 
         private class FreezeVelocitySession : IDynamicTrackingSession
@@ -61,10 +61,10 @@ namespace Sonosthesia.TouchDeform
                 _currentVelocity = monitor.Select(TransformDynamics.Order.Velocity).Position;
             }
 
-            public Vector3 Update()
+            public Vector3 Update(float deltaTime)
             {
-                _currentVelocity = _currentVelocity.ChangeLength(1f - _drag * Time.deltaTime);
-                _currentPosition += _currentVelocity * Time.deltaTime;
+                _currentVelocity = _currentVelocity.ChangeLength(1f - _drag * deltaTime);
+                _currentPosition += _currentVelocity * deltaTime;
                 Debug.Log($"{this} {nameof(Update)} {nameof(_currentPosition)} {_currentPosition} {nameof(_currentVelocity)} {_currentVelocity}");
                 return _currentPosition;
             }

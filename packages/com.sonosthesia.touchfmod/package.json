@@ -1,0 +1,21 @@
+{
+  "author": "Jonathan Thorpe",
+  "dependencies": {
+    "com.neuecc.unirx": "7.1.0",
+    "com.sonosthesia.utils": "1.10.0",
+    "com.sonosthesia.interaction": "1.10.0",
+    "com.sonosthesia.touch": "1.10.0",
+    "com.sonosthesia.dynamic": "1.10.0",
+    "com.sonosthesia.trigger": "1.10.0"
+  },
+  "description": "Sonosthesia unity touch fmod",
+  "displayName": "Sonosthesia Touch FMOD",
+  "keywords": [
+    "unity"
+  ],
+  "license": "MIT",
+  "name": "com.sonosthesia.touchfmod",
+  "repository": "github:jbat100/sonosthesia-unity-packages",
+  "unity": "2022.3",
+  "version": "1.9.0"
+}

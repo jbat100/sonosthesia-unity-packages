@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Sonosthesia.TouchDeform
+namespace Sonosthesia.Touch
 {
     public enum DynamicTrackingStrategy
     {

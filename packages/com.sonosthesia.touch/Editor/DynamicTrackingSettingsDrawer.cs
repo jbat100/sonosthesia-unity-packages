@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 using Sonosthesia.Utils;
 using Sonosthesia.Utils.Editor;
 
-namespace Sonosthesia.TouchDeform.Editor
+namespace Sonosthesia.Touch.Editor
 {
     [CustomPropertyDrawer(typeof(DynamicTrackingSettings))]
     public class DynamicTrackingSettingsDrawer : PropertyDrawer
