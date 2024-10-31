@@ -12,6 +12,11 @@ namespace Sonosthesia.Envelope
             return new EnvelopePhase(EaseType.linear, duration);
         }
 
+        public static EnvelopePhase InOutSine(float duration)
+        {
+            return new EnvelopePhase(EaseType.easeInOutSine, duration);
+        }
+
         public EnvelopePhase(EaseType easeType, float duration)
         {
             _easeType = easeType; 

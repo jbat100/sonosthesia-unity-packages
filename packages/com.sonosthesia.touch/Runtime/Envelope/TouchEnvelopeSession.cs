@@ -139,7 +139,7 @@ namespace Sonosthesia.Touch
             public ContactTouchEnvelopeSession(TouchEnvelopeSettings settings, TriggerController controller = null)
             {
                 _settings = settings;
-                _controller = controller ?? new TriggerController(AccumulationMode.Max);
+                _controller = controller ?? new TriggerController(AccumulationMode.Sum);
             }
             
             public override void StartTouch(TouchEvent e)

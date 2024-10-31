@@ -10,8 +10,8 @@ namespace Sonosthesia.Trigger
         private const float THRESHOLD = 1e-6f;
         
         private static readonly IEnvelope _defaultEnvelope =
-            new ADSREnvelope(EnvelopePhase.Linear(0.3f), EnvelopePhase.Linear(0.5f), 
-                0.5f, 0.5f, EnvelopePhase.Linear(0.5f));
+            new ADSREnvelope(EnvelopePhase.InOutSine(0.3f), EnvelopePhase.InOutSine(0.5f), 
+                0.5f, 0.5f, EnvelopePhase.InOutSine(0.5f));
         
         // used to avoid alloc on update
         private static readonly HashSet<Entry> _obsolete = new();
@@ -94,10 +94,14 @@ namespace Sonosthesia.Trigger
             {
                 // Debug.Log($"{this} removed {previousCount - currentCount} obsolete entries");
             }
-            
-            float result = _entries.Aggregate(0f, (current, entry) => entry.Accumulate(_accumulationMode, current));
 
-            return result;
+            if (_entries.Count == 0)
+            {
+                return 0f;
+            }
+            
+            return _entries.Aggregate(_accumulationMode.Seed(), 
+                (current, entry) => entry.Accumulate(_accumulationMode, current));
         }
     }
 }

@@ -6,7 +6,7 @@ using Sonosthesia.Envelope;
 
 namespace Sonosthesia.Trigger
 {
-    public class TrackedTriggerImplementation
+    internal class TrackedTriggerImplementation
     {
         private readonly Dictionary<Guid, Entry> _entries = new ();
 
@@ -98,9 +98,13 @@ namespace Sonosthesia.Trigger
                 _entries.Remove(id);
             }
 
-            float result = _entries.Values.Aggregate(0f, (current, entry) => entry.Accumulate(_accumulationMode, current));
-            
-            return result;
+            if (_entries.Count == 0)
+            {
+                return 0f;
+            }
+
+            return _entries.Values.Aggregate(_accumulationMode.Seed(), 
+                (current, entry) => entry.Accumulate(_accumulationMode, current));
         }
 
         private class Entry

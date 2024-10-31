@@ -51,7 +51,6 @@ namespace Sonosthesia.TouchFMOD
                 _emitter.transform.position = _positionTrackingSession.Update(0f);
                 
                 _updateSubscription = Observable.EveryUpdate()
-                    .StartWith(0) // ensure that it fires immediately
                     .TakeUntilDisable(affordance)
                     .Subscribe(_ =>
                     {

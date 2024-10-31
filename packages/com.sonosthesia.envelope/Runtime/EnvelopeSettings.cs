@@ -123,13 +123,13 @@ namespace Sonosthesia.Envelope
         [SerializeField] private PhasedEnvelopeType _phasedType = PhasedEnvelopeType.ADSR;
         public PhasedEnvelopeType PhasedType => _phasedType;
         
-        [SerializeField] private EnvelopePhase _attack = EnvelopePhase.Linear(1f);
+        [SerializeField] private EnvelopePhase _attack = EnvelopePhase.InOutSine(0.1f);
         public EnvelopePhase Attack => _attack;
         
-        [SerializeField] private EnvelopePhase _decay = EnvelopePhase.Linear(0.5f);
+        [SerializeField] private EnvelopePhase _decay = EnvelopePhase.InOutSine(0.5f);
         public EnvelopePhase Decay => _decay;
         
-        [SerializeField] private EnvelopePhase _release = EnvelopePhase.Linear(1f);
+        [SerializeField] private EnvelopePhase _release = EnvelopePhase.InOutSine(1f);
         public EnvelopePhase Release => _release;
         
         [SerializeField] private float _hold = 1f;

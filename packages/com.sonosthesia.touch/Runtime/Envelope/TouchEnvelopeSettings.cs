@@ -29,7 +29,7 @@ namespace Sonosthesia.Touch
         public FloatTouchExtractorSettings TimeScaleExtractor => _timeScaleExtractor;
         
         [SerializeField] private EnvelopeSettings _envelope
-            = EnvelopeSettings.ADS(EnvelopePhase.Linear(0.5f), EnvelopePhase.Linear(0.5f), 0.5f);
+            = EnvelopeSettings.ADS(EnvelopePhase.InOutSine(0.1f), EnvelopePhase.InOutSine(0.3f), 0.5f);
         public EnvelopeSettings Envelope => _envelope;
 
         [SerializeField] private bool _trackValue;
@@ -38,7 +38,7 @@ namespace Sonosthesia.Touch
         [SerializeField] private FloatTouchExtractorSettings _releaseExtractor;
         public FloatTouchExtractorSettings ReleaseExtractor => _releaseExtractor;
 
-        [SerializeField] private EaseType _releaseType = EaseType.linear;
+        [SerializeField] private EaseType _releaseType = EaseType.easeInOutSine;
         public EaseType ReleaseType => _releaseType;
     }
 
