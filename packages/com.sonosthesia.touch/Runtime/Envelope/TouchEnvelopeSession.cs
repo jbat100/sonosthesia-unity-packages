@@ -74,10 +74,6 @@ namespace Sonosthesia.Touch
                 {
                     _constantValue = 0f;
                 }
-                else
-                {
-                    Debug.Log($"{this} {nameof(StartTouch)} extracted {nameof(_constantValue)} {_constantValue}");
-                }
 
                 _controller?.StartTrigger(_triggerId, new ConstantEnvelope(_constantValue, float.PositiveInfinity), 1f, 1f);
             }

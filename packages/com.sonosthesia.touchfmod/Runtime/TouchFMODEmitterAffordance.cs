@@ -49,15 +49,22 @@ namespace Sonosthesia.TouchFMOD
 
                 _emitter = Instantiate(configuration.EmitterPrefab, affordance.transform);
                 _emitter.transform.position = _positionTrackingSession.Update(0f);
+
+                void UpdateParameters()
+                {
+                    _emitter.SetParameter(Parameters.VOLUME, _volumeSession.Update());
+                    _emitter.SetParameter(Parameters.EXCITATION, _excitationSession.Update());
+                    _emitter.SetParameter(Parameters.BODY, _bodySession.Update());
+                }
+                
+                UpdateParameters();
                 
                 _updateSubscription = Observable.EveryUpdate()
                     .TakeUntilDisable(affordance)
                     .Subscribe(_ =>
                     {
                         _emitter.transform.position = _positionTrackingSession.Update(Time.deltaTime);
-                        _emitter.SetParameter(Parameters.VOLUME, _volumeSession.Update());
-                        _emitter.SetParameter(Parameters.EXCITATION, _excitationSession.Update());
-                        _emitter.SetParameter(Parameters.BODY, _bodySession.Update());
+                        UpdateParameters();
                     }, err => Dispose(), Dispose);
             }
 

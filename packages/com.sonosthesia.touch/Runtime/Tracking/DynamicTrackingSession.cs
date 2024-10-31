@@ -65,7 +65,7 @@ namespace Sonosthesia.Touch
             {
                 _currentVelocity = _currentVelocity.ChangeLength(1f - _drag * deltaTime);
                 _currentPosition += _currentVelocity * deltaTime;
-                Debug.Log($"{this} {nameof(Update)} {nameof(_currentPosition)} {_currentPosition} {nameof(_currentVelocity)} {_currentVelocity}");
+                // Debug.Log($"{this} {nameof(Update)} {nameof(_currentPosition)} {_currentPosition} {nameof(_currentVelocity)} {_currentVelocity}");
                 return _currentPosition;
             }
         }

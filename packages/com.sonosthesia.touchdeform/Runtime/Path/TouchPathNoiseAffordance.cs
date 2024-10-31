@@ -5,7 +5,6 @@ using UniRx;
 using Sonosthesia.Deform;
 using Sonosthesia.Interaction;
 using Sonosthesia.Touch;
-using Random = Unity.Mathematics.Random;
 
 namespace Sonosthesia.TouchDeform
 {
@@ -107,8 +106,7 @@ namespace Sonosthesia.TouchDeform
 
                 float duration = Mathf.Max(displacementRelease, radiusRelease, frequencyRelease, speedRelease);
 
-                Debug.LogWarning($"{this} {nameof(Teardown)} Dispose in {duration} seconds");
-                
+                // Debug.LogWarning($"{this} {nameof(Teardown)} Dispose in {duration} seconds");
                 Observable.Timer(TimeSpan.FromSeconds(duration))
                     .TakeUntilDisable(affordance)
                     .Subscribe(_ => {}, Dispose);
@@ -116,7 +114,7 @@ namespace Sonosthesia.TouchDeform
 
             public void Dispose()
             {
-                Debug.LogWarning($"{this} Dispose");
+                // Debug.LogWarning($"{this} Dispose");
                 _updateSubscription?.Dispose();
                 Affordance._processor.Unregister(EventId);
             }
