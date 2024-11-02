@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using Sonosthesia.Utils;
+using UnityEngine;
 
 namespace Sonosthesia.Dynamic
 {
     [RequireComponent(typeof(Rigidbody))]
-    public class ProportionalDerivativeFollower : MonoBehaviour
+    public class DynamicFollower : Follower
     {
         public enum FollowStrategy
         {
@@ -11,8 +12,6 @@ namespace Sonosthesia.Dynamic
             Move,
             Force
         }
-        
-        [SerializeField] private Transform _target;
 
         [Header("Position")] 
         
@@ -34,9 +33,9 @@ namespace Sonosthesia.Dynamic
         {
             _rb = GetComponent<Rigidbody>();
             
-            if (!(_target && _rb))
+            if (!(Target && _rb))
             {
-                Debug.LogError($"{this} requires {nameof(Rigidbody)} and {nameof(_target)}");
+                Debug.LogError($"{this} requires {nameof(Rigidbody)} and {nameof(Target)}");
                 enabled = false;
             }
         }
@@ -46,11 +45,11 @@ namespace Sonosthesia.Dynamic
             switch (_followPosition)
             {
                 case FollowStrategy.Move:
-                    _rb.MovePosition(_target.position);
+                    _rb.MovePosition(Target.position);
                     break;
                 case FollowStrategy.Force:
                 {
-                    Vector3 directionToTarget = _target.position - transform.position;
+                    Vector3 directionToTarget = Target.position - transform.position;
                     Vector3 proportionalForce = directionToTarget * _followForce;
                     Vector3 velocityDamping = -_rb.velocity * _damping;
                     Vector3 totalForce = proportionalForce + velocityDamping;
@@ -71,7 +70,7 @@ namespace Sonosthesia.Dynamic
                 case FollowStrategy.Force:
                 {
                     // TODO : fix, this does weird things, prefer Move for now
-                    Quaternion targetRotation = _target.rotation;
+                    Quaternion targetRotation = Target.rotation;
                     Quaternion currentRotation = transform.rotation;
                     Quaternion rotationDifference = targetRotation * Quaternion.Inverse(currentRotation);
                     rotationDifference.ToAngleAxis(out float angleInDegrees, out Vector3 rotationAxis);
@@ -86,6 +85,12 @@ namespace Sonosthesia.Dynamic
                 }
                     break;
             }
+        }
+
+        public override void Align()
+        {
+            _rb.MovePosition(Target.position);
+            _rb.MoveRotation(Target.rotation);
         }
     }
 }
