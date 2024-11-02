@@ -65,7 +65,7 @@ namespace Sonosthesia.Dynamic
             switch (_followRotation)
             {
                 case FollowStrategy.Move:
-                    _rb.MoveRotation(transform.rotation);
+                    _rb.MoveRotation(Target.rotation);
                     break;
                 case FollowStrategy.Force:
                 {
