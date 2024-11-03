@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Sonosthesia.Interaction;
+using System.Linq;
 using UniRx;
 using UnityEngine;
 
@@ -25,6 +25,8 @@ namespace Sonosthesia.Touch
         [SerializeField] private bool _autoEnd;
 
         [SerializeField] private float _autoEndDelay;
+        
+        [SerializeField] private List<TouchGate> _gates;
 
         // note : we don't want concurrent events from the same collider
 
@@ -92,12 +94,23 @@ namespace Sonosthesia.Touch
 
             if (!IsCompatibleActor(actor))
             {
-                Debug.Log($"{this} {nameof(OnTriggerEnter)} bailed out (incompatible actor)");
+                if (_log)
+                {
+                    Debug.Log($"{this} {nameof(OnTriggerEnter)} bailed out (incompatible actor)");
+                }
                 return;
             }
 
-            // if gates fail we don't want to go ahead with stream _endOnReEnter
-            if (!CheckGates(this, actor) || !actor.CheckGates(this, actor))
+            if (!_gates.All(gate => gate.AllowTrigger(this, actor)))
+            {
+                if (_log)
+                {
+                    Debug.Log($"{this} {nameof(OnTriggerEnter)} bailed out (gate)");
+                }
+                return;
+            }
+            
+            if (Mute || actor.Mute)
             {
                 if (_log)
                 {

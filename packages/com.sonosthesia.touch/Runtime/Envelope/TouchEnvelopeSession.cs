@@ -1,7 +1,6 @@
 using System;
 using Sonosthesia.Envelope;
 using Sonosthesia.Trigger;
-using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
@@ -33,6 +32,17 @@ namespace Sonosthesia.Touch
 
         private class TouchEnvelopeSession : ITouchEnvelopeSession
         {
+            protected readonly TouchEnvelopeSettings Settings;
+            protected readonly TriggerController Controller;
+            protected readonly Guid TriggerId = Guid.NewGuid();
+            
+            public TouchEnvelopeSession(TouchEnvelopeSettings settings, TriggerController controller)
+            {
+                Settings = settings;
+                Controller = controller ?? new TriggerController(AccumulationMode.Max);
+            }
+
+            
             public virtual void StartTouch(TouchEvent e)
             {
                 
@@ -56,130 +66,136 @@ namespace Sonosthesia.Touch
 
         private class ConstantTouchEnvelopeSession : TouchEnvelopeSession
         {
-            private readonly TouchEnvelopeSettings _settings;
-            private readonly TriggerController _controller;
-            private readonly Guid _triggerId = Guid.NewGuid();
+            private ITouchExtractorSession<float> _valueScaleSession;
             
-            private float _constantValue;
-            
-            public ConstantTouchEnvelopeSession(TouchEnvelopeSettings settings, TriggerController controller)
+            private float _valueScale;
+
+            public ConstantTouchEnvelopeSession(TouchEnvelopeSettings settings, TriggerController controller) 
+                : base(settings, controller)
             {
-                _settings = settings;
-                _controller = controller;
+                
             }
-            
+
             public override void StartTouch(TouchEvent e)
             {
-                if (!_settings.ConstantExtractor.Extract(e, out _constantValue))
+                _valueScaleSession = Settings.ConstantExtractor.MakeSession();
+                
+                if (!_valueScaleSession.Setup(e, out _valueScale))
                 {
-                    _constantValue = 0f;
+                    _valueScale = 0f;
                 }
 
-                _controller?.StartTrigger(_triggerId, new ConstantEnvelope(_constantValue, float.PositiveInfinity), 1f, 1f);
+                Controller.StartTrigger(TriggerId, new ConstantEnvelope(1f, float.PositiveInfinity), _valueScale, 1f);
+            }
+
+            public override void UpdateTouch(TouchEvent e)
+            {
+                if (!Settings.TrackValue)
+                {
+                    return;
+                }
+                
+                if (_valueScaleSession.Update(e, out _valueScale))
+                {
+                    Controller.UpdateTrigger(TriggerId, _valueScale);
+                }
             }
 
             public override void EndTouch(TouchEvent e, out float release)
             {
                 release = 0;
-                _controller?.EndTrigger(_triggerId, null, 0);
+                Controller.EndTrigger(TriggerId, null, 0);
             }
 
             public override float Update()
             {
                 // maintain value beyond trigger for affordances which use multiple envelopes
-                return _constantValue;
+                return _valueScale;
             }
         }
         
         private class PulseTouchEnvelopeSession : TouchEnvelopeSession
         {
-            private readonly TouchEnvelopeSettings _settings;
-            private readonly TriggerController _controller;
-            
-            public PulseTouchEnvelopeSession(TouchEnvelopeSettings settings, TriggerController controller = null)
+            public PulseTouchEnvelopeSession(TouchEnvelopeSettings settings, TriggerController controller) 
+                : base(settings, controller)
             {
-                _settings = settings;
-                _controller = controller ?? new TriggerController(AccumulationMode.Max);
+                
             }
             
             public override void StartTouch(TouchEvent e)
             {
-                IEnvelope envelope = _settings.Envelope.Build();
+                IEnvelope envelope = Settings.Envelope.Build();
 
-                if (!_settings.ValueScaleExtractor.Extract(e, out float valueScale))
+                if (!Settings.ValueScaleExtractor.Extract(e, out float valueScale))
                 {
                     valueScale = 1f;
                 }
-                if (!_settings.TimeScaleExtractor.Extract(e, out float timeScale))
+                if (!Settings.TimeScaleExtractor.Extract(e, out float timeScale))
                 {
                     timeScale = 1f;
                 }
 
-                _controller.PlayTrigger(envelope, valueScale, timeScale);
+                Controller.PlayTrigger(envelope, valueScale, timeScale);
             }
 
             public override float Update()
             {
-                return _controller.Update();
+                return Controller.Update();
             }
         }
         
         private class ContactTouchEnvelopeSession : TouchEnvelopeSession
         {
-            private readonly TouchEnvelopeSettings _settings;
-            private readonly TriggerController _controller;
-            private readonly Guid _triggerId = Guid.NewGuid();
-            
             private ITouchExtractorSession<float> _valueScaleSession;
 
-            public ContactTouchEnvelopeSession(TouchEnvelopeSettings settings, TriggerController controller = null)
+            public ContactTouchEnvelopeSession(TouchEnvelopeSettings settings, TriggerController controller) 
+                : base(settings, controller)
             {
-                _settings = settings;
-                _controller = controller ?? new TriggerController(AccumulationMode.Sum);
+                
             }
             
             public override void StartTouch(TouchEvent e)
             {
-                _valueScaleSession = _settings.ValueScaleExtractor.MakeSession(); 
-                IEnvelope envelope = _settings.Envelope.Build();
+                _valueScaleSession = Settings.ValueScaleExtractor.MakeSession(); 
+                IEnvelope envelope = Settings.Envelope.Build();
 
                 if (!_valueScaleSession.Setup(e, out float valueScale))
                 {
                     valueScale = 1f;
                 }
-                if (!_settings.TimeScaleExtractor.Extract(e, out float timeScale))
+                if (!Settings.TimeScaleExtractor.Extract(e, out float timeScale))
                 {
                     timeScale = 1f;
                 }
 
-                _controller.StartTrigger(_triggerId, envelope, valueScale, timeScale);
+                Controller.StartTrigger(TriggerId, envelope, valueScale, timeScale);
             }
 
             public override void UpdateTouch(TouchEvent e)
             {
-                if (!_settings.TrackValue)
+                if (!Settings.TrackValue)
                 {
                     return;
                 }
-                if (_valueScaleSession?.Update(e, out float valueScale) ?? false)
+                if (_valueScaleSession.Update(e, out float valueScale))
                 {
-                    _controller.UpdateTrigger(_triggerId, valueScale);
+                    Controller.UpdateTrigger(TriggerId, valueScale);
                 }
             }
 
             public override void EndTouch(TouchEvent e, out float release)
             {
-                if (!_settings.ReleaseExtractor.Extract(e, out release))
+                if (!Settings.ReleaseExtractor.Extract(e, out release))
                 {
                     release = 1f;
                 }
-                IEnvelope envelope = _settings.ReleaseType.ReleaseEnvelope(release);
-                _controller.EndTrigger(_triggerId, envelope);
+                IEnvelope envelope = Settings.ReleaseType.ReleaseEnvelope(release);
+                Controller.EndTrigger(TriggerId, envelope);
             }
 
             public override float Update()
             {
-                return _controller.Update();
+                return Controller.Update();
             }
         }
     }

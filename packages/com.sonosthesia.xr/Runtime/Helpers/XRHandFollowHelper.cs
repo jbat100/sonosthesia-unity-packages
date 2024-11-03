@@ -37,7 +37,9 @@ namespace Sonosthesia.XR
                 return;
             }
 
-            _subscription = _trackingEvents.trackingChanged.AsObservable().Subscribe(SetActiveFollower);
+            _subscription = _trackingEvents.trackingChanged.AsObservable()
+                .StartWith(_trackingEvents.handIsTracked)
+                .Subscribe(SetActiveFollower);
         }
 
         protected void OnDisable()

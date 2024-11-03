@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using Sonosthesia.Dynamic;
 using Sonosthesia.Interaction;
 using UnityEngine;
@@ -9,6 +7,9 @@ namespace Sonosthesia.Touch
 {
     public abstract class TouchEndpoint : MonoBehaviour, IInteractionEndpoint
     {
+        [SerializeField] private bool _mute;
+        public bool Mute => _mute;
+        
         [SerializeField] private InteractionLayerMask _interactionLayers = ~0;
         public InteractionLayerMask InteractionLayers => _interactionLayers;
 
@@ -18,7 +19,6 @@ namespace Sonosthesia.Touch
         [SerializeField] private TransformDynamicsMonitor _dynamicsMonitor;
         public TransformDynamicsMonitor DynamicsMonitor => _dynamicsMonitor;
         
-        [SerializeField] private List<TouchGate> _gates;
 
         protected virtual void Awake()
         {
@@ -27,11 +27,6 @@ namespace Sonosthesia.Touch
                 // TODO: Auto add ?
                 _dynamicsMonitor = GetComponent<TransformDynamicsMonitor>();
             }
-        }
-        
-        public bool CheckGates(TouchEndpoint source, TouchEndpoint actor)
-        {
-            return _gates.All(gate => gate.AllowTrigger(this, actor));
         }
 
         public virtual bool RequestPermission(Collider other)
