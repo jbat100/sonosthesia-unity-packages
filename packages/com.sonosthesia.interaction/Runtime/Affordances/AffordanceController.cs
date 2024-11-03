@@ -49,11 +49,11 @@ namespace Sonosthesia.Interaction
 
         protected virtual bool CheckCompatibility(TEvent e)
         {
-            if ((e.Source.InteractionLayers & _affordance.SourceInteractionLayers) == 0)
+            if (!_affordance.SourceMatch.Match(_affordance.SourceLayers, e.Source.InteractionLayers))
             {
                 return false;
             }
-            if ((e.Actor.InteractionLayers & _affordance.ActorInteractionLayers) == 0)
+            if (!_affordance.ActorMatch.Match(_affordance.ActorLayers, e.Actor.InteractionLayers))
             {
                 return false;
             }

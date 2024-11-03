@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.XR.Interaction.Toolkit;
 
 namespace Sonosthesia.Interaction
@@ -11,13 +12,19 @@ namespace Sonosthesia.Interaction
     {
         [SerializeField] private bool _log;
         public bool Log => _log;
+
+        [SerializeField] private InteractionLayerMask _sourceLayers;
+        public InteractionLayerMask SourceLayers => _sourceLayers;
         
-        [SerializeField] private InteractionLayerMask _sourceInteractionLayers = ~0;
-        public InteractionLayerMask SourceInteractionLayers => _sourceInteractionLayers;
+        [SerializeField] private InteractionLayerMatch _sourceMatch;
+        public InteractionLayerMatch SourceMatch => _sourceMatch = InteractionLayerMatch.Any;
         
-        [SerializeField] private InteractionLayerMask _actorInteractionLayers = ~0;
-        public InteractionLayerMask ActorInteractionLayers => _actorInteractionLayers;
+        [SerializeField] private InteractionLayerMask _actorLayers;
+        public InteractionLayerMask ActorLayers => _actorLayers;
         
+        [SerializeField] private InteractionLayerMatch _actorMatch;
+        public InteractionLayerMatch ActorMatch => _actorMatch = InteractionLayerMatch.Any;
+
         [SerializeField] private List<StreamContainer<TEvent>> _streamContainers;
 
         private readonly CompositeDisposable _subscriptions = new();

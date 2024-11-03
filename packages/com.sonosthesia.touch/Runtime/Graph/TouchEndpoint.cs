@@ -19,7 +19,6 @@ namespace Sonosthesia.Touch
         [SerializeField] private TransformDynamicsMonitor _dynamicsMonitor;
         public TransformDynamicsMonitor DynamicsMonitor => _dynamicsMonitor;
         
-
         protected virtual void Awake()
         {
             if (!_dynamicsMonitor)

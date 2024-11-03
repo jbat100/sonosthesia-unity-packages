@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sonosthesia.Interaction;
 using UniRx;
 using UnityEngine;
 
@@ -25,6 +26,8 @@ namespace Sonosthesia.Touch
         [SerializeField] private bool _autoEnd;
 
         [SerializeField] private float _autoEndDelay;
+
+        [SerializeField] private InteractionLayerMatch _actorMatch = InteractionLayerMatch.Any;
         
         [SerializeField] private List<TouchGate> _gates;
 
@@ -90,6 +93,15 @@ namespace Sonosthesia.Touch
                 {
                     return;
                 }
+            }
+
+            if (!_actorMatch.Match(InteractionLayers, actor.InteractionLayers))
+            {
+                if (_log)
+                {
+                    Debug.Log($"{this} {nameof(OnTriggerEnter)} bailed out (no match)");
+                }
+                return;
             }
 
             if (!IsCompatibleActor(actor))
