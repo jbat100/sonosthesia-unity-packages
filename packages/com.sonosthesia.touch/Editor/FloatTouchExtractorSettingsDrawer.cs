@@ -39,6 +39,9 @@ namespace Sonosthesia.Touch.Editor
 
             root.AddRelativeField(property, "_distanceAxes", 
                 out SerializedProperty _, out PropertyField distanceAxesField);
+            
+            root.AddRelativeField(property, "_normalizedDistance", 
+                out SerializedProperty _, out PropertyField normalizedDistanceField);
 
             root.AddRelativeField(property, "_postProcessing", 
                 out SerializedProperty postProcessingProp, out PropertyField postProcessingField);
@@ -53,6 +56,7 @@ namespace Sonosthesia.Touch.Editor
             {
                 FloatTouchExtractorSettings.ExtractorType extractorType = (FloatTouchExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
                 FloatTouchExtractorSettings.PostProcessingType postProcessingType = (FloatTouchExtractorSettings.PostProcessingType)postProcessingProp.enumValueIndex;
+                FloatTouchExtractorSettings.DistanceType distanceType = (FloatTouchExtractorSettings.DistanceType)distanceTypeProp.enumValueIndex;
 
                 extractorField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Custom);
                 
@@ -64,6 +68,8 @@ namespace Sonosthesia.Touch.Editor
                 
                 distanceTypeField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Distance);
                 distanceAxesField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Distance);
+                normalizedDistanceField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Distance && 
+                                             distanceType is FloatTouchExtractorSettings.DistanceType.ActorToSource);
 
                 remapField.Show(postProcessingType is FloatTouchExtractorSettings.PostProcessingType.Remap);
                 curveField.Show(postProcessingType is FloatTouchExtractorSettings.PostProcessingType.Curve);
@@ -73,6 +79,7 @@ namespace Sonosthesia.Touch.Editor
 
             extractorTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());
             postProcessingField.RegisterValueChangeCallback(_ => UpdateVisibility());
+            distanceTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());
             
             return root;
         }

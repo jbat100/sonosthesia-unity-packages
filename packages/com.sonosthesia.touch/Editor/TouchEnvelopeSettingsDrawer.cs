@@ -51,7 +51,6 @@ namespace Sonosthesia.Touch.Editor
                 valueScaleExtractorField.Show(type is not TouchEnvelopeSettings.TouchType.Constant);
                 timeScaleExtractorField.Show(type is not TouchEnvelopeSettings.TouchType.Constant);
                 envelopeField.Show(type is not TouchEnvelopeSettings.TouchType.Constant);
-                trackValueField.Show(type is not TouchEnvelopeSettings.TouchType.Constant);
                 
                 releaseExtractorField.Show(type is TouchEnvelopeSettings.TouchType.Contact);
                 releaseTypeField.Show(type is TouchEnvelopeSettings.TouchType.Contact);
