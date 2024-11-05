@@ -60,11 +60,20 @@ namespace Sonosthesia.Touch
         [SerializeField] private Axes _distanceAxes = Axes.X | Axes.Y | Axes.Z;
         [SerializeField] private bool _normalizedDistance;
 
+        // ----------- actor modulation -------------
+
+        [SerializeField] private TouchModulationType _actorModulationType;
+        [SerializeField] private FloatModulationSettings _actorModulation;
+        
         // ----------- postprocess -------------
         
         [SerializeField] private PostProcessingType _postProcessing;
         [SerializeField] private AnimationCurve _curve;
         [SerializeField] private RemapSettings _remap;
+        
+        // ----------- clamp -------------
+
+        [SerializeField] private ClampSettings _clampSettings;
 
         // used when only the initial value is needed, creates a session, sets it up and returns extracted value
         public bool Extract(TouchEvent e, out float value)
@@ -81,8 +90,8 @@ namespace Sonosthesia.Touch
             {
                 return _distanceType switch
                 {
-                    DistanceType.ActorToSource => new ActorToSourceDistanceTouchExtractorSession(_distanceAxes, _normalizedDistance),
-                    DistanceType.ActorRelative => new ActorRelativeDistanceTouchExtractorSession(_distanceAxes),
+                    DistanceType.ActorToSource => new ActorToSourceDistanceSession(_distanceAxes, _normalizedDistance),
+                    DistanceType.ActorRelative => new ActorRelativeDistanceSession(_distanceAxes),
                     _ => null
                 };
             }
@@ -90,52 +99,89 @@ namespace Sonosthesia.Touch
             ITouchExtractorSession<float> session = _extractorType switch
             {
                 ExtractorType.Custom => _extractor.MakeSession(),
-                ExtractorType.Static => new StaticFloatTouchExtractorSession(_staticValue),
-                ExtractorType.Dynamic => new DynamicFloatTouchExtractorSession(_dynamicType, _dynamicsDomain, _dynamicsOrder),
+                ExtractorType.Static => new StaticSession(_staticValue),
+                ExtractorType.Dynamic => new DynamicSession(_dynamicType, _dynamicsDomain, _dynamicsOrder),
                 ExtractorType.Distance => DistanceSession(),
-                ExtractorType.Twist => new TwistTouchExtractorSession(),
+                ExtractorType.Twist => new TwistSession(),
                 _ => null
             };
 
+            if (_actorModulationType != TouchModulationType.None)
+            {
+                session = new ActorModulationSession(session, _actorModulationType, _actorModulation);
+            }
+
             session = _postProcessing switch
             {
-                PostProcessingType.Remap => new RemapTouchExtractorSession(session, _remap),
-                PostProcessingType.Curve => new CurveTouchExtractorSession(session, _curve),
+                PostProcessingType.Remap => new RemapSession(session, _remap),
+                PostProcessingType.Curve => new CurveSession(session, _curve),
                 _ => session
             };
 
             return session;
         }
-            
-        private class RemapTouchExtractorSession : TouchExtractorSessionProcessor<float, RemapSettings>
+
+        private class ActorModulationSession : TouchExtractorSessionProcessor<float>
         {
-            public RemapTouchExtractorSession(ITouchExtractorSession<float> session, RemapSettings processor) : base(session, processor)
+            private readonly TouchModulationType _type;
+            private readonly FloatModulationSettings _settings;
+            
+            public ActorModulationSession(ITouchExtractorSession<float> session, TouchModulationType type, FloatModulationSettings settings) 
+                : base(session)
             {
+                _type = type;
+                _settings = settings;
             }
 
-            protected override float Process(RemapSettings processor, float value)
+            protected override float Process(TouchEvent touchEvent, float value)
             {
-                return processor.Remap(value);
+                TouchActorModulator modulator = touchEvent.TouchData.Actor.Modulator;
+                return _settings.Modulate(modulator ? modulator.Select(_type) : 0f, value);
             }
         }
         
-        private class CurveTouchExtractorSession : TouchExtractorSessionProcessor<float, AnimationCurve>
+        private class RemapSession : TouchExtractorSessionProcessor<float>
         {
-            public CurveTouchExtractorSession(ITouchExtractorSession<float> session, AnimationCurve processor) : base(session, processor)
+            private readonly RemapSettings _settings;
+            
+            public RemapSession(ITouchExtractorSession<float> session, RemapSettings settings) : base(session)
             {
+                _settings = settings;
             }
 
-            protected override float Process(AnimationCurve processor, float value)
+            protected override float Process(TouchEvent touchEvent, float value) => _settings.Remap(value);
+            
+        }
+        
+        private class CurveSession : TouchExtractorSessionProcessor<float>
+        {
+            private readonly AnimationCurve _curve;
+            
+            public CurveSession(ITouchExtractorSession<float> session, AnimationCurve curve) : base(session)
             {
-                return processor.Evaluate(value);
+                _curve = curve;
             }
+
+            protected override float Process(TouchEvent touchEvent, float value) => _curve.Evaluate(value);
         }
 
-        private class StaticFloatTouchExtractorSession : ITouchExtractorSession<float>
+        private class ClampSession : TouchExtractorSessionProcessor<float>
+        {
+            private readonly ClampSettings _settings;
+            
+            public ClampSession(ITouchExtractorSession<float> session, ClampSettings settings) : base(session)
+            {
+                _settings = settings;
+            }
+
+            protected override float Process(TouchEvent touchEvent, float value) => _settings.Clamp(value);
+        }
+
+        private class StaticSession : ITouchExtractorSession<float>
         {
             private readonly float _staticValue;
             
-            public StaticFloatTouchExtractorSession(float staticValue)
+            public StaticSession(float staticValue)
             {
                 _staticValue = staticValue;
             }
@@ -151,7 +197,7 @@ namespace Sonosthesia.Touch
             public bool Update(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
         }
 
-        private class DynamicFloatTouchExtractorSession : ITouchExtractorSession<float>
+        private class DynamicSession : ITouchExtractorSession<float>
         {
             private readonly DynamicType _type;
             private readonly TransformDynamics.Domain _domain;
@@ -160,7 +206,7 @@ namespace Sonosthesia.Touch
             private TransformDynamicsMonitor _sourceMonitor;
             private TransformDynamicsMonitor _actorMonitor;
             
-            public DynamicFloatTouchExtractorSession(DynamicType type, TransformDynamics.Domain domain, TransformDynamics.Order order)
+            public DynamicSession(DynamicType type, TransformDynamics.Domain domain, TransformDynamics.Order order)
             {
                 _type = type;
                 _domain = domain;
@@ -193,13 +239,13 @@ namespace Sonosthesia.Touch
             public bool Update(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
         }
         
-        private class ActorRelativeDistanceTouchExtractorSession : ITouchExtractorSession<float>
+        private class ActorRelativeDistanceSession : ITouchExtractorSession<float>
         {
             private readonly Axes _axes;
 
             private Vector3 _actorPositionReference;
 
-            public ActorRelativeDistanceTouchExtractorSession(Axes axes)
+            public ActorRelativeDistanceSession(Axes axes)
             {
                 _axes = axes;
             }
@@ -220,14 +266,14 @@ namespace Sonosthesia.Touch
             public bool Update(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
         }
         
-        private class ActorToSourceDistanceTouchExtractorSession : ITouchExtractorSession<float>
+        private class ActorToSourceDistanceSession : ITouchExtractorSession<float>
         {
             private readonly bool _normalized;
             private readonly Axes _axes;
 
             private float _referenceDistance;
 
-            public ActorToSourceDistanceTouchExtractorSession(Axes axes, bool normalized)
+            public ActorToSourceDistanceSession(Axes axes, bool normalized)
             {
                 _normalized = normalized;
                 _axes = axes;
@@ -251,7 +297,7 @@ namespace Sonosthesia.Touch
             public bool Update(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
         }
 
-        private class TwistTouchExtractorSession : ITouchExtractorSession<float>
+        private class TwistSession : ITouchExtractorSession<float>
         {
             private Quaternion _referenceRotation;
 
@@ -271,5 +317,4 @@ namespace Sonosthesia.Touch
             public bool Update(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
         }
     }
-
 }

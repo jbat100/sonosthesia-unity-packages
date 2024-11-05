@@ -14,7 +14,7 @@ namespace Sonosthesia.Audio
         
         public override IDynamicProcessor<float> Make()
         {
-            return new ProcessorChain<float>(
+            return new DynamicProcessorChain<float>(
                 new FloatOneEuroFilterProcessor(_oneEuroFilter),
                 new FloatSoftLandingProcessor(_softLanding),
                 new FloatRangeProcessor(_range)

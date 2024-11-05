@@ -59,7 +59,7 @@ namespace Sonosthesia.Mapping
                 }
 
                 float startTime = Time.time;
-                ProcessorChain<TValue> chain = new ProcessorChain<TValue>(processors.ToArray());
+                DynamicProcessorChain<TValue> chain = new DynamicProcessorChain<TValue>(processors.ToArray());
                 return source._signal.SignalObservable
                     .Subscribe(value =>
                     {

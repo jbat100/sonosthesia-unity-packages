@@ -13,7 +13,7 @@ namespace Sonosthesia.Flow
 
         private IDynamicProcessor<T> _operator;
 
-        protected void Awake() => _operator = new ProcessorChain<T>(
+        protected void Awake() => _operator = new DynamicProcessorChain<T>(
             _operatorFactories.Select(f => f.Make()).ToArray()
             );
 

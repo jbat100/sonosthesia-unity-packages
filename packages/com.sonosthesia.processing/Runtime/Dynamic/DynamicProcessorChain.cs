@@ -2,11 +2,11 @@ using System.Linq;
 
 namespace Sonosthesia.Processing
 {
-    public class ProcessorChain<T> : IDynamicProcessor<T> where T : struct
+    public class DynamicProcessorChain<T> : IDynamicProcessor<T> where T : struct
     {
         private readonly IDynamicProcessor<T>[] _processors;
 
-        public ProcessorChain(params IDynamicProcessor<T>[] processors)
+        public DynamicProcessorChain(params IDynamicProcessor<T>[] processors)
         {
             _processors = processors.ToArray();
         }

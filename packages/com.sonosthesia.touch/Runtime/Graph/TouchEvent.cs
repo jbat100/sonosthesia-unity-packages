@@ -10,7 +10,7 @@ namespace Sonosthesia.Touch
         TouchSource Source { get; }
         TouchActor Actor { get; }
     }
-    
+
     // used for affordances
     public readonly struct TouchEvent : IInteractionEvent
     {

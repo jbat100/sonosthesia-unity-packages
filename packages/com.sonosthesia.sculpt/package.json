@@ -1,20 +1,19 @@
 {
   "author": "Jonathan Thorpe",
   "dependencies": {
+    "com.unity.xr.hands": "1.5.0",
     "com.unity.xr.interaction.toolkit": "2.5.4",
     "com.neuecc.unirx": "7.1.0",
-    "com.cysharp.unitask": "2.5.2",
     "com.sonosthesia.utils": "1.10.0",
-    "com.sonosthesia.channel": "1.10.0",
-    "com.sonosthesia.trigger": "1.10.0"
+    "com.sonosthesia.interaction": "1.10.0"
   },
-  "description": "Sonosthesia unity interaction",
-  "displayName": "Sonosthesia Interaction",
+  "description": "Sonosthesia unity sculpt",
+  "displayName": "Sonosthesia Sculpt",
   "keywords": [
     "unity"
   ],
   "license": "MIT",
-  "name": "com.sonosthesia.interaction",
+  "name": "com.sonosthesia.sculpt",
   "repository": "github:jbat100/sonosthesia-unity-packages",
   "unity": "2022.3",
   "version": "1.10.0"

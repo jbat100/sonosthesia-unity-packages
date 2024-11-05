@@ -14,7 +14,6 @@ namespace Sonosthesia.Interaction
         protected Guid EventId => _eventId;
         
         private bool _initialized;
-        private bool _blocked;
         private TEvent _latest;
 
         public AffordanceController(Guid eventId, TAffordance affordance)
@@ -46,46 +45,14 @@ namespace Sonosthesia.Interaction
                 Debug.LogWarning($"{_affordance} controller {nameof(Teardown)} {EventId} {e}");
             }
         }
-
-        protected virtual bool CheckCompatibility(TEvent e)
-        {
-            if (!_affordance.SourceMatch.Match(_affordance.SourceLayers, e.Source.InteractionLayers))
-            {
-                if (_affordance.Log)
-                {
-                    Debug.LogWarning($"{_affordance} controller failed source compatibility check");   
-                }
-                return false;
-            }
-            if (!_affordance.ActorMatch.Match(_affordance.ActorLayers, e.Actor.InteractionLayers))
-            {
-                if (_affordance.Log)
-                {
-                    Debug.LogWarning($"{_affordance} controller failed actor compatibility check");   
-                }
-                return false;
-            }
-
-            return true;
-        }
-
+        
         public void OnNext(TEvent e)
         {
-            if (_blocked)
-            {
-                return;
-            }
-            
             _latest = e;
 
             if (!_initialized)
             {
                 _initialized = true;
-                if (!CheckCompatibility(e))
-                {
-                    _blocked = true;
-                    return;
-                }
                 Setup(e);
                 return;
             }
@@ -95,18 +62,12 @@ namespace Sonosthesia.Interaction
         
         public void OnCompleted()
         {
-            if (!_blocked)
-            {
-                Teardown(_latest);    
-            }
+            Teardown(_latest);
         }
 
         public void OnError(Exception error)
         {
-            if (!_blocked)
-            {
-                Teardown(_latest);    
-            }
+            Teardown(_latest);
         }
     }
 }

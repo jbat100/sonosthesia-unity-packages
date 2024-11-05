@@ -16,7 +16,7 @@ namespace Sonosthesia.Processing
                 throw new Exception("chain should not reference itself");
             }
             
-            return new ProcessorChain<T>(_chain.Select(factory => factory.Make()).ToArray());
+            return new DynamicProcessorChain<T>(_chain.Select(factory => factory.Make()).ToArray());
         }
     }
 }
