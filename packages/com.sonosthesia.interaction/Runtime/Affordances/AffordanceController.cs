@@ -51,10 +51,18 @@ namespace Sonosthesia.Interaction
         {
             if (!_affordance.SourceMatch.Match(_affordance.SourceLayers, e.Source.InteractionLayers))
             {
+                if (_affordance.Log)
+                {
+                    Debug.LogWarning($"{_affordance} controller failed source compatibility check");   
+                }
                 return false;
             }
             if (!_affordance.ActorMatch.Match(_affordance.ActorLayers, e.Actor.InteractionLayers))
             {
+                if (_affordance.Log)
+                {
+                    Debug.LogWarning($"{_affordance} controller failed actor compatibility check");   
+                }
                 return false;
             }
 

@@ -5,7 +5,7 @@ using Sonosthesia.Touch;
 using UniRx;
 using UnityEngine;
 
-namespace Sonosthesia.TouchFMOD
+namespace Sonosthesia.FMODInteraction
 {
     public class TouchFMODEmitterAffordance : AbstractAffordance<TouchEvent>
     {

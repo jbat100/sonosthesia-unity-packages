@@ -13,13 +13,13 @@
     "com.sonosthesia.noise": "1.10.0",
     "com.sonosthesia.dynamic": "1.10.0"
   },
-  "description": "Sonosthesia unity touch deform",
-  "displayName": "Sonosthesia Touch Deform",
+  "description": "Sonosthesia unity deform interaction",
+  "displayName": "Sonosthesia Deform Interaction",
   "keywords": [
     "unity"
   ],
   "license": "MIT",
-  "name": "com.sonosthesia.touchdeform",
+  "name": "com.sonosthesia.deforminteraction",
   "repository": "github:jbat100/sonosthesia-unity-packages",
   "unity": "2022.3",
   "version": "1.10.0"

@@ -258,14 +258,14 @@ namespace Sonosthesia.Deform
         {
             if (info.IsImpotent)
             {
-                Debug.LogWarning($"{this} {nameof(Unregister)} impotent {info}");
+                // Debug.LogWarning($"{this} {nameof(Unregister)} impotent {info}");
                 Unregister(id);
             }
             else
             {
                 _components[id] = info;
-                Debug.Log($"{this} CENTER {info.center}");
-                Debug.Log($"{this} {nameof(Register)} (id {id}) : {info}");   
+                // Debug.Log($"{this} CENTER {info.center}");
+                // Debug.Log($"{this} {nameof(Register)} (id {id}) : {info}");   
             }
         }
         
@@ -273,7 +273,7 @@ namespace Sonosthesia.Deform
         {
             if (_components.Remove(id))
             {
-                Debug.LogWarning($"{this} {nameof(Unregister)} (id {id}) component count : {_components.Count}");   
+                // Debug.LogWarning($"{this} {nameof(Unregister)} (id {id}) component count : {_components.Count}");   
             }
         }
 

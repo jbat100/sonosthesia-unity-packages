@@ -1,6 +1,6 @@
 {
-    "name": "Sonosthesia.TouchDeform.Editor",
-    "rootNamespace": "Sonosthesia.TouchDeform.Editor",
+    "name": "Sonosthesia.DeformInteraction.Editor",
+    "rootNamespace": "Sonosthesia.DeformInteraction.Editor",
     "references": [
         "GUID:d8b63aba1907145bea998dd612889d6b",
         "GUID:560b04d1a97f54a4e82edc0cbbb69285",

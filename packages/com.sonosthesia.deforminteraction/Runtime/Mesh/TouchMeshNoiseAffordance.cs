@@ -1,122 +1,109 @@
 using System;
-using Unity.Mathematics;
-using UnityEngine;
-using UniRx;
 using Sonosthesia.Deform;
 using Sonosthesia.Interaction;
 using Sonosthesia.Touch;
+using Sonosthesia.Noise;
+using UniRx;
+using Unity.Mathematics;
+using UnityEngine;
 
-namespace Sonosthesia.TouchDeform
+namespace Sonosthesia.DeformInteraction
 {
-    public class TouchPathNoiseAffordance : AbstractAffordance<TouchEvent>
+    public class TouchMeshNoiseAffordance : AbstractAffordance<TouchEvent>
     {
-        [SerializeField] private TouchPathNoiseConfiguration _configuration;
+        [SerializeField] private TouchMeshNoiseConfiguration _configuration;
 
-        [SerializeField] private CompoundNoisePathProcessor _processor;
-
-        private class Controller : AffordanceController<TouchEvent, TouchPathNoiseAffordance>, IDisposable
+        [SerializeField] private CompoundNoiseMeshController _controller;
+        
+        private class Controller : AffordanceController<TouchEvent, TouchMeshNoiseAffordance>, IDisposable
         {
-            // we can't use the Update(TouchEvent) callback to run the sessions because:
-            // - it is not necessarily called on each frame
-            // - it is not called beyond teardown
-            // feels like this is common enough that it justifies an inbuilt mechanism 
-
             private ITouchEnvelopeSession _displacementSession;
             private ITouchEnvelopeSession _radiusSession;
-            private ITouchEnvelopeSession _frequencySession;
             private ITouchEnvelopeSession _speedSession;
 
-            private float3 _center;
-            
+            private IDynamicTrackingSession _centerTrackingSession;
+
             private IDisposable _updateSubscription;
-
-            public Controller(Guid eventId, TouchPathNoiseAffordance affordance) : base(eventId, affordance)
-            {
-            }
-
-            private float3 ExtractPosition(TouchEvent e)
-            {
-                return e.TouchData.Actor.transform.position;
-            }
             
+            public Controller(Guid eventId, TouchMeshNoiseAffordance affordance) : base(eventId, affordance)
+            {
+            }
+
             protected override void Setup(TouchEvent e)
             {
                 base.Setup(e);
 
-                TouchPathNoiseAffordance affordance = Affordance;
-                TouchPathNoiseConfiguration configuration = affordance._configuration;
+                TouchMeshNoiseAffordance affordance = Affordance;
+                TouchMeshNoiseConfiguration configuration = affordance._configuration;
 
-                _center = ExtractPosition(e);
+                _centerTrackingSession = DynamicTrackingSessionUtil.CreateSession(
+                    configuration.CenterTracking,
+                    e.TouchData.Actor.DynamicsMonitor);
                 
                 _displacementSession = configuration.Displacement.SetupSession(e);
-                _frequencySession = configuration.Frequency.SetupSession(e);
-                _speedSession = configuration.Speed.SetupSession(e);
                 _radiusSession = configuration.Radius.SetupSession(e);
+                _speedSession = configuration.Speed.SetupSession(e);
 
                 // don't start time from 0 or we get always the same noise effect, the choice of Time.time 
                 // is arbitrary, it could be a random number
                 
                 float time = Time.time;
                 
+                float3x4 rts = (new SpaceTRS { scale = 1 }).Matrix;
+
                 _updateSubscription = Observable.EveryUpdate()
                     .TakeUntilDisable(affordance)
                     .Subscribe(_ =>
                     {
                         time += Time.deltaTime * _speedSession.Update();
-                        CompoundPathNoiseInfo info = new CompoundPathNoiseInfo(
-                            configuration.NoiseType,
+                        CompoundMeshNoiseInfo info = new CompoundMeshNoiseInfo(
+                            affordance._configuration.CrossFadeType,
+                            affordance._configuration.NoiseType,
                             _displacementSession.Update(),
-                            configuration.FalloffType,
-                            _center,
+                            rts,
+                            affordance._configuration.Falloff,
+                            affordance._configuration.FalloffType,
+                            _centerTrackingSession.Update(Time.deltaTime),
                             _radiusSession.Update(),
                             time,
-                            float3.zero,
-                            _frequencySession.Update()
+                            affordance._configuration.Frequency
                         );
-                        affordance._processor.Register(EventId, info);
+                        affordance._controller.Register(EventId, info);
                     }, err => Dispose(), Dispose);
-                    
             }
 
             protected override void Update(TouchEvent e)
             {
                 base.Update(e);
                 
-                if (Affordance._configuration.TrackPosition)
-                {
-                    _center = ExtractPosition(e);
-                }
-                
                 _displacementSession.UpdateTouch(e);
                 _radiusSession.UpdateTouch(e);
-                _frequencySession.UpdateTouch(e);
                 _speedSession.UpdateTouch(e);
             }
-
+            
             protected override void Teardown(TouchEvent e)
             {
                 base.Teardown(e);
                 
-                TouchPathNoiseAffordance affordance = Affordance;
+                TouchMeshNoiseAffordance affordance = Affordance;
 
                 _displacementSession.EndTouch(e, out float displacementRelease);
                 _radiusSession.EndTouch(e, out float radiusRelease);
-                _frequencySession.EndTouch(e, out float frequencyRelease);
                 _speedSession.EndTouch(e, out float speedRelease);
 
-                float duration = Mathf.Max(displacementRelease, radiusRelease, frequencyRelease, speedRelease);
+                float duration = Mathf.Max(displacementRelease, radiusRelease, speedRelease);
 
                 // Debug.LogWarning($"{this} {nameof(Teardown)} Dispose in {duration} seconds");
                 Observable.Timer(TimeSpan.FromSeconds(duration))
                     .TakeUntilDisable(affordance)
                     .Subscribe(_ => {}, Dispose);
             }
-
+            
             public void Dispose()
             {
                 // Debug.LogWarning($"{this} Dispose");
                 _updateSubscription?.Dispose();
-                Affordance._processor.Unregister(EventId);
+                Affordance._controller.Unregister(EventId);
             }
         }
 

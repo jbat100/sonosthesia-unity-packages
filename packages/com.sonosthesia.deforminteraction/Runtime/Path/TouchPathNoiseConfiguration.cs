@@ -3,7 +3,7 @@ using Sonosthesia.Deform;
 using Sonosthesia.Ease;
 using Sonosthesia.Touch;
 
-namespace Sonosthesia.TouchDeform
+namespace Sonosthesia.DeformInteraction
 {
     [CreateAssetMenu(fileName = "TouchPathNoiseConfiguration", menuName = "Sonosthesia/Touch/TouchPathNoiseConfiguration")]
     public class TouchPathNoiseConfiguration : ScriptableObject

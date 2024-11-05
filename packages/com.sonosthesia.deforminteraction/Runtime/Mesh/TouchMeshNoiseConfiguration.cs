@@ -3,7 +3,7 @@ using Sonosthesia.Ease;
 using Sonosthesia.Touch;
 using UnityEngine;
 
-namespace Sonosthesia.TouchDeform
+namespace Sonosthesia.DeformInteraction
 {
     [CreateAssetMenu(fileName = "TouchMeshNoiseConfiguration", menuName = "Sonosthesia/Touch/TouchMeshNoiseConfiguration")]
     public class TouchMeshNoiseConfiguration : ScriptableObject
@@ -34,6 +34,5 @@ namespace Sonosthesia.TouchDeform
         
         [SerializeField] private TouchEnvelopeSettings _speed;
         public TouchEnvelopeSettings Speed => _speed;
-
     }
 }

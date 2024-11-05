@@ -8,14 +8,14 @@
     "com.sonosthesia.dynamic": "1.10.0",
     "com.sonosthesia.trigger": "1.10.0"
   },
-  "description": "Sonosthesia unity touch fmod",
-  "displayName": "Sonosthesia Touch FMOD",
+  "description": "Sonosthesia unity FMOD interaction",
+  "displayName": "Sonosthesia FMOD Interaction",
   "keywords": [
     "unity"
   ],
   "license": "MIT",
-  "name": "com.sonosthesia.touchfmod",
+  "name": "com.sonosthesia.fmodinteraction",
   "repository": "github:jbat100/sonosthesia-unity-packages",
   "unity": "2022.3",
-  "version": "1.9.0"
+  "version": "1.10.0"
 }

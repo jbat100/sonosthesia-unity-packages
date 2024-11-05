@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.XR.Interaction.Toolkit;
 
 namespace Sonosthesia.Interaction
@@ -16,14 +15,14 @@ namespace Sonosthesia.Interaction
         [SerializeField] private InteractionLayerMask _sourceLayers;
         public InteractionLayerMask SourceLayers => _sourceLayers;
         
-        [SerializeField] private InteractionLayerMatch _sourceMatch;
-        public InteractionLayerMatch SourceMatch => _sourceMatch = InteractionLayerMatch.Any;
+        [SerializeField] private InteractionLayerMatch _sourceMatch = InteractionLayerMatch.Any;
+        public InteractionLayerMatch SourceMatch => _sourceMatch;
         
         [SerializeField] private InteractionLayerMask _actorLayers;
         public InteractionLayerMask ActorLayers => _actorLayers;
         
-        [SerializeField] private InteractionLayerMatch _actorMatch;
-        public InteractionLayerMatch ActorMatch => _actorMatch = InteractionLayerMatch.Any;
+        [SerializeField] private InteractionLayerMatch _actorMatch = InteractionLayerMatch.Any;
+        public InteractionLayerMatch ActorMatch => _actorMatch;
 
         [SerializeField] private List<StreamContainer<TEvent>> _streamContainers;
 

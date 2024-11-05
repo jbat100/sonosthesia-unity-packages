@@ -2,7 +2,7 @@ using UnityEngine;
 using FMODUnity;
 using Sonosthesia.Touch;
 
-namespace Sonosthesia.TouchFMOD
+namespace Sonosthesia.FMODInteraction
 {
     [CreateAssetMenu(fileName = "TouchFMODEmitterAffordance", menuName = "Sonosthesia/Touch/TouchFMODEmitterAffordance")]
     public class TouchFMODEmitterConfiguration : ScriptableObject
