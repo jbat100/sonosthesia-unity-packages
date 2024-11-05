@@ -63,7 +63,7 @@ namespace Sonosthesia.Interaction
                     System.IObserver<TEvent> controller = MakeController(id);
                     if (controller != null)
                     {
-                        Debug.LogWarning($"{this} created new controller {id}");
+                        // Debug.LogWarning($"{this} created new controller {id}");
                         stream.Subscribe(controller);
                     }
                     HandleStream(id, stream);
