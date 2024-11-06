@@ -8,22 +8,16 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 namespace Sonosthesia.Interaction
 {
-    public class AbstractAffordance<TEvent> : MonoBehaviour where TEvent : struct, IInteractionEvent
+    public class AbstractAffordance<TEvent> : MonoBehaviour, ILogSwitch where TEvent : struct, IInteractionEvent
     {
         [SerializeField] private bool _log;
         public bool Log => _log;
 
         [SerializeField] private InteractionLayerMask _sourceLayers;
-        public InteractionLayerMask SourceLayers => _sourceLayers;
-        
         [SerializeField] private InteractionLayerMatch _sourceMatch = InteractionLayerMatch.Pass;
-        public InteractionLayerMatch SourceMatch => _sourceMatch;
         
         [SerializeField] private InteractionLayerMask _actorLayers;
-        public InteractionLayerMask ActorLayers => _actorLayers;
-        
         [SerializeField] private InteractionLayerMatch _actorMatch = InteractionLayerMatch.Pass;
-        public InteractionLayerMatch ActorMatch => _actorMatch;
 
         [SerializeField] private List<StreamContainer<TEvent>> _streamContainers;
 
@@ -45,18 +39,12 @@ namespace Sonosthesia.Interaction
         {
             if (!_sourceMatch.Match(_sourceLayers, e.Source.InteractionLayers))
             {
-                if (Log)
-                {
-                    Debug.Log($"{this} failed source compatibility check");   
-                }
+                this.LogVerbose($"{this} failed source compatibility check");
                 return false;
             }
             if (!_actorMatch.Match(_actorLayers, e.Actor.InteractionLayers))
             {
-                if (Log)
-                {
-                    Debug.LogWarning($"{this} failed actor compatibility check");   
-                }
+                this.LogVerbose($"{this} failed actor compatibility check");
                 return false;
             }
 
@@ -73,11 +61,8 @@ namespace Sonosthesia.Interaction
                 return;
             }
             
-            if (Log)
-            {
-                Debug.LogWarning($"{this} handling new stream {stream}");
-            }
-            
+            this.LogWarning($"{this} handling new stream {stream}");
+
             // TODO: check what happens in the case of controllers which live beyond the stream
             System.IObserver<TEvent> controller = MakeController(id);
             if (controller != null)
@@ -100,10 +85,7 @@ namespace Sonosthesia.Interaction
                 _subscriptions.Add(streamContainer.StreamNode.Values.ObserveCountChanged().Subscribe(OnEventCountChanged));
                 _subscriptions.Add(streamContainer.StreamNode.StreamObservable.Subscribe(pair =>
                 {
-                    if (Log)
-                    {
-                        Debug.Log($"{this} received new stream {pair.Key}");
-                    }
+                    this.LogVerbose($"{this} received new stream {pair.Key}");
                     OnStream(pair.Key, pair.Value).Forget();
                 }));    
             }

@@ -37,7 +37,7 @@ namespace Sonosthesia.Utils
     }
 #endif
     
-    public abstract class Dispatcher : MonoBehaviour
+    public abstract class Dispatcher : MonoBehaviour, ILogSwitch
     {
         public enum Mode
         {
@@ -45,6 +45,9 @@ namespace Sonosthesia.Utils
             Random,
             Mixed
         }
+        
+        [SerializeField] private bool _log;
+        public bool Log => _log;
 
         [SerializeField] private Mode _mode;
 

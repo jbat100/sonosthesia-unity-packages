@@ -1,12 +1,14 @@
 using System;
+using Sonosthesia.Utils;
 using UnityEngine;
 using UniRx;
 
 namespace Sonosthesia.Channel
 {
-    public class Channel<T> : ChannelBase where T : struct
+    public class Channel<T> : ChannelBase, ILogSwitch where T : struct
     {
         [SerializeField] private bool _log;
+        public bool Log => _log;
         
         private readonly Subject<IObservable<T>> _streamSubject = new ();
         public IObservable<IObservable<T>> StreamObservable => _streamSubject.AsObservable();
@@ -53,11 +55,7 @@ namespace Sonosthesia.Channel
                 State? state = null;
                 _subscriptions.Add(stream.Subscribe(value =>
                     {
-                        if (_log)
-                        {
-                            Debug.Log($"{this} stream {streamCount} emitted {value}");    
-                        }
-
+                        this.LogVerbose($"{this} stream {streamCount} emitted {value}");
                         bool initial = !state.HasValue;
                         state = state?.Push(value) ?? new State(value);
                         _states[identifier] = state.Value;
@@ -68,19 +66,13 @@ namespace Sonosthesia.Channel
                     },
                     e =>
                     {
-                        if (_log)
-                        {
-                            Debug.LogError($"{this} stream {streamCount} error {e.Message}");    
-                        }
+                        this.LogError($"{this} stream {streamCount} error {e.Message}");
                         _states.Remove(identifier);
                         Unregister(identifier);
                     },
                     () =>
                     {
-                        if (_log)
-                        {
-                            Debug.Log($"{this} stream {streamCount} completed");    
-                        }
+                        this.LogVerbose($"{this} stream {streamCount} completed");
                         _states.Remove(identifier);
                         Unregister(identifier);
                     }));
