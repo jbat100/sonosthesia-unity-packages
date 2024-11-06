@@ -13,9 +13,9 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private bool _local;
         
-        public override bool AllowTrigger(TouchEndpoint source, TouchEndpoint actor)
+        public override bool Check(TouchSource source, TouchActor actor)
         {
-            TransformDynamicsMonitor monitor = actor.GetComponentInParent<TransformDynamicsMonitor>();
+            TransformDynamicsMonitor monitor = actor.DynamicsMonitor;
             if (!monitor)
             {
                 return false;

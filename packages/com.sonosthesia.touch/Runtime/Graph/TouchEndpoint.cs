@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using Sonosthesia.Dynamic;
 using Sonosthesia.Interaction;
+using Sonosthesia.Utils;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -19,12 +21,14 @@ namespace Sonosthesia.Touch
         [SerializeField] private TransformDynamicsMonitor _dynamicsMonitor;
         public TransformDynamicsMonitor DynamicsMonitor => _dynamicsMonitor;
         
+        [SerializeField] private List<TouchGate> _gates;
+        public IReadOnlyList<TouchGate> Gates => _gates.AsReadOnly();
+
         protected virtual void Awake()
         {
             if (!_dynamicsMonitor)
             {
-                // TODO: Auto add ?
-                _dynamicsMonitor = GetComponent<TransformDynamicsMonitor>();
+                _dynamicsMonitor = this.GetOrAddComponent<TransformDynamicsMonitor>();
             }
         }
 
