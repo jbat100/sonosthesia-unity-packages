@@ -1,11 +1,17 @@
 using UnityEditor;
+using UnityEditor.Graphs;
 using UnityEditor.UIElements;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Sonosthesia.Utils.Editor
 {
     public static class UIHorizontalUtils
     {
+        private const float PROPERTY_LABEL_GROW = 0.4f;
+        
+        public static VisualElement CreateContainer() => CreateContainer(3);
+        
         public static VisualElement CreateContainer(StyleLength paddingTop)
         {
             return new VisualElement
@@ -15,7 +21,23 @@ namespace Sonosthesia.Utils.Editor
                     paddingTop = paddingTop,
                     flexDirection = FlexDirection.Row,
                     justifyContent = Justify.SpaceBetween,
+                    alignContent = Align.Center,
                     flexGrow = 1
+                }
+            };
+        }
+        
+        public static VisualElement CreatePropertyContainer()
+        {
+            return new VisualElement
+            {
+                style =
+                {
+                    flexDirection = FlexDirection.Row,
+                    justifyContent = Justify.FlexEnd,
+                    alignContent = Align.Center,
+                    flexGrow = 1f - PROPERTY_LABEL_GROW,
+                    // backgroundColor = Color.blue
                 }
             };
         }
@@ -32,9 +54,8 @@ namespace Sonosthesia.Utils.Editor
                 style =
                 {
                     width = minWidth,
-                    //alignSelf = Align.Center,
                     paddingLeft = paddingLeft,
-                    paddingTop = 2
+                    paddingTop = 3
                 }
             };
         }
@@ -45,11 +66,11 @@ namespace Sonosthesia.Utils.Editor
             {
                 style =
                 {
-                    minWidth = 120,
-                    //alignSelf = Align.Center,
+                    // minWidth = 120,
+                    // alignSelf = Align.Center,
                     paddingLeft = 5,
-                    paddingTop = 2,
-                    flexGrow = 0.6f
+                    // paddingTop = 2,
+                    flexGrow = PROPERTY_LABEL_GROW
                 }
             };
         }

@@ -62,7 +62,7 @@ namespace Sonosthesia.Touch
 
         // ----------- actor modulation -------------
 
-        [SerializeField] private TouchModulationType _actorModulationType;
+        [SerializeField] private TouchActorModulationType _actorModulationType;
         [SerializeField] private FloatModulationSettings _actorModulation;
         
         // ----------- postprocess -------------
@@ -73,7 +73,7 @@ namespace Sonosthesia.Touch
         
         // ----------- clamp -------------
 
-        [SerializeField] private ClampSettings _clampSettings;
+        [SerializeField] private ClampSettings _clamp;
 
         // used when only the initial value is needed, creates a session, sets it up and returns extracted value
         public bool Extract(TouchEvent e, out float value)
@@ -106,7 +106,7 @@ namespace Sonosthesia.Touch
                 _ => null
             };
 
-            if (_actorModulationType != TouchModulationType.None)
+            if (_actorModulationType != TouchActorModulationType.None)
             {
                 session = new ActorModulationSession(session, _actorModulationType, _actorModulation);
             }
@@ -118,15 +118,20 @@ namespace Sonosthesia.Touch
                 _ => session
             };
 
+            if (_clamp.Clamp)
+            {
+                session = new ClampSession(session, _clamp);
+            }
+
             return session;
         }
 
         private class ActorModulationSession : TouchExtractorSessionProcessor<float>
         {
-            private readonly TouchModulationType _type;
+            private readonly TouchActorModulationType _type;
             private readonly FloatModulationSettings _settings;
             
-            public ActorModulationSession(ITouchExtractorSession<float> session, TouchModulationType type, FloatModulationSettings settings) 
+            public ActorModulationSession(ITouchExtractorSession<float> session, TouchActorModulationType type, FloatModulationSettings settings) 
                 : base(session)
             {
                 _type = type;
@@ -174,7 +179,7 @@ namespace Sonosthesia.Touch
                 _settings = settings;
             }
 
-            protected override float Process(TouchEvent touchEvent, float value) => _settings.Clamp(value);
+            protected override float Process(TouchEvent touchEvent, float value) => _settings.Process(value);
         }
 
         private class StaticSession : ITouchExtractorSession<float>
@@ -283,14 +288,12 @@ namespace Sonosthesia.Touch
             {
                 float distance = touchEvent.ActorPositionInSourceSpace().FilterAxes(_axes).magnitude;
                 value = _normalized ? distance / _referenceDistance : distance;
-                // Debug.Log($"{this} {nameof(Common)} {nameof(distance)} {distance} {nameof(_referenceDistance)} {_referenceDistance} {nameof(value)} {value}");
                 return true;
             }
             
             public bool Setup(TouchEvent touchEvent, out float value)
             {
                 _referenceDistance = math.max(touchEvent.ActorPositionInSourceSpace().FilterAxes(_axes).magnitude, 1e-3f);
-                // Debug.Log($"{this} {nameof(Setup)} {nameof(_referenceDistance)} {_referenceDistance}");
                 return Common(touchEvent, out value);
             }
 

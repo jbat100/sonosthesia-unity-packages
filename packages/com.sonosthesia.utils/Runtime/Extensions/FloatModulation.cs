@@ -45,7 +45,7 @@ namespace Sonosthesia.Utils
     [Serializable]
     public class FloatModulationSettings
     {
-        [SerializeField] private FloatModulationStrategy _strategy;
+        [SerializeField] private FloatModulationStrategy _strategy = FloatModulationStrategy.Add;
         [SerializeField] private float _scale = 1f;
         [SerializeField] private float _offset = 0f;
 

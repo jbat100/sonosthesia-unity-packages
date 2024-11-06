@@ -8,10 +8,12 @@ namespace Sonosthesia.Utils
     public class ClampSettings
     {
         [SerializeField] private bool _clamp;
+        public bool Clamp => _clamp;
+        
         [SerializeField] private float _min = 0f;
         [SerializeField] private float _max = 1f;
 
-        public float Clamp(float value)
+        public float Process(float value)
         {
             return _clamp ? math.clamp(value, _min, _max) : value;
         }

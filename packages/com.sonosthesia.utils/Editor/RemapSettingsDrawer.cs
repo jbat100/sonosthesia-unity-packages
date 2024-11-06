@@ -1,18 +1,15 @@
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace Sonosthesia.Utils.Editor
 {
     [CustomPropertyDrawer(typeof(RemapSettings))]
-    public class RemapSettingsDrawer : PropertyDrawer
+    public class RemapSettingsDrawer : HorizontalPropertyDrawer
     {
-        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        protected override VisualElement CreateContent(SerializedProperty property)
         {
-            VisualElement container = UIHorizontalUtils.CreateContainer(10);
-
-            Label titleLabel = UIHorizontalUtils.CreateLabel(property.name.PropertyNameToLabel(), 50, 5);
-
+            VisualElement container = UIHorizontalUtils.CreatePropertyContainer();
+            
             SerializedProperty fromMinProp = property.FindPropertyRelative("_fromMin");
             SerializedProperty fromMaxProp = property.FindPropertyRelative("_fromMax");
             SerializedProperty toMinProp = property.FindPropertyRelative("_toMin");
@@ -36,8 +33,7 @@ namespace Sonosthesia.Utils.Editor
             Label toLabel = UIHorizontalUtils.CreateLabel("To", 20);
             FloatField toMinField = UIHorizontalUtils.CreateFloatField(toMinProp);
             FloatField toMaxField = UIHorizontalUtils.CreateFloatField(toMaxProp);
-
-            container.Add(titleLabel);
+            
             //container.Add(fromLabel);
             container.Add(fromMinField);
             container.Add(fromMaxField);

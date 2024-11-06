@@ -42,6 +42,12 @@ namespace Sonosthesia.Touch.Editor
             
             root.AddRelativeField(property, "_normalizedDistance", 
                 out SerializedProperty _, out PropertyField normalizedDistanceField);
+            
+            root.AddRelativeField(property, "_actorModulationType", 
+                out SerializedProperty actorModulationTypeProp, out PropertyField actorModulationTypeField);
+            
+            root.AddRelativeField(property, "_actorModulation", 
+                out SerializedProperty _, out PropertyField actorModulationField);
 
             root.AddRelativeField(property, "_postProcessing", 
                 out SerializedProperty postProcessingProp, out PropertyField postProcessingField);
@@ -52,11 +58,14 @@ namespace Sonosthesia.Touch.Editor
             root.AddRelativeField(property, "_remap", 
                 out SerializedProperty _, out PropertyField remapField);
             
+            root.AddRelativeField(property, "_clamp");
+            
             void UpdateVisibility()
             {
                 FloatTouchExtractorSettings.ExtractorType extractorType = (FloatTouchExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
                 FloatTouchExtractorSettings.PostProcessingType postProcessingType = (FloatTouchExtractorSettings.PostProcessingType)postProcessingProp.enumValueIndex;
                 FloatTouchExtractorSettings.DistanceType distanceType = (FloatTouchExtractorSettings.DistanceType)distanceTypeProp.enumValueIndex;
+                TouchActorModulationType actorModulationType = (TouchActorModulationType)actorModulationTypeProp.enumValueIndex;
 
                 extractorField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Custom);
                 
@@ -70,6 +79,8 @@ namespace Sonosthesia.Touch.Editor
                 distanceAxesField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Distance);
                 normalizedDistanceField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Distance && 
                                              distanceType is FloatTouchExtractorSettings.DistanceType.ActorToSource);
+                
+                actorModulationField.Show(actorModulationType is not TouchActorModulationType.None);
 
                 remapField.Show(postProcessingType is FloatTouchExtractorSettings.PostProcessingType.Remap);
                 curveField.Show(postProcessingType is FloatTouchExtractorSettings.PostProcessingType.Curve);
@@ -80,6 +91,7 @@ namespace Sonosthesia.Touch.Editor
             extractorTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());
             postProcessingField.RegisterValueChangeCallback(_ => UpdateVisibility());
             distanceTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());
+            actorModulationTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());
             
             return root;
         }

@@ -4,14 +4,13 @@ using UnityEngine.UIElements;
 
 namespace Sonosthesia.Utils.Editor
 {
-    public class ClampSettingsDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(ClampSettings))]
+    public class ClampSettingsDrawer : HorizontalPropertyDrawer
     {
-        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        protected override VisualElement CreateContent(SerializedProperty property)
         {
-            VisualElement container = UIHorizontalUtils.CreateContainer(10);
-
-            Label titleLabel = UIHorizontalUtils.CreateLabel(property.name.PropertyNameToLabel(), 50, 5);
-
+            VisualElement container = UIHorizontalUtils.CreatePropertyContainer();
+            
             SerializedProperty minProp = property.FindPropertyRelative("_min");
             SerializedProperty maxProp = property.FindPropertyRelative("_max");
             SerializedProperty clampProp = property.FindPropertyRelative("_clamp");
@@ -24,8 +23,7 @@ namespace Sonosthesia.Utils.Editor
                 value = clampProp.boolValue
             };
             clampToggle.BindProperty(clampProp);
-
-            container.Add(titleLabel);
+            
             container.Add(clampToggle);
             container.Add(minField);
             container.Add(maxField);
