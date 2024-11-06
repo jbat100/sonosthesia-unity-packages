@@ -139,6 +139,7 @@ namespace Sonosthesia.Touch
             
             if (!CheckGates(actor))
             {
+                this.LogVerbose($"{this} {nameof(OnTriggerEnter)} gated actor");
                 _gatedActors[actor] = other;
             }
             else
@@ -156,6 +157,7 @@ namespace Sonosthesia.Touch
             {
                 if (CheckGates(actor))
                 {
+                    this.LogWarning($"{this} {nameof(OnTriggerStay)} promoted gated actor");
                     _gatedActors.Remove(actor);
                     AttemptStream(actor, other);
                 }
@@ -203,7 +205,7 @@ namespace Sonosthesia.Touch
         {
             if (!actor.RequestPermission(other))
             {
-                this.LogVerbose($"{this} {nameof(OnTriggerEnter)} bailed out (actor refused permission)");
+                this.LogVerbose($"{this} {nameof(AttemptStream)} bailed out (actor refused permission)");
                 return false;
             }
             
@@ -217,6 +219,8 @@ namespace Sonosthesia.Touch
             };
 
             BeginStream(touchData);
+            
+            this.LogWarning($"{this} {nameof(AttemptStream)} started stream {touchData.Id}");
 
             return true;
         }
