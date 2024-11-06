@@ -20,11 +20,8 @@ namespace Sonosthesia.Touch
         }
 
         [SerializeField] private bool _endOnExit = true;
-
         [SerializeField] private bool _endOnReEnter = true;
-
         [SerializeField] private bool _autoEnd;
-
         [SerializeField] private float _autoEndDelay;
 
         [SerializeField] private InteractionLayerMatch _actorMatch = InteractionLayerMatch.Any;
@@ -218,28 +215,25 @@ namespace Sonosthesia.Touch
                 Source = this
             };
 
-            BeginStream(touchData);
-            
-            this.LogWarning($"{this} {nameof(AttemptStream)} started stream {touchData.Id}");
-
-            return true;
-        }
-        
-        private void BeginStream(TouchData touchData)
-        {
             _touchData[touchData.Actor] = touchData;
 
             if (!ConfigureStream(touchData.Id, touchData))
             {
+                this.LogWarning($"{this} {nameof(AttemptStream)} failed to started stream {touchData.Id}");
                 EndStream(touchData);
-                return;
+                return false;
             }
 
             if (_autoEnd)
             {
                 Observable.Timer(TimeSpan.FromSeconds(_autoEndDelay)).Subscribe(_ => EndStream(touchData));
             }
+
+            this.LogWarning($"{this} {nameof(AttemptStream)} started stream {touchData.Id}");
+            
+            return true;
         }
+        
         
         private void EndStream(TouchData touchData)
         {
