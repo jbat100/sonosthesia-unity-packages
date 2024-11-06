@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Sonosthesia.Interaction;
+using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ namespace Sonosthesia.Touch
 {
     public abstract class TouchSource : TouchEndpoint
     {
-        protected class TouchData : ITouchData
+        private class TouchData : ITouchData
         {
             public Guid Id;
             public Collider Collider { get; set; }
@@ -17,8 +18,6 @@ namespace Sonosthesia.Touch
             public TouchSource Source { get; set; }
             public TouchActor Actor { get; set; }
         }
-        
-        [SerializeField] private bool _log;
 
         [SerializeField] private bool _endOnExit = true;
 
@@ -29,15 +28,20 @@ namespace Sonosthesia.Touch
         [SerializeField] private float _autoEndDelay;
 
         [SerializeField] private InteractionLayerMatch _actorMatch = InteractionLayerMatch.Any;
-
+        
         // note : we don't want concurrent events from the same collider
         
         private readonly Dictionary<TouchActor, TouchData> _touchData = new();
-        private readonly HashSet<TouchActor> _gatedActors = new();
+        private readonly Dictionary<TouchActor, Collider> _gatedActors = new();
+
+        // avoid alloc
+        
+        private static readonly List<TouchData> _reusableData = new();
+        private static readonly List<TouchActor> _reusableActors = new();
 
         public void KillAllStreams()
         {
-            foreach (TouchData data in _touchData.Values.ToArray())
+            foreach (TouchData data in _reusableData.Import(_touchData.Values))
             {
                 EndStream(data);
             }
@@ -45,7 +49,7 @@ namespace Sonosthesia.Touch
 
         public void KillStream(Guid id)
         {
-            foreach (TouchData data in _touchData.Values.Where(d => d.Id == id).ToArray())
+            foreach (TouchData data in _reusableData.Import(_touchData.Values.Where(d => d.Id == id)))
             {
                 EndStream(data);
             }
@@ -53,144 +57,130 @@ namespace Sonosthesia.Touch
 
         protected virtual bool IsCompatibleActor(TouchActor actor) => true;
 
+        // using FixedUpdate instead of OnTriggerStay because stream can stay active after collision ends
+        
         protected virtual void FixedUpdate()
         {
-            foreach (var data in _touchData.Values.Where(data => !data.Colliding))
+            foreach (TouchData data in _touchData.Values)
             {
-                UpdateStream(pair.Value, triggerData);
+                UpdateStream(data.Id, data);
             }
+        }
+
+        protected virtual void OnDisable()
+        {
+            _gatedActors.Clear();
+            KillAllStreams();
         }
 
         protected virtual void OnTriggerEnter(Collider other)
         {
-            if (_log)
-            {
-                Debug.Log($"{this} {nameof(OnTriggerEnter)} {other}");    
-            }
+            this.LogVerbose($"{this} {nameof(OnTriggerEnter)} {other}");
 
             TouchActor actor = other.GetComponentInParent<TouchActor>();
 
             if (!actor)
             {
-                Debug.Log($"{this} {nameof(OnTriggerEnter)} bailed out (no actor)");
+                this.LogVerbose($"{this} {nameof(OnTriggerEnter)} bailed out (no actor)");
                 return;
             }
             
-            // bail out if the actor is already active through this or another collider
-
-            if (_currentActors.Contains(actor))
+            if (Mute)
             {
-                if (!_streamIds.TryGetValue(other, out Guid eventId))
-                {
-                    _
-                }
-                
-                if (_streamIds.TryGetValue(other, out Guid eventId) && _touchData.TryGetValue(eventId, out TouchData touchData))
-                {
-                    if (_endOnReEnter)
-                    {
-                        EndStream(eventId, touchData);
-                    }
-                    else
-                    {
-                        touchData.Colliding = true;
-                        UpdateStream(eventId, touchData);
-                        if (_log)
-                        {
-                            Debug.Log($"{this} {nameof(OnTriggerEnter)} bailed out (existing stream)");
-                        }
+                this.LogVerbose($"{this} {nameof(OnTriggerEnter)} bailed out (source mute)");
+                return;
+            }
 
-                        return;
-                    }
+            if (actor.Mute)
+            {
+                this.LogVerbose($"{this} {nameof(OnTriggerEnter)} bailed out (mute)");
+                return;
+            }
+
+            if (_gatedActors.ContainsKey(actor))
+            {
+                this.LogVerbose($"{this} {nameof(OnTriggerEnter)} bailed out (gated actor)");
+                return;
+            }
+            
+            if (_touchData.TryGetValue(actor, out TouchData data))
+            {
+                if (data.Collider != other)
+                {
+                    this.LogVerbose($"{this} {nameof(OnTriggerEnter)} bailed out (current actor with other collider)");
+                    return;
+                }
+                if (_endOnReEnter)
+                {
+                    this.LogWarning($"{this} {nameof(OnTriggerEnter)} ended stream on re-enter)");
+                    EndStream(data);
+                    // Do not return _endOnReEnter implies restart, could change name to be more representative
+                }
+                else
+                {
+                    data.Colliding = true;
+                    UpdateStream(data.Id, data);
+                    this.LogVerbose($"{this} {nameof(OnTriggerEnter)} bailed out (updated existing stream)");
+                    return;
                 }
             }
 
-            // check interaction layers
-            
             if (!_actorMatch.Match(InteractionLayers, actor.InteractionLayers))
             {
-                if (_log)
-                {
-                    Debug.Log($"{this} {nameof(OnTriggerEnter)} bailed out (no match)");
-                }
+                this.LogVerbose($"{this} {nameof(OnTriggerEnter)} bailed out (no actor layer mismatch)");
                 return;
             }
 
             if (!IsCompatibleActor(actor))
             {
-                if (_log)
-                {
-                    Debug.Log($"{this} {nameof(OnTriggerEnter)} bailed out (incompatible actor)");
-                }
+                this.LogVerbose($"{this} {nameof(OnTriggerEnter)} bailed out (incompatible actor)");
                 return;
             }
-
-            if (Mute || actor.Mute)
-            {
-                if (_log)
-                {
-                    Debug.Log($"{this} {nameof(OnTriggerEnter)} bailed out (gate block)");
-                }
-                return;
-            }
-
+            
             if (!CheckGates(actor))
             {
-                
+                _gatedActors[actor] = other;
             }
-
-            AttemptStream(actor, other);
+            else
+            {
+                AttemptStream(actor, other);   
+            }
         }
+
+        private IEnumerable<TouchActor> GatedActors(Collider other) => 
+            _gatedActors.Where(p => p.Value == other).Select(p => p.Key);
 
         protected virtual void OnTriggerStay(Collider other)
         {
-            // Debug.Log($"{this} {nameof(OnTriggerStay)} {other.gameObject.name}");
-
-            if (!_streamIds.TryGetValue(other, out Guid eventId))
+            foreach (TouchActor actor in _reusableActors.Import(GatedActors(other)))
             {
-                return;
-            }
-
-            if (_touchData.TryGetValue(eventId, out TouchData triggerData))
-            {
-                UpdateStream(eventId, triggerData);
+                if (CheckGates(actor))
+                {
+                    _gatedActors.Remove(actor);
+                    AttemptStream(actor, other);
+                }
             }
         }
 
         protected virtual void OnTriggerExit(Collider other)
         {
-            if (_log)
+            this.LogVerbose($"{this} {nameof(OnTriggerExit)} {other}");
+
+            foreach (TouchActor actor in _reusableActors.Import(GatedActors(other)))
             {
-                Debug.Log($"{this} {nameof(OnTriggerExit)} {other}");    
+                _gatedActors.Remove(actor);
             }
-
-            if (!_streamIds.TryGetValue(other, out Guid eventId))
+            
+            // should only be one 
+            
+            foreach (TouchData data in _reusableData.Import(_touchData.Values.Where(d => d.Collider == other)))
             {
-                if (_log)
+                data.Colliding = false;
+                if (_endOnExit)
                 {
-                    Debug.Log($"{this} {nameof(OnTriggerExit)} bailing out no event");    
-                }
-                return;
-            }
-
-            if (!_touchData.TryGetValue(eventId, out TouchData triggerData))
-            {
-                if (_log)
-                {
-                    Debug.Log($"{this} {nameof(OnTriggerExit)} bailing out no data");    
-                }
-                return;
-            }
-
-            triggerData.Colliding = false;
-
-            if (_endOnExit)
-            {
-                if (_log)
-                {
-                    Debug.Log($"{this} {nameof(OnTriggerExit)} ending stream {eventId}");    
-                }
-                EndStream(eventId, triggerData);
+                    this.LogVerbose($"{this} {nameof(OnTriggerExit)} ending stream on exit {data.Id}");
+                    EndStream(data);
+                }     
             }
         }
 
@@ -213,15 +203,13 @@ namespace Sonosthesia.Touch
         {
             if (!actor.RequestPermission(other))
             {
-                if (_log)
-                {
-                    Debug.Log($"{this} {nameof(OnTriggerEnter)} bailed out (actor refused permission)");
-                }
+                this.LogVerbose($"{this} {nameof(OnTriggerEnter)} bailed out (actor refused permission)");
                 return false;
             }
             
             TouchData touchData = new TouchData()
             {
+                Id = Guid.NewGuid(),
                 Collider = other,
                 Colliding = true,
                 Actor = actor,
@@ -235,29 +223,26 @@ namespace Sonosthesia.Touch
         
         private void BeginStream(TouchData touchData)
         {
-            Guid id = Guid.NewGuid();
-            
-            _streamIds[touchData.Collider] = id;
-            _touchData[id] = touchData;
+            _touchData[touchData.Actor] = touchData;
 
-            if (!ConfigureStream(id, touchData))
+            if (!ConfigureStream(touchData.Id, touchData))
             {
-                EndStream(id, touchData);
+                EndStream(touchData);
                 return;
             }
 
             if (_autoEnd)
             {
-                Observable.Timer(TimeSpan.FromSeconds(_autoEndDelay)).Subscribe(_ => EndStream(id, touchData));
+                Observable.Timer(TimeSpan.FromSeconds(_autoEndDelay)).Subscribe(_ => EndStream(touchData));
             }
         }
         
         private void EndStream(TouchData touchData)
         {
-            _streamIds.Remove(touchData.Collider);
-            _touchData.Remove(id);
-            
-            CleanupStream(id, touchData);
+            if (_touchData.Remove(touchData.Actor))
+            {
+                CleanupStream(touchData.Id, touchData);   
+            }
         }
 
         protected abstract bool ConfigureStream(Guid id, ITouchData touchData);

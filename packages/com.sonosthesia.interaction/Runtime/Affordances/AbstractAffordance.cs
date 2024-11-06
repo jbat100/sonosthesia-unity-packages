@@ -16,13 +16,13 @@ namespace Sonosthesia.Interaction
         [SerializeField] private InteractionLayerMask _sourceLayers;
         public InteractionLayerMask SourceLayers => _sourceLayers;
         
-        [SerializeField] private InteractionLayerMatch _sourceMatch = InteractionLayerMatch.Any;
+        [SerializeField] private InteractionLayerMatch _sourceMatch = InteractionLayerMatch.Pass;
         public InteractionLayerMatch SourceMatch => _sourceMatch;
         
         [SerializeField] private InteractionLayerMask _actorLayers;
         public InteractionLayerMask ActorLayers => _actorLayers;
         
-        [SerializeField] private InteractionLayerMatch _actorMatch = InteractionLayerMatch.Any;
+        [SerializeField] private InteractionLayerMatch _actorMatch = InteractionLayerMatch.Pass;
         public InteractionLayerMatch ActorMatch => _actorMatch;
 
         [SerializeField] private List<StreamContainer<TEvent>> _streamContainers;
