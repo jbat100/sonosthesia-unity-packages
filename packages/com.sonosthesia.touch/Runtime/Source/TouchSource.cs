@@ -19,6 +19,7 @@ namespace Sonosthesia.Touch
             public TouchActor Actor { get; set; }
         }
 
+        [SerializeField] private bool _endOnGates = true;
         [SerializeField] private bool _endOnExit = true;
         [SerializeField] private bool _endOnReEnter = true;
         [SerializeField] private bool _autoEnd;
@@ -58,8 +59,20 @@ namespace Sonosthesia.Touch
         
         protected virtual void FixedUpdate()
         {
-            foreach (TouchData data in _touchData.Values)
+            foreach (TouchData data in _reusableData.Import(_touchData.Values))
             {
+                if (_endOnGates && !CheckGates(data.Actor))
+                {
+                    if (!CheckGates(data.Actor))
+                    {
+                        if (data.Colliding)
+                        {
+                            _gatedActors[data.Actor] = data.Collider;
+                        }
+                        EndStream(data);
+                        continue;
+                    }
+                }
                 UpdateStream(data.Id, data);
             }
         }

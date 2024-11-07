@@ -18,6 +18,12 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private Strategy _strategy;
 
+        [SerializeField] private bool _thumb = true;
+        [SerializeField] private bool _index = true;
+        [SerializeField] private bool _middle = true;
+        [SerializeField] private bool _ring = true;
+        [SerializeField] private bool _little = true;
+
         private static readonly List<float> _values = new ();
         
         public override float Select(TouchActorModulationType modulationType)
@@ -42,26 +48,26 @@ namespace Sonosthesia.Touch
             
             _values.Clear();
             
-            if (hand.TryGetModulation(XRHandFingerID.Index, modulationType, out float index))
+            if (_index && hand.TryGetModulation(XRHandFingerID.Index, modulationType, out float index))
             {
                 _values.Add(index);
             }
-            if (hand.TryGetModulation(XRHandFingerID.Middle, modulationType, out float middle))
+            if (_middle && hand.TryGetModulation(XRHandFingerID.Middle, modulationType, out float middle))
             {
                 _values.Add(middle);
             }
-            if (hand.TryGetModulation(XRHandFingerID.Ring, modulationType, out float ring))
+            if (_ring && hand.TryGetModulation(XRHandFingerID.Ring, modulationType, out float ring))
             {
                 _values.Add(ring);
             }
-            if (hand.TryGetModulation(XRHandFingerID.Ring, modulationType, out float little))
+            if (_little && hand.TryGetModulation(XRHandFingerID.Ring, modulationType, out float little))
             {
                 _values.Add(little);
             }
 
             if (modulationType != TouchActorModulationType.Pinch)
             {
-                if (hand.TryGetModulation(XRHandFingerID.Thumb, modulationType, out float thumb))
+                if (_thumb && hand.TryGetModulation(XRHandFingerID.Thumb, modulationType, out float thumb))
                 {
                     _values.Add(thumb);
                 }
