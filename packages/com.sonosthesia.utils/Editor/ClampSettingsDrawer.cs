@@ -7,10 +7,8 @@ namespace Sonosthesia.Utils.Editor
     [CustomPropertyDrawer(typeof(ClampSettings))]
     public class ClampSettingsDrawer : HorizontalPropertyDrawer
     {
-        protected override VisualElement CreateContent(SerializedProperty property)
+        protected override void CreateContent(SerializedProperty property, VisualElement container)
         {
-            VisualElement container = UIHorizontalUtils.CreatePropertyContainer();
-            
             SerializedProperty minProp = property.FindPropertyRelative("_min");
             SerializedProperty maxProp = property.FindPropertyRelative("_max");
             SerializedProperty clampProp = property.FindPropertyRelative("_clamp");
@@ -27,8 +25,6 @@ namespace Sonosthesia.Utils.Editor
             container.Add(clampToggle);
             container.Add(minField);
             container.Add(maxField);
-
-            return container;
         }
     }
 }

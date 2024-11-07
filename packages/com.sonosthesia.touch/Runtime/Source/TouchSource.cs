@@ -185,12 +185,12 @@ namespace Sonosthesia.Touch
 
         private bool CheckGates(TouchActor actor)
         {
-            if (!Gates.All(gate => gate.Check(this, actor)))
+            if (!Gates.All(gate => gate && gate.Check(this, actor)))
             {
                 return false;
             }
             
-            if (!actor.Gates.All(gate => gate.Check(this, actor)))
+            if (!actor.Gates.All(gate => gate && gate.Check(this, actor)))
             {
                 return false;
             }

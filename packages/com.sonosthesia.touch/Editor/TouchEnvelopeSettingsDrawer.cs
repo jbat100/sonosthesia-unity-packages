@@ -17,6 +17,15 @@ namespace Sonosthesia.Touch.Editor
             
             root.Add(UIElementUtils.SectionLabel(property.name.PropertyNameToLabel()));
             
+            root.AddRelativeField(property, "_trackValue", 
+                out SerializedProperty _, out PropertyField trackValueField);
+            
+            root.AddRelativeField(property, "_filter", 
+                out SerializedProperty filterProp, out PropertyField filterField);
+            
+            root.AddRelativeField(property, "_oneEuroFilter", 
+                out SerializedProperty _, out PropertyField oneEuroFilterField);
+            
             root.AddRelativeField(property, "_type", 
                 out SerializedProperty typeProp, out PropertyField typeField);
             
@@ -31,10 +40,7 @@ namespace Sonosthesia.Touch.Editor
             
             root.AddRelativeField(property, "_envelope", 
                 out SerializedProperty _, out PropertyField envelopeField);
-            
-            root.AddRelativeField(property, "_trackValue", 
-                out SerializedProperty _, out PropertyField trackValueField);
-            
+
             root.AddRelativeField(property, "_releaseExtractor", 
                 out SerializedProperty _, out PropertyField releaseExtractorField);
             
@@ -43,8 +49,10 @@ namespace Sonosthesia.Touch.Editor
             
             void UpdateVisibility()
             {
-                TouchEnvelopeSettings.TouchType type 
-                    = (TouchEnvelopeSettings.TouchType)typeProp.enumValueIndex;
+                TouchEnvelopeSettings.TouchType type = (TouchEnvelopeSettings.TouchType)typeProp.enumValueIndex;
+                TouchEnvelopeSettings.FilterType filter = (TouchEnvelopeSettings.FilterType)filterProp.enumValueIndex;
+                
+                oneEuroFilterField.Show(filter is TouchEnvelopeSettings.FilterType.OneEuro);
                 
                 constantExtractorField.Show(type is TouchEnvelopeSettings.TouchType.Constant);
                 
@@ -58,6 +66,7 @@ namespace Sonosthesia.Touch.Editor
 
             UpdateVisibility();
             typeField.RegisterValueChangeCallback(_ => UpdateVisibility());
+            filterField.RegisterValueChangeCallback(_ => UpdateVisibility());
             
             return root;
         }

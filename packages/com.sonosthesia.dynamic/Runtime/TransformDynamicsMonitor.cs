@@ -6,7 +6,7 @@ namespace Sonosthesia.Dynamic
     {
         [SerializeField] [Range(0, 3)] private int _order = 1;
 
-        [SerializeField] private bool _local = true;
+        [SerializeField] private bool _local = false;
 
         [SerializeField] private bool _fixedUpdate = true;
 

@@ -2,6 +2,7 @@ using System;
 using Sonosthesia.Ease;
 using Sonosthesia.Envelope;
 using Sonosthesia.Trigger;
+using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
@@ -15,6 +16,21 @@ namespace Sonosthesia.Touch
             Pulse,
             Contact
         }
+
+        public enum FilterType
+        {
+            None,
+            OneEuro
+        }
+        
+        [SerializeField] private bool _trackValue;
+        public bool TrackValue => _trackValue;
+        
+        [SerializeField] private FilterType _filter;
+        public FilterType Filter => _filter;
+
+        [SerializeField] private OneEuroFilterSettings _oneEuroFilter;
+        public OneEuroFilterSettings OneEuroFilter => _oneEuroFilter;
         
         [SerializeField] private TouchType _type;
         public TouchType Type => _type;
@@ -32,9 +48,6 @@ namespace Sonosthesia.Touch
             = EnvelopeSettings.ADS(EnvelopePhase.InOutSine(0.1f), EnvelopePhase.InOutSine(0.3f), 0.5f);
         public EnvelopeSettings Envelope => _envelope;
 
-        [SerializeField] private bool _trackValue;
-        public bool TrackValue => _trackValue;
-        
         [SerializeField] private FloatTouchExtractorSettings _releaseExtractor;
         public FloatTouchExtractorSettings ReleaseExtractor => _releaseExtractor;
 

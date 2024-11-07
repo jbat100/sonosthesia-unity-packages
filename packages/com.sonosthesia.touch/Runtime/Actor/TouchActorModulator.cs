@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using Unity.Mathematics;
+using UnityEngine;
+using UnityEngine.XR.Hands;
+using UnityEngine.XR.Hands.Gestures;
 
 namespace Sonosthesia.Touch
 {
@@ -16,5 +19,49 @@ namespace Sonosthesia.Touch
     public abstract class TouchActorModulator : MonoBehaviour
     {
         public abstract float Select(TouchActorModulationType modulationType);
+    }
+
+    public static class TouchActorModulationExtension
+    {
+        public static bool TryGetModulation(this XRHand hand, XRHandFingerID finger, TouchActorModulationType modulationType, out float result)
+        {
+            XRFingerShapeTypes shapeTypes = modulationType switch
+            {
+                TouchActorModulationType.Curl => XRFingerShapeTypes.FullCurl,
+                TouchActorModulationType.Tension => XRFingerShapeTypes.TipCurl | XRFingerShapeTypes.BaseCurl,
+                TouchActorModulationType.Pinch => XRFingerShapeTypes.Pinch,
+                _ => XRFingerShapeTypes.None
+            };
+            
+            XRFingerShape shape = hand.CalculateFingerShape(finger, shapeTypes);
+
+            switch (modulationType)
+            {
+                case TouchActorModulationType.Curl:
+                    if (shape.TryGetFullCurl(out float fullCurl))
+                    {
+                        result = fullCurl;
+                        return true;
+                    }
+                    break;
+                case TouchActorModulationType.Tension:
+                    if (shape.TryGetTipCurl(out float tipCurl) && shape.TryGetBaseCurl(out float baseCurl))
+                    {
+                        result = math.abs(tipCurl - baseCurl);
+                        return true;
+                    }
+                    break;
+                case TouchActorModulationType.Pinch:
+                    if (shape.TryGetPinch(out float pinch))
+                    {
+                        result = pinch;
+                        return true;
+                    }
+                    break;
+            }
+
+            result = 0;
+            return false;
+        }
     }
 }

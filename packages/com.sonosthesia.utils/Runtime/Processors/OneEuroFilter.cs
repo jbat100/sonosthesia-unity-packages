@@ -5,8 +5,16 @@ namespace Sonosthesia.Utils
     // source https://github.com/keijiro/OneEuroFilter/blob/main/Assets/Script/OneEuroFilter.cs
     
     // it's a pain but code repetition seems the least bad option to have 1, 2 and 3 dimension versions
+
+
+    public interface IOneEuroFilterParameters
+    {
+        float Beta { get; set; }
+        
+        float MinCutoff { get; set; }
+    }
     
-    public sealed class OneEuroFilter1
+    public sealed class OneEuroFilter1 : IOneEuroFilterParameters
     {
         public float Beta { get; set; }
         public float MinCutoff { get; set; }
@@ -40,7 +48,7 @@ namespace Sonosthesia.Utils
         private (float t, float x, float dx) _prev;
     }
     
-    public sealed class OneEuroFilter2
+    public sealed class OneEuroFilter2 : IOneEuroFilterParameters
     {
         public float Beta { get; set; }
         public float MinCutoff { get; set; }
@@ -74,7 +82,7 @@ namespace Sonosthesia.Utils
         private (float t, float2 x, float2 dx) _prev;
     }
     
-    public sealed class OneEuroFilter3
+    public sealed class OneEuroFilter3 : IOneEuroFilterParameters
     {
         public float Beta { get; set; }
         public float MinCutoff { get; set; }

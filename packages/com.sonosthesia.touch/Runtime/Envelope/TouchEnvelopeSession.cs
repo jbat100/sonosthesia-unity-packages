@@ -26,9 +26,17 @@ namespace Sonosthesia.Touch
                 TouchEnvelopeSettings.TouchType.Contact => new ContactTouchEnvelopeSession(settings, controller),
                 _ => throw new ArgumentOutOfRangeException()
             };
+
+            if (settings.Filter == TouchEnvelopeSettings.FilterType.OneEuro)
+            {
+                session = new StaticTouchEnvelopeSessionOneEuroFilter(session, settings.OneEuroFilter);
+            }
+            
             session.StartTouch(e);
             return session;
         }
+
+        
 
         private class TouchEnvelopeSession : ITouchEnvelopeSession
         {

@@ -6,6 +6,6 @@ namespace Sonosthesia.Touch
     {
         [SerializeField] private bool _block;
 
-        public override bool Check(TouchSource source, TouchActor actor) => !_block;
+        protected override bool PerformCheck(TouchSource source, TouchActor actor) => !_block;
     }
 }

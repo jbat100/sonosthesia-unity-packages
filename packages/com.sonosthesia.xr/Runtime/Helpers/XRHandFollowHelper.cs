@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
@@ -9,20 +10,31 @@ namespace Sonosthesia.XR
 {
     public class XRHandFollowHelper : MonoBehaviour
     {
+        [Serializable]
+        private class Element
+        {
+            [SerializeField] private Follower _follower;
+            public Follower Follower => _follower;
+
+            [SerializeField] private bool _active;
+            public bool Active => _active;
+        }
+        
         [SerializeField] private XRHandTrackingEvents _trackingEvents;
 
-        [SerializeField] private List<Follower> _followers;
+        [SerializeField] private List<Element> _followers;
 
         private IDisposable _subscription;
         
         private void SetActiveFollower(bool active)
         {
-            foreach (Follower follower in _followers)
+            foreach (Element element in _followers.Where(e => e.Follower))
             {
-                follower.gameObject.SetActive(active);
-                if (active)
+                bool activeElement = active && element.Active;
+                element.Follower.gameObject.SetActive(activeElement);
+                if (activeElement)
                 {
-                    follower.Align();
+                    element.Follower.Align();
                 }
             }    
         }

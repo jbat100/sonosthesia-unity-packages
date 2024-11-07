@@ -2,6 +2,7 @@
   "author": "Jonathan Thorpe",
   "dependencies": {
     "com.unity.xr.interaction.toolkit": "2.5.4",
+    "com.unity.xr.hands": "1.5.0",
     "com.neuecc.unirx": "7.1.0",
     "com.cysharp.unitask": "2.5.2",
     "com.sonosthesia.utils": "1.10.0",

@@ -8,9 +8,9 @@ namespace Sonosthesia.Utils.Editor
 {
     public static class UIHorizontalUtils
     {
-        private const float PROPERTY_LABEL_GROW = 0.4f;
+        private const float PROPERTY_LABEL_GROW = 0.35f;
         
-        public static VisualElement CreateContainer() => CreateContainer(3);
+        public static VisualElement CreateContainer() => CreateContainer(0);
         
         public static VisualElement CreateContainer(StyleLength paddingTop)
         {
@@ -44,7 +44,7 @@ namespace Sonosthesia.Utils.Editor
 
         public static Label CreateLabel(string title, StyleLength minWidth)
         {
-            return CreateLabel(title, minWidth, 5);
+            return CreateLabel(title, minWidth, 10);
         }
         
         public static Label CreateLabel(string title, StyleLength minWidth, StyleLength paddingLeft)
@@ -55,7 +55,10 @@ namespace Sonosthesia.Utils.Editor
                 {
                     width = minWidth,
                     paddingLeft = paddingLeft,
-                    paddingTop = 3
+                    marginLeft = 5,
+                    //paddingTop = 3,
+                    justifyContent = Justify.FlexEnd,
+                    unityTextAlign = TextAnchor.MiddleRight
                 }
             };
         }
@@ -70,6 +73,7 @@ namespace Sonosthesia.Utils.Editor
                     // alignSelf = Align.Center,
                     paddingLeft = 5,
                     // paddingTop = 2,
+                    unityTextAlign = TextAnchor.MiddleLeft,
                     flexGrow = PROPERTY_LABEL_GROW
                 }
             };

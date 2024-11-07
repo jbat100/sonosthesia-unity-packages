@@ -6,10 +6,8 @@ namespace Sonosthesia.Utils.Editor
     [CustomPropertyDrawer(typeof(FloatModulationSettings))]
     public class FloatModulationSettingsDrawer : HorizontalPropertyDrawer
     {
-        protected override VisualElement CreateContent(SerializedProperty property)
+        protected override void CreateContent(SerializedProperty property, VisualElement container)
         {
-            VisualElement container = UIHorizontalUtils.CreatePropertyContainer();
-            
             SerializedProperty strategyProp = property.FindPropertyRelative("_strategy");
             SerializedProperty scaleProp = property.FindPropertyRelative("_scale");
             SerializedProperty offsetProp = property.FindPropertyRelative("_offset");
@@ -25,8 +23,6 @@ namespace Sonosthesia.Utils.Editor
             container.Add(scaleField);
             container.Add(offsetLabel);
             container.Add(offsetField);
-
-            return container;
         }
     }
 }

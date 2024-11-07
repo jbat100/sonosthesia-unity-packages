@@ -6,10 +6,8 @@ namespace Sonosthesia.Utils.Editor
     [CustomPropertyDrawer(typeof(RemapSettings))]
     public class RemapSettingsDrawer : HorizontalPropertyDrawer
     {
-        protected override VisualElement CreateContent(SerializedProperty property)
+        protected override void CreateContent(SerializedProperty property, VisualElement container)
         {
-            VisualElement container = UIHorizontalUtils.CreatePropertyContainer();
-            
             SerializedProperty fromMinProp = property.FindPropertyRelative("_fromMin");
             SerializedProperty fromMaxProp = property.FindPropertyRelative("_fromMax");
             SerializedProperty toMinProp = property.FindPropertyRelative("_toMin");
@@ -41,8 +39,6 @@ namespace Sonosthesia.Utils.Editor
             //container.Add(middleLabel);
             container.Add(toMinField);
             container.Add(toMaxField);
-
-            return container;
         }
     }
 }

@@ -7,10 +7,8 @@ namespace Sonosthesia.Envelope.Editor
     [CustomPropertyDrawer(typeof(EnvelopePhase))]
     public class EnvelopePhaseDrawer : HorizontalPropertyDrawer
     {
-        protected override VisualElement CreateContent(SerializedProperty property)
+        protected override void CreateContent(SerializedProperty property, VisualElement container)
         {
-            VisualElement container = UIHorizontalUtils.CreatePropertyContainer();
-            
             SerializedProperty easeTypeProp = property.FindPropertyRelative("_easeType");
             SerializedProperty durationProp = property.FindPropertyRelative("_duration");
 
@@ -22,8 +20,6 @@ namespace Sonosthesia.Envelope.Editor
             container.Add(easeTypeField);
             container.Add(durationField);
             container.Add(durationLabel);
-
-            return container;
         }
     }
 }

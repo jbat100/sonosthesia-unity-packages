@@ -2,8 +2,15 @@
 
 namespace Sonosthesia.Touch
 {
-    public abstract class TouchGate : MonoBehaviour   
+    public abstract class TouchGate : MonoBehaviour
     {
-        public abstract bool Check(TouchSource source, TouchActor actor);
+        [SerializeField] private bool _bypass;
+
+        public bool Check(TouchSource source, TouchActor actor)
+        {
+            return _bypass || PerformCheck(source, actor);
+        }
+        
+        protected abstract bool PerformCheck(TouchSource source, TouchActor actor);
     }
 }

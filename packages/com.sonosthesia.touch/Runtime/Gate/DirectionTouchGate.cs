@@ -13,7 +13,7 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private bool _local;
         
-        public override bool Check(TouchSource source, TouchActor actor)
+        protected override bool PerformCheck(TouchSource source, TouchActor actor)
         {
             TransformDynamicsMonitor monitor = actor.DynamicsMonitor;
             if (!monitor)
