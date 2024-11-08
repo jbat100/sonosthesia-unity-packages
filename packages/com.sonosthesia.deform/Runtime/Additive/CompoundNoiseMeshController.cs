@@ -11,7 +11,6 @@ using UnityEngine;
 
 namespace Sonosthesia.Deform
 {
-
     public readonly struct CompoundMeshNoiseInfo
     {
         private const float IMPOTENCE_THRESHOLD = 1e-4f;
@@ -20,10 +19,7 @@ namespace Sonosthesia.Deform
         public readonly CatlikeNoiseType noiseType;
         public readonly float displacement;
         public readonly float3x4 domainTRS;
-        public readonly bool falloff;
-        public readonly EaseType falloffType;
-        public readonly float3 center;
-        public readonly float radius;
+        public readonly SpatialFalloffInfo falloff;
         public readonly float time;
         public readonly int frequency;
 
@@ -35,7 +31,7 @@ namespace Sonosthesia.Deform
                 {
                     return true;
                 }
-                if (falloff && math.abs(radius) < IMPOTENCE_THRESHOLD)
+                if (falloff.active && math.abs(falloff.radius) < IMPOTENCE_THRESHOLD)
                 {
                     return true;
                 }
@@ -47,39 +43,15 @@ namespace Sonosthesia.Deform
                 return false;
             }
         }
-        
-        public static CompoundMeshNoiseInfo Global(CatlikeNoiseType noiseType, 
-            float displacement, float3x4 domainTRS,
-            float time, int frequency, EaseType crossFadeType = EaseType.easeInOutSine)
-        {
-            return new CompoundMeshNoiseInfo(crossFadeType, noiseType, displacement, domainTRS,
-                false, EaseType.linear, float3.zero, 0f,
-                time, frequency);
-        }
 
-        public static CompoundMeshNoiseInfo Local(CatlikeNoiseType noiseType, 
-            float displacement, float3x4 domainTRS,
-            EaseType falloffType, float3 center, float radius,
-            float time, int frequency, EaseType crossFadeType = EaseType.easeInOutSine)
-        {
-            return new CompoundMeshNoiseInfo(crossFadeType, noiseType, displacement, domainTRS,
-                true, falloffType, center, radius,
-                time, frequency);
-        }
-        
         public CompoundMeshNoiseInfo(EaseType crossFadeType, CatlikeNoiseType noiseType, 
-            float displacement, float3x4 domainTRS,
-            bool falloff, EaseType falloffType, float3 center, float radius, 
-            float time, int frequency)
+            float displacement, float3x4 domainTRS, SpatialFalloffInfo falloff, float time, int frequency)
         {
             this.crossFadeType = crossFadeType;
             this.noiseType = noiseType;
             this.displacement = displacement;
             this.domainTRS = domainTRS;
             this.falloff = falloff;
-            this.falloffType = falloffType;
-            this.center = center;
-            this.radius = radius;
             this.time = time;
             this.frequency = frequency;
         }
@@ -90,9 +62,6 @@ namespace Sonosthesia.Deform
                    $"{nameof(noiseType)}: {noiseType}, " +
                    $"{nameof(displacement)}: {displacement}, " +
                    $"{nameof(falloff)}: {falloff}, " +
-                   $"{nameof(falloffType)}: {falloffType}, " +
-                   $"{nameof(center)}: {center}, " +
-                   $"{nameof(radius)}: {radius}, " +
                    $"{nameof(time)}: {time}, " +
                    $"{nameof(frequency)}: {frequency}";
         }
@@ -120,11 +89,12 @@ namespace Sonosthesia.Deform
             [WriteOnly] private NativeArray<float4> deformations;
             private TriNoise.TriNoiseComponent component;
             private CompoundMeshNoiseInfo info;
+            private SpatialFalloffCompute falloffCompute;
             private float3 localCenter;
 
             private float Falloff(float3 pos)
             {
-                float distance = math.distance(pos, localCenter);
+                float falloff = falloffCompute.;
                 float fade = math.clamp(math.unlerp(info.radius, 0, distance), 0, 1);
                 float falloff = info.falloffType.Evaluate(fade);
                 return falloff;
@@ -137,7 +107,7 @@ namespace Sonosthesia.Deform
                     v.v0.position, v.v1.position, v.v2.position, v.v3.position
                 )));
                 float4 noise = position.GetSimpleNoise<N>(component);
-                if (info.falloff)
+                if (info.falloff.active)
                 {
                     //float4 distance = new float4(
                     //    math.distance(v.v3.position, localCenter),
