@@ -12,11 +12,8 @@ using UnityEngine;
 namespace Sonosthesia.Deform
 {
 
-    
-    
     public readonly struct CompoundMeshNoiseInfo
     {
-        
         private const float IMPOTENCE_THRESHOLD = 1e-4f;
 
         public readonly EaseType crossFadeType;
@@ -116,7 +113,7 @@ namespace Sonosthesia.Deform
             int innerloopBatchCount, JobHandle dependency
         );
         
-        [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, OptimizeFor = OptimizeFor.Performance, CompileSynchronously = true)]
+        [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, OptimizeFor = OptimizeFor.Performance)]
         private struct Job<N> : IJobFor where N : struct, ISimpleNoise
         {
             [ReadOnly] private NativeArray<Vertex4> vertices;

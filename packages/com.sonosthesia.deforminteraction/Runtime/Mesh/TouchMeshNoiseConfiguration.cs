@@ -14,18 +14,15 @@ namespace Sonosthesia.DeformInteraction
         [SerializeField] private EaseType _crossFadeType = EaseType.easeInOutSine;
         public EaseType CrossFadeType => _crossFadeType;
 
-        [SerializeField] private bool _falloff;
-        public bool Falloff => _falloff;
-        
-        [SerializeField] private EaseType _falloffType = EaseType.linear;
-        public EaseType FalloffType => _falloffType;
-        
         [SerializeField] private int _frequency = 1;
         public int Frequency => _frequency;
         
-        [SerializeField] private DynamicTrackingSettings _centerTracking;
-        public DynamicTrackingSettings CenterTracking => _centerTracking;
+        [SerializeField] private DynamicTrackingSettings _actorTracking;
+        public DynamicTrackingSettings ActorTracking => _actorTracking;
 
+        [SerializeField] private TouchSpatialFalloffSettings _spatialFalloff;
+        public TouchSpatialFalloffSettings SpatialFalloff => _spatialFalloff;
+        
         [SerializeField] private TouchEnvelopeSettings _radius;
         public TouchEnvelopeSettings Radius => _radius;
         

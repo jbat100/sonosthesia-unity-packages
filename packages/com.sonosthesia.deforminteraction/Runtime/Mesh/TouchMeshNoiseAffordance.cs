@@ -37,7 +37,7 @@ namespace Sonosthesia.DeformInteraction
                 TouchMeshNoiseConfiguration configuration = affordance._configuration;
 
                 _centerTrackingSession = DynamicTrackingSessionUtil.CreateSession(
-                    configuration.CenterTracking,
+                    configuration.ActorTracking,
                     e.TouchData.Actor.DynamicsMonitor);
                 
                 _displacementSession = configuration.Displacement.SetupSession(e);
@@ -61,8 +61,8 @@ namespace Sonosthesia.DeformInteraction
                             affordance._configuration.NoiseType,
                             _displacementSession.Update(),
                             rts,
-                            affordance._configuration.Falloff,
-                            affordance._configuration.FalloffType,
+                            affordance._configuration.SpatialFalloff.Active,
+                            affordance._configuration.SpatialFalloff.EaseType,
                             _centerTrackingSession.Update(Time.deltaTime),
                             _radiusSession.Update(),
                             time,
