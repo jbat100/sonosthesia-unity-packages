@@ -78,7 +78,7 @@ namespace Sonosthesia.Deform
         private delegate JobHandle JobScheduleDelegate (
             UnityEngine.Mesh.MeshData meshData, 
             NativeArray<float4> deformations, TriNoise.TriNoiseComponent component, 
-            CompoundMeshNoiseInfo info, float3 localCenter,
+            CompoundMeshNoiseInfo info, Transform parent,
             int innerloopBatchCount, JobHandle dependency
         );
         
@@ -90,14 +90,12 @@ namespace Sonosthesia.Deform
             private TriNoise.TriNoiseComponent component;
             private CompoundMeshNoiseInfo info;
             private SpatialFalloffCompute falloffCompute;
-            private float3 localCenter;
 
             private float Falloff(float3 pos)
             {
-                float falloff = falloffCompute.;
-                float fade = math.clamp(math.unlerp(info.radius, 0, distance), 0, 1);
-                float falloff = info.falloffType.Evaluate(fade);
-                return falloff;
+                float falloff = falloffCompute.Compute(pos);
+                float eased = info.falloff.ease.Evaluate(falloff);
+                return eased;
             }
             
             public void Execute(int i)
@@ -129,16 +127,27 @@ namespace Sonosthesia.Deform
 
             public static JobHandle ScheduleParallel (UnityEngine.Mesh.MeshData meshData, 
                 NativeArray<float4> deformations, TriNoise.TriNoiseComponent component, 
-                CompoundMeshNoiseInfo info, float3 localCenter,
+                CompoundMeshNoiseInfo info, Transform parent,
                 int innerloopBatchCount, JobHandle dependency)
             {
+                SpatialFalloffCompute falloffCompute = default;
+                
+                if (info.falloff.active)
+                {
+                    float3 localCenter = parent.InverseTransformPoint(info.falloff.center);
+                    float3 localHandle = parent.InverseTransformPoint(info.falloff.handle);
+                    float localRadius = info.falloff.radius / parent.lossyScale.x;
+
+                    falloffCompute = new SpatialFalloffCompute(info.falloff.shape, localCenter, localHandle, localRadius);
+                }
+
                 return new Job<N>
                 {
                     vertices = meshData.GetVertexData<SingleStreams.Stream0>().Reinterpret<Vertex4>(12 * 4),
                     deformations = deformations,
                     component = component,
                     info = info,
-                    localCenter = localCenter
+                    falloffCompute = falloffCompute
                 }.ScheduleParallel(meshData.vertexCount / 4, innerloopBatchCount, dependency);
             }
         }
@@ -273,10 +282,9 @@ namespace Sonosthesia.Deform
             int dimensionIndex = IsPlane ? 0 : 2;
             foreach (CompoundMeshNoiseInfo info in _components.Values)
             {
-                float3 localCenter = transform.InverseTransformPoint(info.center);
                 JobScheduleDelegate deformationDelegate = _jobs[(int)info.noiseType, dimensionIndex];
                 TriNoise.TriNoiseComponent component = TriNoise.GetNoiseComponent(info, 0);
-                deformationJobs[i] = deformationDelegate(data, _summationHelper.terms[i], component, info, localCenter, resolution, dependency);
+                deformationJobs[i] = deformationDelegate(data, _summationHelper.terms[i], component, info, transform, resolution, dependency);
                 i++;
             }
 

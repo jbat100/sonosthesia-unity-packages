@@ -51,7 +51,7 @@ namespace Sonosthesia.DeformInteraction
         [SerializeField] private TouchSpatialFalloffSpace _space = TouchSpatialFalloffSpace.Actor;
         public TouchSpatialFalloffSpace Space => _space;
 
-        [SerializeField] private Vector3 _direction = Vector3.up;
-        public Vector3 Direction => _direction;
+        [SerializeField] private Vector3 offset = Vector3.up;
+        public Vector3 Offset => offset;
     }
 }

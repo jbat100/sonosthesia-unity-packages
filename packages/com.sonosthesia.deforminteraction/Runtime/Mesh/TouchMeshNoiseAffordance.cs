@@ -21,7 +21,7 @@ namespace Sonosthesia.DeformInteraction
             private ITouchEnvelopeSession _radiusSession;
             private ITouchEnvelopeSession _speedSession;
 
-            private IDynamicTrackingSession _centerTrackingSession;
+            private IDynamicTrackingSession _actorTrackingSession;
 
             private IDisposable _updateSubscription;
             
@@ -36,7 +36,7 @@ namespace Sonosthesia.DeformInteraction
                 TouchMeshNoiseAffordance affordance = Affordance;
                 TouchMeshNoiseConfiguration configuration = affordance._configuration;
 
-                _centerTrackingSession = DynamicTrackingSessionUtil.CreateSession(
+                _actorTrackingSession = DynamicTrackingSessionUtil.CreateSession(
                     configuration.ActorTracking,
                     e.TouchData.Actor.DynamicsMonitor);
                 
@@ -51,22 +51,40 @@ namespace Sonosthesia.DeformInteraction
                 
                 float3x4 rts = (new SpaceTRS { scale = 1 }).Matrix;
 
+                Vector3 source = e.TouchData.Source.transform.position;
+
                 _updateSubscription = Observable.EveryUpdate()
-                    .TakeUntilDisable(affordance)
+                    // .TakeUntilDisable(affordance)
                     .Subscribe(_ =>
                     {
                         time += Time.deltaTime * _speedSession.Update();
+                        Vector3 actor = _actorTrackingSession.Update(Time.deltaTime);
+                        Vector3 center = configuration.SpatialFalloff.Center switch
+                        {
+                            TouchSpatialFalloffCenter.Actor => actor,
+                            _ => source
+                        };
+                        Vector3 handle = center + configuration.SpatialFalloff.Space switch
+                        {
+                            TouchSpatialFalloffSpace.World => configuration.SpatialFalloff.Offset,
+                            TouchSpatialFalloffSpace.Source => e.TouchData.Source.transform.TransformDirection(configuration.SpatialFalloff.Offset),
+                            TouchSpatialFalloffSpace.Actor => e.TouchData.Actor.transform.TransformDirection(configuration.SpatialFalloff.Offset),
+                            TouchSpatialFalloffSpace.ActorSource => (actor - source).normalized * configuration.SpatialFalloff.Offset.y,
+                            _ => throw new ArgumentOutOfRangeException()
+                        };
+                        SpatialFalloffInfo falloffInfo = new SpatialFalloffInfo(
+                            configuration.SpatialFalloff.Active,
+                            configuration.SpatialFalloff.Shape,
+                            configuration.SpatialFalloff.EaseType,
+                            center, handle, _radiusSession.Update());
                         CompoundMeshNoiseInfo info = new CompoundMeshNoiseInfo(
-                            affordance._configuration.CrossFadeType,
-                            affordance._configuration.NoiseType,
+                            configuration.CrossFadeType,
+                            configuration.NoiseType,
                             _displacementSession.Update(),
                             rts,
-                            affordance._configuration.SpatialFalloff.Active,
-                            affordance._configuration.SpatialFalloff.EaseType,
-                            _centerTrackingSession.Update(Time.deltaTime),
-                            _radiusSession.Update(),
+                            falloffInfo,
                             time,
-                            affordance._configuration.Frequency
+                            configuration.Frequency
                         );
                         affordance._controller.Register(EventId, info);
                     }, err => Dispose(), Dispose);
@@ -95,7 +113,7 @@ namespace Sonosthesia.DeformInteraction
 
                 // Debug.LogWarning($"{this} {nameof(Teardown)} Dispose in {duration} seconds");
                 Observable.Timer(TimeSpan.FromSeconds(duration))
-                    .TakeUntilDisable(affordance)
+                    // .TakeUntilDisable(affordance)
                     .Subscribe(_ => {}, Dispose);
             }
             

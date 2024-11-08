@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Sonosthesia.Ease;
 using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Mathematics.Geometry;
@@ -18,17 +19,30 @@ namespace Sonosthesia.Deform
     {
         public readonly bool active;
         public readonly SpatialFalloffShape shape;
+        public readonly EaseType ease;
         public readonly float3 center;
         public readonly float3 handle;
         public readonly float radius;
 
-        public SpatialFalloffInfo(bool active, SpatialFalloffShape shape, float3 center, float3 handle, float radius)
+        public SpatialFalloffInfo(bool active, SpatialFalloffShape shape, EaseType ease, float3 center, float3 handle, float radius)
         {
             this.active = active;
             this.shape = shape;
+            this.ease = ease;
             this.center = center;
             this.handle = handle;
             this.radius = radius;
+        }
+        
+        public override string ToString()
+        {
+            return $"{nameof(SpatialFalloffInfo)} " +
+                   $"{nameof(active)}: {active}, " +
+                   $"{nameof(shape)}: {shape}, " +
+                   $"{nameof(ease)}: {ease}, " +
+                   $"{nameof(center)}: {center}, " +
+                   $"{nameof(handle)}: {handle}, " +
+                   $"{nameof(radius)}: {radius}";
         }
     }
 
@@ -79,14 +93,14 @@ namespace Sonosthesia.Deform
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public float Apply(float3 point, float value)
+        public float Compute(float3 point)
         {
             if (zero)
             {
                 return 0f;
             }
             
-            return Distance(point) * radiusInverse * value;
+            return 1f - math.clamp(Distance(point) * radiusInverse, 0, 1);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -96,13 +110,7 @@ namespace Sonosthesia.Deform
             {
                 case SpatialFalloffShape.Spherical:
                 {
-                    float distanceSqr = math.distancesq(point, center);
-                    if (distanceSqr > radiusSqr)
-                    {
-                        return 0;
-                    }
-                    float distance = math.rsqrt(distanceSqr);
-                    return distance;
+                    return math.distance(point, center);
                 }
                 case SpatialFalloffShape.Capsule:
                 {

@@ -1,7 +1,6 @@
 using System;
 using Sonosthesia.Ease;
 using Sonosthesia.Noise;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace Sonosthesia.Deform
@@ -19,11 +18,13 @@ namespace Sonosthesia.Deform
         [SerializeField] private EaseType _crossFadeType = EaseType.easeInOutQuint;
         [SerializeField] private float _speed = 1f;
 
-        [Header("Local")] 
+        [Header("Falloff")] 
         
         [SerializeField] private bool _falloff;
-        [SerializeField] private EaseType _falloffType;
-        [SerializeField] private float _radius = 1f;
+        [SerializeField] private EaseType _falloffEase;
+        [SerializeField] private SpatialFalloffShape _falloffShape;
+        [SerializeField] private float _falloffRadius = 1f;
+        [SerializeField] private Vector3 _falloffDirection = Vector3.up;
 
         private readonly Guid _id = Guid.NewGuid();
         private float _time;
@@ -41,14 +42,15 @@ namespace Sonosthesia.Deform
             }
             
             _time += Time.deltaTime * _speed;
-            float3 center = transform.position;
+            
+            Vector3 center = transform.position;
+            Vector3 handle = center + transform.TransformVector(_falloffDirection);
+
+            SpatialFalloffInfo falloffInfo = new SpatialFalloffInfo(_falloff, _falloffShape, _falloffEase, 
+                center, handle, _falloffRadius);
             
             CompoundMeshNoiseInfo info = new CompoundMeshNoiseInfo(
-                _crossFadeType, _noiseType, 
-                _displacement, _domainTRS.Matrix,
-                _falloff, _falloffType, center, _radius,
-                _time, _frequency
-                );
+                _crossFadeType, _noiseType, _displacement, _domainTRS.Matrix, falloffInfo, _time, _frequency);
             
             _controller.Register(_id, info);
         }
