@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Sonosthesia.Ease;
+using Sonosthesia.Utils;
 using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Mathematics.Geometry;
@@ -54,6 +55,7 @@ namespace Sonosthesia.Deform
 
         private readonly SpatialFalloffShape shape;
         private readonly float3 center;
+        private readonly float radius;
         
         private readonly bool zero;
         private readonly float radiusSqr;
@@ -66,6 +68,7 @@ namespace Sonosthesia.Deform
         {
             this.shape = shape;
             this.center = center;
+            this.radius = radius;
             
             zero = default;
             radiusSqr = default;
@@ -100,28 +103,34 @@ namespace Sonosthesia.Deform
                 return 0f;
             }
             
-            return 1f - math.clamp(Distance(point) * radiusInverse, 0, 1);
+            return 1f - math.clamp(Falloff(point), 0, 1);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public float Distance(float3 point)
+        private float Falloff(float3 point)
         {
             switch (shape)
             {
                 case SpatialFalloffShape.Spherical:
                 {
-                    return math.distance(point, center);
+                    // we can easily avoid the square root as a check
+                    float distanceSqr = math.distancesq(point, center);
+                    if (distanceSqr > lengthSqr)
+                    {
+                        return 1;
+                    }
+                    return math.sqrt(distanceSqr) * radiusInverse;
                 }
                 case SpatialFalloffShape.Capsule:
                 {
                     float3 pointToCenter = point - center;
                     float t = math.clamp(math.dot(pointToCenter, direction) / lengthSqr, 0f, 1f);
                     float3 q = center + t * direction;
-                    return math.distance(q, point);
+                    return math.distance(q, point) * radiusInverse;
                 }
                 case SpatialFalloffShape.Planar:
                 {
-                    return math.abs(plane.SignedDistanceToPoint(point));
+                    return math.abs(plane.UnsafeSignedDistanceToPoint(point)) * radiusInverse;
                 }
             }
 

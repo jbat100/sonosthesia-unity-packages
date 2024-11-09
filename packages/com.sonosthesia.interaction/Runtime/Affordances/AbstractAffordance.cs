@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
 
 namespace Sonosthesia.Interaction
 {
@@ -13,12 +13,8 @@ namespace Sonosthesia.Interaction
         [SerializeField] private bool _log;
         public bool Log => _log;
 
-        [SerializeField] private InteractionLayerMask _sourceLayers;
-        [SerializeField] private InteractionLayerMatch _sourceMatch = InteractionLayerMatch.Pass;
+        [SerializeField] private List<AbstractAffordanceGate> _gates;
         
-        [SerializeField] private InteractionLayerMask _actorLayers;
-        [SerializeField] private InteractionLayerMatch _actorMatch = InteractionLayerMatch.Pass;
-
         [SerializeField] private List<StreamContainer<TEvent>> _streamContainers;
 
         private readonly CompositeDisposable _subscriptions = new();
@@ -34,31 +30,39 @@ namespace Sonosthesia.Interaction
         {
             
         }
-        
-        protected virtual bool CheckCompatibility(TEvent e)
-        {
-            if (!_sourceMatch.Match(_sourceLayers, e.Source.InteractionLayers))
-            {
-                this.LogVerbose($"{this} failed source compatibility check");
-                return false;
-            }
-            if (!_actorMatch.Match(_actorLayers, e.Actor.InteractionLayers))
-            {
-                this.LogVerbose($"{this} failed actor compatibility check");
-                return false;
-            }
 
-            return true;
-        }
+        protected virtual bool CheckCompatibility(TEvent e) => true;
 
         // a bit of a pain to have to use async, but we need to wait for the first stream element to check
         private async UniTaskVoid OnStream(Guid id, IObservable<TEvent> stream)
         {
             stream = stream.TakeUntilDisable(this);
+
+            TEvent e = await stream.ToUniTask(true);
             
-            if (!CheckCompatibility(await stream.ToUniTask(true)))
+            if (!CheckCompatibility(e))
             {
                 return;
+            }
+
+            foreach (AbstractAffordanceGate gate in _gates)
+            {
+                if (gate is IAffordanceGate<TEvent> typedGate)
+                {
+                    if (!typedGate.Check(e))
+                    {
+                        this.LogVerbose($"{this} bailout on typed gate");
+                        return;
+                    }
+                }
+                else if (gate is IAffordanceGate interactionGate)
+                {
+                    if (!interactionGate.Check(e))
+                    {
+                        this.LogVerbose($"{this} bailout on gate");
+                        return;    
+                    }
+                }
             }
             
             this.LogWarning($"{this} handling new stream {stream}");

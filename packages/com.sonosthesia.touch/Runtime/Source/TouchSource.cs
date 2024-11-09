@@ -59,8 +59,18 @@ namespace Sonosthesia.Touch
         
         protected virtual void FixedUpdate()
         {
+            foreach (TouchActor actor in _reusableActors.Import(_gatedActors.Keys).Where(actor => !actor.isActiveAndEnabled))
+            {
+                _gatedActors.Remove(actor);
+            }
+
             foreach (TouchData data in _reusableData.Import(_touchData.Values))
             {
+                if (!data.Actor.isActiveAndEnabled)
+                {
+                    EndStream(data);
+                    continue;
+                }
                 if (_endOnGates && !CheckGates(data.Actor))
                 {
                     if (!CheckGates(data.Actor))

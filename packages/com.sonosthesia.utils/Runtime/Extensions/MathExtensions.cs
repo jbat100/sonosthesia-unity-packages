@@ -1,11 +1,20 @@
+using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
+using Plane = Unity.Mathematics.Geometry.Plane;
 
 namespace Sonosthesia.Utils
 {
     public static class MathExtensions
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float UnsafeSignedDistanceToPoint(this Plane plane, float3 point)
+        {
+            // same as SignedDistanceToPoint but avoids the Normalization check when not needed
+            return math.dot(plane.NormalAndDistance, new float4(point, 1.0f));
+        }
+        
         // https://stackoverflow.com/questions/1082917/mod-of-negative-number-is-melting-my-brain
         public static float Modulus(float a,float b)
         {

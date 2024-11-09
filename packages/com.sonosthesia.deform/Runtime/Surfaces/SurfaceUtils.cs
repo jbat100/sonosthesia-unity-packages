@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Sonosthesia.Noise;
 using Unity.Mathematics;
 
@@ -7,11 +8,13 @@ namespace Sonosthesia.Deform
 {
     public static class SurfaceUtils
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vertex4 SetDeformation(Vertex4 v, float4 noise, bool isPlane)
         {
             return isPlane ? SetPlaneDeformation(v, noise) : SetSphereDeformations(v, noise);
         }
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vertex4 SetPlaneDeformation(Vertex4 v, float4 noise)
         {
             v.v0.position.y = noise.x;
@@ -22,6 +25,7 @@ namespace Sonosthesia.Deform
             return v;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vertex4 SetSphereDeformations(Vertex4 v, float4 noise)
         {
             noise += 1f;
@@ -34,6 +38,7 @@ namespace Sonosthesia.Deform
             return v;
         }
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vertex4 SetVertices(Vertex4 v, Sample4 noise, bool isPlane)
         {
             return isPlane ? SetPlaneVertices(v, noise) : SetSphereVertices(v, noise);
