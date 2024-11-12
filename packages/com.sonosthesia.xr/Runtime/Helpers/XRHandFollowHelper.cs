@@ -20,12 +20,12 @@ namespace Sonosthesia.XR
             public bool Active => _active;
         }
         
-        [SerializeField] private XRHandTrackingEvents _trackingEvents;
+        [SerializeField] private XRHandProvider _hand;
 
         [SerializeField] private List<Element> _followers;
 
         private IDisposable _subscription;
-        
+
         private void SetActiveFollower(bool active)
         {
             foreach (Element element in _followers.Where(e => e.Follower))
@@ -38,19 +38,27 @@ namespace Sonosthesia.XR
                 }
             }    
         }
-        
+
+        protected void Awake()
+        {
+            if (!_hand)
+            {
+                _hand = GetComponentInParent<XRHandProvider>();
+            }
+        }
+
         protected void OnEnable()
         {
             _subscription?.Dispose();
 
-            if (!_trackingEvents)
+            if (!(_hand && _hand.TrackingEvents))
             {
                 SetActiveFollower(false);
                 return;
             }
 
-            _subscription = _trackingEvents.trackingChanged.AsObservable()
-                .StartWith(_trackingEvents.handIsTracked)
+            _subscription = _hand.TrackingEvents.trackingChanged.AsObservable()
+                .StartWith(_hand.TrackingEvents.handIsTracked)
                 .Subscribe(SetActiveFollower);
         }
 

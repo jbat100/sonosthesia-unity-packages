@@ -29,7 +29,7 @@ namespace Sonosthesia.XR
             }
         }
         
-        [SerializeField] private XRHandTrackingEvents _trackingEvents;
+        [SerializeField] private XRHandProvider _hand;
         [SerializeField] private List<Element> _elements;
 
         private IDisposable _subscription;
@@ -38,9 +38,9 @@ namespace Sonosthesia.XR
         {
             _subscription?.Dispose();
             DeactivateAll();
-            if (_trackingEvents)
+            if (_hand && _hand.TrackingEvents)
             {
-                _subscription = _trackingEvents.jointsUpdated.AsObservable().Subscribe(args =>
+                _subscription = _hand.TrackingEvents.jointsUpdated.AsObservable().Subscribe(args =>
                 {
                     foreach (Element element in _elements)
                     {
