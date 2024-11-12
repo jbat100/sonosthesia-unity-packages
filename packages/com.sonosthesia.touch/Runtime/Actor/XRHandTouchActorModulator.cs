@@ -2,19 +2,19 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.XR.Hands;
-using Sonosthesia.Utils;
+using Sonosthesia.XR;
 
 namespace Sonosthesia.Touch
 {
-    public class HandTouchActorModulator : TouchActorModulator
+    public class XRHandTouchActorModulator : TouchActorModulator
     {
         private enum Strategy
         {
             Max,
             Average
         }
-        
-        [SerializeField] private Handedness _handedness;
+
+        [SerializeField] private XRHandProvider _hand;
 
         [SerializeField] private Strategy _strategy;
 
@@ -26,6 +26,14 @@ namespace Sonosthesia.Touch
 
         private static readonly List<float> _values = new ();
         
+        protected virtual void Awake()
+        {
+            if (!_hand)
+            {
+                _hand = GetComponentInParent<XRHandProvider>();
+            }
+        }
+        
         public override float Select(TouchActorModulationType modulationType)
         {
             if (modulationType == TouchActorModulationType.None)
@@ -33,18 +41,10 @@ namespace Sonosthesia.Touch
                 return 0;
             }
 
-            if (_handedness == Handedness.Invalid)
+            if (_hand.TryGetTrackedHand(out XRHand hand))
             {
                 return 0;
             }
-            
-            XRHandSubsystem subsystem = SubsystemHelper.Get<XRHandSubsystem>();
-            if (subsystem == null)
-            {
-                return 0;
-            }
-            
-            XRHand hand = _handedness == Handedness.Left ? subsystem.leftHand : subsystem.rightHand;
             
             _values.Clear();
             

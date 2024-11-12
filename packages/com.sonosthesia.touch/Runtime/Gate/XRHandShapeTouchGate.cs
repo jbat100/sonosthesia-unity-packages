@@ -1,31 +1,39 @@
 using System;
+using Sonosthesia.XR;
 using UniRx;
 using UnityEngine;
-using UnityEngine.XR.Hands;
 using UnityEngine.XR.Hands.Gestures;
 
 namespace Sonosthesia.Touch
 {
-    public class HandShapeTouchGate : TouchGate
+    public class XRHandShapeTouchGate : TouchGate
     {
         [SerializeField] private XRHandShape _shape;
 
-        [SerializeField] private XRHandTrackingEvents _trackingEvents;
+        [SerializeField] private XRHandProvider _hand;
 
         private IDisposable _subscription;
         private bool _match;
+
+        protected virtual void Awake()
+        {
+            if (!_hand)
+            {
+                _hand = GetComponentInParent<XRHandProvider>();
+            }
+        }
         
         protected virtual void OnEnable()
         {
             _match = false;
             _subscription?.Dispose();
 
-            if (!_trackingEvents)
+            if (!_hand || !_hand.TrackingEvents)
             {
                 return;
             }
             
-            _subscription = _trackingEvents.jointsUpdated.AsObservable().Subscribe(eventArgs =>
+            _subscription = _hand.TrackingEvents.jointsUpdated.AsObservable().Subscribe(eventArgs =>
             {
                 _match = _shape && _shape.CheckConditions(eventArgs);
             });

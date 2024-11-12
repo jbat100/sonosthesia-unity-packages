@@ -9,6 +9,9 @@ namespace Sonosthesia.Utils
         {
             private static readonly List<T> _subsystemsReuse = new ();
             
+            // note that XRHandTrackingEvent does work on every update to ensure that we are using the latest running
+            // subsystem so maybe keeping a reference is not such a great idea
+            
             public static T TryGetSubsystem()
             {
                 SubsystemManager.GetSubsystems(_subsystemsReuse);

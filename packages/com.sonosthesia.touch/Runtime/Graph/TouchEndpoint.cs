@@ -15,6 +15,9 @@ namespace Sonosthesia.Touch
         [SerializeField] private bool _mute;
         public bool Mute => _mute;
         
+        [SerializeField] private int _domain;
+        public int Domain => _domain;        
+        
         [SerializeField] private InteractionLayerMask _interactionLayers = ~0;
         public InteractionLayerMask InteractionLayers => _interactionLayers;
 
