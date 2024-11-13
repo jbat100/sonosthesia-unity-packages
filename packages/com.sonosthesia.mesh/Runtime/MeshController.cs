@@ -77,7 +77,7 @@ namespace Sonosthesia.Mesh
 
         protected void Rebuild()
         {
-            Debug.Log($"{this.name} {nameof(Rebuild)} on frame {Time.frameCount}");
+            // Debug.Log($"{this.name} {nameof(Rebuild)} on frame {Time.frameCount}");
             
             _vertices = null;
             _normals = null;

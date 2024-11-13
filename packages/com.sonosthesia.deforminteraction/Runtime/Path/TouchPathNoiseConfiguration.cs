@@ -8,8 +8,6 @@ namespace Sonosthesia.DeformInteraction
     [CreateAssetMenu(fileName = "TouchPathNoiseConfiguration", menuName = "Sonosthesia/Touch/TouchPathNoiseConfiguration")]
     public class TouchPathNoiseConfiguration : ScriptableObject
     {
-        [Header("Noise")]
-        
         [SerializeField] private bool _trackPosition;
         public bool TrackPosition => _trackPosition;
 
@@ -18,9 +16,7 @@ namespace Sonosthesia.DeformInteraction
         
         [SerializeField] private EaseType _falloffType = EaseType.linear;
         public EaseType FalloffType => _falloffType;
-        
-        [Header("Touch")]
-        
+
         [SerializeField] private TouchEnvelopeSettings _radius;
         public TouchEnvelopeSettings Radius => _radius;
 
