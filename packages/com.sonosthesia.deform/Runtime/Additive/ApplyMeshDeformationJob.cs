@@ -7,7 +7,7 @@ using Unity.Mathematics;
 
 namespace Sonosthesia.Deform
 {
-    [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
+    [BurstCompile(FloatPrecision.Standard, FloatMode.Fast)]
     public struct ApplyMeshSampleDeformationJob : IJobFor
     {
         private float displacement;

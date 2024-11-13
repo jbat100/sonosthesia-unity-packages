@@ -192,7 +192,7 @@ namespace Sonosthesia.Deform
 
         private NormalComputeHelper _normalComputeHelper;
 
-        private CacheKey MakeCacheKey() => new CacheKey(_meshType, _resolution);
+        protected CacheKey MakeCacheKey() => new (_meshType, _resolution);
         
         protected override void Awake()
         {

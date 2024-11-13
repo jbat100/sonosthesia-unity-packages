@@ -70,10 +70,33 @@ namespace Sonosthesia.Deform
     public class CompoundNoiseMeshController : SingleStreamMeshController
     {
         [SerializeField] private int _summationPoolSize = 4;
+
+        [SerializeField] private float _planeDeformationFade = 0.1f;
+
+        [SerializeField] private EaseType _planeDeformationEase = EaseType.easeInOutSine;
         
         private readonly Dictionary<Guid, CompoundMeshNoiseInfo> _components = new();
 
         private UnsafeNativeArraySummationHelper<float4> _summationHelper;
+
+        private class DeformationMaskCache : IDisposable
+        {
+            public CacheKey cacheKey; 
+            public NativeArray<float4> deformationMask;
+
+            public DeformationMaskCache(CacheKey cacheKey, NativeArray<float4> deformationMask)
+            {
+                this.cacheKey = cacheKey;
+                this.deformationMask = deformationMask;
+            }
+
+            public void Dispose()
+            {
+                deformationMask.Dispose();
+            }
+        }
+
+        private DeformationMaskCache _deformationMaskCache;
 
         private delegate JobHandle JobScheduleDelegate (
             UnityEngine.Mesh.MeshData meshData, 
@@ -270,6 +293,29 @@ namespace Sonosthesia.Deform
             if (_components.Count == 0)
             {
                 return dependency;
+            }
+
+            if (IsPlane)
+            {
+                CacheKey cacheKey = MakeCacheKey();
+                if (_deformationMaskCache == null || _deformationMaskCache.cacheKey != cacheKey)
+                {
+                    _deformationMaskCache?.Dispose();
+                    // build deformation mask cache
+
+                    NativeArray<Vertex4> vertices = data.GetVertexData<SingleStreams.Stream0>().Reinterpret<Vertex4>(12 * 4);
+                    NativeArray<float4> mask = new NativeArray<float4>(vertices.Length, Allocator.Persistent);
+                    
+                    PlaneDeformationMaskJob.Make(vertices, mask);
+                }
+            }
+            else
+            {
+                if (_deformationMaskCache != null)
+                {
+                    _deformationMaskCache.Dispose();
+                    _deformationMaskCache = null;
+                }
             }
             
             _summationHelper.Length = Mathf.CeilToInt(data.vertexCount / 4f);
