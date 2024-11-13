@@ -7,6 +7,8 @@ using Unity.Mathematics;
 
 namespace Sonosthesia.Deform
 {
+    // Used to sum an arbitrary number of float/float4 native arrays
+    
     // Once you alter ComponentCount or Length, old array references may be invalid
 
     public class UnsafeNativeArraySummationHelper<T> : IDisposable where T : struct

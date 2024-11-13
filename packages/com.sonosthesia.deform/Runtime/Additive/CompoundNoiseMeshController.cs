@@ -71,9 +71,7 @@ namespace Sonosthesia.Deform
     {
         [SerializeField] private int _summationPoolSize = 4;
 
-        [SerializeField] private float _planeDeformationFade = 0.1f;
-
-        [SerializeField] private EaseType _planeDeformationEase = EaseType.easeInOutSine;
+        [SerializeField] private PlaneDeformationMaskSettings _planeDeformationMask;
         
         private readonly Dictionary<Guid, CompoundMeshNoiseInfo> _components = new();
 
@@ -81,18 +79,18 @@ namespace Sonosthesia.Deform
 
         private class DeformationMaskCache : IDisposable
         {
-            public CacheKey cacheKey; 
-            public NativeArray<float4> deformationMask;
+            public readonly CacheKey cacheKey; 
+            public NativeArray<float4> mask;
 
-            public DeformationMaskCache(CacheKey cacheKey, NativeArray<float4> deformationMask)
+            public DeformationMaskCache(CacheKey cacheKey, NativeArray<float4> mask)
             {
                 this.cacheKey = cacheKey;
-                this.deformationMask = deformationMask;
+                this.mask = mask;
             }
 
             public void Dispose()
             {
-                deformationMask.Dispose();
+                mask.Dispose();
             }
         }
 
@@ -282,6 +280,18 @@ namespace Sonosthesia.Deform
             _summationHelper = new UnsafeNativeArraySummationHelper<float4>(_summationPoolSize);
         }
 
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
+            if (_deformationMaskCache != null)
+            {
+                _deformationMaskCache.Dispose();
+                _deformationMaskCache = null;
+            }
+                
+        }
+
         protected override JobHandle DeformMesh(UnityEngine.Mesh.MeshData data, int resolution, float displacement, JobHandle dependency)
         {
             if (data.vertexCount == 0)
@@ -295,7 +305,7 @@ namespace Sonosthesia.Deform
                 return dependency;
             }
 
-            if (IsPlane)
+            if (IsPlane && _planeDeformationMask.Active)
             {
                 CacheKey cacheKey = MakeCacheKey();
                 if (_deformationMaskCache == null || _deformationMaskCache.cacheKey != cacheKey)
@@ -306,7 +316,12 @@ namespace Sonosthesia.Deform
                     NativeArray<Vertex4> vertices = data.GetVertexData<SingleStreams.Stream0>().Reinterpret<Vertex4>(12 * 4);
                     NativeArray<float4> mask = new NativeArray<float4>(vertices.Length, Allocator.Persistent);
                     
-                    PlaneDeformationMaskJob.Make(vertices, mask);
+                    PlaneDeformationMaskJob planeDeformationMaskJob = 
+                        PlaneDeformationMaskJob.Make(vertices, mask, _planeDeformationMask.Fade, _planeDeformationMask.Ease);
+
+                    planeDeformationMaskJob.ScheduleParallel(vertices.Length, resolution, default).Complete();
+
+                    _deformationMaskCache = new DeformationMaskCache(cacheKey, planeDeformationMaskJob.mask);
                 }
             }
             else
@@ -325,7 +340,7 @@ namespace Sonosthesia.Deform
 
             NativeArray<JobHandle> deformationJobs = new NativeArray<JobHandle>(_components.Count, Allocator.Temp);
             int i = 0;
-            int dimensionIndex = IsPlane ? 0 : 2;
+            int dimensionIndex = IsPlane ? 1 : 2;
             foreach (CompoundMeshNoiseInfo info in _components.Values)
             {
                 JobScheduleDelegate deformationDelegate = _jobs[(int)info.noiseType, dimensionIndex];
@@ -334,10 +349,26 @@ namespace Sonosthesia.Deform
                 i++;
             }
 
-            JobHandle sumDependency = _summationHelper.Float4Sum(JobHandle.CombineDependencies(deformationJobs));
+            dependency = _summationHelper.Float4Sum(JobHandle.CombineDependencies(deformationJobs));
+
+            NativeArray<float4> deformations = _summationHelper.sum;
+
+            if (IsPlane && _planeDeformationMask.Active && _deformationMaskCache != null)
+            {
+                Debug.Log($"{this} applying deformation mask");
+
+                // debugging deformation mask
+                // deformations = _deformationMaskCache.mask;
+
+                dependency = new Float4MultiplyArrayJob
+                    {
+                        source = _deformationMaskCache.mask,
+                        target = deformations
+                    }
+                    .ScheduleParallel(_deformationMaskCache.mask.Length, resolution, dependency);
+            }
             
-            return ApplyMeshFloatDeformationJob.ScheduleParallel(data, 
-                _summationHelper.sum, displacement, IsPlane, resolution, sumDependency);
+            return ApplyMeshFloatDeformationJob.ScheduleParallel(data, deformations, displacement, IsPlane, resolution, dependency);
         }
     }
 }

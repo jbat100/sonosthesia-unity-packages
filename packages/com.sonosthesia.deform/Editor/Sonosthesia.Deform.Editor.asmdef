@@ -1,0 +1,28 @@
+{
+    "name": "Sonosthesia.Deform.Editor",
+    "rootNamespace": "Sonosthesia.Deform.Editor",
+    "references": [
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:2665a8d13d1b3f18800f46e256720795",
+        "GUID:21d1eb854b91ade49bc69a263d12bee2",
+        "GUID:da4dcb349cd2457b9de2fe9f9ea29a3d",
+        "GUID:eda0e54ec5f2644fe9c828d88900f12b",
+        "GUID:2794d9488a0044c8b932b9b661e6e989",
+        "GUID:124ed27b5fec441139fc96ad76f1b7b4",
+        "GUID:0e73a958ea93c4999aae301d99219c62",
+        "GUID:1f7670743f37b4db48eea5bc06ad4e65",
+        "GUID:25e5e4b6f3916462c92ecc1d0ffca2c2",
+        "GUID:84e4dabf4521845c2ba0da98542e684a"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

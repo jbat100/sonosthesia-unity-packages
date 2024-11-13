@@ -4,7 +4,6 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Sonosthesia.Ease;
-using Sonosthesia.Mesh;
 
 namespace Sonosthesia.Deform
 {
@@ -12,21 +11,29 @@ namespace Sonosthesia.Deform
     [BurstCompile(FloatPrecision.Standard, FloatMode.Fast)]
     public struct PlaneDeformationMaskJob : IJobFor
     {
-        [ReadOnly] private NativeArray<Vertex4> vertices;
-        [WriteOnly] private NativeArray<float4> mask;
-        private float fade; // [0, 0.5]
-        private EaseType easeType;
+        [ReadOnly] public NativeArray<Vertex4> vertices;
+        [WriteOnly] public NativeArray<float4> mask;
+        public float fade; // [0, 0.5]
+        public EaseType easeType;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private float2 Distance(float2 pos)
+        {
+            float2 pos01 = pos + 0.5f;
+            return math.abs(pos01 - math.round(pos01));
+        }
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private float Fade(float3 position)
         {
-            float3 abs = math.abs(position) - 0.5f;
-            float distance = math.min(abs.x, abs.y) / fade;
-            if (distance > 1)
+            float2 distanceXZ = Distance(new float2(position.x, position.z));
+            float distance = math.min(distanceXZ.x, distanceXZ.y);
+            float f = math.unlerp(0, fade, distance);
+            if (f > 1)
             {
                 return 1;
             }
-            return easeType.Evaluate(distance);
+            return easeType.Evaluate(f);
         }
         
         public void Execute(int index)

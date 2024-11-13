@@ -9,8 +9,8 @@ namespace Sonosthesia.Deform
     [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
     public struct SumArrayJob<T> : IJobFor where T : struct, ISummable<T>
     {
-        [NativeDisableParallelForRestriction][ReadOnly] public NativeArray<T> source;
-        [NativeDisableParallelForRestriction] public NativeArray<T> target;
+        [ReadOnly] public NativeArray<T> source;
+        public NativeArray<T> target;
 
         public void Execute(int index)
         {
@@ -23,8 +23,8 @@ namespace Sonosthesia.Deform
     [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
     public struct FloatSumArrayJob : IJobFor
     {
-        [NativeDisableParallelForRestriction][ReadOnly] public NativeArray<float> source;
-        [NativeDisableParallelForRestriction] public NativeArray<float> target;
+        [ReadOnly] public NativeArray<float> source;
+        public NativeArray<float> target;
 
         public void Execute(int index)
         {
@@ -35,8 +35,8 @@ namespace Sonosthesia.Deform
     [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
     public struct Float4SumArrayJob : IJobFor
     {
-        [NativeDisableParallelForRestriction][ReadOnly] public NativeArray<float4> source;
-        [NativeDisableParallelForRestriction] public NativeArray<float4> target;
+        [ReadOnly] public NativeArray<float4> source;
+        public NativeArray<float4> target;
 
         public void Execute(int index)
         {
