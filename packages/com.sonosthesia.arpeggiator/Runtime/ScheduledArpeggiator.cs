@@ -1,14 +1,14 @@
 using System;
 using UnityEngine;
 using UniRx;
-using Sonosthesia.Channel;
+using Sonosthesia.Scheduler;
 
 namespace Sonosthesia.Arpeggiator
 {
-    public abstract class ScheduledArpegiator<T> : Arpegiator<T> where T : struct
+    public abstract class ScheduledArpeggiator<T> : Arpeggiator<T> where T : struct
     {
-        [SerializeField] private Scheduler _scheduler;
-        
+        [SerializeField] private LoopingScheduler _scheduler;
+
         [SerializeField] private Modulator<T> _modulator;
         
         [SerializeField] private ArpegiatorFollower<T> _follower;
@@ -21,7 +21,7 @@ namespace Sonosthesia.Arpeggiator
         private class StreamArpegiator : IDisposable
         {
             private readonly float _startTime;
-            private Scheduler.ISession _session;
+            private ISchedulerSession _session;
             private IDisposable _streamSubscription;
             private IDisposable _sessionSubscription;
             private Subject<IObservable<T>> _arpegiations;
@@ -29,15 +29,15 @@ namespace Sonosthesia.Arpeggiator
             public IObservable<IObservable<T>> Arpegiations => _arpegiations;
             
             public StreamArpegiator(IObservable<T> stream, 
-                Scheduler scheduler, 
+                LoopingScheduler scheduler, 
                 Modulator<T> modulator,
                 ArpegiatorFollower<T> follower,
                 ArpegiatorTerminator<T> terminator)
             {
                 IConnectableObservable<T> connected = stream.Replay(1);
                 _startTime = Time.time;
-                _session = scheduler.Session();
-                _sessionSubscription = _session.Stream.Subscribe(offset => Arpegiate(connected, offset, modulator, follower, terminator));
+                _session = scheduler.CreateSession(1f, 0f);
+                _sessionSubscription = _session.Stream.Subscribe(offset => Arpegiate(connected, offset.position, modulator, follower, terminator));
                 _arpegiations = new Subject<IObservable<T>>();
                 _streamSubscription = stream.Subscribe(_ => {}, Dispose);
                 connected.Connect();

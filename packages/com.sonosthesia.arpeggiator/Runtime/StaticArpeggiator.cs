@@ -1,11 +1,12 @@
 using UnityEngine;
 using Sonosthesia.Channel;
+using Sonosthesia.Scheduler;
 
 namespace Sonosthesia.Arpeggiator
 {
-    public class StaticArpegiator<T> : Channel<T> where T : struct
+    public class StaticArpeggiator<T> : Channel<T> where T : struct
     {
-        [SerializeField] private Scheduler _scheduler;
+        [SerializeField] private LoopingScheduler _scheduler;
         
         [SerializeField] private Modulator<T> _modulator;
         

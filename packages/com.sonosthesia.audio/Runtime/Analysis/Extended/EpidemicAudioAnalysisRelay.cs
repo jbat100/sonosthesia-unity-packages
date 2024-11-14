@@ -19,7 +19,8 @@ namespace Sonosthesia.Audio
         protected virtual void Awake()
         {
 #if UNITY_EDITOR
-            CreateRelays();
+            // Unity really doesn't like this on first import, goes into an infinite loop
+            // CreateRelays();
 #endif
         }
         

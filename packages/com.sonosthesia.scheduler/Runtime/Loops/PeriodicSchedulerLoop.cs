@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sonosthesia.Arpeggiator
+namespace Sonosthesia.Scheduler
 {
-    [CreateAssetMenu(fileName = "PeriodicSchedulerConfiguration", menuName = "Sonosthesia/Scheduling/PeriodicSchedulerConfiguration")]
-    public class PeriodicSchedulerConfiguration : SchedulerConfiguration
+    [CreateAssetMenu(fileName = "PeriodicSchedulerLoop", menuName = "Sonosthesia/Scheduler/PeriodicSchedulerLoop")]
+    public class PeriodicSchedulerLoop : SchedulerLoop
     {
         [SerializeField] private float _duration;
 

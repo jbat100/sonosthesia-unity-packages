@@ -2,7 +2,7 @@ using System;
 using UniRx;
 using UnityEngine;
 
-namespace Sonosthesia.Arpeggiator
+namespace Sonosthesia.Scheduler
 {
 #if UNITY_EDITOR
     using UnityEditor;
@@ -26,23 +26,34 @@ namespace Sonosthesia.Arpeggiator
     }
 #endif
     
-    [RequireComponent(typeof(Scheduler))]
     public class SchedulerTest : MonoBehaviour
     {
-        private Scheduler _scheduler;
-        private Scheduler.ISession _session;
+        [SerializeField] private AbstractScheduler _scheduler; 
+        
+        [SerializeField] private float _speed = 1f;
+        
+        [SerializeField] private float _chaos = 1f;
+        
+        private ISchedulerSession _session;
         private IDisposable _subscription;
         private float? _lastTime;
 
-        protected void Awake()
+        protected void Update()
         {
-            _scheduler = GetComponent<Scheduler>();
+            if (_session == null)
+            {
+                return;
+            }
+            
+            _session.Speed = _speed;
+            _session.Chaos = _chaos;
         }
 
         public void Play()
         {
-            _session?.Dispose();
-            _session = _scheduler.Session();
+            Stop();
+            
+            _session = _scheduler.CreateSession(_speed, _chaos);
             _subscription = _session.Stream.Subscribe(offset =>
             {
                 if (_lastTime.HasValue)
@@ -55,14 +66,16 @@ namespace Sonosthesia.Arpeggiator
                 }
 
                 _lastTime = Time.time;
-
             });
         }
 
         public void Stop()
         {
             _subscription?.Dispose();
+            _subscription = null;
+            
             _session?.Dispose();
+            _session = null;
         }
     }
 }

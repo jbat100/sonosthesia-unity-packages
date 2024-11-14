@@ -5,7 +5,7 @@ using Sonosthesia.Channel;
 
 namespace Sonosthesia.Arpeggiator
 {
-    public abstract class Arpegiator<T> : Channel<T> where T : struct
+    public abstract class Arpeggiator<T> : Channel<T> where T : struct
     {
         [SerializeField] private Channel<T> _source;
         

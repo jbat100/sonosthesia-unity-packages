@@ -1,11 +1,11 @@
 using System.Linq;
 using UnityEngine;
 
-namespace Sonosthesia.Arpeggiator
+namespace Sonosthesia.Scheduler
 {
     
-    [CreateAssetMenu(fileName = "CustomSchedulerConfiguration", menuName = "Sonosthesia/Scheduling/CustomSchedulerConfiguration")]
-    public class CustomSchedulerConfiguration : SchedulerConfiguration
+    [CreateAssetMenu(fileName = "CustomSchedulerConfiguration", menuName = "Sonosthesia/Scheduler/CustomLoop")]
+    public class CustomSchedulerLoop : SchedulerLoop
     {
         [SerializeField] private float _duration;
 

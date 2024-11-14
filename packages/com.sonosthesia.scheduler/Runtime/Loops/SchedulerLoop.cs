@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace Sonosthesia.Arpeggiator
+namespace Sonosthesia.Scheduler
 {
-    public abstract class SchedulerConfiguration : ScriptableObject
+    public abstract class SchedulerLoop : ScriptableObject
     {
         public abstract float Duration { get; }
 
