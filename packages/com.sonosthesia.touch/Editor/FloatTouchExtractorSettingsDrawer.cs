@@ -25,15 +25,9 @@ namespace Sonosthesia.Touch.Editor
             root.AddRelativeField(property, "_staticValue", 
                 out SerializedProperty _, out PropertyField staticValueField);
 
-            root.AddRelativeField(property, "_dynamicType", 
-                out SerializedProperty dynamicTypeProp, out PropertyField dynamicTypeField);
-            
-            root.AddRelativeField(property, "_dynamicsDomain", 
-                out SerializedProperty _, out PropertyField dynamicsDomainField);
-            
-            root.AddRelativeField(property, "_dynamicsOrder", 
-                out SerializedProperty _, out PropertyField dynamicsOrderField);
-            
+            root.AddRelativeField(property, "_velocityType", 
+                out SerializedProperty _, out PropertyField velocityTypeField);
+
             root.AddRelativeField(property, "_distanceType", 
                 out SerializedProperty distanceTypeProp, out PropertyField distanceTypeField);
 
@@ -68,12 +62,8 @@ namespace Sonosthesia.Touch.Editor
                 TouchActorModulationType actorModulationType = (TouchActorModulationType)actorModulationTypeProp.enumValueIndex;
 
                 extractorField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Custom);
-                
                 staticValueField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Static);
-                
-                dynamicTypeField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Dynamic);
-                dynamicsOrderField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Dynamic);
-                dynamicsDomainField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Dynamic);
+                velocityTypeField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Velocity);
                 
                 distanceTypeField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Distance);
                 distanceAxesField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Distance);

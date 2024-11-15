@@ -1,5 +1,4 @@
 using System;
-using Sonosthesia.Dynamic;
 using Sonosthesia.Utils;
 using Unity.Mathematics;
 using UnityEngine;
@@ -13,12 +12,12 @@ namespace Sonosthesia.Touch
         {
             Custom,
             Static,
-            Dynamic,
+            Velocity,
             Distance,
             Twist
         }
 
-        public enum DynamicType
+        public enum VelocityType
         {
             Actor,
             Source,
@@ -48,11 +47,9 @@ namespace Sonosthesia.Touch
         
         [SerializeField] private float _staticValue = 1;
 
-        // ----------- dynamic -------------
+        // ----------- velocity -------------
         
-        [SerializeField] private DynamicType _dynamicType = DynamicType.Actor;
-        [SerializeField] private TransformDynamics.Domain _dynamicsDomain = TransformDynamics.Domain.Position;
-        [SerializeField] private TransformDynamics.Order _dynamicsOrder = TransformDynamics.Order.Velocity;
+        [SerializeField] private VelocityType _velocityType = VelocityType.Actor;
 
         // ----------- distance -------------
         
@@ -85,7 +82,6 @@ namespace Sonosthesia.Touch
         // used when the value can change with time and may require state, such as relative distance etc...
         public ITouchExtractorSession<float> MakeSession()
         {
-
             ITouchExtractorSession<float> DistanceSession()
             {
                 return _distanceType switch
@@ -100,7 +96,7 @@ namespace Sonosthesia.Touch
             {
                 ExtractorType.Custom => _extractor.MakeSession(),
                 ExtractorType.Static => new StaticSession(_staticValue),
-                ExtractorType.Dynamic => new DynamicSession(_dynamicType, _dynamicsDomain, _dynamicsOrder),
+                ExtractorType.Velocity => new VelocitySession(_velocityType),
                 ExtractorType.Distance => DistanceSession(),
                 ExtractorType.Twist => new TwistSession(),
                 _ => null
@@ -155,7 +151,6 @@ namespace Sonosthesia.Touch
             }
 
             protected override float Process(TouchEvent touchEvent, float value) => _settings.Remap(value);
-            
         }
         
         private class CurveSession : TouchExtractorSessionProcessor<float>
@@ -202,44 +197,30 @@ namespace Sonosthesia.Touch
             public bool Update(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
         }
 
-        private class DynamicSession : ITouchExtractorSession<float>
+        private class VelocitySession : ITouchExtractorSession<float>
         {
-            private readonly DynamicType _type;
-            private readonly TransformDynamics.Domain _domain;
-            private readonly TransformDynamics.Order _order;
-
-            private TransformDynamicsMonitor _sourceMonitor;
-            private TransformDynamicsMonitor _actorMonitor;
+            private readonly VelocityType _type;
             
-            public DynamicSession(DynamicType type, TransformDynamics.Domain domain, TransformDynamics.Order order)
+            public VelocitySession(VelocityType type)
             {
                 _type = type;
-                _domain = domain;
-                _order = order;
             }
 
             private bool Common(TouchEvent touchEvent, out float value)
             {
-                Vector3 source = _sourceMonitor ? _sourceMonitor.Select(_order).Select(_domain) : Vector3.zero;
-                Vector3 actor = _actorMonitor ? _actorMonitor.Select(_order).Select(_domain) : Vector3.zero;
-
                 value = _type switch
                 {
-                    DynamicType.Actor => actor.magnitude,
-                    DynamicType.Source => source.magnitude,
-                    DynamicType.Relative => (actor - source).magnitude,
+                    VelocityType.Actor => touchEvent.TouchData.Actor.DynamicsMonitor.Velocity.Position.magnitude,
+                    VelocityType.Source => touchEvent.TouchData.Source.DynamicsMonitor.Velocity.Position.magnitude,
+                    VelocityType.Relative => (touchEvent.TouchData.Actor.DynamicsMonitor.Velocity.Position - 
+                                              touchEvent.TouchData.Source.DynamicsMonitor.Velocity.Position).magnitude,
                     _ => 0f
                 };
 
                 return true;
             }
 
-            public bool Setup(TouchEvent touchEvent, out float value)
-            {
-                _sourceMonitor = touchEvent.TouchData.Source.DynamicsMonitor;
-                _actorMonitor = touchEvent.TouchData.Actor.DynamicsMonitor;
-                return Common(touchEvent, out value);
-            }
+            public bool Setup(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
 
             public bool Update(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
         }
