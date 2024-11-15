@@ -31,6 +31,8 @@ namespace Sonosthesia.Touch.Editor
             root.AddRelativeField(property, "_direction", 
                 out SerializedProperty _, out PropertyField directionField);
             
+            root.AddRelativeField(property, "_scale");
+            
             
             void UpdateVisibility()
             {

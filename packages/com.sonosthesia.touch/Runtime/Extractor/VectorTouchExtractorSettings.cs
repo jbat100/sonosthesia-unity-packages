@@ -39,6 +39,8 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private Vector3 _direction;
 
+        [SerializeField] private float _scale = 1f;
+
         public ITouchExtractorSession<Vector3> MakeSession()
         {
             return _extractorType switch
