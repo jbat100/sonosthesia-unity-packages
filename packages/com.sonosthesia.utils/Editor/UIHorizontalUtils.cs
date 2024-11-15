@@ -69,7 +69,7 @@ namespace Sonosthesia.Utils.Editor
             {
                 style =
                 {
-                    // minWidth = 120,
+                    minWidth = 120,
                     // alignSelf = Align.Center,
                     paddingLeft = 5,
                     // paddingTop = 2,
@@ -87,8 +87,8 @@ namespace Sonosthesia.Utils.Editor
                 style =
                 {
                     flexGrow = 0.5f,
-                    minWidth = 30,
-                    paddingLeft = 5
+                    minWidth = 40,
+                    paddingLeft = 3
                     //alignSelf = Align.Center
                 }
             };

@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -22,6 +23,12 @@ namespace Sonosthesia.Utils
 
     public static class FloatRangeExtensions
     {
+        public static float Random(this FloatRange range)
+        {
+            return MathUtils.RandomFloat(range.Min, range.Max);
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Remap(this float value, FloatRange inputRange, FloatRange outputRange)
         {
             float inputWidth = inputRange.Max - inputRange.Min;

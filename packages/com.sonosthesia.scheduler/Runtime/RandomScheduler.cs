@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using Random = Unity.Mathematics.Random;
+﻿using Sonosthesia.Utils;
+using UnityEngine;
 
 namespace Sonosthesia.Scheduler
 {
@@ -8,15 +8,13 @@ namespace Sonosthesia.Scheduler
     {
         private class RandomSession : AbstractSchedulerSession
         {
-            private static Random _random = new (12345);
-
             private int _count;
             private float _time;
             private float? _nextEventTime;
             
             protected override void Update()
             {
-                _nextEventTime ??= _time + 1 + (_random.NextFloat() * 2f - 1f) * Chaos;
+                _nextEventTime ??= _time + 1 + MathUtils.RandomFloat(-1f, 1f) * Chaos;
                 _time += Time.deltaTime * Speed;
                 
                 if (_time < _nextEventTime.Value)

@@ -1,6 +1,6 @@
-﻿using Unity.Mathematics;
+﻿using Sonosthesia.Utils;
+using Unity.Mathematics;
 using UnityEngine;
-using Random = Unity.Mathematics.Random;
 
 namespace Sonosthesia.Scheduler
 {
@@ -9,15 +9,13 @@ namespace Sonosthesia.Scheduler
     {
         private class PeriodicSession : AbstractSchedulerSession
         {
-            private static Random _random = new (12345);
-            
             private float _time;
             private float _nextEventFraction;
             private int _count;
 
             public PeriodicSession(float speed, float chaos) : base(speed, chaos)
             {
-                _nextEventFraction = _random.NextFloat();
+                _nextEventFraction = MathUtils.RandomFloat();
                 _time = 0;
             }
             
@@ -36,7 +34,7 @@ namespace Sonosthesia.Scheduler
                 if (fraction >= _nextEventFraction)
                 {
                     Push(new SchedulerEvent(_count, _time, 0f));
-                    _nextEventFraction = _random.NextFloat() * math.clamp(Chaos, 0, 1);
+                    _nextEventFraction = MathUtils.RandomFloat() * math.clamp(Chaos, 0, 1);
                     _count++;
                 }
             }
