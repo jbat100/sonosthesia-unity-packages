@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Sonosthesia.Channel;
 using Sonosthesia.Dynamic;
@@ -9,7 +10,7 @@ namespace Sonosthesia.Touch
     [RequireComponent(typeof(TransformDynamicsMonitor))]
     public abstract class CollisionSource<TPayload> : MonoBehaviour where TPayload : struct
     {
-         [SerializeField] private Channel<TPayload> _channel;
+        [SerializeField] private Channel<TPayload> _channel;
 
         private TransformDynamicsMonitor _dynamicsMonitor;
         private readonly Dictionary<Transform, Subject<TPayload>> _subjects = new();
@@ -26,7 +27,7 @@ namespace Sonosthesia.Touch
             Subject<TPayload> subject = new Subject<TPayload>();
             _subjects[collision.transform] = subject;
             _monitors[collision.transform] = collision.transform.GetComponent<TransformDynamicsMonitor>();
-            _channel.Pipe(subject);
+            _channel.Push(Guid.NewGuid(), subject);
             if (MakePayload(collision, out TPayload payload))
             {
                 subject.OnNext(payload);

@@ -32,7 +32,7 @@ namespace Sonosthesia.Channel
         {
             BehaviorSubject<T> subject = new BehaviorSubject<T>(value);
             _ongoingSubjects[id] = subject;
-            _channel.Pipe(subject.AsObservable());
+            _channel.Push(id, subject.AsObservable());
         }
 
         public void UpdateStream(Guid id, Func<T, T> update)

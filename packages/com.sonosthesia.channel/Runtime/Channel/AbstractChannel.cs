@@ -6,10 +6,10 @@ namespace Sonosthesia.Channel
 {
     // allows observers who do not need specific types but are just interested in stream counts / ids
 
-    public class ChannelBase : MonoBehaviour
+    public class AbstractChannel : MonoBehaviour
     {
         private readonly ReactiveCollection<Guid> _streamIds = new();
-        public IReadOnlyReactiveCollection<Guid> StreamIds => _streamIds;
+        public IReadOnlyReactiveCollection<Guid> Ids => _streamIds;
 
         protected void Register(Guid identifier)
         {

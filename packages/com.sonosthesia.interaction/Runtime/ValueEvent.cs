@@ -6,7 +6,8 @@ namespace Sonosthesia.Interaction
     {
         public readonly TValue Value;
         public readonly TEvent Event;
-        
+
+        public float StartTime => Event.StartTime;
         public IInteractionEndpoint Source => Event.Source;
         public IInteractionEndpoint Actor => Event.Actor;
         

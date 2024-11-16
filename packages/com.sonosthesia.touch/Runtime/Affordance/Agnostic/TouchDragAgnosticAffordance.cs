@@ -20,13 +20,13 @@ namespace Sonosthesia.Touch
 
             protected override bool GetOriginPosition(bool initial, TouchEvent value, ref Vector3 origin)
             {
-                origin = value.TouchData.Source.transform.position;
+                origin = value.touchData.Source.transform.position;
                 return true;
             }
 
             protected override bool GetTargetPosition(bool initial, TouchEvent value, Vector3 origin, ref Vector3 target)
             {
-                target = value.TouchData.Actor.transform.position;
+                target = value.touchData.Actor.transform.position;
                 return true;
             }
         }

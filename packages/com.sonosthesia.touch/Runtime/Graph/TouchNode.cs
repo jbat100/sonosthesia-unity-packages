@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class TouchNode : TouchEventStreamContainer
+    public class TouchNode : TouchEventChannel
     {
         [Tooltip("Maximum concurrent streams for this node and descendents")]
         [SerializeField] private int _maxConcurrent = 1;
@@ -38,11 +38,11 @@ namespace Sonosthesia.Touch
                 _parent.RegisterChildNode(this);
                 
                 // used to relay streams up the node hierarchy
-                _parentSubscriptions.Add(_parent.StreamNode.Pipe(StreamNode));
+                _parentSubscriptions.Add(_parent.Pipe(this));
                 
                 // used to send events when something changed updstream
                 _parentSubscriptions.Add(_parent
-                    .StreamNode.Values.ObserveCountChanged().AsUnitObservable()
+                    .Values.ObserveCountChanged().AsUnitObservable()
                     .Merge(_parent.UpstreamObservable)
                     .Subscribe(_upstreamSubject));
             }
@@ -57,9 +57,8 @@ namespace Sonosthesia.Touch
             }
         }
 
-        protected override void OnDestroy()
+        protected virtual void OnDestroy()
         {
-            base.OnDestroy();
             _upstreamSubject.OnCompleted();
             _upstreamSubject.Dispose();
         }
@@ -78,9 +77,9 @@ namespace Sonosthesia.Touch
         {
             float lowestStartTime = float.MaxValue;
             Guid oldest = Guid.Empty;
-            foreach (KeyValuePair<Guid, TouchEvent> pair in StreamNode.Values)
+            foreach (KeyValuePair<Guid, TouchEvent> pair in Values)
             {
-                float startTime = pair.Value.StartTime;
+                float startTime = pair.Value.startTime;
                 if (startTime < lowestStartTime)
                 {
                     oldest = pair.Key;
@@ -106,8 +105,8 @@ namespace Sonosthesia.Touch
             while (current)
             {
                 int count = _perCollider
-                    ? current.StreamNode.Values.Count(n => n.Value.TouchData.Collider == other)
-                    : current.StreamNode.Values.Count;
+                    ? current.Values.Count(n => n.Value.touchData.Collider == other)
+                    : current.Values.Count;
                 
                 if (count >= current.MaxConcurrent)
                 {

@@ -6,15 +6,15 @@ namespace Sonosthesia.Touch
     {
         protected virtual void OnTriggerEnter(Collider other)
         {
-            TouchEventStreamContainer _eventStreamContainer = Extract<TouchEventStreamContainer>(other);
+            TouchEventChannel eventChannel = Extract<TouchEventChannel>(other);
 
-            if (_eventStreamContainer)
+            if (eventChannel)
             {
-                _eventStreamContainer.KillAllStreams();
+                eventChannel.KillAllStreams();
             }
         }
 
-        protected virtual TStream Extract<TStream>(Collider other) where TStream : TouchEventStreamContainer
+        protected virtual TStream Extract<TStream>(Collider other) where TStream : TouchEventChannel
         {
             return other.GetComponentInParent<TStream>();
         }

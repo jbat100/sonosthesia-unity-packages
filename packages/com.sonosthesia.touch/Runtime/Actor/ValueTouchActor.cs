@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Sonosthesia.Touch
 {
@@ -6,7 +7,7 @@ namespace Sonosthesia.Touch
     {
         // we use composition with ValueTouchEndpoint so that affordances can apply to both sources and actors
         
-        [SerializeField] private TouchValueEventStreamContainer<TValue> _valueEventStreamContainer;
-        public TouchValueEventStreamContainer<TValue> ValueEventStreamContainer => _valueEventStreamContainer;
+        [SerializeField] private TouchValueEventChannel<TValue> _valueEventChannel;
+        public TouchValueEventChannel<TValue> ValueEventChannel => _valueEventChannel;
     }
 }

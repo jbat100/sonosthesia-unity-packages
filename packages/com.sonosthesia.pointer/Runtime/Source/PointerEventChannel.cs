@@ -1,5 +1,5 @@
 using Sonosthesia.Interaction;
-using Sonosthesia.Utils;
+using Sonosthesia.Channel;
 using UnityEngine.EventSystems;
 
 namespace Sonosthesia.Pointer
@@ -13,11 +13,12 @@ namespace Sonosthesia.Pointer
             Data = data;
         }
 
+        public float StartTime => 0;
         public IInteractionEndpoint Source => null;
         public IInteractionEndpoint Actor => null;
     }
     
-    public class PointerEventStreamContainer : StreamContainer<PointerEvent>
+    public class PointerEventChannel : Channel<PointerEvent>
     {
         
     }

@@ -25,11 +25,10 @@ namespace Sonosthesia.Trigger
         protected void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = _channel.StreamObservable.TakeUntilDisable(this)
-                .Subscribe(stream =>
+            _subscription = _channel.Observable.TakeUntilDisable(this)
+                .Subscribe(pair =>
                 {
-                    
-                    Guid id = Guid.NewGuid();
+                    Guid id = pair.Key;
                     T? lastValue = null;
 
                     void EndTrigger()
@@ -38,14 +37,14 @@ namespace Sonosthesia.Trigger
                         {
                             return;
                         }
-                        trigger.EndTrigger(_end, id, lastValue.Value);
+                        trigger.EndTrigger(_end, pair.Key, lastValue.Value);
                     }
                     
-                    stream.TakeUntilDisable(this).Subscribe(value =>
+                    pair.Value.TakeUntilDisable(this).Subscribe(value =>
                     {
                         if (!lastValue.HasValue)
                         {
-                            trigger.StartTrigger(_start, value);
+                            trigger.StartTrigger(pair.Key, _start, value);
                         }
                         lastValue = value;
                     }, error => EndTrigger(), EndTrigger);

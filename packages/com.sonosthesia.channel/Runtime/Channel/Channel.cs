@@ -1,97 +1,52 @@
 using System;
+using System.Collections.Generic;
 using Sonosthesia.Utils;
 using UnityEngine;
 using UniRx;
 
 namespace Sonosthesia.Channel
 {
-    public class Channel<T> : ChannelBase, ILogSwitch where T : struct
+    public class Channel<T> : AbstractChannel, ILogSwitch where T : struct
     {
         [SerializeField] private bool _log;
         public bool Log => _log;
         
-        private readonly Subject<IObservable<T>> _streamSubject = new ();
-        public IObservable<IObservable<T>> StreamObservable => _streamSubject.AsObservable();
-
-        public readonly struct State
-        {
-            public readonly T Current;
-            public readonly float Start;
-            public readonly int Count;
-
-            public State(T value)
-            {
-                Current = value;
-                Start = Time.time;
-                Count = 0;
-            }
-
-            private State(T value, float start, int count)
-            {
-                Current = value;
-                Start = start;
-                Count = count;
-            }
-
-            public State Push(T value)
-            {
-                return new State(value, Start, Count + 1);
-            }
-        }
-
-        private readonly ReactiveDictionary<Guid, State> _states = new();
-        public IReadOnlyReactiveDictionary<Guid, State> States => _states;
-
-        private readonly CompositeDisposable _subscriptions = new ();
-
-        protected virtual void OnEnable()
-        {
-            _subscriptions.Clear();
-            int count = 0;
-            _subscriptions.Add(StreamObservable.Subscribe(stream =>
-            {
-                int streamCount = count++;
-                Guid identifier = Guid.NewGuid();
-                State? state = null;
-                _subscriptions.Add(stream.Subscribe(value =>
-                    {
-                        this.LogVerbose($"{this} stream {streamCount} emitted {value}");
-                        bool initial = !state.HasValue;
-                        state = state?.Push(value) ?? new State(value);
-                        _states[identifier] = state.Value;
-                        if (initial)
-                        {
-                            Register(identifier);    
-                        }
-                    },
-                    e =>
-                    {
-                        this.LogError($"{this} stream {streamCount} error {e.Message}");
-                        _states.Remove(identifier);
-                        Unregister(identifier);
-                    },
-                    () =>
-                    {
-                        this.LogVerbose($"{this} stream {streamCount} completed");
-                        _states.Remove(identifier);
-                        Unregister(identifier);
-                    }));
-            }));
-        }
-
-        protected virtual void OnDisable()
-        {
-            _subscriptions.Clear();
-            foreach (Guid identifier in _states.Keys)
-            {
-                Unregister(identifier);
-            }
-            _states.Clear();
-        }
+        private readonly ReactiveDictionary<Guid, T> _values = new();
+        public IReadOnlyReactiveDictionary<Guid, T> Values => _values;
         
-        public void Pipe(IObservable<T> observable)
+        private readonly Subject<KeyValuePair<Guid, IObservable<T>>> _subject = new ();
+        public IObservable<KeyValuePair<Guid, IObservable<T>>> Observable => _subject.AsObservable();
+
+        public void Push(KeyValuePair<Guid, IObservable<T>> pair) => Push(pair.Key, pair.Value);
+        
+        public void Push(Guid id, IObservable<T> stream)
         {
-            _streamSubject.OnNext(observable);
+            this.LogVerbose($"{this} new stream {id}");
+            stream.Subscribe(
+                valueEvent =>
+                {
+                    _values[id] = valueEvent;
+                    Register(id);
+                }, 
+                error =>
+                {
+                    _values.Remove(id);
+                    Unregister(id);
+                    this.LogVerbose($"{this} end stream {id}");
+                },
+                () =>
+                {
+                    _values.Remove(id);
+                    Unregister(id);
+                    this.LogVerbose($"{this} end stream {id}");
+                });
+            
+            _subject.OnNext(new KeyValuePair<Guid, IObservable<T>>(id, stream));
+        }
+
+        public IDisposable Pipe(Channel<T> other)
+        {
+            return other.Observable.Subscribe(Push);
         }
     }
 }

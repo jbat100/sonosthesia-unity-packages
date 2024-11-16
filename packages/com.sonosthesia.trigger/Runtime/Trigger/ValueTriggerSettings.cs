@@ -35,6 +35,14 @@ namespace Sonosthesia.Trigger
             float timeScale = _timeSelector ? _timeSelector.Select(value) : 1f;
             return trigger.TriggerController.StartTrigger(envelope, valueScale, timeScale);
         }
+
+        public void StartTrigger(Trigger trigger, Guid id, T value)
+        {
+            IEnvelope envelope = _envelopeFactory ? _envelopeFactory.Build() : null;
+            float valueScale = _valueSelector ? _valueSelector.Select(value) : 1f;
+            float timeScale = _timeSelector ? _timeSelector.Select(value) : 1f;
+            trigger.TriggerController.StartTrigger(id, envelope, valueScale, timeScale);
+        }
     }
     
     [Serializable]
@@ -63,6 +71,12 @@ namespace Sonosthesia.Trigger
             where T : struct
         {
             return settings.StartTrigger(trigger, value);
+        }
+        
+        public static void StartTrigger<T>(this Trigger trigger, Guid id, ValueStartTriggerSettings<T> settings, T value)
+            where T : struct
+        {
+            settings.StartTrigger(trigger, id, value);
         }
 
         public static void EndTrigger<T>(this Trigger trigger, ValueEndTriggerSettings<T> settings, Guid id, T value)

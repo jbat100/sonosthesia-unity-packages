@@ -20,13 +20,13 @@ namespace Sonosthesia.Channel
         {
             base.OnEnable();
             _subscription?.Dispose();
-            _subscription = _source.StreamObservable.Subscribe(value =>
+            _subscription = _source.Observable.Subscribe(pair =>
             {
                 if (_destinations.Count == 0)
                 {
                     return;
                 }
-                _destinations[StepIndex()].Pipe(value);
+                _destinations[StepIndex()].Push(pair);
             });
         }
 

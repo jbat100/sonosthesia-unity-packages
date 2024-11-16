@@ -36,7 +36,7 @@ namespace Sonosthesia.DeformInteraction
 
             private float3 ExtractPosition(TouchEvent e)
             {
-                return e.TouchData.Actor.transform.position;
+                return e.touchData.Actor.transform.position;
             }
             
             protected override void Setup(TouchEvent e)

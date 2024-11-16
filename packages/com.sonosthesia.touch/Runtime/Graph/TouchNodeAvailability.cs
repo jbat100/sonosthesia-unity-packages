@@ -34,7 +34,7 @@ namespace Sonosthesia.Touch
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = _node.StreamNode.StreamObservable.AsUnitObservable()
+            _subscription = _node.Observable.AsUnitObservable()
                 .Merge(_node.UpstreamObservable)
                 .StartWith(Unit.Default)
                 .BatchFrame()
@@ -53,7 +53,7 @@ namespace Sonosthesia.Touch
             bool maxReached = false;
             while (current)
             {
-                if (current.StreamNode.Values.Count >= current.MaxConcurrent)
+                if (current.Values.Count >= current.MaxConcurrent)
                 {
                     maxReached = true;
                     break;

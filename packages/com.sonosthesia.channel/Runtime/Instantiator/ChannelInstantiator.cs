@@ -44,7 +44,7 @@ namespace Sonosthesia.Channel
             _subscription?.Dispose();
             if (_source)
             {
-                _subscription = _source.StreamObservable.Subscribe(Instantiate);
+                _subscription = _source.Observable.Subscribe(pair => Instantiate(pair.Value));
             }
         }
 

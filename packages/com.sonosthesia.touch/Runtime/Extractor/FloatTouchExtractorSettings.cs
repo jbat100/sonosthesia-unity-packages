@@ -136,7 +136,7 @@ namespace Sonosthesia.Touch
 
             protected override float Process(TouchEvent touchEvent, float value)
             {
-                TouchActorModulator modulator = touchEvent.TouchData.Actor.Modulator;
+                TouchActorModulator modulator = touchEvent.touchData.Actor.Modulator;
                 return _settings.Modulate(modulator ? modulator.Select(_type) : 0f, value);
             }
         }
@@ -210,10 +210,10 @@ namespace Sonosthesia.Touch
             {
                 value = _type switch
                 {
-                    VelocityType.Actor => touchEvent.TouchData.Actor.DynamicsMonitor.Velocity.Position.magnitude,
-                    VelocityType.Source => touchEvent.TouchData.Source.DynamicsMonitor.Velocity.Position.magnitude,
-                    VelocityType.Relative => (touchEvent.TouchData.Actor.DynamicsMonitor.Velocity.Position - 
-                                              touchEvent.TouchData.Source.DynamicsMonitor.Velocity.Position).magnitude,
+                    VelocityType.Actor => touchEvent.touchData.Actor.DynamicsMonitor.Velocity.Position.magnitude,
+                    VelocityType.Source => touchEvent.touchData.Source.DynamicsMonitor.Velocity.Position.magnitude,
+                    VelocityType.Relative => (touchEvent.touchData.Actor.DynamicsMonitor.Velocity.Position - 
+                                              touchEvent.touchData.Source.DynamicsMonitor.Velocity.Position).magnitude,
                     _ => 0f
                 };
 
@@ -287,14 +287,14 @@ namespace Sonosthesia.Touch
 
             private bool Common(TouchEvent touchEvent, out float value)
             {
-                Quaternion rotation = touchEvent.TouchData.Actor.transform.rotation;
+                Quaternion rotation = touchEvent.touchData.Actor.transform.rotation;
                 value = Quaternion.Angle(_referenceRotation, rotation) / 180f;
                 return true;
             }
             
             public bool Setup(TouchEvent touchEvent, out float value)
             {
-                _referenceRotation = touchEvent.TouchData.Actor.transform.rotation;
+                _referenceRotation = touchEvent.touchData.Actor.transform.rotation;
                 return Common(touchEvent, out value);
             }
 

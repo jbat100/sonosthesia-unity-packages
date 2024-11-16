@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using Sonosthesia.Scheduler;
@@ -24,9 +25,9 @@ namespace Sonosthesia.Arpeggiator
             private ISchedulerSession _session;
             private IDisposable _streamSubscription;
             private IDisposable _sessionSubscription;
-            private Subject<IObservable<T>> _arpegiations;
+            private Subject<IObservable<T>> _arpeggiations;
 
-            public IObservable<IObservable<T>> Arpegiations => _arpegiations;
+            public IObservable<IObservable<T>> Arpeggiations => _arpeggiations;
             
             public StreamArpegiator(IObservable<T> stream, 
                 LoopingScheduler scheduler, 
@@ -38,7 +39,7 @@ namespace Sonosthesia.Arpeggiator
                 _startTime = Time.time;
                 _session = scheduler.CreateSession(1f, 0f);
                 _sessionSubscription = _session.Stream.Subscribe(offset => Arpegiate(connected, offset.position, modulator, follower, terminator));
-                _arpegiations = new Subject<IObservable<T>>();
+                _arpeggiations = new Subject<IObservable<T>>();
                 _streamSubscription = stream.Subscribe(_ => {}, Dispose);
                 connected.Connect();
             }
@@ -51,9 +52,9 @@ namespace Sonosthesia.Arpeggiator
                 _streamSubscription = null;
                 _sessionSubscription?.Dispose();
                 _sessionSubscription = null;
-                _arpegiations?.OnCompleted();
-                _arpegiations?.Dispose();
-                _arpegiations = null;
+                _arpeggiations?.OnCompleted();
+                _arpeggiations?.Dispose();
+                _arpeggiations = null;
             }
 
             private void Arpegiate(IObservable<T> stream, float offset, Modulator<T> modulator, ArpegiatorFollower<T> follower, ArpegiatorTerminator<T> terminator)
@@ -73,16 +74,16 @@ namespace Sonosthesia.Arpeggiator
                 IObservable<Unit> termination = terminator.Termination(stream, arpegiated, Time.time - _startTime);
                 
                 // we prolong arpegiated because it can outlive stream if so determined by termination
-                _arpegiations.OnNext(arpegiated
-                    .Concat(Observable.Never<T>())
-                    .TakeUntil(termination.IgnoreElements().Concat(Observable.Return(Unit.Default))));
+                _arpeggiations.OnNext(arpegiated
+                    .Concat(UniRx.Observable.Never<T>())
+                    .TakeUntil(termination.IgnoreElements().Concat(UniRx.Observable.Return(Unit.Default))));
             }
         }
 
-        protected override void HandleStream(IObservable<T> stream)
+        protected override void HandleStream(KeyValuePair<Guid, IObservable<T>> pair)
         {
-            StreamArpegiator arpegiator = new StreamArpegiator(stream, _scheduler, _modulator, _follower, _terminator);
-            arpegiator.Arpegiations.Subscribe(Pipe);
+            StreamArpegiator arpegiator = new StreamArpegiator(pair.Value, _scheduler, _modulator, _follower, _terminator);
+            arpegiator.Arpeggiations.Subscribe(arpeggiated => Push(Guid.NewGuid(), arpeggiated));
         }
     }
 }

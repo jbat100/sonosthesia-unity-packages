@@ -14,16 +14,17 @@ namespace Sonosthesia.Touch
     // used for affordances
     public readonly struct TouchEvent : IInteractionEvent
     {
-        public readonly ITouchData TouchData;
-        public readonly float StartTime;
+        public readonly ITouchData touchData;
+        public readonly float startTime;
         
-        public IInteractionEndpoint Source => TouchData?.Source;
-        public IInteractionEndpoint Actor => TouchData?.Actor;
+        public float StartTime => startTime;
+        public IInteractionEndpoint Source => touchData?.Source;
+        public IInteractionEndpoint Actor => touchData?.Actor;
 
         public TouchEvent(ITouchData touchData, float startTime)
         {
-            TouchData = touchData;
-            StartTime = startTime;
+            this.touchData = touchData;
+            this.startTime = startTime;
         }
     }
     
@@ -31,8 +32,8 @@ namespace Sonosthesia.Touch
     {
         public static Vector3 ActorPositionInSourceSpace(this TouchEvent touchEvent)
         {
-            return touchEvent.TouchData.Source.transform
-                .InverseTransformPoint(touchEvent.TouchData.Actor.transform.position);
+            return touchEvent.touchData.Source.transform
+                .InverseTransformPoint(touchEvent.touchData.Actor.transform.position);
         }
     }
 }

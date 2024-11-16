@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Cysharp.Threading.Tasks;
 using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Sonosthesia.Interaction
 {
@@ -15,7 +15,10 @@ namespace Sonosthesia.Interaction
 
         [SerializeField] private List<AbstractAffordanceGate> _gates;
         
-        [SerializeField] private List<StreamContainer<TEvent>> _streamContainers;
+        [FormerlySerializedAs("_streamContainers")] 
+        [SerializeField] private List<Channel.Channel<TEvent>> _inputs;
+
+        [SerializeField] private Channel.Channel<TEvent> _relay;
 
         private readonly CompositeDisposable _subscriptions = new();
 
@@ -75,19 +78,24 @@ namespace Sonosthesia.Interaction
                 stream.Subscribe(controller);
             }
             HandleStream(id, stream);
+
+            if (_relay)
+            {
+                _relay.Push(id, stream);   
+            }
         }
 
         protected virtual void OnEnable()
         {
-            foreach (StreamContainer<TEvent> streamContainer in _streamContainers)
+            foreach (Channel.Channel<TEvent> channel in _inputs)
             {
-                if (!streamContainer)
+                if (!channel)
                 {
                     continue;
                 }
                 
-                _subscriptions.Add(streamContainer.StreamNode.Values.ObserveCountChanged().Subscribe(OnEventCountChanged));
-                _subscriptions.Add(streamContainer.StreamNode.StreamObservable.Subscribe(pair =>
+                _subscriptions.Add(channel.Values.ObserveCountChanged().Subscribe(OnEventCountChanged));
+                _subscriptions.Add(channel.Observable.Subscribe(pair =>
                 {
                     this.LogVerbose($"{this} received new stream {pair.Key}");
                     OnStream(pair.Key, pair.Value).Forget();

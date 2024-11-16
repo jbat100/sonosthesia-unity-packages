@@ -22,8 +22,8 @@ namespace Sonosthesia.Pointer
 
         [SerializeField] private ChannelDriver<TValue> _driver;
 
-        [SerializeField] private PointerValueEventStreamContainer<TValue> _valueEventStreamContainer;
-        public PointerValueEventStreamContainer<TValue> ValueEventStreamContainer => _valueEventStreamContainer;
+        [SerializeField] private PointerValueEventChannel<TValue> _valueEventChannel;
+        public PointerValueEventChannel<TValue> ValueEventChannel => _valueEventChannel;
         
         [SerializeField] private TrackingMode _trackingMode;
 
@@ -47,13 +47,13 @@ namespace Sonosthesia.Pointer
             BehaviorSubject<ValueEvent<TValue, PointerEvent>> subject = new (new ValueEvent<TValue, PointerEvent>(value, pointerEvent));
             _valueEventSubjects[id] = subject;
 
-            if (EventStreamContainer)
+            if (EventChannel)
             {
-                EventStreamContainer.StreamNode.Push(id, subject.Select(valueEvent => valueEvent.Event)); 
+                EventChannel.Push(id, subject.Select(valueEvent => valueEvent.Event)); 
             }
-            if (ValueEventStreamContainer)
+            if (ValueEventChannel)
             {
-                ValueEventStreamContainer.StreamNode.Push(id, subject.AsObservable()); 
+                ValueEventChannel.Push(id, subject.AsObservable()); 
             }
         }
 

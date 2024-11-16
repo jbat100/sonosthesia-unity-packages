@@ -69,8 +69,8 @@ namespace Sonosthesia.Touch
             {
                 value = _space switch
                 {
-                    Space.Source => touchEvent.TouchData.Source.transform.TransformDirection(_direction),
-                    Space.Actor => touchEvent.TouchData.Actor.transform.TransformDirection(_direction),
+                    Space.Source => touchEvent.touchData.Source.transform.TransformDirection(_direction),
+                    Space.Actor => touchEvent.touchData.Actor.transform.TransformDirection(_direction),
                     _ => _direction
                 };
                 return true;
@@ -94,10 +94,10 @@ namespace Sonosthesia.Touch
             {
                 value = _velocityType switch
                 {
-                    VelocityType.Actor => touchEvent.TouchData.Actor.DynamicsMonitor.Velocity.Position,
-                    VelocityType.Source => touchEvent.TouchData.Source.DynamicsMonitor.Velocity.Position,
-                    VelocityType.Relative => touchEvent.TouchData.Actor.DynamicsMonitor.Velocity.Position -
-                                         touchEvent.TouchData.Source.DynamicsMonitor.Velocity.Position,
+                    VelocityType.Actor => touchEvent.touchData.Actor.DynamicsMonitor.Velocity.Position,
+                    VelocityType.Source => touchEvent.touchData.Source.DynamicsMonitor.Velocity.Position,
+                    VelocityType.Relative => touchEvent.touchData.Actor.DynamicsMonitor.Velocity.Position -
+                                         touchEvent.touchData.Source.DynamicsMonitor.Velocity.Position,
                     _ => Vector3.zero
                 };
 
@@ -113,7 +113,7 @@ namespace Sonosthesia.Touch
         {
             private static bool Common(TouchEvent touchEvent, out Vector3 value)
             {
-                value = touchEvent.TouchData.Actor.transform.position - touchEvent.TouchData.Source.transform.position;
+                value = touchEvent.touchData.Actor.transform.position - touchEvent.touchData.Source.transform.position;
                 return true;
             }
             
@@ -126,8 +126,8 @@ namespace Sonosthesia.Touch
         {
             private static bool Common(TouchEvent touchEvent, out Vector3 value)
             {
-                Vector3 actorToSource = touchEvent.TouchData.Source.transform.position - touchEvent.TouchData.Actor.transform.position;
-                Vector3 actorVelocity = touchEvent.TouchData.Actor.DynamicsMonitor.Velocity.Position;
+                Vector3 actorToSource = touchEvent.touchData.Source.transform.position - touchEvent.touchData.Actor.transform.position;
+                Vector3 actorVelocity = touchEvent.touchData.Actor.DynamicsMonitor.Velocity.Position;
                 value = Vector3.Cross(actorVelocity, actorToSource);
                 return true;
             }

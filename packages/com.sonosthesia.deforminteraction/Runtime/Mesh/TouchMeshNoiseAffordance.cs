@@ -38,7 +38,7 @@ namespace Sonosthesia.DeformInteraction
 
                 _actorTrackingSession = DynamicTrackingSessionUtil.CreateSession(
                     configuration.ActorTracking,
-                    e.TouchData.Actor.DynamicsMonitor);
+                    e.touchData.Actor.DynamicsMonitor);
                 
                 _displacementSession = configuration.Displacement.SetupSession(e);
                 _radiusSession = configuration.Radius.SetupSession(e);
@@ -51,7 +51,7 @@ namespace Sonosthesia.DeformInteraction
                 
                 float3x4 rts = (new SpaceTRS { scale = 1 }).Matrix;
 
-                Vector3 source = e.TouchData.Source.transform.position;
+                Vector3 source = e.touchData.Source.transform.position;
 
                 _updateSubscription = Observable.EveryUpdate()
                     // .TakeUntilDisable(affordance)
@@ -67,8 +67,8 @@ namespace Sonosthesia.DeformInteraction
                         Vector3 handle = center + configuration.SpatialFalloff.Space switch
                         {
                             TouchSpatialFalloffSpace.World => configuration.SpatialFalloff.Offset,
-                            TouchSpatialFalloffSpace.Source => e.TouchData.Source.transform.TransformDirection(configuration.SpatialFalloff.Offset),
-                            TouchSpatialFalloffSpace.Actor => e.TouchData.Actor.transform.TransformDirection(configuration.SpatialFalloff.Offset),
+                            TouchSpatialFalloffSpace.Source => e.touchData.Source.transform.TransformDirection(configuration.SpatialFalloff.Offset),
+                            TouchSpatialFalloffSpace.Actor => e.touchData.Actor.transform.TransformDirection(configuration.SpatialFalloff.Offset),
                             TouchSpatialFalloffSpace.ActorSource => (actor - source).normalized * configuration.SpatialFalloff.Offset.y,
                             _ => throw new ArgumentOutOfRangeException()
                         };

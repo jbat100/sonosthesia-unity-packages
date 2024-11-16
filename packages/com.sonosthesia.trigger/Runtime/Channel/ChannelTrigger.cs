@@ -29,8 +29,8 @@ namespace Sonosthesia.Trigger
         protected void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = _channel.StreamObservable
-                .SelectMany(stream => stream.First())
+            _subscription = _channel.Observable
+                .SelectMany(stream => stream.Value.First())
                 .Subscribe(value =>
                 {
                     trigger.Trigger(_settings, value);

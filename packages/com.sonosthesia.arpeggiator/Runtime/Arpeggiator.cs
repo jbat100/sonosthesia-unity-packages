@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
 using Sonosthesia.Channel;
@@ -11,21 +12,19 @@ namespace Sonosthesia.Arpeggiator
         
         private IDisposable _subscription;
         
-        protected abstract void HandleStream(IObservable<T> stream);
+        protected abstract void HandleStream(KeyValuePair<Guid, IObservable<T>> pair);
         
-        protected override void OnEnable()
+        protected virtual void OnEnable()
         {
-            base.OnEnable();
             _subscription?.Dispose();
             if (_source)
             {
-                _subscription = _source.StreamObservable.Subscribe(HandleStream);
+                _subscription = _source.Observable.Subscribe(HandleStream);
             }
         }
         
-        protected override void OnDisable()
+        protected virtual void OnDisable()
         {
-            base.OnDisable();
             _subscription?.Dispose();
             _subscription = null;
         }

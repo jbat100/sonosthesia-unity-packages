@@ -41,7 +41,7 @@ namespace Sonosthesia.FMODInteraction
 
                 _positionTrackingSession = DynamicTrackingSessionUtil.CreateSession(
                     configuration.PositionTracking,
-                    e.TouchData.Actor.DynamicsMonitor);
+                    e.touchData.Actor.DynamicsMonitor);
                 
                 _volumeSession = configuration.Volume.SetupSession(e);
                 _excitationSession = configuration.Excitation.SetupSession(e);
