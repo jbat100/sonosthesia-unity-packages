@@ -48,6 +48,11 @@ namespace Sonosthesia.Scheduler
         
         public IObservable<SchedulerEvent> Stream => _subject.AsObservable();
 
+        public AbstractSchedulerSession() : this(1f, 0f)
+        {
+            
+        }
+        
         public AbstractSchedulerSession(float speed, float chaos)
         {
             Speed = speed;

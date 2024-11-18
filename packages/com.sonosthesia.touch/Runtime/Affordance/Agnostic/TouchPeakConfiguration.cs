@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Sonosthesia.Scheduler;
+using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
@@ -8,6 +9,15 @@ namespace Sonosthesia.Touch
         [SerializeField] [Range(0, 1)] private float _randomization;
         public float Randomization => _randomization;
         
+        [SerializeField] private SchedulerSettings _scheduler;
+        public SchedulerSettings Scheduler => _scheduler;
+
+        [SerializeField] private TouchEnvelopeSettings _speed;
+        public TouchEnvelopeSettings Speed => _speed;
+        
+        [SerializeField] private TouchEnvelopeSettings _chaos;
+        public TouchEnvelopeSettings Chaos => _chaos;
+
         [SerializeField] private TouchEnvelopeSettings _magnitude;
         public TouchEnvelopeSettings Magnitude => _magnitude;
 

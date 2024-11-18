@@ -35,7 +35,7 @@ namespace Sonosthesia.Touch
                 _speedSession = configuration.Speed.SetupSession(e);
                 _chaosSession = configuration.Chaos.SetupSession(e);
 
-                _schedulerSession = configuration.Scheduler.CreateSession(_speedSession.Update(), _chaosSession.Update());
+                _schedulerSession =  configuration.Scheduler.MakeSession(_speedSession.Update(), _chaosSession.Update());
                 
                 _updateSubscription = Observable.EveryUpdate().Subscribe(_ =>
                 {

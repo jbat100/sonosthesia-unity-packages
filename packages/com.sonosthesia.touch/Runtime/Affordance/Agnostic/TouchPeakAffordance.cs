@@ -14,8 +14,6 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private TouchPeakConfiguration _peakConfiguration;
         
-        [SerializeField] private TouchSchedulerConfiguration _schedulerConfiguration;
-
         private class Controller : AffordanceController<TouchEvent, TouchPeakAffordance>, IDisposable
         {
             private ITouchEnvelopeSession _magnitude;
@@ -38,16 +36,15 @@ namespace Sonosthesia.Touch
                 base.Setup(e);
 
                 TouchPeakConfiguration peakConfiguration = Affordance._peakConfiguration;
-                TouchSchedulerConfiguration schedulerConfiguration = Affordance._schedulerConfiguration;
                 Signal<Peak> target = Affordance._target;
 
                 _magnitude = peakConfiguration.Magnitude.SetupSession(e);
                 _duration = peakConfiguration.Duration.SetupSession(e);
 
-                _speed = schedulerConfiguration.Speed.SetupSession(e);
-                _chaos = schedulerConfiguration.Chaos.SetupSession(e);
+                _speed = peakConfiguration.Speed.SetupSession(e);
+                _chaos = peakConfiguration.Chaos.SetupSession(e);
 
-                _schedulerSession = schedulerConfiguration.Scheduler.CreateSession(_speed.Update(), _chaos.Update());
+                _schedulerSession = peakConfiguration.Scheduler.MakeSession(_speed.Update(), _chaos.Update());
                 
                 _updateSubscription = Observable.EveryUpdate().Subscribe(_ =>
                 {
