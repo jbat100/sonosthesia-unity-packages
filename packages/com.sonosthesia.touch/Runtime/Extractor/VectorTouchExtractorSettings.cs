@@ -43,7 +43,7 @@ namespace Sonosthesia.Touch
 
         public ITouchExtractorSession<Vector3> MakeSession()
         {
-            return _extractorType switch
+            ITouchExtractorSession<Vector3> session = _extractorType switch
             {
                 ExtractorType.Custom => _extractor.MakeSession(),
                 ExtractorType.Static => new StaticSession(_space, _direction),
@@ -52,8 +52,29 @@ namespace Sonosthesia.Touch
                 ExtractorType.Axis => new AxisSession(),
                 _ => throw new ArgumentOutOfRangeException()
             };
+
+            return new ScaleSession(session, _scale);
         }
-        
+
+        public ITouchExtractorSession<Vector3> SetupSession(TouchEvent e, out Vector3 result)
+        {
+            ITouchExtractorSession<Vector3> session = MakeSession();
+            session.Setup(e, out result);
+            return session;
+        }
+
+        private class ScaleSession : TouchExtractorSessionProcessor<Vector3>
+        {
+            private readonly float _scale;
+            
+            public ScaleSession(ITouchExtractorSession<Vector3> session, float scale) : base(session)
+            {
+                _scale = scale;
+            }
+
+            protected override Vector3 Process(TouchEvent touchEvent, Vector3 value) => value * _scale;
+        }
+
         private class StaticSession : ITouchExtractorSession<Vector3>
         {
             private readonly Space _space;

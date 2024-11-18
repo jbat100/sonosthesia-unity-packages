@@ -70,7 +70,6 @@ namespace Sonosthesia.Interaction
             
             this.LogWarning($"{this} handling new stream {stream}");
 
-            // TODO: check what happens in the case of controllers which live beyond the stream
             System.IObserver<TEvent> controller = MakeController(id);
             if (controller != null)
             {
