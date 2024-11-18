@@ -6,6 +6,8 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
+    // TODO : separate grouping structure into other class, no need for tree, group will do
+    
     public class TouchNode : TouchEventChannel
     {
         [Tooltip("Maximum concurrent streams for this node and descendents")]
