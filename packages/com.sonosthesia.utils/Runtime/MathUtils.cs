@@ -9,6 +9,10 @@ namespace Sonosthesia.Utils
     {
         private static Random _random = new Random(12345);
 
+        public static int RandomInt() => _random.NextInt();
+        
+        public static int RandomInt(int min, int max) => _random.NextInt(min, max);
+        
         public static float RandomFloat() => _random.NextFloat();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

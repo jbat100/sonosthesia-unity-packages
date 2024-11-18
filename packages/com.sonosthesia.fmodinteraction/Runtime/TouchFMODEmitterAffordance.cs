@@ -1,7 +1,9 @@
 using System;
 using FMODUnity;
+using Sonosthesia.FMOD;
 using Sonosthesia.Interaction;
 using Sonosthesia.Touch;
+using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 
@@ -18,12 +20,53 @@ namespace Sonosthesia.FMODInteraction
         }
         
         [SerializeField] private TouchFMODEmitterConfiguration _configuration;
-        
+
+        private IPrefabSelectorSession<StudioEventEmitter> _selectorSession;
+
+        private StudioEventEmitter NextStudioEventEmitter()
+        {
+            _selectorSession ??= _configuration.Emitter.MakeSession();
+            return _selectorSession.Next();
+        }
+
         private class Controller : AffordanceController<TouchEvent, TouchFMODEmitterAffordance>, IDisposable
         {
-            private ITouchEnvelopeSession _volumeSession;
-            private ITouchEnvelopeSession _excitationSession;
-            private ITouchEnvelopeSession _bodySession;
+            private struct ParameterSession
+            {
+                private string name;
+                private ITouchEnvelopeSession envelope;
+                private bool valid;
+                private StudioEventEmitter emitter;
+                
+                public static ParameterSession Setup(StudioEventEmitter emitter, TouchEnvelopeSettings settings,
+                    string name, TouchEvent e)
+                {
+                    return new ParameterSession
+                    {
+                        name = name,
+                        emitter = emitter,
+                        envelope = settings.SetupSession(e),
+                        valid = emitter.HasParameter(name)
+                    };
+                }
+
+                public void UpdateTouch(TouchEvent e) => envelope.UpdateTouch(e);
+
+                public void EndTouch(TouchEvent e, out float release) => envelope.EndTouch(e, out release);
+
+                public void Update()
+                {
+                    if (valid)
+                    {
+                        emitter.SetParameter(name, envelope.Update());    
+                    }
+                }
+            }
+            
+            private ParameterSession _volumeSession;
+            private ParameterSession _excitationSession;
+            private ParameterSession _bodySession;
+            
             private IDynamicTrackingSession _positionTrackingSession;
             private IDisposable _updateSubscription;
             private StudioEventEmitter _emitter;
@@ -43,18 +86,18 @@ namespace Sonosthesia.FMODInteraction
                     configuration.PositionTracking,
                     e.touchData.Actor.DynamicsMonitor);
                 
-                _volumeSession = configuration.Volume.SetupSession(e);
-                _excitationSession = configuration.Excitation.SetupSession(e);
-                _bodySession = configuration.Body.SetupSession(e);
-
-                _emitter = Instantiate(configuration.EmitterPrefab, affordance.transform);
+                _emitter = Instantiate(Affordance.NextStudioEventEmitter(), affordance.transform);
                 _emitter.transform.position = _positionTrackingSession.Update(0f);
-
+                
+                _volumeSession = ParameterSession.Setup(_emitter, configuration.Volume, Parameters.VOLUME, e);
+                _excitationSession = ParameterSession.Setup(_emitter, configuration.Excitation, Parameters.EXCITATION, e);
+                _bodySession = ParameterSession.Setup(_emitter, configuration.Body, Parameters.BODY, e);
+                
                 void UpdateParameters()
                 {
-                    _emitter.SetParameter(Parameters.VOLUME, _volumeSession.Update());
-                    _emitter.SetParameter(Parameters.EXCITATION, _excitationSession.Update());
-                    _emitter.SetParameter(Parameters.BODY, _bodySession.Update());
+                    _volumeSession.Update();
+                    _excitationSession.Update();
+                    _bodySession.Update();
                 }
                 
                 UpdateParameters();
@@ -89,7 +132,7 @@ namespace Sonosthesia.FMODInteraction
 
                 float duration = Mathf.Max(volumeRelease, excitationRelease, bodySession);
 
-                Debug.LogWarning($"{this} {nameof(Teardown)} Dispose in {duration} seconds");
+                Affordance.LogWarning($"{this} {nameof(Teardown)} Dispose in {duration} seconds");
                 
                 Observable.Timer(TimeSpan.FromSeconds(duration))
                     .TakeUntilDisable(affordance)
@@ -98,7 +141,7 @@ namespace Sonosthesia.FMODInteraction
             
             public void Dispose()
             {
-                Debug.LogWarning($"{this} Dispose");
+                Affordance.LogWarning($"{this} Dispose");
                 _updateSubscription?.Dispose();
                 Destroy(_emitter.gameObject);
             }
@@ -107,6 +150,11 @@ namespace Sonosthesia.FMODInteraction
         protected override IObserver<TouchEvent> MakeController(Guid id)
         {
             return _configuration ? new Controller(id, this) : null;
+        }
+
+        protected virtual void OnValidate()
+        {
+            _selectorSession = null;
         }
     }
 }

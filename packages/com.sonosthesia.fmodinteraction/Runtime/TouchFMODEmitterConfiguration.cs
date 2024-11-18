@@ -1,14 +1,15 @@
 using UnityEngine;
 using FMODUnity;
 using Sonosthesia.Touch;
+using Sonosthesia.Utils;
 
 namespace Sonosthesia.FMODInteraction
 {
     [CreateAssetMenu(fileName = "TouchFMODEmitterAffordance", menuName = "Sonosthesia/Touch/TouchFMODEmitterAffordance")]
     public class TouchFMODEmitterConfiguration : ScriptableObject
     {
-        [SerializeField] private StudioEventEmitter _emitterPrefab;
-        public StudioEventEmitter EmitterPrefab => _emitterPrefab;
+        [SerializeField] private PrefabSelectorSettings<StudioEventEmitter> _emitter;
+        public PrefabSelectorSettings<StudioEventEmitter> Emitter => _emitter;
         
         [SerializeField] private DynamicTrackingSettings _positionTracking;
         public DynamicTrackingSettings PositionTracking => _positionTracking;

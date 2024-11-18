@@ -6,7 +6,8 @@
     "com.sonosthesia.interaction": "1.10.0",
     "com.sonosthesia.touch": "1.10.0",
     "com.sonosthesia.dynamic": "1.10.0",
-    "com.sonosthesia.trigger": "1.10.0"
+    "com.sonosthesia.trigger": "1.10.0",
+    "com.sonosthesia.fmod": "1.10.0"
   },
   "description": "Sonosthesia unity FMOD interaction",
   "displayName": "Sonosthesia FMOD Interaction",
