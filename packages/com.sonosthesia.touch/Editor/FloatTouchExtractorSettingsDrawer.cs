@@ -1,8 +1,10 @@
+using System;
 using Sonosthesia.Utils;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using Sonosthesia.Utils.Editor;
+using UnityEngine;
 
 namespace Sonosthesia.Touch.Editor
 {
@@ -42,7 +44,7 @@ namespace Sonosthesia.Touch.Editor
             
             root.AddRelativeField(property, "_actorModulation", 
                 out SerializedProperty _, out PropertyField actorModulationField);
-
+            
             root.AddRelativeField(property, "_postProcessing", 
                 out SerializedProperty postProcessingProp, out PropertyField postProcessingField);
 
@@ -52,12 +54,13 @@ namespace Sonosthesia.Touch.Editor
             root.AddRelativeField(property, "_remap", 
                 out SerializedProperty _, out PropertyField remapField);
             
-            root.AddRelativeField(property, "_clamp");
+            root.AddRelativeField(property, "_clamp",
+                out SerializedProperty _, out PropertyField clampField);
             
             void UpdateVisibility()
             {
                 FloatTouchExtractorSettings.ExtractorType extractorType = (FloatTouchExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
-                FloatTouchExtractorSettings.PostProcessingType postProcessingType = (FloatTouchExtractorSettings.PostProcessingType)postProcessingProp.enumValueIndex;
+                FloatTouchExtractorSettings.PostProcessingType postProcessingType = (FloatTouchExtractorSettings.PostProcessingType)postProcessingProp.enumValueFlag;
                 FloatTouchExtractorSettings.DistanceType distanceType = (FloatTouchExtractorSettings.DistanceType)distanceTypeProp.enumValueIndex;
                 TouchActorModulationType actorModulationType = (TouchActorModulationType)actorModulationTypeProp.enumValueIndex;
 
@@ -72,8 +75,15 @@ namespace Sonosthesia.Touch.Editor
                 
                 actorModulationField.Show(actorModulationType is not TouchActorModulationType.None);
 
-                remapField.Show(postProcessingType is FloatTouchExtractorSettings.PostProcessingType.Remap);
-                curveField.Show(postProcessingType is FloatTouchExtractorSettings.PostProcessingType.Curve);
+                bool curve = postProcessingType.HasFlag(FloatTouchExtractorSettings.PostProcessingType.Curve);
+                bool remap = postProcessingType.HasFlag(FloatTouchExtractorSettings.PostProcessingType.Remap);
+                bool clamp = postProcessingType.HasFlag(FloatTouchExtractorSettings.PostProcessingType.Clamp);
+                
+                Debug.Log($"{this} {nameof(UpdateVisibility)} postprocess {(int)postProcessingType} : {nameof(curve)} {curve} {nameof(remap)} {remap} {nameof(clamp)} {clamp}");
+                
+                curveField.Show(curve);
+                remapField.Show(remap);
+                clampField.Show(clamp);
             }
 
             UpdateVisibility();

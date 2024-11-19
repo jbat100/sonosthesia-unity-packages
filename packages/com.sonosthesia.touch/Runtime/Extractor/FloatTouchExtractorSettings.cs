@@ -30,11 +30,12 @@ namespace Sonosthesia.Touch
             ActorRelative
         }
 
+        [Flags]
         public enum PostProcessingType
         {
-            None,
-            Remap,
-            Curve
+            Curve = 1 << 0,
+            Remap = 1 << 1,
+            Clamp = 1 << 2
         }
         
         [SerializeField] private ExtractorType _extractorType = ExtractorType.Static;
@@ -67,10 +68,7 @@ namespace Sonosthesia.Touch
         [SerializeField] private PostProcessingType _postProcessing;
         [SerializeField] private AnimationCurve _curve;
         [SerializeField] private RemapSettings _remap;
-        
-        // ----------- clamp -------------
-
-        [SerializeField] private ClampSettings _clamp;
+        [SerializeField] private FloatRange _clamp;
 
         // used when only the initial value is needed, creates a session, sets it up and returns extracted value
         public bool Extract(TouchEvent e, out float value)
@@ -106,15 +104,18 @@ namespace Sonosthesia.Touch
             {
                 session = new ActorModulationSession(session, _actorModulationType, _actorModulation);
             }
-
-            session = _postProcessing switch
+            
+            if (_postProcessing.HasFlag(PostProcessingType.Curve))
             {
-                PostProcessingType.Remap => new RemapSession(session, _remap),
-                PostProcessingType.Curve => new CurveSession(session, _curve),
-                _ => session
-            };
+                session = new CurveSession(session, _curve);
+            }
 
-            if (_clamp.Clamp)
+            if (_postProcessing.HasFlag(PostProcessingType.Remap))
+            {
+                session = new RemapSession(session, _remap);
+            }
+
+            if (_postProcessing.HasFlag(PostProcessingType.Clamp))
             {
                 session = new ClampSession(session, _clamp);
             }
@@ -140,7 +141,7 @@ namespace Sonosthesia.Touch
                 return _settings.Modulate(modulator ? modulator.Select(_type) : 0f, value);
             }
         }
-        
+
         private class RemapSession : TouchExtractorSessionProcessor<float>
         {
             private readonly RemapSettings _settings;
@@ -167,14 +168,14 @@ namespace Sonosthesia.Touch
 
         private class ClampSession : TouchExtractorSessionProcessor<float>
         {
-            private readonly ClampSettings _settings;
+            private readonly FloatRange _range;
             
-            public ClampSession(ITouchExtractorSession<float> session, ClampSettings settings) : base(session)
+            public ClampSession(ITouchExtractorSession<float> session, FloatRange range) : base(session)
             {
-                _settings = settings;
+                _range = range;
             }
 
-            protected override float Process(TouchEvent touchEvent, float value) => _settings.Process(value);
+            protected override float Process(TouchEvent touchEvent, float value) => _range.Clamp(value);
         }
 
         private class StaticSession : ITouchExtractorSession<float>
