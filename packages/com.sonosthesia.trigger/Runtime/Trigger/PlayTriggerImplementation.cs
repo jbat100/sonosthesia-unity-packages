@@ -41,6 +41,8 @@ namespace Sonosthesia.Trigger
                 Debug.LogWarning($"{this} fired with tiny time scale {timeScale}");
                 return;
             }
+            
+            // Debug.Log($"{this} {nameof(PlayTrigger)} {nameof(valueScale)} {valueScale} {nameof(timeScale)} {timeScale}");
 
             Entry entry = new Entry(new WarpedEnvelope(envelope ?? _defaultEnvelope, valueScale, timeScale));
             _entries.Add(entry);
