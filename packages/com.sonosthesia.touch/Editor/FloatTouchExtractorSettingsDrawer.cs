@@ -1,10 +1,8 @@
-using System;
 using Sonosthesia.Utils;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using Sonosthesia.Utils.Editor;
-using UnityEngine;
 
 namespace Sonosthesia.Touch.Editor
 {
@@ -78,9 +76,7 @@ namespace Sonosthesia.Touch.Editor
                 bool curve = postProcessingType.HasFlag(FloatTouchExtractorSettings.PostProcessingType.Curve);
                 bool remap = postProcessingType.HasFlag(FloatTouchExtractorSettings.PostProcessingType.Remap);
                 bool clamp = postProcessingType.HasFlag(FloatTouchExtractorSettings.PostProcessingType.Clamp);
-                
-                Debug.Log($"{this} {nameof(UpdateVisibility)} postprocess {(int)postProcessingType} : {nameof(curve)} {curve} {nameof(remap)} {remap} {nameof(clamp)} {clamp}");
-                
+
                 curveField.Show(curve);
                 remapField.Show(remap);
                 clampField.Show(clamp);

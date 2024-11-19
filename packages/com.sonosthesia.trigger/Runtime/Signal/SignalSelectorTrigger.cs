@@ -7,7 +7,8 @@ using UniRx;
 
 namespace Sonosthesia.Trigger
 {
-    public class SignalTrigger<T> : MonoBehaviour where T : struct
+    [Obsolete("Use SignalTrigger with settings")]
+    public class SignalSelectorTrigger<T> : MonoBehaviour where T : struct
     {
         [SerializeField] private Signal<T> _source;
         
