@@ -11,27 +11,38 @@ namespace Sonosthesia.FMOD
     {
         [SerializeField] private bool _log;
         public bool Log => _log;
-        
+
         [SerializeField] private StudioEventEmitter _emitter;
 
         [SerializeField] private Signal<T> _source;
 
         private IDisposable _subscription;
         
-        protected void OnEnable()
+        protected virtual bool SkipFirst => false;
+        
+        protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            if (_source)
+            if (!_source)
             {
-                _subscription = _source.SignalObservable.Subscribe(value =>
-                {
-                    this.LogVerbose($"{this} playing sound on {value}");
-                    _emitter.Play();
-                });
+                return;
             }
+
+            IObservable<T> observable = _source.SignalObservable;
+
+            if (SkipFirst)
+            {
+                observable = observable.Skip(1);
+            }
+
+            _subscription = _source.SignalObservable.Subscribe(value =>
+            {
+                this.LogVerbose($"{this} playing sound on {value}");
+                _emitter.Play();
+            });
         }
 
-        protected void OnDisable()
+        protected virtual void OnDisable()
         {
             _subscription?.Dispose();
             _subscription = null;
