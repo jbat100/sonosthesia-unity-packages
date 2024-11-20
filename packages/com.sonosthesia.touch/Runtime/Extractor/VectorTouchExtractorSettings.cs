@@ -28,6 +28,13 @@ namespace Sonosthesia.Touch
             Source,
             Relative
         }
+
+        [Flags]
+        public enum PostProcessingType
+        {
+            Normalize = 1 << 0,
+            Scale = 1 << 2
+        }
         
         [SerializeField] private ExtractorType _extractorType;
 
@@ -38,6 +45,8 @@ namespace Sonosthesia.Touch
         [SerializeField] private Space _space;
 
         [SerializeField] private Vector3 _direction;
+
+        [SerializeField] private PostProcessingType _postProcessing;
 
         [SerializeField] private float _scale = 1f;
 
@@ -53,7 +62,17 @@ namespace Sonosthesia.Touch
                 _ => throw new ArgumentOutOfRangeException()
             };
 
-            return new ScaleSession(session, _scale);
+            if (_postProcessing.HasFlag(PostProcessingType.Normalize))
+            {
+                session = new NormalizeSession(session);
+            }
+
+            if (_postProcessing.HasFlag(PostProcessingType.Scale))
+            {
+                session = new ScaleSession(session, _scale);
+            }
+
+            return session;
         }
 
         public ITouchExtractorSession<Vector3> SetupSession(TouchEvent e, out Vector3 result)
@@ -61,6 +80,15 @@ namespace Sonosthesia.Touch
             ITouchExtractorSession<Vector3> session = MakeSession();
             session.Setup(e, out result);
             return session;
+        }
+
+        private class NormalizeSession : TouchExtractorSessionProcessor<Vector3>
+        {
+            public NormalizeSession(ITouchExtractorSession<Vector3> session) : base(session)
+            {
+            }
+
+            protected override Vector3 Process(TouchEvent touchEvent, Vector3 value) => value.normalized;
         }
 
         private class ScaleSession : TouchExtractorSessionProcessor<Vector3>

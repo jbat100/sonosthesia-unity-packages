@@ -28,10 +28,12 @@ namespace Sonosthesia.Dynamic
         [SerializeField] private float _rotationDamping = 80f;
         
         private Rigidbody _rb;
+        private TransformDynamicsMonitor _monitor;
 
         protected virtual void OnEnable()
         {
             _rb = GetComponent<Rigidbody>();
+            _monitor = GetComponent<TransformDynamicsMonitor>();
             
             if (!(Target && _rb))
             {
@@ -89,8 +91,19 @@ namespace Sonosthesia.Dynamic
 
         public override void Align()
         {
-            _rb.MovePosition(Target.position);
-            _rb.MoveRotation(Target.rotation);
+            Vector3 targetPosition = Target.position;
+            Quaternion targetRotation = Target.rotation;
+
+            Transform t = transform;
+            t.position = targetPosition;
+            t.rotation = targetRotation;
+            _rb.MovePosition(targetPosition);
+            _rb.MoveRotation(targetRotation);
+
+            if (_monitor)
+            {
+                _monitor.Clear();
+            }
         }
     }
 }

@@ -66,5 +66,7 @@ namespace Sonosthesia.Utils
             float newMagnitude = currentMagnitude * factor;
             return vector * (newMagnitude / currentMagnitude);
         }
+        
+        public static float DecibelToLinear(this float decibels) => math.pow(10f, decibels / 20f);
     }
 }

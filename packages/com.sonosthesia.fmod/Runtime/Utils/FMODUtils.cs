@@ -6,6 +6,7 @@ namespace Sonosthesia.FMOD
 {
     public static class FMODUtils
     {
+
         public static bool HasParameter(this StudioEventEmitter emitter, string name)
         {
             if (emitter == null || string.IsNullOrEmpty(name))

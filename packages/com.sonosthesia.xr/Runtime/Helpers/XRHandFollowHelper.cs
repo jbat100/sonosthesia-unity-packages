@@ -4,7 +4,6 @@ using System.Linq;
 using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
-using UnityEngine.XR.Hands;
 
 namespace Sonosthesia.XR
 {
@@ -31,11 +30,11 @@ namespace Sonosthesia.XR
             foreach (Element element in _followers.Where(e => e.Follower))
             {
                 bool activeElement = active && element.Active;
-                element.Follower.gameObject.SetActive(activeElement);
                 if (activeElement)
                 {
                     element.Follower.Align();
                 }
+                element.Follower.gameObject.SetActive(activeElement);
             }    
         }
 

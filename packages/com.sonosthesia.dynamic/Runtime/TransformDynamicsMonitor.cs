@@ -31,13 +31,18 @@ namespace Sonosthesia.Dynamic
                 _ => default
             };
         }
-        
-        protected virtual void OnEnable()
+
+        public void Clear()
         {
             _current = null;
             _velocity = null;
             _acceleration = null;
             _jerk = null;
+        }
+        
+        protected virtual void OnEnable()
+        {
+            Clear();
         }
 
         protected virtual void Update()
