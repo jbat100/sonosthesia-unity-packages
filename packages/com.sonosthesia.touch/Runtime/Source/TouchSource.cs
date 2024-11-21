@@ -13,15 +13,17 @@ namespace Sonosthesia.Touch
         private class TouchData : ITouchData
         {
             public Guid Id;
+            public TouchStart Start { get; set; }
             public Collider Collider { get; set; }
             public bool Colliding { get; set; }
             public TouchSource Source { get; set; }
             public TouchActor Actor { get; set; }
         }
 
+        [SerializeField] private bool _allowDeferred = true;
         [SerializeField] private bool _endOnGates = true;
         [SerializeField] private bool _endOnExit = true;
-        [SerializeField] private bool _endOnReEnter = true;
+        [SerializeField] private bool _restartOnEnter = true;
         [SerializeField] private bool _autoEnd;
         [SerializeField] private float _autoEndDelay;
 
@@ -130,11 +132,10 @@ namespace Sonosthesia.Touch
                     this.LogVerbose($"{this} {nameof(OnTriggerEnter)} bailed out (current actor with other collider)");
                     return;
                 }
-                if (_endOnReEnter)
+                if (_restartOnEnter)
                 {
                     this.LogWarning($"{this} {nameof(OnTriggerEnter)} ended stream on re-enter)");
                     EndStream(data);
-                    // Do not return _endOnReEnter implies restart, could change name to be more representative
                 }
                 else
                 {
@@ -164,7 +165,7 @@ namespace Sonosthesia.Touch
             }
             else
             {
-                AttemptStream(actor, other);   
+                AttemptStream(actor, other, TouchStart.Collision);   
             }
         }
 
@@ -173,13 +174,20 @@ namespace Sonosthesia.Touch
 
         protected virtual void OnTriggerStay(Collider other)
         {
+            if (!_allowDeferred)
+            {
+                return;
+            }
+            
+            // check gated touch actors and attempt to start stream
+            
             foreach (TouchActor actor in _reusableActors.Import(GatedActors(other)))
             {
                 if (CheckGates(actor))
                 {
                     this.LogWarning($"{this} {nameof(OnTriggerStay)} promoted gated actor");
                     _gatedActors.Remove(actor);
-                    AttemptStream(actor, other);
+                    AttemptStream(actor, other, TouchStart.Deferred);
                 }
             }
         }
@@ -221,7 +229,7 @@ namespace Sonosthesia.Touch
             return true;
         }
         
-        private bool AttemptStream(TouchActor actor, Collider other)
+        private bool AttemptStream(TouchActor actor, Collider other, TouchStart start)
         {
             if (!actor.RequestPermission(other))
             {
@@ -232,6 +240,7 @@ namespace Sonosthesia.Touch
             TouchData touchData = new TouchData()
             {
                 Id = Guid.NewGuid(),
+                Start = start,
                 Collider = other,
                 Colliding = true,
                 Actor = actor,

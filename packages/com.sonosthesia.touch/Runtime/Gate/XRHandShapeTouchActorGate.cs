@@ -6,7 +6,7 @@ using UnityEngine.XR.Hands.Gestures;
 
 namespace Sonosthesia.Touch
 {
-    public class XRHandShapeTouchGate : TouchGate
+    public class XRHandShapeTouchActorGate : TouchActorGate
     {
         [SerializeField] private XRHandShape _shape;
 

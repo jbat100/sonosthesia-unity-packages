@@ -27,8 +27,8 @@ namespace Sonosthesia.Touch
         [SerializeField] private TransformDynamicsMonitor _dynamicsMonitor;
         public TransformDynamicsMonitor DynamicsMonitor => _dynamicsMonitor;
         
-        [SerializeField] private List<TouchGate> _gates;
-        public IReadOnlyList<TouchGate> Gates => _gates.AsReadOnly();
+        [SerializeField] private List<TouchActorGate> _gates;
+        public IReadOnlyList<TouchActorGate> Gates => _gates.AsReadOnly();
 
         protected virtual void Awake()
         {

@@ -2,7 +2,7 @@
 
 namespace Sonosthesia.Touch
 {
-    public abstract class TouchGate : MonoBehaviour
+    public abstract class TouchActorGate : MonoBehaviour
     {
         [SerializeField] private bool _bypass;
 

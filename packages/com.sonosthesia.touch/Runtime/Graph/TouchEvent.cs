@@ -3,8 +3,15 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
+    public enum TouchStart
+    {
+        Collision,
+        Deferred
+    }
+    
     public interface ITouchData
     {
+        TouchStart Start { get; }
         Collider Collider { get; }
         bool Colliding { get; }
         TouchSource Source { get; }

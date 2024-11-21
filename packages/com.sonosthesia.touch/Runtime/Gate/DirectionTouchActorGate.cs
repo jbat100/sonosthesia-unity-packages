@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class DirectionTouchGate : TouchGate
+    public class DirectionTouchActorGate : TouchActorGate
     {
         [SerializeField] private Vector3 _direction;
 
