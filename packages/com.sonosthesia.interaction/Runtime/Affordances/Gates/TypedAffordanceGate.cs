@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
-    public abstract class TypedAffordanceGate<TEvent> : AbstractAffordanceGate, 
-        IAffordanceGate<TEvent> where TEvent : IInteractionEvent 
+    public abstract class TypedAffordanceGate<TEvent> : InteractionAffordanceGate, 
+        IInteractionAffordanceGate<TEvent> where TEvent : IInteractionEvent 
     {
         [SerializeField] private bool _bypass;
 

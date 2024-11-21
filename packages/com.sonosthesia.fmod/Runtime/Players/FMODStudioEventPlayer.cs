@@ -35,7 +35,7 @@ namespace Sonosthesia.FMOD
                 observable = observable.Skip(1);
             }
 
-            _subscription = _source.SignalObservable.Subscribe(value =>
+            _subscription = observable.Subscribe(value =>
             {
                 this.LogVerbose($"{this} playing sound on {value}");
                 _emitter.Play();

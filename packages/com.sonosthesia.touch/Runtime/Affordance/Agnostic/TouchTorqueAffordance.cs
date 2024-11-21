@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class TouchTorqueAffordance : AbstractAffordance<TouchEvent>
+    public class TouchTorqueAffordance : InteractionAffordance<TouchEvent>
     {
         [SerializeField] private Rigidbody _target;
 

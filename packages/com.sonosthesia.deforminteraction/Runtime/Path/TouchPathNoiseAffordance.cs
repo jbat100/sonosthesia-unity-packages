@@ -8,7 +8,7 @@ using Sonosthesia.Touch;
 
 namespace Sonosthesia.DeformInteraction
 {
-    public class TouchPathNoiseAffordance : AbstractAffordance<TouchEvent>
+    public class TouchPathNoiseAffordance : InteractionAffordance<TouchEvent>
     {
         [SerializeField] private TouchPathNoiseConfiguration _configuration;
 
@@ -106,7 +106,7 @@ namespace Sonosthesia.DeformInteraction
 
                 float duration = Mathf.Max(displacementRelease, radiusRelease, frequencyRelease, speedRelease);
 
-                // Debug.LogWarning($"{this} {nameof(Teardown)} Dispose in {duration} seconds");
+                Debug.LogWarning($"{this} {nameof(Teardown)} Dispose in {duration} seconds");
                 Observable.Timer(TimeSpan.FromSeconds(duration))
                     .TakeUntilDisable(affordance)
                     .Subscribe(_ => {}, Dispose);
@@ -114,7 +114,7 @@ namespace Sonosthesia.DeformInteraction
 
             public void Dispose()
             {
-                // Debug.LogWarning($"{this} Dispose");
+                Debug.LogWarning($"{this} Dispose");
                 _updateSubscription?.Dispose();
                 Affordance._processor.Unregister(EventId);
             }

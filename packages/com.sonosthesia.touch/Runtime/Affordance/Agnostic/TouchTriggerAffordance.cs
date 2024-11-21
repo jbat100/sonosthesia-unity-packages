@@ -4,7 +4,7 @@ using Sonosthesia.Interaction;
 
 namespace Sonosthesia.Touch
 {
-    public class TouchTriggerAffordance : AbstractAffordance<TouchEvent>
+    public class TouchTriggerAffordance : InteractionAffordance<TouchEvent>
     {
         [SerializeField] private Trigger.Trigger _trigger;
 

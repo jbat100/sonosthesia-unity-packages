@@ -1,6 +1,8 @@
 using System;
 using Sonosthesia.Envelope;
 using Sonosthesia.Trigger;
+using Unity.Mathematics;
+using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
@@ -124,6 +126,8 @@ namespace Sonosthesia.Touch
         
         private class PulseTouchEnvelopeSession : TouchEnvelopeSession
         {
+            private float _endTime;
+            
             public PulseTouchEnvelopeSession(TouchEnvelopeSettings settings, TriggerController controller) 
                 : base(settings, controller)
             {
@@ -143,7 +147,15 @@ namespace Sonosthesia.Touch
                     timeScale = 1f;
                 }
 
+                _endTime = Time.time + envelope.Duration * timeScale;
+
                 Controller.PlayTrigger(envelope, valueScale, timeScale);
+            }
+            
+            public override void EndTouch(TouchEvent e, out float release)
+            {
+                // make sure pulse has time to complete
+                release = math.max(0, _endTime - Time.time);
             }
 
             public override float Update()

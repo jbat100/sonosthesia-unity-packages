@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
-    public abstract class AffordanceGate : AbstractAffordanceGate, IAffordanceGate
+    public abstract class AffordanceGate : InteractionAffordanceGate, IInteractionAffordanceGate
     {
         [SerializeField] private bool _bypass;
 

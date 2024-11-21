@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Sonosthesia.DeformInteraction
 {
-    public class TouchMeshNoiseAffordance : AbstractAffordance<TouchEvent>
+    public class TouchMeshNoiseAffordance : InteractionAffordance<TouchEvent>
     {
         [SerializeField] private TouchMeshNoiseConfiguration _configuration;
 

@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class TouchPeakAffordance : AbstractAffordance<TouchEvent>
+    public class TouchPeakAffordance : InteractionAffordance<TouchEvent>
     {
         [SerializeField] private Signal<Peak> _target;
 

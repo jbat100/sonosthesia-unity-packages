@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class TouchSchedulerAffordance : AbstractAffordance<TouchEvent>
+    public class TouchSchedulerAffordance : InteractionAffordance<TouchEvent>
     {
         [SerializeField] private Signal<SchedulerEvent> _target;
 

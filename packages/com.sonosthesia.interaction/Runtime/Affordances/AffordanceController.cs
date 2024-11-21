@@ -5,7 +5,7 @@ namespace Sonosthesia.Interaction
 {
     public class AffordanceController<TEvent, TAffordance>  : IObserver<TEvent> 
         where TEvent : struct, IInteractionEvent
-        where TAffordance : AbstractAffordance<TEvent>
+        where TAffordance : InteractionAffordance<TEvent>
     {
         private readonly TAffordance _affordance;
         protected TAffordance Affordance => _affordance;

@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Sonosthesia.FMODInteraction
 {
-    public class TouchFMODEmitterAffordance : AbstractAffordance<TouchEvent>
+    public class TouchFMODEmitterAffordance : InteractionAffordance<TouchEvent>
     {
         // these parameters are agreed by convention 
         private static class Parameters

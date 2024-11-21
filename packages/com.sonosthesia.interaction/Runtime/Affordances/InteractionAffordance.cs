@@ -8,12 +8,12 @@ using UnityEngine.Serialization;
 
 namespace Sonosthesia.Interaction
 {
-    public class AbstractAffordance<TEvent> : MonoBehaviour, ILogSwitch where TEvent : struct, IInteractionEvent
+    public class InteractionAffordance<TEvent> : MonoBehaviour, ILogSwitch where TEvent : struct, IInteractionEvent
     {
         [SerializeField] private bool _log;
         public bool Log => _log;
 
-        [SerializeField] private List<AbstractAffordanceGate> _gates;
+        [SerializeField] private List<InteractionAffordanceGate> _gates;
         
         [FormerlySerializedAs("_streamContainers")] 
         [SerializeField] private List<Channel.Channel<TEvent>> _inputs;
@@ -48,10 +48,10 @@ namespace Sonosthesia.Interaction
                 return;
             }
 
-            foreach (AbstractAffordanceGate gate in _gates)
+            foreach (InteractionAffordanceGate gate in _gates)
             {
                 this.LogVerbose($"{this} checking {e} on {gate}");
-                if (gate is IAffordanceGate<TEvent> typedGate)
+                if (gate is IInteractionAffordanceGate<TEvent> typedGate)
                 {
                     if (!typedGate.Check(e))
                     {
@@ -59,7 +59,7 @@ namespace Sonosthesia.Interaction
                         return;
                     }
                 }
-                else if (gate is IAffordanceGate interactionGate)
+                else if (gate is IInteractionAffordanceGate interactionGate)
                 {
                     if (!interactionGate.Check(e))
                     {
