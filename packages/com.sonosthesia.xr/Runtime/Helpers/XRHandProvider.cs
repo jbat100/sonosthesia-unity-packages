@@ -1,10 +1,14 @@
+using Sonosthesia.Utils;
 using UnityEngine;
 using UnityEngine.XR.Hands;
 
 namespace Sonosthesia.XR
 {
-    public class XRHandProvider : MonoBehaviour
+    public class XRHandProvider : MonoBehaviour, ILogSwitch
     {
+        [SerializeField] private bool _log;
+        public bool Log => _log;
+        
         [SerializeField] private XRHandTrackingEvents _trackingEvents;
         public XRHandTrackingEvents TrackingEvents => _trackingEvents;
 
@@ -22,11 +26,13 @@ namespace Sonosthesia.XR
             
             if (!_trackingEvents)
             {
+                this.LogError($"{this} no {nameof(TrackingEvents)}");
                 return false;
             }
 
             if (_trackingEvents.handedness == Handedness.Invalid)
             {
+                this.LogError($"{this} {_trackingEvents.handedness}");
                 return false;
             }
 
@@ -34,6 +40,7 @@ namespace Sonosthesia.XR
 
             if (subsystem == null)
             {
+                this.LogError($"{this} no {_trackingEvents.subsystem}");
                 return false;
             }
 
@@ -41,6 +48,7 @@ namespace Sonosthesia.XR
 
             if (!hand.isTracked)
             {
+                this.LogError($"{this} not tracked");
                 return false;
             }
 

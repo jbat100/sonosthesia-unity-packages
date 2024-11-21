@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Sonosthesia.Utils;
 using UnityEngine;
 using UnityEngine.XR.Hands;
 using Sonosthesia.XR;
@@ -38,11 +39,13 @@ namespace Sonosthesia.Touch
         {
             if (modulationType == TouchActorModulationType.None)
             {
+                this.LogVerbose($"{this} {nameof(Select)} bailing out on none");
                 return 0;
             }
 
-            if (_hand.TryGetTrackedHand(out XRHand hand))
+            if (!_hand.TryGetTrackedHand(out XRHand hand))
             {
+                this.LogVerbose($"{this} {nameof(Select)} bailing out on failed {nameof(_hand.TryGetTrackedHand)}");
                 return 0;
             }
             
@@ -72,6 +75,8 @@ namespace Sonosthesia.Touch
                     _values.Add(thumb);
                 }
             }
+            
+            this.LogVerbose($"{this} {nameof(Select)} computing from {string.Join(", ", _values)}");
 
             return _strategy switch
             {

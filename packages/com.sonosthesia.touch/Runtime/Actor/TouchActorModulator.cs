@@ -1,4 +1,5 @@
-﻿using Unity.Mathematics;
+﻿using Sonosthesia.Utils;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.XR.Hands;
 using UnityEngine.XR.Hands.Gestures;
@@ -16,8 +17,11 @@ namespace Sonosthesia.Touch
         Pinch
     }
 
-    public abstract class TouchActorModulator : MonoBehaviour
+    public abstract class TouchActorModulator : MonoBehaviour, ILogSwitch
     {
+        [SerializeField] private bool _log;
+        public bool Log => _log;
+        
         public abstract float Select(TouchActorModulationType modulationType);
     }
 
