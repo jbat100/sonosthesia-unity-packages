@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Sonosthesia.Dynamic;
 using Sonosthesia.Interaction;
@@ -30,12 +31,25 @@ namespace Sonosthesia.Touch
         [SerializeField] private List<TouchActorGate> _gates;
         public IReadOnlyList<TouchActorGate> Gates => _gates.AsReadOnly();
 
+        private float? _enableTime;
+        public float? TimeSinceEnable => Time.time - _enableTime;
+        
         protected virtual void Awake()
         {
             if (!_dynamicsMonitor)
             {
                 _dynamicsMonitor = this.GetOrAddComponent<TransformDynamicsMonitor>();
             }
+        }
+
+        protected virtual void OnEnable()
+        {
+            _enableTime = Time.time;
+        }
+
+        protected virtual void OnDisable()
+        {
+            _enableTime = null;
         }
 
         public virtual bool RequestPermission(Collider other)

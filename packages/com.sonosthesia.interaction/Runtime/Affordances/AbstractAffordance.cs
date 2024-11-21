@@ -50,11 +50,12 @@ namespace Sonosthesia.Interaction
 
             foreach (AbstractAffordanceGate gate in _gates)
             {
+                this.LogVerbose($"{this} checking {e} on {gate}");
                 if (gate is IAffordanceGate<TEvent> typedGate)
                 {
                     if (!typedGate.Check(e))
                     {
-                        this.LogVerbose($"{this} bailout on typed gate");
+                        this.LogVerbose($"{this} bailout on typed gate {e}");
                         return;
                     }
                 }
@@ -62,7 +63,7 @@ namespace Sonosthesia.Interaction
                 {
                     if (!interactionGate.Check(e))
                     {
-                        this.LogVerbose($"{this} bailout on gate");
+                        this.LogVerbose($"{this} bailout on gate {e}");
                         return;    
                     }
                 }

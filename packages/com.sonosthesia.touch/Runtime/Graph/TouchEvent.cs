@@ -5,8 +5,20 @@ namespace Sonosthesia.Touch
 {
     public enum TouchStart
     {
-        Collision,
-        Deferred
+        /// <summary>
+        /// Touch was started on trigger enter
+        /// </summary>
+        Enter,
+        
+        /// <summary>
+        /// Touch was started by gate switch on trigger stay
+        /// </summary>
+        Deferred,
+        
+        /// <summary>
+        /// Touch was started on actor (or shortly after) OnEnable
+        /// </summary>
+        Trojan
     }
     
     public interface ITouchData
@@ -23,7 +35,8 @@ namespace Sonosthesia.Touch
     {
         public readonly ITouchData touchData;
         public readonly float startTime;
-        
+
+        public float Age => Time.time - startTime;
         public float StartTime => startTime;
         public IInteractionEndpoint Source => touchData?.Source;
         public IInteractionEndpoint Actor => touchData?.Actor;
@@ -32,6 +45,11 @@ namespace Sonosthesia.Touch
         {
             this.touchData = touchData;
             this.startTime = startTime;
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(TouchEvent)} ({touchData.Start}) {nameof(Age)} {Age}";
         }
     }
     

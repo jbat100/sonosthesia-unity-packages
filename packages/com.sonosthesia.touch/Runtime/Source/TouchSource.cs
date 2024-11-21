@@ -10,6 +10,8 @@ namespace Sonosthesia.Touch
 {
     public abstract class TouchSource : TouchEndpoint
     {
+        private const float TROJAN_THRESHOLD = 0.1f;
+        
         private class TouchData : ITouchData
         {
             public Guid Id;
@@ -20,7 +22,8 @@ namespace Sonosthesia.Touch
             public TouchActor Actor { get; set; }
         }
 
-        [SerializeField] private bool _allowDeferred = true;
+        [SerializeField] private bool _allowTrojan = false;
+        [SerializeField] private bool _allowDeferred = false;
         [SerializeField] private bool _endOnGates = true;
         [SerializeField] private bool _endOnExit = true;
         [SerializeField] private bool _restartOnEnter = true;
@@ -89,8 +92,9 @@ namespace Sonosthesia.Touch
             }
         }
 
-        protected virtual void OnDisable()
+        protected override void OnDisable()
         {
+            base.OnDisable();
             _gatedActors.Clear();
             KillAllStreams();
         }
@@ -163,9 +167,13 @@ namespace Sonosthesia.Touch
                 this.LogVerbose($"{this} {nameof(OnTriggerEnter)} gated actor");
                 _gatedActors[actor] = other;
             }
-            else
+            else if (actor.TimeSinceEnable > TROJAN_THRESHOLD && TimeSinceEnable > TROJAN_THRESHOLD)
             {
-                AttemptStream(actor, other, TouchStart.Collision);   
+                AttemptStream(actor, other, TouchStart.Enter);  
+            }
+            else if (_allowTrojan)
+            {
+                AttemptStream(actor, other, TouchStart.Trojan);   
             }
         }
 
