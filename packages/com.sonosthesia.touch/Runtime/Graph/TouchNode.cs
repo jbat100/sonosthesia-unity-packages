@@ -7,6 +7,13 @@ using UnityEngine;
 namespace Sonosthesia.Touch
 {
     // TODO : separate grouping structure into other class, no need for tree, group will do
+
+    public enum NodeConflictResolution
+    {
+        None,
+        Block,
+        Switch
+    }
     
     public class TouchNode : TouchEventChannel
     {
@@ -15,8 +22,8 @@ namespace Sonosthesia.Touch
         public int MaxConcurrent => _maxConcurrent;
         
         [Tooltip("Allow ending one stream to create another while on max concurrent")]
-        [SerializeField] private bool _allowSwitching;
-        public bool AllowSwitching => _allowSwitching;
+        [SerializeField] private NodeConflictResolution _conflictResolution;
+        public NodeConflictResolution ConflictResolution => _conflictResolution;
         
         [Tooltip("Calculate concurrent count per collider")]
         [SerializeField] private bool _perCollider;
@@ -101,6 +108,11 @@ namespace Sonosthesia.Touch
             {
                 return false;
             }
+
+            if (_conflictResolution == NodeConflictResolution.None)
+            {
+                return true;
+            }
             
             TouchNode current = this;
             bool maxReached = false;
@@ -123,7 +135,7 @@ namespace Sonosthesia.Touch
                 return true;
             }
 
-            if (current.AllowSwitching)
+            if (_conflictResolution == NodeConflictResolution.Switch)
             {
                 current.EndOldestStream();
                 return true;

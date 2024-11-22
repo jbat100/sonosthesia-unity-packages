@@ -4,7 +4,6 @@ using Cysharp.Threading.Tasks;
 using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Sonosthesia.Interaction
 {
@@ -14,10 +13,7 @@ namespace Sonosthesia.Interaction
         public bool Log => _log;
 
         [SerializeField] private List<InteractionAffordanceGate> _gates;
-        
-        [FormerlySerializedAs("_streamContainers")] 
         [SerializeField] private List<Channel.Channel<TEvent>> _inputs;
-
         [SerializeField] private Channel.Channel<TEvent> _relay;
 
         private readonly CompositeDisposable _subscriptions = new();

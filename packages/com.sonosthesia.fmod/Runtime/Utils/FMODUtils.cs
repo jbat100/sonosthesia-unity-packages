@@ -19,7 +19,7 @@ namespace Sonosthesia.FMOD
         
         public static bool HasParameter(this EventReference reference, string name)
         {
-            RESULT result = RuntimeManager.StudioSystem.getEvent(reference.Path, out EventDescription description);
+            RESULT result = RuntimeManager.StudioSystem.getEventByID(reference.Guid, out EventDescription description);
             return result == RESULT.OK && description.HasParameter(name);
         }
         

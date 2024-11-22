@@ -54,12 +54,16 @@ namespace Sonosthesia.FMODInteraction
 
                 public void EndTouch(TouchEvent e, out float release) => envelope.EndTouch(e, out release);
 
-                public void Update()
+                public float Update()
                 {
                     if (valid)
                     {
-                        emitter.SetParameter(name, envelope.Update());    
+                        float value = envelope.Update();
+                        emitter.SetParameter(name, envelope.Update());
+                        return value;
                     }
+
+                    return float.NaN;
                 }
             }
             
@@ -95,9 +99,11 @@ namespace Sonosthesia.FMODInteraction
                 
                 void UpdateParameters()
                 {
-                    _volumeSession.Update();
-                    _excitationSession.Update();
-                    _bodySession.Update();
+                    float volume = _volumeSession.Update();
+                    float excitation = _excitationSession.Update();
+                    float body = _bodySession.Update();
+                    affordance.LogVerbose($"{affordance} update FMOD parameters : " +
+                                          $"{nameof(volume)} {volume} {nameof(excitation)} {excitation} {nameof(body)} {body}");
                 }
                 
                 UpdateParameters();

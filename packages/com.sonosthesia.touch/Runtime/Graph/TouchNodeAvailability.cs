@@ -38,7 +38,7 @@ namespace Sonosthesia.Touch
                 .Merge(_node.UpstreamObservable)
                 .StartWith(Unit.Default)
                 .BatchFrame()
-                .Subscribe(_ => Broadcast(ComputeAvalability()));
+                .Subscribe(_ => Broadcast(ComputeAvailability()));
         }
         
         protected virtual void OnDisable()
@@ -47,8 +47,13 @@ namespace Sonosthesia.Touch
             _subscription = null;
         }
 
-        protected virtual NodeAvailabilityState ComputeAvalability()
+        protected virtual NodeAvailabilityState ComputeAvailability()
         {
+            if (_node.ConflictResolution == NodeConflictResolution.None)
+            {
+                return NodeAvailabilityState.Available;
+            }
+            
             TouchNode current = _node;
             bool maxReached = false;
             while (current)
@@ -66,7 +71,8 @@ namespace Sonosthesia.Touch
                 return NodeAvailabilityState.Available;
             }
 
-            return current.AllowSwitching ? NodeAvailabilityState.Switchable : NodeAvailabilityState.Unavailable;
+            return current.ConflictResolution == NodeConflictResolution.Switch ? 
+                NodeAvailabilityState.Switchable : NodeAvailabilityState.Unavailable;
         }
     }
 }

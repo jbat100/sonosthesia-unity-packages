@@ -4,11 +4,12 @@ using UniRx;
 using FMOD;
 using FMOD.Studio;
 using Sonosthesia.Signal;
+using Sonosthesia.Utils;
 using Unity.Mathematics;
 
 namespace Sonosthesia.FMOD
 {
-    public class FMODParamTarget : Target<float>
+    public class FMODInstanceParamTarget : Target<float>
     {
         public enum RangeHandling
         {
@@ -71,13 +72,13 @@ namespace Sonosthesia.FMOD
                 RESULT result = _eventInstance.getDescription(out _eventDescription);
                 if (result != RESULT.OK)
                 {
-                    UnityEngine.Debug.LogWarning($"{this} failed getDescription {result}");
+                    this.LogError($"{this} failed getDescription {result}");
                     return;
                 }
                 result = _eventDescription.getParameterDescriptionByName(_parameterName, out _parameterDescription);
                 if (result != RESULT.OK)
                 {
-                    UnityEngine.Debug.LogWarning($"{this} failed getParameterDescriptionByName {_parameterName} {result}");
+                    this.LogError($"{this} failed getParameterDescriptionByName {_parameterName} {result}");
                     return;
                 }
 
@@ -86,6 +87,7 @@ namespace Sonosthesia.FMOD
             }
             else
             {
+                this.LogError($"{this} invalid instance");
                 Clear();
             }
         }

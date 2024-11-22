@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Sonosthesia.Utils.Editor
+namespace Sonosthesia.Utils
 {
     public static class GizmoUtils
     {
