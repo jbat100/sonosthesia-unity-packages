@@ -16,7 +16,8 @@ namespace Sonosthesia.Envelope
         AHR,
         ADSR,
         ADS,
-        SR
+        SR,
+        A
     }
 
     public static class EnvelopeUtils
@@ -36,6 +37,7 @@ namespace Sonosthesia.Envelope
                     PhasedEnvelopeType.ADSR => new ADSREnvelope(settings.Attack, settings.Decay, settings.Sustain, settings.Hold, settings.Release),
                     PhasedEnvelopeType.ADS => new ADSEnvelope(settings.Attack, settings.Decay, settings.Sustain),
                     PhasedEnvelopeType.SR => new SREnvelope(settings.Sustain, settings.Release),
+                    PhasedEnvelopeType.A => new AEnvelope(settings.Attack),
                     _ => null
                 }; 
             }

@@ -32,6 +32,34 @@ namespace Sonosthesia.Envelope
         public float Evaluate(float time) => _duration < 1e-3 ? 1f : _easeType.Evaluate(time / _duration);
     }
     
+    public class AEnvelope : IEnvelope
+    {
+        private EnvelopePhase _attack;
+
+        public AEnvelope(EnvelopePhase attack)
+        {
+            _attack = attack;
+        }
+        
+        public float Duration => _attack.Duration;
+
+        public float InitialValue => 0f;
+        
+        public float FinalValue => 1f;
+
+        public float Evaluate(float t)
+        {
+            const float attackStart = 0;
+            float end = _attack.Duration;
+            return t switch
+            {
+                < attackStart => 0,
+                >= attackStart when t <= end => _attack.Evaluate(t),
+                _ => 1f
+            };
+        }
+    }
+    
     public class AHREnvelope : IEnvelope
     {
         private readonly float _hold;
