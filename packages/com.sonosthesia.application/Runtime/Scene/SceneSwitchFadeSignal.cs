@@ -3,6 +3,7 @@ using UniRx;
 using VContainer;
 using UnityEngine;
 using Sonosthesia.Signal;
+using Sonosthesia.Utils;
 
 namespace Sonosthesia.Application
 {
@@ -27,6 +28,15 @@ namespace Sonosthesia.Application
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
+
+            if (_switcher == null)
+            {
+                this.LogError($"{this} expected switcher");
+                return;
+            }
+            
+            this.LogVerbose($"{this} setting up switcher fade");
+            
             _subscription = _switcher.StateObservable.Subscribe(state =>
             {
                 switch (state)
