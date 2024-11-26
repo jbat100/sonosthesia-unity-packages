@@ -25,5 +25,15 @@ namespace Sonosthesia.Utils
             subject.Dispose();
             subject = null;
         }
+
+        public static void Toggle(this BoolReactiveProperty property)
+        {
+            if (property == null)
+            {
+                return;
+            }
+
+            property.Value = !property.Value;
+        }
     }
 }

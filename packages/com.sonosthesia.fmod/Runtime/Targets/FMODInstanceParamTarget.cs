@@ -53,7 +53,10 @@ namespace Sonosthesia.FMOD
 
         protected virtual void OnValidate()
         {
-            RefreshParameterDescription();
+            if (Application.isPlaying)
+            {
+                RefreshParameterDescription();   
+            }
         }
 
         private void Clear()

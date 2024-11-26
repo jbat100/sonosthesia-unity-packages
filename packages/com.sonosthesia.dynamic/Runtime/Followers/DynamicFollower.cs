@@ -91,6 +91,12 @@ namespace Sonosthesia.Dynamic
 
         public override void Align()
         {
+            if (!_rb)
+            {
+                Debug.LogError($"{this} expected {nameof(Rigidbody)}");
+                return;
+            }
+            
             Vector3 targetPosition = Target.position;
             Quaternion targetRotation = Target.rotation;
 
