@@ -34,6 +34,9 @@ namespace Sonosthesia.Application
         
         [SerializeField] private float _fadeOut = 1f;
         public float FadeOut => _fadeOut;
+
+        [SerializeField] private bool _hideUI = true;
+        public bool HideUI => _hideUI;
     }
     
     public interface ISceneSwitcher
