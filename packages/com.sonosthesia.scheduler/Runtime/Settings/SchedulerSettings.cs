@@ -12,7 +12,7 @@ namespace Sonosthesia.Scheduler
             Random
         }
 
-        [SerializeField] private SchedulerType _schedulerType;
+        [SerializeField] private SchedulerType _schedulerType = SchedulerType.Random;
 
         [SerializeField] private AbstractScheduler _scheduler;
         

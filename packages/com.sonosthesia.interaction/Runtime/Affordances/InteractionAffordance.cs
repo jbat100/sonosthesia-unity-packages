@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using Sonosthesia.Utils;
 using UniRx;
@@ -17,11 +18,6 @@ namespace Sonosthesia.Interaction
         [SerializeField] private Channel.Channel<TEvent> _relay;
 
         private readonly CompositeDisposable _subscriptions = new();
-
-        protected virtual void OnEventCountChanged(int count)
-        {
-            
-        }
 
         protected virtual IObserver<TEvent> MakeController(Guid id) => null;
         
@@ -67,12 +63,13 @@ namespace Sonosthesia.Interaction
             
             this.LogWarning($"{this} handling new stream {stream}");
 
-            System.IObserver<TEvent> controller = MakeController(id);
+            IObserver<TEvent> controller = MakeController(id);
             if (controller != null)
             {
                 // Debug.LogWarning($"{this} created new controller {id}");
                 stream.Subscribe(controller);
             }
+            
             HandleStream(id, stream);
 
             if (_relay)
@@ -83,19 +80,13 @@ namespace Sonosthesia.Interaction
 
         protected virtual void OnEnable()
         {
-            foreach (Channel.Channel<TEvent> channel in _inputs)
+            foreach (var channel in _inputs.Where(channel => channel))
             {
-                if (!channel)
-                {
-                    continue;
-                }
-                
-                _subscriptions.Add(channel.Values.ObserveCountChanged().Subscribe(OnEventCountChanged));
                 _subscriptions.Add(channel.Observable.Subscribe(pair =>
                 {
                     this.LogVerbose($"{this} received new stream {pair.Key}");
                     OnStream(pair.Key, pair.Value).Forget();
-                }));    
+                }));
             }
         }
 
