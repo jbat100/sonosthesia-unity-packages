@@ -20,46 +20,30 @@ namespace Sonosthesia.Application
             _settings = settings;
             _parentScope = parentScope;
         }
+
+        private readonly ReactiveProperty<SceneSwitcherState> _state = new(SceneSwitcherState.Idle);
+        public IReadOnlyReactiveProperty<SceneSwitcherState> State => _state;
+
+        private readonly ReactiveProperty<string> _current = new (null);
+        public IReadOnlyReactiveProperty<string> Current => _current;
         
-        private BehaviorSubject<SceneSwitcherState> _stateSubject = new (SceneSwitcherState.Idle);
-        public IObservable<SceneSwitcherState> StateObservable => _stateSubject.AsObservable();
-        public SceneSwitcherState State
-        {
-            get => _stateSubject.Value;
-            private set
-            {
-                Debug.Log($"{this} state {value}");
-                _stateSubject.OnNext(value);
-            }
-        }
-
-        private BehaviorSubject<string> _currentSubject = new(null);
-        public IObservable<string> CurrentObservable => _currentSubject.AsObservable();
-        public string Current
-        {
-            get => _currentSubject.Value;
-            private set => _currentSubject.OnNext(value);
-        }
-
-        private IDisposable _intentSubscription;
-
         public async UniTask SwitchToScene(string sceneName)
         {
-            if (sceneName == Current)
+            if (sceneName == Current.Value)
             {
                 return;
             }
 
             try
             {
-                State = SceneSwitcherState.FadeOut;
+                _state.Value = SceneSwitcherState.FadeOut;
 
                 await UniTask.Delay(TimeSpan.FromSeconds(Settings.FadeOut));
 
-                if (!string.IsNullOrEmpty(Current))
+                if (!string.IsNullOrEmpty(Current.Value))
                 {
-                    State = SceneSwitcherState.Unloading;
-                    await SceneManager.UnloadSceneAsync(Current);
+                    _state.Value = SceneSwitcherState.Unloading;
+                    await SceneManager.UnloadSceneAsync(Current.Value);
                 }
             }
             catch (Exception e)
@@ -72,14 +56,14 @@ namespace Sonosthesia.Application
             {
                 if (!string.IsNullOrEmpty(sceneName))
                 {
-                    State = SceneSwitcherState.Loading;
+                    _state.Value = SceneSwitcherState.Loading;
                     using (LifetimeScope.EnqueueParent(_parentScope))
                     {
                         await SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
                     }
                 }
 
-                Current = sceneName;
+                _current.Value = sceneName;
             }
             catch (Exception e)
             {
@@ -87,18 +71,17 @@ namespace Sonosthesia.Application
                 Debug.LogException(e);
             }
             
-            State = SceneSwitcherState.FadeIn;
+            _state.Value = SceneSwitcherState.FadeIn;
             
             await UniTask.Delay(TimeSpan.FromSeconds(Settings.FadeIn));
             
-            State = SceneSwitcherState.Idle;
+            _state.Value = SceneSwitcherState.Idle;
         }
 
         public void Dispose()
         {
-            Debug.LogWarning($"{this} {nameof(Dispose)}");
-            RxUtils.Cleanup(ref _stateSubject);
-            RxUtils.Cleanup(ref _currentSubject);
+            _state.Dispose();
+            _current.Dispose();
         }
     }
 }

@@ -37,7 +37,7 @@ namespace Sonosthesia.Application
             
             this.LogVerbose($"{this} setting up switcher fade");
             
-            _subscription = _switcher.StateObservable.Subscribe(state =>
+            _subscription = _switcher.State.Subscribe(state =>
             {
                 switch (state)
                 {

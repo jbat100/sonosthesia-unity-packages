@@ -53,7 +53,7 @@ namespace Sonosthesia.Application
         protected virtual void OnEnable()
         {
             _subscriptions.Clear();
-            _subscriptions.Add(_switcher.CurrentObservable.Subscribe(current =>
+            _subscriptions.Add(_switcher.Current.Subscribe(current =>
             {
                 if (!_nameText)
                 {
@@ -70,7 +70,7 @@ namespace Sonosthesia.Application
                 }
                 _nameText.text = current;
             }));
-            _subscriptions.Add(_switcher.StateObservable.Subscribe(state =>
+            _subscriptions.Add(_switcher.State.Subscribe(state =>
             {
                 if (!_stateText)
                 {

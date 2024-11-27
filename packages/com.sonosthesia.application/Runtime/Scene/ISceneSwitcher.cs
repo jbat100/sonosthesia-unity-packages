@@ -1,5 +1,6 @@
 using System;
 using Cysharp.Threading.Tasks;
+using UniRx;
 using UnityEngine;
 
 namespace Sonosthesia.Application
@@ -41,12 +42,8 @@ namespace Sonosthesia.Application
     
     public interface ISceneSwitcher
     {
-        IObservable<SceneSwitcherState> StateObservable { get; }
+        IReadOnlyReactiveProperty<SceneSwitcherState> State { get; }
 
-        IObservable<string> CurrentObservable { get; }
-        
-        string Current { get; }
-
-        UniTask SwitchToScene(string sceneName);
+        public IReadOnlyReactiveProperty<string> Current { get; }
     }
 }
