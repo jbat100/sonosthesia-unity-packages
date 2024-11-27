@@ -9,11 +9,8 @@ namespace Sonosthesia.Mesh
     public class TorusKnotParametricPath : ParametricPath
     {
         [SerializeField] private float _scale;
-
         [SerializeField] private int _p;
-        
         [SerializeField] private int _q;
-
         [SerializeField] private bool _SIMD;
 
         public override float GetLength() => 1f;
@@ -21,16 +18,11 @@ namespace Sonosthesia.Mesh
         [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
         private struct Job : IJob
         {
-            public NativeArray<RigidTransform> points;
-
+            [WriteOnly] public NativeArray<RigidTransform> points;
             public float2 range;
-
             public int segments;
-
             public float scale;
-
             public int p;
-
             public int q;
 
             public void Execute()
@@ -99,7 +91,7 @@ namespace Sonosthesia.Mesh
                 }   
             }
 
-            points.CalculateRotations(range);
+            points.RecalculateRotations(range);
             
             return true;
         }

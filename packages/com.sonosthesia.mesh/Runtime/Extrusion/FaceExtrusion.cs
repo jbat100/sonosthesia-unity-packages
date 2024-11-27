@@ -48,9 +48,8 @@ namespace Sonosthesia.Mesh
         }
         
         [BurstCompile]
-        private struct ExtrudeFacesJob<K> : IJobParallelFor where K : struct, IVertexData
+        private struct ExtrudeFacesJob<K> : IJobFor where K : struct, IVertexData
         {
-            [NativeDisableContainerSafetyRestriction]
             [ReadOnly] public NativeArray<RigidTransform> PathPoints;
             
             [NativeDisableContainerSafetyRestriction]
@@ -60,7 +59,6 @@ namespace Sonosthesia.Mesh
             [WriteOnly] public NativeArray<K> Vertices;
 
             public ExtrusionSettings ExtrusionSettings;
-            public FaceSettings FaceSettings;
             public int VertexArrayOffset;
 
             public void Execute(int index)
@@ -117,10 +115,9 @@ namespace Sonosthesia.Mesh
                     Vertices = vertices,
                     ExtrusionSegments = extrusionSegments,
                     ExtrusionSettings = extrusionSettings,
-                    FaceSettings = faceSettings,
                     VertexArrayOffset = vertexArrayOffset
                 };
-                job.Schedule(extrusionSettings.segments, (int)math.sqrt(extrusionSettings.segments)).Complete();
+                job.ScheduleParallel(extrusionSettings.segments, (int)math.sqrt(extrusionSettings.segments), default).Complete();
             }
         }
         

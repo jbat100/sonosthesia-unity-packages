@@ -1,0 +1,374 @@
+using System;
+using System.Collections.Generic;
+using Sonosthesia.Ease;
+using Sonosthesia.Mesh;
+using Sonosthesia.Noise;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Jobs;
+using Unity.Mathematics;
+using UnityEngine;
+
+namespace Sonosthesia.Deform
+{
+    public readonly struct CompoundMeshNoiseInfo
+    {
+        private const float IMPOTENCE_THRESHOLD = 1e-4f;
+
+        public readonly EaseType crossFadeType;
+        public readonly CatlikeNoiseType noiseType;
+        public readonly float displacement;
+        public readonly float3x4 domainTRS;
+        public readonly SpatialFalloffInfo falloff;
+        public readonly float time;
+        public readonly int frequency;
+
+        public bool IsImpotent
+        {
+            get
+            {
+                if (math.abs(displacement) < IMPOTENCE_THRESHOLD)
+                {
+                    return true;
+                }
+                if (falloff.active && math.abs(falloff.radius) < IMPOTENCE_THRESHOLD)
+                {
+                    return true;
+                }
+                if (frequency == 0)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        public CompoundMeshNoiseInfo(EaseType crossFadeType, CatlikeNoiseType noiseType, 
+            float displacement, float3x4 domainTRS, SpatialFalloffInfo falloff, float time, int frequency)
+        {
+            this.crossFadeType = crossFadeType;
+            this.noiseType = noiseType;
+            this.displacement = displacement;
+            this.domainTRS = domainTRS;
+            this.falloff = falloff;
+            this.time = time;
+            this.frequency = frequency;
+        }
+        
+        public override string ToString()
+        {
+            return $"{nameof(CompoundMeshNoiseInfo)} " +
+                   $"{nameof(noiseType)}: {noiseType}, " +
+                   $"{nameof(displacement)}: {displacement}, " +
+                   $"{nameof(falloff)}: {falloff}, " +
+                   $"{nameof(time)}: {time}, " +
+                   $"{nameof(frequency)}: {frequency}";
+        }
+    }
+
+    public class CompoundNoiseMeshController : SingleStreamMeshController
+    {
+        [SerializeField] private int _summationPoolSize = 4;
+
+        [SerializeField] private PlaneDeformationMaskSettings _planeDeformationMask;
+        
+        private readonly Dictionary<Guid, CompoundMeshNoiseInfo> _components = new();
+
+        private UnsafeNativeArraySummationHelper<float4> _summationHelper;
+
+        private class DeformationMaskCache : IDisposable
+        {
+            public readonly CacheKey cacheKey; 
+            public NativeArray<float4> mask;
+
+            public DeformationMaskCache(CacheKey cacheKey, NativeArray<float4> mask)
+            {
+                this.cacheKey = cacheKey;
+                this.mask = mask;
+            }
+
+            public void Dispose()
+            {
+                mask.Dispose();
+            }
+        }
+
+        private DeformationMaskCache _deformationMaskCache;
+
+        private delegate JobHandle JobScheduleDelegate (
+            UnityEngine.Mesh.MeshData meshData, 
+            NativeArray<float4> deformations, TriNoise.TriNoiseComponent component, 
+            CompoundMeshNoiseInfo info, Transform parent,
+            int innerloopBatchCount, JobHandle dependency
+        );
+        
+        [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, OptimizeFor = OptimizeFor.Performance)]
+        private struct Job<N> : IJobFor where N : struct, ISimpleNoise
+        {
+            [ReadOnly] private NativeArray<Vertex4> vertices;
+            [WriteOnly] private NativeArray<float4> deformations;
+            private TriNoise.TriNoiseComponent component;
+            private CompoundMeshNoiseInfo info;
+            private SpatialFalloffCompute falloffCompute;
+
+            private float Falloff(float3 pos)
+            {
+                float falloff = falloffCompute.Compute(pos);
+                float eased = info.falloff.ease.Evaluate(falloff);
+                return eased;
+            }
+            
+            public void Execute(int i)
+            {
+                Vertex4 v = vertices[i];
+                float4x3 position = info.domainTRS.TransformVectors(math.transpose(new float3x4(
+                    v.v0.position, v.v1.position, v.v2.position, v.v3.position
+                )));
+                float4 noise = position.GetSimpleNoise<N>(component);
+                if (info.falloff.active)
+                {
+                    //float4 distance = new float4(
+                    //    math.distance(v.v3.position, localCenter),
+                    //    math.distance(v.v2.position, localCenter),
+                    //    math.distance(v.v1.position, localCenter),
+                    //    math.distance(v.v0.position, localCenter)
+                    //    );
+                    //float4 fade = math.clamp(math.unlerp(info.radius, 0, distance), 0, 1);
+                    //float4 falloff = info.falloffType.Evaluate(fade);
+                    //noise = math.mul(noise, falloff);
+
+                    noise.x *= Falloff(v.v0.position);
+                    noise.y *= Falloff(v.v1.position);
+                    noise.z *= Falloff(v.v2.position);
+                    noise.w *= Falloff(v.v3.position);
+                }
+                deformations[i] = noise;
+            }
+
+            public static JobHandle ScheduleParallel (UnityEngine.Mesh.MeshData meshData, 
+                NativeArray<float4> deformations, TriNoise.TriNoiseComponent component, 
+                CompoundMeshNoiseInfo info, Transform parent,
+                int innerloopBatchCount, JobHandle dependency)
+            {
+                SpatialFalloffCompute falloffCompute = default;
+                
+                if (info.falloff.active)
+                {
+                    float3 localCenter = parent.InverseTransformPoint(info.falloff.center);
+                    float3 localHandle = parent.InverseTransformPoint(info.falloff.handle);
+                    float localRadius = info.falloff.radius / parent.lossyScale.x;
+
+                    falloffCompute = new SpatialFalloffCompute(info.falloff.shape, localCenter, localHandle, localRadius);
+                }
+
+                return new Job<N>
+                {
+                    vertices = meshData.GetVertexData<SingleStreams.Stream0>().Reinterpret<Vertex4>(12 * 4),
+                    deformations = deformations,
+                    component = component,
+                    info = info,
+                    falloffCompute = falloffCompute
+                }.ScheduleParallel(meshData.vertexCount / 4, innerloopBatchCount, dependency);
+            }
+        }
+        
+        private static readonly JobScheduleDelegate[,] _jobs = {
+            {
+                Job<Lattice1D<Perlin, LatticeNormal>>.ScheduleParallel,
+                Job<Lattice2D<Perlin, LatticeNormal>>.ScheduleParallel,
+                Job<Lattice3D<Perlin, LatticeNormal>>.ScheduleParallel
+            },
+            {
+                Job<Lattice1D<Smoothstep<Turbulence<Perlin>>, LatticeNormal>>.ScheduleParallel,
+                Job<Lattice2D<Smoothstep<Turbulence<Perlin>>, LatticeNormal>>.ScheduleParallel,
+                Job<Lattice3D<Smoothstep<Turbulence<Perlin>>, LatticeNormal>>.ScheduleParallel
+            },
+            {
+                Job<Lattice1D<Value, LatticeNormal>>.ScheduleParallel,
+                Job<Lattice2D<Value, LatticeNormal>>.ScheduleParallel,
+                Job<Lattice3D<Value, LatticeNormal>>.ScheduleParallel
+            },
+            {
+                Job<Simplex1D<Simplex>>.ScheduleParallel,
+                Job<Simplex2D<Simplex>>.ScheduleParallel,
+                Job<Simplex3D<Simplex>>.ScheduleParallel
+            },
+            {
+                Job<Simplex1D<Turbulence<Simplex>>>.ScheduleParallel,
+                Job<Simplex2D<Turbulence<Simplex>>>.ScheduleParallel,
+                Job<Simplex3D<Turbulence<Simplex>>>.ScheduleParallel
+            },
+            {
+                Job<Simplex1D<Smoothstep<Turbulence<Simplex>>>>.ScheduleParallel,
+                Job<Simplex2D<Smoothstep<Turbulence<Simplex>>>>.ScheduleParallel,
+                Job<Simplex3D<Smoothstep<Turbulence<Simplex>>>>.ScheduleParallel
+            },
+            {
+                Job<Simplex1D<Value>>.ScheduleParallel,
+                Job<Simplex2D<Value>>.ScheduleParallel,
+                Job<Simplex3D<Value>>.ScheduleParallel
+            },
+            {
+                Job<Voronoi1D<LatticeNormal, Worley, F1>>.ScheduleParallel,
+                Job<Voronoi2D<LatticeNormal, Worley, F1>>.ScheduleParallel,
+                Job<Voronoi3D<LatticeNormal, Worley, F1>>.ScheduleParallel
+            },
+            {
+                Job<Voronoi1D<LatticeNormal, Worley, F2>>.ScheduleParallel,
+                Job<Voronoi2D<LatticeNormal, Worley, F2>>.ScheduleParallel,
+                Job<Voronoi3D<LatticeNormal, Worley, F2>>.ScheduleParallel
+            },
+            {
+                Job<Voronoi1D<LatticeNormal, Worley, F2MinusF1>>.ScheduleParallel,
+                Job<Voronoi2D<LatticeNormal, Worley, F2MinusF1>>.ScheduleParallel,
+                Job<Voronoi3D<LatticeNormal, Worley, F2MinusF1>>.ScheduleParallel
+            },
+            {
+                Job<Voronoi1D<LatticeNormal, SmoothWorley, F1>>.ScheduleParallel,
+                Job<Voronoi2D<LatticeNormal, SmoothWorley, F1>>.ScheduleParallel,
+                Job<Voronoi3D<LatticeNormal, SmoothWorley, F1>>.ScheduleParallel
+            },
+            {
+                Job<Voronoi1D<LatticeNormal, SmoothWorley, F2>>.ScheduleParallel,
+                Job<Voronoi2D<LatticeNormal, SmoothWorley, F2>>.ScheduleParallel,
+                Job<Voronoi3D<LatticeNormal, SmoothWorley, F2>>.ScheduleParallel
+            },
+            {
+                Job<Voronoi1D<LatticeNormal, Chebyshev, F1>>.ScheduleParallel,
+                Job<Voronoi2D<LatticeNormal, Chebyshev, F1>>.ScheduleParallel,
+                Job<Voronoi3D<LatticeNormal, Chebyshev, F1>>.ScheduleParallel
+            },
+            {
+                Job<Voronoi1D<LatticeNormal, Chebyshev, F2>>.ScheduleParallel,
+                Job<Voronoi2D<LatticeNormal, Chebyshev, F2>>.ScheduleParallel,
+                Job<Voronoi3D<LatticeNormal, Chebyshev, F2>>.ScheduleParallel
+            },
+            {
+                Job<Voronoi1D<LatticeNormal, Chebyshev, F2MinusF1>>.ScheduleParallel,
+                Job<Voronoi2D<LatticeNormal, Chebyshev, F2MinusF1>>.ScheduleParallel,
+                Job<Voronoi3D<LatticeNormal, Chebyshev, F2MinusF1>>.ScheduleParallel
+            }
+        };
+        
+        public void Register(Guid id, CompoundMeshNoiseInfo info)
+        {
+            if (info.IsImpotent)
+            {
+                // Debug.LogWarning($"{this} {nameof(Unregister)} impotent {info}");
+                Unregister(id);
+            }
+            else
+            {
+                _components[id] = info;
+                // Debug.Log($"{this} CENTER {info.center}");
+                // Debug.Log($"{this} {nameof(Register)} (id {id}) : {info}");   
+            }
+        }
+        
+        public void Unregister(Guid id)
+        {
+            if (_components.Remove(id))
+            {
+                // Debug.LogWarning($"{this} {nameof(Unregister)} (id {id}) component count : {_components.Count}");   
+            }
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            _summationHelper = new UnsafeNativeArraySummationHelper<float4>(_summationPoolSize);
+        }
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
+            if (_deformationMaskCache != null)
+            {
+                _deformationMaskCache.Dispose();
+                _deformationMaskCache = null;
+            }
+                
+        }
+
+        protected override JobHandle DeformMesh(UnityEngine.Mesh.MeshData data, int resolution, float displacement, JobHandle dependency)
+        {
+            if (data.vertexCount == 0)
+            {
+                Debug.LogWarning($"Unexpected vertex count {data.vertexCount} {data.vertexCount}");
+                return dependency;
+            }
+            
+            if (_components.Count == 0)
+            {
+                return dependency;
+            }
+
+            if (IsPlane && _planeDeformationMask.Active)
+            {
+                CacheKey cacheKey = MakeCacheKey();
+                if (_deformationMaskCache == null || _deformationMaskCache.cacheKey != cacheKey)
+                {
+                    _deformationMaskCache?.Dispose();
+                    // build deformation mask cache
+
+                    NativeArray<Vertex4> vertices = data.GetVertexData<SingleStreams.Stream0>().Reinterpret<Vertex4>(12 * 4);
+                    NativeArray<float4> mask = new NativeArray<float4>(vertices.Length, Allocator.Persistent);
+                    
+                    PlaneDeformationMaskJob planeDeformationMaskJob = 
+                        PlaneDeformationMaskJob.Make(vertices, mask, _planeDeformationMask.Fade, _planeDeformationMask.Ease);
+
+                    planeDeformationMaskJob.ScheduleParallel(vertices.Length, resolution, default).Complete();
+
+                    _deformationMaskCache = new DeformationMaskCache(cacheKey, planeDeformationMaskJob.mask);
+                }
+            }
+            else
+            {
+                if (_deformationMaskCache != null)
+                {
+                    _deformationMaskCache.Dispose();
+                    _deformationMaskCache = null;
+                }
+            }
+            
+            _summationHelper.Length = Mathf.CeilToInt(data.vertexCount / 4f);
+            _summationHelper.ComponentCount = _components.Count;
+            
+            _summationHelper.Check();
+
+            NativeArray<JobHandle> deformationJobs = new NativeArray<JobHandle>(_components.Count, Allocator.Temp);
+            int i = 0;
+            int dimensionIndex = IsPlane ? 1 : 2;
+            foreach (CompoundMeshNoiseInfo info in _components.Values)
+            {
+                JobScheduleDelegate deformationDelegate = _jobs[(int)info.noiseType, dimensionIndex];
+                TriNoise.TriNoiseComponent component = TriNoise.GetNoiseComponent(info, 0);
+                deformationJobs[i] = deformationDelegate(data, _summationHelper.terms[i], component, info, transform, resolution, dependency);
+                i++;
+            }
+
+            dependency = _summationHelper.Float4Sum(JobHandle.CombineDependencies(deformationJobs));
+
+            NativeArray<float4> deformations = _summationHelper.sum;
+
+            if (IsPlane && _planeDeformationMask.Active && _deformationMaskCache != null)
+            {
+                Debug.Log($"{this} applying deformation mask");
+
+                // debugging deformation mask
+                // deformations = _deformationMaskCache.mask;
+
+                dependency = new Float4MultiplyArrayJob
+                    {
+                        source = _deformationMaskCache.mask,
+                        target = deformations
+                    }
+                    .ScheduleParallel(_deformationMaskCache.mask.Length, resolution, dependency);
+            }
+            
+            return ApplyMeshFloatDeformationJob.ScheduleParallel(data, deformations, displacement, IsPlane, resolution, dependency);
+        }
+    }
+}

@@ -1,12 +1,16 @@
 using System;
 using Sonosthesia.Processing;
+using Sonosthesia.Utils;
 using UnityEngine;
 using UniRx;
 
 namespace Sonosthesia.Signal
 {
-    public abstract class Target<T> : MonoBehaviour where T : struct
+    public abstract class Target<T> : MonoBehaviour, ILogSwitch where T : struct
     {
+        [SerializeField] private bool _log;
+        public bool Log => _log;
+        
         [SerializeField] private Signal<T> _source;
 
         [SerializeField] private bool _distinct = true; 
@@ -44,12 +48,18 @@ namespace Sonosthesia.Signal
                 float startTime = Time.time;
                 _subscription = observable.Subscribe(value =>
                 {
-                    Apply(_processor.Process(value, Time.time - startTime));
+                    T processed = _processor.Process(value, Time.time - startTime); 
+                    this.LogVerbose($"{this} {nameof(Apply)} {processed}");
+                    Apply(processed);
                 });    
             }
             else
             {
-                _subscription = observable.Subscribe(Apply); 
+                _subscription = observable.Subscribe(value =>
+                {
+                    this.LogVerbose($"{this} {nameof(Apply)} {value}");
+                    Apply(value);
+                }); 
             }
         }
 

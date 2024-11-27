@@ -1,4 +1,4 @@
-﻿using Sonosthesia.Utils.Editor;
+﻿using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.XR.Test

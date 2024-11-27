@@ -18,7 +18,7 @@ namespace Sonosthesia.Audio
 
         [SerializeField] private FloatSoftLandingSettings _softLanding;
 
-        private ProcessorChain<float> _chain = new();
+        private DynamicProcessorChain<float> _chain = new();
 
         protected void Awake()
         {
@@ -27,7 +27,7 @@ namespace Sonosthesia.Audio
                 _spectrum = GetComponentInParent<AudioSpectrum>();
             }
 
-            _chain = new ProcessorChain<float>(
+            _chain = new DynamicProcessorChain<float>(
                 new FloatWarpProcessor(_warp),
                 new FloatOneEuroFilterProcessor(_oneEuroFilter),
                 new FloatSoftLandingProcessor(_softLanding));

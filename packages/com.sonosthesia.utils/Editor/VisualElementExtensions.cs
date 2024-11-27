@@ -7,6 +7,11 @@ namespace Sonosthesia.Utils.Editor
 {
     public static class VisualElementExtensions
     {
+        public static void Show(this VisualElement element, bool show)
+        {
+            element.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+        
         public static bool TryGetElementByName<T>(this VisualElement visualElement, string name, out T element) where T : VisualElement
         {
             element = visualElement.Q<T>(name);

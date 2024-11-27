@@ -1,0 +1,44 @@
+using UnityEditor;
+using UnityEngine.UIElements;
+
+namespace Sonosthesia.Utils.Editor
+{
+    [CustomPropertyDrawer(typeof(RemapSettings))]
+    public class RemapSettingsDrawer : HorizontalPropertyDrawer
+    {
+        protected override void CreateContent(SerializedProperty property, VisualElement container)
+        {
+            SerializedProperty fromMinProp = property.FindPropertyRelative("_fromMin");
+            SerializedProperty fromMaxProp = property.FindPropertyRelative("_fromMax");
+            SerializedProperty toMinProp = property.FindPropertyRelative("_toMin");
+            SerializedProperty toMaxProp = property.FindPropertyRelative("_toMax");
+
+            // Label fromLabel = UIHorizontalUtils.CreateLabel("", 10);
+            FloatField fromMinField = UIHorizontalUtils.CreateFloatField(fromMinProp);
+            FloatField fromMaxField = UIHorizontalUtils.CreateFloatField(fromMaxProp);
+
+            // Label middleLabel = new Label("-")
+            // {
+            //     style =
+            //     {
+            //         width = 20,
+            //         //justifyContent = Justify.Center,
+            //         paddingTop = 2,
+            //         unityTextAlign = TextAnchor.MiddleCenter
+            //     }
+            // };
+            
+            Label toLabel = UIHorizontalUtils.CreateLabel("To", 20);
+            FloatField toMinField = UIHorizontalUtils.CreateFloatField(toMinProp);
+            FloatField toMaxField = UIHorizontalUtils.CreateFloatField(toMaxProp);
+            
+            //container.Add(fromLabel);
+            container.Add(fromMinField);
+            container.Add(fromMaxField);
+            container.Add(toLabel);
+            //container.Add(middleLabel);
+            container.Add(toMinField);
+            container.Add(toMaxField);
+        }
+    }
+}

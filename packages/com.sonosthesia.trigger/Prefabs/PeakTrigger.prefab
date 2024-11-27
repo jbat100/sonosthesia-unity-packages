@@ -206,6 +206,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  _timeScale: 1
 --- !u!114 &-1436325843560928884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -220,5 +221,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _log: 0
   _distinct: 0
-  _envelope: {fileID: 3541215410988271683}
+  _envelopeBuilder: {fileID: 3541215410988271683}
   _accumulationMode: 2
+  _postProcessorFactory: {fileID: 0}
+  _postProcessor:
+    _abs: 0
+    _scale: 1
+    _offset: 0
+    _clamp: 0
+    _clampRange: {x: 0, y: 0}

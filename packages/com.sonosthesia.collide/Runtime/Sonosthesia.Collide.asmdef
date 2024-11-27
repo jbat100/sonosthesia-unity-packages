@@ -1,0 +1,21 @@
+{
+    "name": "Sonosthesia.Collide",
+    "rootNamespace": "Sonosthesia.Collide",
+    "references": [
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:25e5e4b6f3916462c92ecc1d0ffca2c2",
+        "GUID:2c48158b2e03846379768d3cfe369611",
+        "GUID:1fd512b3b6c091f43bedec2c48831e94",
+        "GUID:319f02148647a4150b5487ff70ad53bc"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

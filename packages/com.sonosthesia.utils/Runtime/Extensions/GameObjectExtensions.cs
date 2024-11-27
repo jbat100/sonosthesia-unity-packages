@@ -19,6 +19,15 @@ namespace Sonosthesia.Utils
         {
             return new RigidTransform(transform.rotation, transform.position);
         }
+
+        public static void SafeSetActive(this GameObject target, bool active)
+        {
+            if (!target || target.activeSelf == active)
+            {
+                return;
+            }
+            target.SetActive(active);
+        }
     }    
 }
 

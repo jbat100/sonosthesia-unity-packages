@@ -1,34 +1,14 @@
 using System;
 using System.Collections.Generic;
-using Sonosthesia.Channel;
-using Sonosthesia.Interaction;
-using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Sonosthesia.Channel;
+using Sonosthesia.Interaction;
 
 namespace Sonosthesia.Pointer
 {
-    
-    // used for affordances
-    public readonly struct PointerValueEvent<TValue> : IValueEvent<TValue> where TValue : struct
-    {
-        public readonly Guid Id;
-        public readonly TValue Value;
-        public readonly PointerEventData Data;
-
-        public PointerValueEvent(Guid id, TValue value, PointerEventData data)
-        {
-            Id = id;
-            Value = value;
-            Data = data;
-        }
-
-        public TValue GetValue() => Value;
-    }
-    
     public abstract class PointerSource<TValue> : BasePointerSource, 
-        IValueEventStreamContainer<TValue, PointerValueEvent<TValue>>,
         IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler, IPointerExitHandler,
         IScrollHandler,
         IDragHandler, IInitializePotentialDragHandler
@@ -42,22 +22,16 @@ namespace Sonosthesia.Pointer
 
         [SerializeField] private ChannelDriver<TValue> _driver;
 
+        [SerializeField] private PointerValueEventChannel<TValue> _valueEventChannel;
+        public PointerValueEventChannel<TValue> ValueEventChannel => _valueEventChannel;
+        
         [SerializeField] private TrackingMode _trackingMode;
 
         [SerializeField] private bool _endOnExit;
         
-        private readonly Dictionary<int, Guid> _pointerEvents = new();
+        private readonly Dictionary<int, Guid> _pointerStreams = new();
         
-        private readonly Dictionary<Guid, BehaviorSubject<PointerValueEvent<TValue>>> _valueEventSubjects = new();
-        
-        private StreamNode<PointerValueEvent<TValue>> _valueStreamNode;
-        public StreamNode<PointerValueEvent<TValue>> ValueStreamNode => _valueStreamNode ??= new StreamNode<PointerValueEvent<TValue>>(this);
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            _valueStreamNode?.Dispose();
-        }
+        private readonly Dictionary<Guid, BehaviorSubject<ValueEvent<TValue, PointerEvent>>> _valueEventSubjects = new();
 
         private void BeginEvent(PointerEventData eventData)
         {
@@ -66,19 +40,26 @@ namespace Sonosthesia.Pointer
                 return;
             }
             
-            Guid eventId = _driver.BeginStream(value);
-            _pointerEvents[eventData.pointerId] = eventId; 
+            Guid id = _driver.BeginStream(value);
+            _pointerStreams[eventData.pointerId] = id;
 
-            BehaviorSubject<PointerValueEvent<TValue>> subject = new BehaviorSubject<PointerValueEvent<TValue>>(new PointerValueEvent<TValue>(eventId, value, eventData));
-            _valueEventSubjects[eventId] = subject;
+            PointerEvent pointerEvent = new PointerEvent(eventData);
+            BehaviorSubject<ValueEvent<TValue, PointerEvent>> subject = new (new ValueEvent<TValue, PointerEvent>(value, pointerEvent));
+            _valueEventSubjects[id] = subject;
 
-            ValueStreamNode.Push(eventId, subject.AsObservable());
-            EventStreamNode.Push(eventId, subject.Select(valueEvent => new PointerEvent(valueEvent.Id, eventData)));
+            if (EventChannel)
+            {
+                EventChannel.Push(id, subject.Select(valueEvent => valueEvent.Event)); 
+            }
+            if (ValueEventChannel)
+            {
+                ValueEventChannel.Push(id, subject.AsObservable()); 
+            }
         }
 
         private void UpdateEvent(PointerEventData eventData)
         {
-            if (!_pointerEvents.TryGetValue(eventData.pointerId, out Guid eventId))
+            if (!_pointerStreams.TryGetValue(eventData.pointerId, out Guid id))
             {
                 return;
             }
@@ -88,29 +69,29 @@ namespace Sonosthesia.Pointer
                 return;
             }
             
-            _driver.UpdateStream(eventId, value);
+            _driver.UpdateStream(id, value);
             
-            if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<PointerValueEvent<TValue>> subject))
+            if (!_valueEventSubjects.TryGetValue(id, out BehaviorSubject<ValueEvent<TValue, PointerEvent>> subject))
             {
                 return;
             }
             
-            subject.OnNext(new PointerValueEvent<TValue>(eventId, value, eventData));
+            subject.OnNext(new ValueEvent<TValue, PointerEvent>(value, new PointerEvent(eventData)));
         }
         
         private void EndEvent(PointerEventData eventData)
         {
             End(eventData);
             
-            if (!_pointerEvents.TryGetValue(eventData.pointerId, out Guid eventId))
+            if (!_pointerStreams.TryGetValue(eventData.pointerId, out Guid eventId))
             {
                 return;
             }
             
             _driver.EndStream(eventId);
-            _pointerEvents.Remove(eventData.pointerId);
+            _pointerStreams.Remove(eventData.pointerId);
 
-            if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<PointerValueEvent<TValue>> subject))
+            if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<ValueEvent<TValue, PointerEvent>> subject))
             {
                 return;
             }

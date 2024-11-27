@@ -20,6 +20,7 @@ namespace Sonosthesia.FMOD
         public override void Stop()
         {
             _emitter.Stop();
+            _dirty = true;
         }
         
         protected virtual void Update()

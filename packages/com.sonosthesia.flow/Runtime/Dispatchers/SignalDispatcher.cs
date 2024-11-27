@@ -9,7 +9,7 @@ namespace Sonosthesia.Flow
 {
     public class SignalDispatcher<T> : Dispatcher where T : struct
     {
-        [SerializeField] private bool _log;
+        
         
         [SerializeField] private Signal<T> _source;
 
@@ -32,11 +32,8 @@ namespace Sonosthesia.Flow
                 {
                     return;
                 }
-
-                if (_log)
-                {
-                    Debug.Log($"{this} dispatching {value}");
-                }
+                
+                this.LogVerbose($"{this} dispatching {value}");
                 
                 _destinations[StepIndex()].Broadcast(value);
             });

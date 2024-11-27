@@ -10,16 +10,14 @@ namespace Sonosthesia.Channel
 
         private IDisposable _subscription;
 
-        protected override void OnEnable()
+        protected virtual void OnEnable()
         {
-            base.OnEnable();
             _subscription?.Dispose();
-            _subscription = _relay.StreamObservable.Subscribe(Pipe);
+            _subscription = _relay.StreamObservable.Subscribe(Push);
         }
 
-        protected override void OnDisable()
+        protected virtual void OnDisable()
         {
-            base.OnEnable();
             _subscription?.Dispose();
             _subscription = null;
         }

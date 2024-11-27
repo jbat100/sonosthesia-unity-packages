@@ -15,7 +15,7 @@ namespace Sonosthesia.Channel
         protected void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = _source.StreamObservable.Subscribe(stream => _relay.Pipe(stream));
+            _subscription = _source.Observable.Subscribe(pair => _relay.Push(pair));
         }
 
         protected void OnDisable()

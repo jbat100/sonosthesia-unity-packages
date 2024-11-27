@@ -1,4 +1,5 @@
 ﻿using System;
+using Sonosthesia.Utils;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -11,6 +12,8 @@ namespace Sonosthesia.Mesh
     [RequireComponent(typeof(MeshFilter))]
     public abstract class MeshController : MonoBehaviour
     {
+        private readonly Guid _id = Guid.NewGuid();
+        
         [Flags]
         private enum GizmoMode
         {
@@ -24,6 +27,8 @@ namespace Sonosthesia.Mesh
             ReorderIndices = 1 << 0, 
             ReorderVertices = 1 << 1
         }
+
+        [SerializeField] private FrameModerator _frameModerator;
         
         [SerializeField] private GizmoMode _gizmoMode;
 
@@ -72,6 +77,8 @@ namespace Sonosthesia.Mesh
 
         protected void Rebuild()
         {
+            // Debug.Log($"{this.name} {nameof(Rebuild)} on frame {Time.frameCount}");
+            
             _vertices = null;
             _normals = null;
             
@@ -90,10 +97,15 @@ namespace Sonosthesia.Mesh
             }
             if (_recalculateNormals)
             {
+                // expensive but pretty much indispensable (unless the subclasses provide correct normals)
+                // TODO : look at burst compiled normals recalculation 
+                // - https://gist.github.com/unitycoder/81888c54f87b56113f17a5c8eb6bb32b
+                // - https://discussions.unity.com/t/burst-happy-recalculate-normals/753008/5
                 Mesh.RecalculateNormals();
             }
             if (_recalculateTangents)
             {
+                // expensive and often useless, depends on whether the shader uses this info
                 _mesh.RecalculateTangents();                
             }
 
@@ -131,18 +143,36 @@ namespace Sonosthesia.Mesh
         {
             if (_rebuildOnUpdate || (_rebuildRequested && (Time.time >= _nextScheduledRebuild || !Application.isPlaying)))
             {
-                Rebuild();
+                if (!_frameModerator || _frameModerator.Request(_id))
+                {
+                    Rebuild();   
+                }
             }
         }
 
         protected virtual void OnValidate()
         {
-            Rebuild();
+            if (Application.isPlaying)
+            {
+                Rebuild();       
+            }
         }
         
         protected virtual void OnEnable()
         {
             _rebuildRequested = true;
+            if (_frameModerator)
+            {
+                _frameModerator.Register(_id);
+            }
+        }
+
+        protected virtual void OnDisable()
+        {
+            if (_frameModerator)
+            {
+                _frameModerator.Unregister(_id);
+            }
         }
 
         protected virtual void OnDrawGizmos ()

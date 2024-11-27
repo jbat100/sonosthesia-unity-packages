@@ -20,11 +20,11 @@ namespace Sonosthesia.MIDI
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = _channel.StreamObservable.Subscribe(stream =>
+            _subscription = _channel.Observable.Subscribe(pair =>
             {
                 MIDINote? initial = null;
                 MIDINote? previous = null;
-                stream.Subscribe(note =>
+                pair.Value.Subscribe(note =>
                 {
                     if (initial.HasValue)
                     {

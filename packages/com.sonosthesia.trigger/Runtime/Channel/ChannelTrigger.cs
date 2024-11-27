@@ -3,6 +3,7 @@ using UniRx;
 using UnityEngine;
 using Sonosthesia.Utils;
 using Sonosthesia.Channel;
+using Sonosthesia.Envelope;
 
 namespace Sonosthesia.Trigger
 {
@@ -13,24 +14,26 @@ namespace Sonosthesia.Trigger
     /// <typeparam name="T"></typeparam>
     public class ChannelTrigger<T> : MonoBehaviour where T : struct
     {
-        [SerializeField] private Triggerable _triggerable;
-
-        [SerializeField] private Channel<T> _channel;
-
-        [SerializeField] private Selector<T> _valueSelector;
-
-        [SerializeField] private Selector<T> _timeSelector;
+        [Header("Source")]
         
+        [SerializeField] private Channel<T> _channel;
+        
+        [Header("Trigger")]
+        
+        [SerializeField] private Trigger trigger;
+
+        [SerializeField] private ValueTriggerSettings<T> _settings;
+
         private IDisposable _subscription;
     
         protected void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = _channel.StreamObservable
-                .SelectMany(stream => stream.First())
+            _subscription = _channel.Observable
+                .SelectMany(stream => stream.Value.First())
                 .Subscribe(value =>
                 {
-                    _triggerable.Trigger(_valueSelector.Select(value), _timeSelector.Select(value));
+                    trigger.Trigger(_settings, value);
                 });
         }
 

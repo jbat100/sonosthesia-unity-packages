@@ -1,3 +1,4 @@
+using Sonosthesia.Utils.Editor;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -7,8 +8,6 @@ namespace Sonosthesia.Mapping.Editor
     [CustomPropertyDrawer(typeof(FloatFaderSettings))]
     public class FloatFaderSettingsPropertyDrawer : PropertyDrawer
     {
-        protected StyleEnum<DisplayStyle> Show(bool show) => show ? DisplayStyle.Flex : DisplayStyle.None;
-
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             VisualElement root = new VisualElement();
@@ -50,12 +49,12 @@ namespace Sonosthesia.Mapping.Editor
                 FloatFaderType type = (FloatFaderType)faderTypeProp.enumValueIndex;
                 bool clamp = clampProp.boolValue;
                 
-                valueField.style.display = Show(type is FloatFaderType.Constant);
-                curveField.style.display = Show(type is FloatFaderType.Curve);
-                remapInputField.style.display = Show(type is FloatFaderType.Remap);
-                remapOutputField.style.display = Show(type is FloatFaderType.Remap);
-                clampField.style.display = Show(type is not FloatFaderType.Constant);
-                clampRangeField.style.display = Show(clamp && type is not FloatFaderType.Constant);
+                valueField.Show(type is FloatFaderType.Constant);
+                curveField.Show(type is FloatFaderType.Curve);
+                remapInputField.Show(type is FloatFaderType.Remap);
+                remapOutputField.Show(type is FloatFaderType.Remap);
+                clampField.Show(type is not FloatFaderType.Constant);
+                clampRangeField.Show(clamp && type is not FloatFaderType.Constant);
             }
 
             // Initial visibility update

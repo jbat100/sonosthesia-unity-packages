@@ -59,11 +59,11 @@ namespace Sonosthesia.Spawn
             _subscription?.Dispose();
             if (_source)
             {
-                _subscription = _source.StreamObservable.Subscribe(stream =>
+                _subscription = _source.Observable.Subscribe(pair =>
                 {
                     // TODO : check GC / Pooling
                     SpawnStreamHandler handler = new SpawnStreamHandler();
-                    handler.Setup(_visualEffect, _eventName, stream);
+                    handler.Setup(_visualEffect, _eventName, pair.Value);
                 });
             }
         }

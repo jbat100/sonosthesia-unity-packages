@@ -4,6 +4,15 @@
 
 This repository contains Unity packages for the Sonosthesia project. It aims to provide modular and composable tools to create immersive and interactive audio visual experiences.
 
+## Demo Applications
+
+A number of demo applications provide example usage for these packages 
+
+- [MIDI Demo](https://github.com/jbat100/sonosthesia-unity-demo-midi)
+- [Ableton Live Bridge Demo](https://github.com/jbat100/sonosthesia-unity-demo-deform)
+- [Procedural Graphics Demo](https://github.com/jbat100/sonosthesia-unity-demo-live)
+- [Reactive Assets Demo](https://github.com/jbat100/sonosthesia-unity-reactive-assets)
+
 ## Packages
 
 ### Signals
@@ -34,13 +43,17 @@ Mappings allow signals and channels to be connected to each other, potentially a
 
 Interactions in XR are crucial to the project, multi modal interaction is encouraged.
 
+- [com.sonosthesia.interaction](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.interaction)
 - [com.sonosthesia.touch](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.touch)
 
 ### Procedural Graphics 
 
+- [com.sonosthesia.trajectory](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.trajectory)
 - [com.sonosthesia.noise](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.noise)
 - [com.sonosthesia.mesh](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.mesh)
 - [com.sonosthesia.deform](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.deform)
+- [com.sonosthesia.deforminteraction](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.deforminteraction)
+
 
 ### MIDI
 
@@ -51,6 +64,7 @@ Interactions in XR are crucial to the project, multi modal interaction is encour
 ### Sound
 
 - [com.sonosthesia.audio](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.audio)
+- [com.sonosthesia.fmod](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.fmod)
 
 ### Instruments
 
@@ -86,3 +100,40 @@ These packages are hosted on npm and have a dependency on [UniTask](https://gith
     }
   ]
 }
+```
+
+Some packages require additional scoped registeries, namely
+
+- [com.sonosthesia.rtmidi](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.rtmidi)
+
+```json
+{
+  "scopedRegistries": [
+    // ...
+    {
+      "name": "Keijiro",
+      "url": "https://registry.npmjs.com",
+      "scopes": [ 
+        "jp.keijiro" 
+      ]
+    }
+  ]
+}
+```
+
+- [com.sonosthesia.application](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.application)
+
+```json
+{
+  "scopedRegistries": [
+    // ...
+    {
+      "name": "Hadashikick",
+      "url": "https://package.openupm.com",
+      "scopes": [
+        "jp.hadashikick.vcontainer"
+      ]
+    }
+  ]
+}
+```

@@ -1,31 +1,46 @@
 using System;
-using UnityEngine;
-using Sonosthesia.Signal;
 using Sonosthesia.Utils;
+using Sonosthesia.Signal;
 using UniRx;
+using UnityEngine;
 
 namespace Sonosthesia.Trigger
 {
-    public class SignalTrigger<T> : MonoBehaviour where T : struct
+    public class SignalTrigger<T, TExtractor> : MonoBehaviour, ILogSwitch where T : struct where TExtractor : IExtractor<T>
     {
+        [SerializeField] private bool _log;
+        public bool Log => _log;
+
         [SerializeField] private Signal<T> _source;
         
-        [SerializeField] private Triggerable _destination;
-
-        [SerializeField] private Selector<T> _timeScaleSelector;
-
-        [SerializeField] private Selector<T> _valueScaleSelector;
-
+        [SerializeField] private Trigger _destination;
+        
+        [SerializeField] private SignalTriggerConfiguration<T, TExtractor> _configuration;
+        
         private IDisposable _subscription;
 
+        protected virtual bool SkipFirst => false;
+        
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = _source.SignalObservable.Subscribe(source =>
+
+            if (!_source)
             {
-                float timeScale = _timeScaleSelector ? _timeScaleSelector.Select(source) : 1f;
-                float valueScale = _valueScaleSelector ? _valueScaleSelector.Select(source) : 1f;
-                _destination.Trigger(valueScale, timeScale);
+                return;
+            }
+
+            IObservable<T> observable = _source.SignalObservable;
+
+            if (SkipFirst)
+            {
+                observable = observable.Skip(1);
+            }
+
+            _subscription = observable.Subscribe(source =>
+            {
+                this.LogVerbose($"{this} trigger on {source}");
+                _configuration.Trigger(_destination.TriggerController, source);
             });
         }
 

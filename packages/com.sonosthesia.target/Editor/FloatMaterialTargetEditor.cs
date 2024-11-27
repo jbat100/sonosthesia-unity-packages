@@ -2,7 +2,7 @@
 
 namespace Sonosthesia.Target.Editor
 {
-    [CustomEditor(typeof(MaterialTarget<float>), true)]
+    [CustomEditor(typeof(FloatMaterialTarget))]
     public class FloatMaterialTargetEditor : MaterialTargetEditor<float>
     {
         

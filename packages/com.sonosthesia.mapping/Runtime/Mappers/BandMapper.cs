@@ -15,7 +15,7 @@ namespace Sonosthesia.Mapping
 
             public IDynamicProcessor<float> Make()
             {
-                return new ProcessorChain<float>(
+                return new DynamicProcessorChain<float>(
                     new FloatWarpProcessor(_warp),
                     new FloatOneEuroFilterProcessor(_oneEuroFilter),
                     new FloatSoftLandingProcessor(_softLanding)

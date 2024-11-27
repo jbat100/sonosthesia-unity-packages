@@ -11,7 +11,7 @@ namespace Sonosthesia.Application
 
         [SerializeField] private List<GameObject> _instances;
         
-        [SerializeField] private List<int> _indices = new List<int>() { 0 };
+        [SerializeField] private List<int> _indices = new () { 0 };
         public IReadOnlyList<int> Indices
         {
             get => _indices;

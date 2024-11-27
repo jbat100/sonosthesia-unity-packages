@@ -25,8 +25,9 @@ namespace Sonosthesia.Scaffold
         [SerializeField] private SplineDirection _upDirection;
 
         
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             Spline.Changed += SplineOnChanged;
         }
 

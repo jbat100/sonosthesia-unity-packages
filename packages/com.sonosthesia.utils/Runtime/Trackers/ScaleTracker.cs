@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Sonosthesia.Utils.Trackers
+namespace Sonosthesia.Utils
 {
     [ExecuteInEditMode]
     public class ScaleTracker : MonoBehaviour

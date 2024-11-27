@@ -23,7 +23,7 @@ namespace Sonosthesia.Mesh
                 points[index] = new RigidTransform(quaternion.identity, position);
             }
             
-            points.CalculateRotations(range);
+            points.RecalculateRotations(range);
             
             return true;
         }

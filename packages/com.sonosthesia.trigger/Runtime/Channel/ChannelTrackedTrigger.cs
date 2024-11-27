@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using Sonosthesia.Utils;
 using Sonosthesia.Channel;
 using UniRx;
 
@@ -8,56 +7,47 @@ namespace Sonosthesia.Trigger
 {
     public class ChannelTrackedTrigger<T> : MonoBehaviour where T : struct
     {
-        [SerializeField] private TrackedTriggerable _triggerable;
-
-        [SerializeField] private Channel<T> _channel;
-
-        [SerializeField] private Selector<T> _valueSelector;
-
-        [SerializeField] private Selector<T> _timeSelector;
+        [Header("Source")]
         
+        [SerializeField] private Channel<T> _channel;
+        
+        [Header("Trigger")]
+        
+        [SerializeField] private Trigger trigger;
+
+        [SerializeField] private ValueStartTriggerSettings<T> _start;
+
+        [SerializeField] private ValueEndTriggerSettings<T> _end;
+
+
         private IDisposable _subscription;
     
         protected void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = _channel.StreamObservable
-                .Subscribe(stream =>
+            _subscription = _channel.Observable.TakeUntilDisable(this)
+                .Subscribe(pair =>
                 {
-                    
-                    Guid? id = null;
+                    Guid id = pair.Key;
                     T? lastValue = null;
 
                     void EndTrigger()
                     {
-                        if (!id.HasValue || !lastValue.HasValue)
+                        if (!lastValue.HasValue)
                         {
                             return;
                         }
-                        float timeScale = _timeSelector ? _timeSelector.Select(lastValue.Value) : 1f;
-                        _triggerable.EndTrigger(id.Value, timeScale);
+                        trigger.EndTrigger(_end, pair.Key, lastValue.Value);
                     }
                     
-                    stream.TakeUntilDisable(this).Subscribe(value =>
+                    pair.Value.TakeUntilDisable(this).Subscribe(value =>
                     {
+                        if (!lastValue.HasValue)
+                        {
+                            trigger.StartTrigger(pair.Key, _start, value);
+                        }
                         lastValue = value;
-                        float valueScale = _valueSelector ? _valueSelector.Select(value) : 1f;
-                        if (id.HasValue)
-                        {
-                            _triggerable.UpdateTrigger(id.Value, valueScale);
-                        }
-                        else
-                        {
-                            float timeScale = _timeSelector ? _timeSelector.Select(value) : 1f;
-                            id = _triggerable.StartTrigger(valueScale, timeScale);
-                        }
-                    }, error =>
-                    {
-                        EndTrigger();
-                    }, () =>
-                    {
-                        EndTrigger();
-                    });
+                    }, error => EndTrigger(), EndTrigger);
                 });
         }
 

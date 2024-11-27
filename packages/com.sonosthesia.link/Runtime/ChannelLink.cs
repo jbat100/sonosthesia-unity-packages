@@ -42,18 +42,18 @@ namespace Sonosthesia.Link
             _subscription?.Dispose();
             if (_source)
             {
-                _subscription = _source.StreamObservable.Subscribe(stream =>
+                _subscription = _source.Observable.Subscribe(pair =>
                 {
                     float startTime = Time.time;
                     TSource? reference = null;
-                    IObservable<TTarget> mapped = stream
+                    IObservable<TTarget> mapped = pair.Value
                         .Do(source => reference ??= source)
                         .Select(source => Map(source, reference.Value, Time.time - startTime));
                     if (_log)
                     {
                         mapped = mapped.Do(v => Debug.Log($"{this} mapped to {v}"));
                     }
-                    _target.Pipe(mapped);
+                    _target.Push(pair.Key, mapped);
                 });
             }
         }

@@ -1,0 +1,22 @@
+{
+    "name": "Sonosthesia.Envelope.Editor",
+    "rootNamespace": "Sonosthesia.Envelope.Editor",
+    "references": [
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:da4dcb349cd2457b9de2fe9f9ea29a3d",
+        "GUID:25e5e4b6f3916462c92ecc1d0ffca2c2",
+        "GUID:eda0e54ec5f2644fe9c828d88900f12b",
+        "GUID:c457092a10a0ce546b4a27eeadca91c6"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

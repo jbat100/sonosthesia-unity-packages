@@ -1,126 +1,72 @@
-﻿using System;
+using System;
 using Cysharp.Threading.Tasks;
-using Sonosthesia.Signal;
-using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using VContainer.Unity;
 
 namespace Sonosthesia.Application
 {
-    public enum SceneSwitcherState
+    public class SceneSwitcher : ISceneSwitcher, IDisposable
     {
-        Empty,
-        FadeOut,
-        Unloading,
-        Loading,
-        FadeIn,
-        Idle
-    }
+        public SceneSwitcherSettings Settings { get; }
 
-    public readonly struct SceneSwitcherFade
-    {
-        public readonly bool In;
-        public readonly float Duration;
+        private readonly LifetimeScope _parentScope;
+        private readonly ApplicationState _applicationState;
 
-        public SceneSwitcherFade(bool fadeIn, float duration = 0f)
+        public SceneSwitcher(SceneSwitcherSettings settings, ApplicationState applicationState, LifetimeScope parentScope)
         {
-            In = fadeIn;
-            Duration = duration;
+            Settings = settings;
+            _parentScope = parentScope;
+            _applicationState = applicationState;
         }
-    }
-    
-    public class SceneSwitcher : MonoBehaviour
-    {
-        [SerializeField] private IntentSignalRelay _intents;
 
-        [SerializeField] private StateSignalRelay _current;
+        private readonly ReactiveProperty<SceneSwitcherState> _state = new(SceneSwitcherState.Idle);
+        public IReadOnlyReactiveProperty<SceneSwitcherState> State => _state;
+
+        private readonly ReactiveProperty<string> _current = new (null);
+        public IReadOnlyReactiveProperty<string> Current => _current;
         
-        [SerializeField] private float _fadeIn = 1f;
-        public float FadeIn => _fadeIn;
-        
-        [SerializeField] private float _fadeOut = 1f;
-        public float FadeOut => _fadeOut;
-        
-        private readonly BehaviorSubject<SceneSwitcherState> _stateSubject = new (SceneSwitcherState.Empty);
-        public IObservable<SceneSwitcherState> StateObservable => _stateSubject.AsObservable();
-        public SceneSwitcherState State
-        {
-            get => _stateSubject.Value;
-            private set
-            {
-                Debug.Log($"{this} state {value}");
-                _stateSubject.OnNext(value);
-            }
-        }
-
-        private readonly BehaviorSubject<string> _currentSubject = new(null);
-        public IObservable<string> CurrentObservable => _currentSubject.AsObservable();
-        public string Current
-        {
-            get => _currentSubject.Value;
-            private set
-            {
-                if (_current)
-                {
-                    _current.Broadcast(new State(value));
-                } 
-                _currentSubject.OnNext(value);
-            }
-        }
-
-        private IDisposable _intentSubscription;
-
-        protected virtual void Start()
-        {
-            State = SceneSwitcherState.Idle;
-        }
-
-        protected virtual void OnEnable()
-        {
-            _intentSubscription?.Dispose();
-            if (_intents)
-            {
-                _intentSubscription = _intents.Observable.Subscribe(i =>
-                {
-                    if (State != SceneSwitcherState.Idle)
-                    {
-                        Debug.LogWarning($"{this} dropped scene switch intent {i}");
-                        return;
-                    }
-                    SwitchToScene(i.Key).Forget();
-                });
-            }
-        }
-
-        protected virtual void OnDisable() => _intentSubscription?.Dispose();
-
         public async UniTask SwitchToScene(string sceneName)
         {
-            if (sceneName == Current)
+            if (sceneName == Current.Value)
             {
                 return;
             }
 
             try
             {
-                State = SceneSwitcherState.FadeOut;
-            
-                await UniTask.Delay(TimeSpan.FromSeconds(_fadeOut));
+                _state.Value = SceneSwitcherState.FadeOut;
 
-                if (!string.IsNullOrEmpty(Current))
+                await UniTask.Delay(TimeSpan.FromSeconds(Settings.FadeOut));
+                
+
+                if (!string.IsNullOrEmpty(Current.Value))
                 {
-                    State = SceneSwitcherState.Unloading;
-                    await SceneManager.UnloadSceneAsync(Current);
+                    _state.Value = SceneSwitcherState.Unloading;
+                    await SceneManager.UnloadSceneAsync(Current.Value);
                 }
+            }
+            catch (Exception e)
+            {
+                // TODO: have observable for error UI
+                Debug.LogException(e);
+            }
+
+            _applicationState.activeUI.Value = false;
             
+            try
+            {
                 if (!string.IsNullOrEmpty(sceneName))
                 {
-                    State = SceneSwitcherState.Loading;
-                    await SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+                    _state.Value = SceneSwitcherState.Loading;
+                    using (LifetimeScope.EnqueueParent(_parentScope))
+                    {
+                        await SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+                    }
                 }
 
-                Current = sceneName;
+                _current.Value = sceneName;
             }
             catch (Exception e)
             {
@@ -128,11 +74,17 @@ namespace Sonosthesia.Application
                 Debug.LogException(e);
             }
             
-            State = SceneSwitcherState.FadeIn;
+            _state.Value = SceneSwitcherState.FadeIn;
             
-            await UniTask.Delay(TimeSpan.FromSeconds(_fadeIn));
+            await UniTask.Delay(TimeSpan.FromSeconds(Settings.FadeIn));
             
-            State = SceneSwitcherState.Idle;
+            _state.Value = SceneSwitcherState.Idle;
+        }
+
+        public void Dispose()
+        {
+            _state.Dispose();
+            _current.Dispose();
         }
     }
 }

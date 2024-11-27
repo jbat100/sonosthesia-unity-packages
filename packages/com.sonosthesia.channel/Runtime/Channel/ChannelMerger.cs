@@ -20,7 +20,7 @@ namespace Sonosthesia.Channel
 
         private IDisposable Pipe(Channel<TValue> source, Channel<TValue> target)
         {
-            return source.StreamObservable.Subscribe(target.Pipe);
+            return source.Observable.Subscribe(target.Push);
         }
 
         private void OnEnable()

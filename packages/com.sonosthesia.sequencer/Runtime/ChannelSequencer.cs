@@ -33,7 +33,7 @@ namespace Sonosthesia.Sequencer
         {
             if (_target)
             {
-                _target.Pipe(stream);    
+                _target.Push(Guid.NewGuid(), stream);    
             }
         }
 

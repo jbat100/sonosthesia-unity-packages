@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Pointer
 {
-    public class PointerDragAgnosticAffordance : DragAgnosticAffordance<PointerEvent, BasePointerSource, PointerDragAgnosticAffordance>
+    public class PointerDragAgnosticAffordance : DragAgnosticAffordance<PointerEvent>
     {
         public enum ScaleDriver
         {
@@ -19,9 +19,9 @@ namespace Sonosthesia.Pointer
         
         [SerializeField] private float _scaleSensitivity = 0.1f;
         
-        protected new class Controller : DragAgnosticAffordance<PointerEvent, BasePointerSource, PointerDragAgnosticAffordance>.Controller
+        private class Controller : DragAffordanceController<PointerEvent, PointerDragAgnosticAffordance>
         {
-            public Controller(Guid id, PointerDragAgnosticAffordance affordance) : base (id, affordance)
+            public Controller(Guid eventId, PointerDragAgnosticAffordance affordance) : base (eventId, affordance)
             {
                 
             }

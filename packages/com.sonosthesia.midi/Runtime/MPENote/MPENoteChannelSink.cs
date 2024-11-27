@@ -54,7 +54,7 @@ namespace Sonosthesia.MIDI
             _subscription?.Dispose();
             _occupiedChannels.Clear();
             
-            _subscription = _channel.StreamObservable.Subscribe(stream =>
+            _subscription = _channel.Observable.Subscribe(pair =>
             {
                 if (!TryGetAvailableChannel(out int channel))
                 {
@@ -68,7 +68,7 @@ namespace Sonosthesia.MIDI
                 }
 
                 MPENote? previous = null;
-                stream.Subscribe(note =>
+                pair.Value.Subscribe(note =>
                 {
                     if (previous.HasValue)
                     {

@@ -1,4 +1,3 @@
-using System;
 using Unity.Mathematics;
 
 // Adapted from :
@@ -9,95 +8,52 @@ namespace Sonosthesia.Ease
 {
 	public static class DoubleEaseTypeExtensions
 	{
-		public static double Evaluate(this EaseType easeType, double value)
-		{
-			Func<double, double, double, double> func = easeType.EasingFunction();
-			if (func != null)
-			{
-				return func(0, 1, value);
-			}
-			return 0;
-		}
-	    
 		public static double Evaluate(this EaseType easeType, double start, double end, double value)
 		{
-			Func<double, double, double, double> func = easeType.EasingFunction();
-			if (func != null)
-			{
-				return func(start, end, value);
-			}
-			return 0;
+			return DoubleEaseCurves.Ease(easeType, start, end, value);
 		}
-
-		public static Func<double, double, double, double> EasingFunction(this EaseType easeType)
+		
+		public static double Evaluate(this EaseType easeType, double value)
 		{
-			return DoubleEaseCurves.GetEasingFunction(easeType);
+			return DoubleEaseCurves.Ease(easeType, 0f, 1f, value);
 		}
 	}
 	
     public static class DoubleEaseCurves
     {
-	    public static Func<double, double, double, double> GetEasingFunction(EaseType type) => type switch 
+	    public static double Ease(EaseType type, double start, double end, double value) => type switch 
 	    {
-		    EaseType.easeInQuad => easeInQuad,
-		    EaseType.easeOutQuad => easeOutQuad,
-		    EaseType.easeInOutQuad => easeInOutQuad,
-		    EaseType.easeInCubic => easeInCubic,
-		    EaseType.easeOutCubic => easeOutCubic,
-		    EaseType.easeInOutCubic => easeInOutCubic,
-		    EaseType.easeInQuart => easeInQuart,
-		    EaseType.easeOutQuart => easeOutQuart,
-		    EaseType.easeInOutQuart => easeInOutQuart,
-		    EaseType.easeInQuint => easeInQuint,
-		    EaseType.easeOutQuint => easeOutQuint,
-		    EaseType.easeInOutQuint => easeInOutQuint,
-		    EaseType.easeInSine => easeInSine,
-		    EaseType.easeOutSine => easeOutSine,
-		    EaseType.easeInOutSine => easeInOutSine,
-		    EaseType.easeInExpo => easeInExpo,
-		    EaseType.easeOutExpo => easeOutExpo,
-		    EaseType.easeInOutExpo => easeInOutExpo,
-		    EaseType.easeInCirc => easeInCirc,
-		    EaseType.easeOutCirc => easeOutCirc,
-		    EaseType.easeInOutCirc => easeInOutCirc,
-		    EaseType.spring => spring,
-		    EaseType.easeInBounce => easeInBounce,
-		    EaseType.easeOutBounce => easeOutBounce,
-		    EaseType.easeInOutBounce => easeInOutBounce,
-		    EaseType.easeInBack => easeInBack,
-		    EaseType.easeOutBack => easeOutBack,
-		    EaseType.easeInOutBack => easeInOutBack,
-		    EaseType.easeInElastic => easeInElastic,
-		    EaseType.easeOutElastic => easeOutElastic,
-		    EaseType.easeInOutElastic => easeInOutElastic,
-		    _ => linear
+		    EaseType.easeInQuad => easeInQuad(start, end, value),
+		    EaseType.easeOutQuad => easeOutQuad(start, end, value),
+		    EaseType.easeInOutQuad => easeInOutQuad(start, end, value),
+		    EaseType.easeInCubic => easeInCubic(start, end, value),
+		    EaseType.easeOutCubic => easeOutCubic(start, end, value),
+		    EaseType.easeInOutCubic => easeInOutCubic(start, end, value),
+		    EaseType.easeInQuart => easeInQuart(start, end, value),
+		    EaseType.easeOutQuart => easeOutQuart(start, end, value),
+		    EaseType.easeInOutQuart => easeInOutQuart(start, end, value),
+		    EaseType.easeInQuint => easeInQuint(start, end, value),
+		    EaseType.easeOutQuint => easeOutQuint(start, end, value),
+		    EaseType.easeInOutQuint => easeInOutQuint(start, end, value),
+		    EaseType.easeInSine => easeInSine(start, end, value),
+		    EaseType.easeOutSine => easeOutSine(start, end, value),
+		    EaseType.easeInOutSine => easeInOutSine(start, end, value),
+		    EaseType.easeInExpo => easeInExpo(start, end, value),
+		    EaseType.easeOutExpo => easeOutExpo(start, end, value),
+		    EaseType.easeInOutExpo => easeInOutExpo(start, end, value),
+		    EaseType.easeInCirc => easeInCirc(start, end, value),
+		    EaseType.easeOutCirc => easeOutCirc(start, end, value),
+		    EaseType.easeInOutCirc => easeInOutCirc(start, end, value),
+		    EaseType.spring => spring(start, end, value),
+		    EaseType.easeInBack => easeInBack(start, end, value),
+		    EaseType.easeOutBack => easeOutBack(start, end, value),
+		    EaseType.easeInOutBack => easeInOutBack(start, end, value),
+		    _ => linear(start, end, value),
 	    };
 
 	    private static double linear(double start, double end, double value)
 	    {
 		    return math.lerp(start, end, value);
-	    }
-
-	    private static double clerp(double start, double end, double value)
-	    {
-		    double min = 0.0;
-		    double max = 360.0;
-		    double half = math.abs((max - min) * 0.5);
-		    double retval = 0.0;
-		    double diff = 0.0;
-		    if ((end - start) < -half)
-		    {
-			    diff = ((max - start) + end) * value;
-			    retval = start + diff;
-		    }
-		    else if ((end - start) > half)
-		    {
-			    diff = -((max - end) + start) * value;
-			    retval = start + diff;
-		    }
-		    else retval = start + (end - start) * value;
-
-		    return retval;
 	    }
 
 	    private static double spring(double start, double end, double value)
@@ -256,53 +212,6 @@ namespace Sonosthesia.Ease
 		    return end * 0.5 * (math.sqrt(1 - value * value) + 1) + start;
 	    }
 
-	    /* GFX47 MOD START */
-	    private static double easeInBounce(double start, double end, double value)
-	    {
-		    end -= start;
-		    double d = 1;
-		    return end - easeOutBounce(0, end, d - value) + start;
-	    }
-	    /* GFX47 MOD END */
-
-	    /* GFX47 MOD START */
-	    //private static double bounce(double start, double end, double value){
-	    private static double easeOutBounce(double start, double end, double value)
-	    {
-		    value /= 1;
-		    end -= start;
-		    if (value < (1 / 2.75))
-		    {
-			    return end * (7.5625 * value * value) + start;
-		    }
-		    else if (value < (2 / 2.75))
-		    {
-			    value -= (1.5 / 2.75);
-			    return end * (7.5625 * (value) * value + .75) + start;
-		    }
-		    else if (value < (2.5 / 2.75))
-		    {
-			    value -= (2.25 / 2.75);
-			    return end * (7.5625 * (value) * value + .9375) + start;
-		    }
-		    else
-		    {
-			    value -= (2.625 / 2.75);
-			    return end * (7.5625 * (value) * value + .984375) + start;
-		    }
-	    }
-	    /* GFX47 MOD END */
-
-	    /* GFX47 MOD START */
-	    private static double easeInOutBounce(double start, double end, double value)
-	    {
-		    end -= start;
-		    double d = 1;
-		    if (value < d * 0.5) return easeInBounce(0, end, value * 2) * 0.5 + start;
-		    else return easeOutBounce(0, end, value * 2 - d) * 0.5 + end * 0.5 + start;
-	    }
-	    /* GFX47 MOD END */
-
 	    private static double easeInBack(double start, double end, double value)
 	    {
 		    end -= start;
@@ -334,113 +243,5 @@ namespace Sonosthesia.Ease
 		    s *= (1.525);
 		    return end * 0.5 * ((value) * value * (((s) + 1) * value + s) + 2) + start;
 	    }
-
-	    private static double punch(double amplitude, double value)
-	    {
-		    double s = 9;
-		    if (value == 0)
-		    {
-			    return 0;
-		    }
-		    else if (value == 1)
-		    {
-			    return 0;
-		    }
-
-		    double period = 1 * 0.3;
-		    s = period / (2 * math.PI) * math.asin(0);
-		    return (amplitude * math.pow(2, -10 * value) * math.sin((value * 1 - s) * (2 * math.PI) / period));
-	    }
-
-	    /* GFX47 MOD START */
-	    private static double easeInElastic(double start, double end, double value)
-	    {
-		    end -= start;
-
-		    double d = 1;
-		    double p = d * .3;
-		    double s = 0;
-		    double a = 0;
-
-		    if (value == 0) return start;
-
-		    if ((value /= d) == 1) return start + end;
-
-		    if (a == 0 || a < math.abs(end))
-		    {
-			    a = end;
-			    s = p / 4;
-		    }
-		    else
-		    {
-			    s = p / (2 * math.PI) * math.asin(end / a);
-		    }
-
-		    return -(a * math.pow(2, 10 * (value -= 1)) * math.sin((value * d - s) * (2 * math.PI) / p)) + start;
-	    }
-	    /* GFX47 MOD END */
-
-	    /* GFX47 MOD START */
-	    //private static double elastic(double start, double end, double value){
-	    private static double easeOutElastic(double start, double end, double value)
-	    {
-		    /* GFX47 MOD END */
-		    //Thank you to rafael.marteleto for fixing this as a port over from Pedro's UnityTween
-		    end -= start;
-
-		    double d = 1;
-		    double p = d * .3;
-		    double s = 0;
-		    double a = 0;
-
-		    if (value == 0) return start;
-
-		    if ((value /= d) == 1) return start + end;
-
-		    if (a == 0 || a < math.abs(end))
-		    {
-			    a = end;
-			    s = p * 0.25;
-		    }
-		    else
-		    {
-			    s = p / (2 * math.PI) * math.asin(end / a);
-		    }
-
-		    return (a * math.pow(2, -10 * value) * math.sin((value * d - s) * (2 * math.PI) / p) + end + start);
-	    }
-
-	    /* GFX47 MOD START */
-	    private static double easeInOutElastic(double start, double end, double value)
-	    {
-		    end -= start;
-
-		    double d = 1;
-		    double p = d * .3;
-		    double s = 0;
-		    double a = 0;
-
-		    if (value == 0) return start;
-
-		    if ((value /= d * 0.5) == 2) return start + end;
-
-		    if (a == 0 || a < math.abs(end))
-		    {
-			    a = end;
-			    s = p / 4;
-		    }
-		    else
-		    {
-			    s = p / (2 * math.PI) * math.asin(end / a);
-		    }
-
-		    if (value < 1)
-			    return -0.5 * (a * math.pow(2, 10 * (value -= 1)) * math.sin((value * d - s) * (2 * math.PI) / p)) +
-			           start;
-		    return a * math.pow(2, -10 * (value -= 1)) * math.sin((value * d - s) * (2 * math.PI) / p) * 0.5 + end +
-		           start;
-	    }
-	    /* GFX47 MOD END */
-
     }
 }
