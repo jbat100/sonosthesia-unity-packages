@@ -4,6 +4,15 @@
 
 This repository contains Unity packages for the Sonosthesia project. It aims to provide modular and composable tools to create immersive and interactive audio visual experiences.
 
+## Demo Applications
+
+A number of demo applications provide example usage for these packages 
+
+- [MIDI Demo](https://github.com/jbat100/sonosthesia-unity-demo-midi)
+- [Ableton Live Bridge Demo](https://github.com/jbat100/sonosthesia-unity-demo-deform)
+- [Procedural Graphics Demo](https://github.com/jbat100/sonosthesia-unity-demo-live)
+- [Reactive Assets Demo](https://github.com/jbat100/sonosthesia-unity-reactive-assets)
+
 ## Packages
 
 ### Signals
@@ -39,10 +48,12 @@ Interactions in XR are crucial to the project, multi modal interaction is encour
 
 ### Procedural Graphics 
 
+- [com.sonosthesia.trajectory](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.trajectory)
 - [com.sonosthesia.noise](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.noise)
 - [com.sonosthesia.mesh](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.mesh)
 - [com.sonosthesia.deform](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.deform)
-- [com.sonosthesia.trajectory](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.trajectory)
+- [com.sonosthesia.deforminteraction](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.deforminteraction)
+
 
 ### MIDI
 
@@ -91,7 +102,7 @@ These packages are hosted on npm and have a dependency on [UniTask](https://gith
 }
 ```
 
-Some packages required additional scoped registeries
+Some packages require additional scoped registeries, namely
 
 - [com.sonosthesia.rtmidi](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.rtmidi)
 
@@ -110,3 +121,19 @@ Some packages required additional scoped registeries
 }
 ```
 
+- [com.sonosthesia.application](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.application)
+
+```json
+{
+  "scopedRegistries": [
+    // ...
+    {
+      "name": "Hadashikick",
+      "url": "https://package.openupm.com",
+      "scopes": [
+        "jp.hadashikick.vcontainer"
+      ]
+    }
+  ]
+}
+```
