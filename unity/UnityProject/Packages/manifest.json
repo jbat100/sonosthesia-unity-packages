@@ -11,6 +11,8 @@
     "com.sonosthesia.ease": "file:../../../packages/com.sonosthesia.ease",
     "com.sonosthesia.envelope": "file:../../../packages/com.sonosthesia.envelope",
     "com.sonosthesia.flow": "file:../../../packages/com.sonosthesia.flow",
+    "com.sonosthesia.fmod": "file:../../../packages/com.sonosthesia.fmod",
+    "com.sonosthesia.fmodinteraction": "file:../../../packages/com.sonosthesia.fmodinteraction",
     "com.sonosthesia.generator": "file:../../../packages/com.sonosthesia.generator",
     "com.sonosthesia.haptic": "file:../../../packages/com.sonosthesia.haptic",
     "com.sonosthesia.instrument": "file:../../../packages/com.sonosthesia.instrument",

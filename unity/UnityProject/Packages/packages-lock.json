@@ -149,6 +149,32 @@
         "com.sonosthesia.mapping": "1.10.0"
       }
     },
+    "com.sonosthesia.fmod": {
+      "version": "file:../../../packages/com.sonosthesia.fmod",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.unity.mathematics": "1.3.2",
+        "com.neuecc.unirx": "7.1.0",
+        "com.sonosthesia.audio": "1.10.0",
+        "com.sonosthesia.signal": "1.10.0",
+        "com.sonosthesia.utils": "1.10.0"
+      }
+    },
+    "com.sonosthesia.fmodinteraction": {
+      "version": "file:../../../packages/com.sonosthesia.fmodinteraction",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.neuecc.unirx": "7.1.0",
+        "com.sonosthesia.utils": "1.10.0",
+        "com.sonosthesia.interaction": "1.10.0",
+        "com.sonosthesia.touch": "1.10.0",
+        "com.sonosthesia.dynamic": "1.10.0",
+        "com.sonosthesia.trigger": "1.10.0",
+        "com.sonosthesia.fmod": "1.10.0"
+      }
+    },
     "com.sonosthesia.generator": {
       "version": "file:../../../packages/com.sonosthesia.generator",
       "depth": 0,
