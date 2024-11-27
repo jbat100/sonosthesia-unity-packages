@@ -6,6 +6,8 @@
     "com.sonosthesia.audio": "file:../../../packages/com.sonosthesia.audio",
     "com.sonosthesia.channel": "file:../../../packages/com.sonosthesia.channel",
     "com.sonosthesia.deform": "file:../../../packages/com.sonosthesia.deform",
+    "com.sonosthesia.deforminteraction": "file:../../../packages/com.sonosthesia.deforminteraction",
+    "com.sonosthesia.dynamic": "file:../../../packages/com.sonosthesia.dynamic",
     "com.sonosthesia.ease": "file:../../../packages/com.sonosthesia.ease",
     "com.sonosthesia.envelope": "file:../../../packages/com.sonosthesia.envelope",
     "com.sonosthesia.flow": "file:../../../packages/com.sonosthesia.flow",
@@ -30,6 +32,7 @@
     "com.sonosthesia.reactor": "file:../../../packages/com.sonosthesia.reactor",
     "com.sonosthesia.rtmidi": "file:../../../packages/com.sonosthesia.rtmidi",
     "com.sonosthesia.scaffold": "file:../../../packages/com.sonosthesia.scaffold",
+    "com.sonosthesia.scheduler": "file:../../../packages/com.sonosthesia.scheduler",
     "com.sonosthesia.sequencer": "file:../../../packages/com.sonosthesia.sequencer",
     "com.sonosthesia.signal": "file:../../../packages/com.sonosthesia.signal",
     "com.sonosthesia.spawn": "file:../../../packages/com.sonosthesia.spawn",
@@ -40,6 +43,7 @@
     "com.sonosthesia.trigger": "file:../../../packages/com.sonosthesia.trigger",
     "com.sonosthesia.utils": "file:../../../packages/com.sonosthesia.utils",
     "com.sonosthesia.vfx": "file:../../../packages/com.sonosthesia.vfx",
+    "com.sonosthesia.xr": "file:../../../packages/com.sonosthesia.xr",
     "com.unity.cinemachine": "2.10.0",
     "com.unity.collab-proxy": "2.3.1",
     "com.unity.ide.rider": "3.0.28",
@@ -107,6 +111,13 @@
       "url": "https://registry.npmjs.com",
       "scopes": [
         "com.sonosthesia"
+      ]
+    },
+    {
+      "name": "Hadashikick",
+      "url": "https://package.openupm.com",
+      "scopes": [
+        "jp.hadashikick.vcontainer"
       ]
     }
   ]

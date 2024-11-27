@@ -152,7 +152,10 @@ namespace Sonosthesia.Mesh
 
         protected virtual void OnValidate()
         {
-            Rebuild();
+            if (Application.isPlaying)
+            {
+                Rebuild();       
+            }
         }
         
         protected virtual void OnEnable()

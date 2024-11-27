@@ -1,6 +1,5 @@
 using System;
 using Cysharp.Threading.Tasks;
-using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,15 +9,16 @@ namespace Sonosthesia.Application
 {
     public class SceneSwitcher : ISceneSwitcher, IDisposable
     {
-        private readonly SceneSwitcherSettings _settings;
-        public SceneSwitcherSettings Settings => _settings;
+        public SceneSwitcherSettings Settings { get; }
 
-        private LifetimeScope _parentScope;
-        
-        public SceneSwitcher(SceneSwitcherSettings settings, LifetimeScope parentScope)
+        private readonly LifetimeScope _parentScope;
+        private readonly ApplicationState _applicationState;
+
+        public SceneSwitcher(SceneSwitcherSettings settings, ApplicationState applicationState, LifetimeScope parentScope)
         {
-            _settings = settings;
+            Settings = settings;
             _parentScope = parentScope;
+            _applicationState = applicationState;
         }
 
         private readonly ReactiveProperty<SceneSwitcherState> _state = new(SceneSwitcherState.Idle);
@@ -39,6 +39,7 @@ namespace Sonosthesia.Application
                 _state.Value = SceneSwitcherState.FadeOut;
 
                 await UniTask.Delay(TimeSpan.FromSeconds(Settings.FadeOut));
+                
 
                 if (!string.IsNullOrEmpty(Current.Value))
                 {
@@ -51,6 +52,8 @@ namespace Sonosthesia.Application
                 // TODO: have observable for error UI
                 Debug.LogException(e);
             }
+
+            _applicationState.activeUI.Value = false;
             
             try
             {
