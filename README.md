@@ -34,6 +34,7 @@ Mappings allow signals and channels to be connected to each other, potentially a
 
 Interactions in XR are crucial to the project, multi modal interaction is encouraged.
 
+- [com.sonosthesia.interaction](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.interaction)
 - [com.sonosthesia.touch](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.touch)
 
 ### Procedural Graphics 
@@ -41,6 +42,7 @@ Interactions in XR are crucial to the project, multi modal interaction is encour
 - [com.sonosthesia.noise](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.noise)
 - [com.sonosthesia.mesh](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.mesh)
 - [com.sonosthesia.deform](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.deform)
+- [com.sonosthesia.trajectory](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.trajectory)
 
 ### MIDI
 
@@ -51,6 +53,7 @@ Interactions in XR are crucial to the project, multi modal interaction is encour
 ### Sound
 
 - [com.sonosthesia.audio](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.audio)
+- [com.sonosthesia.fmod](https://github.com/jbat100/sonosthesia-unity-packages/tree/main/packages/com.sonosthesia.fmod)
 
 ### Instruments
 
