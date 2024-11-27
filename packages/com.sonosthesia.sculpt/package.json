@@ -4,8 +4,8 @@
     "com.unity.xr.hands": "1.5.0",
     "com.unity.xr.interaction.toolkit": "2.5.4",
     "com.neuecc.unirx": "7.1.0",
-    "com.sonosthesia.utils": "1.10.0",
-    "com.sonosthesia.interaction": "1.10.0"
+    "com.sonosthesia.utils": "1.11.0",
+    "com.sonosthesia.interaction": "1.11.0"
   },
   "description": "Sonosthesia unity sculpt",
   "displayName": "Sonosthesia Sculpt",
@@ -16,5 +16,5 @@
   "name": "com.sonosthesia.sculpt",
   "repository": "github:jbat100/sonosthesia-unity-packages",
   "unity": "2022.3",
-  "version": "1.10.0"
+  "version": "1.11.0"
 }
