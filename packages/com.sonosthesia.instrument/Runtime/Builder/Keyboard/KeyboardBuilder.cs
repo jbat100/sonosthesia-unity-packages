@@ -78,7 +78,7 @@ namespace Sonosthesia.Instrument
             {
                 int note = _startNote + i;
                 KeyboardElement instance = instances[i];
-                instance.MIDINote = note;
+                instance.MIDIPitch = note;
                 
                 bool isWhite = NoteIsWhite(note);
                 offset += isWhite && NoteIsWhite(note - 1) ? 1f : 0.5f;

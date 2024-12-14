@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace Sonosthesia.Instrument
 {
-    public class KeyboardElement : MonoBehaviour, IMIDIPitchedElement, IIndexed
+    public class KeyboardElement : MonoBehaviour, IMIDIPitchProvider, IIndexed
     {
-        public int MIDINote { get; set; }
+        public int MIDIPitch { get; set; }
         
         public int Index { get; set; }
 

@@ -99,5 +99,20 @@ namespace Sonosthesia.Utils
             float3 v3 = default;
             noise.snoise(v3, out float3 gradient);
         }
+        
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 ChangeLength(this Vector3 vector, float factor)
+        {
+            if (vector == Vector3.zero)
+            {
+                return Vector3.zero;
+            }
+            float currentMagnitude = vector.magnitude;
+            float newMagnitude = currentMagnitude * factor;
+            return vector * (newMagnitude / currentMagnitude);
+        }
+        
+        public static float DecibelToLinear(this float decibels) => math.pow(10f, decibels / 20f);
     }
 }

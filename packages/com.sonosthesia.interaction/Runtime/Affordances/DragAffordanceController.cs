@@ -7,7 +7,7 @@ namespace Sonosthesia.Pointer
 {
     public abstract class DragAffordanceController<TEvent, TAffordance> : AffordanceController<TEvent, TAffordance> 
             where TEvent : struct, IInteractionEvent 
-            where TAffordance : DragAgnosticAffordance<TEvent>
+            where TAffordance : DragAffordance<TEvent>
     {
         private GameObject _root;
         private Transform _origin;

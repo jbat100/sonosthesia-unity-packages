@@ -1,21 +1,16 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Sonosthesia.MIDI;
 using UnityEngine;
 
 namespace Sonosthesia.Instrument
 {
-    
-    [CreateAssetMenu(fileName = "MIDIRackSetup", menuName = "Sonosthesia/Racks/MIDIRackSetup")]
+    [CreateAssetMenu(fileName = "MIDIRackSetup", menuName = "Sonosthesia/Instrument/MIDIRackSetup")]
     public class MIDIRackSetup : ScriptableObject
     {
-
         [Serializable]
         private struct Element
         {
-            [SerializeField, Range(0, 16)] private int _channel;
-            public int Channel => _channel;
-            
             [SerializeField] private MIDINoteName _note;
             public MIDINoteName Note => _note;
             
@@ -55,24 +50,10 @@ namespace Sonosthesia.Instrument
             }
         }
 
-        public bool TryGet(string elementName, out int channel, out int note)
+        public bool TryGet(string elementName, out int note)
         {
-            channel = 0;
             note = 0;
-            
-            if (!_elementMap.TryGetValue(elementName, out Element element))
-            {
-                return false;
-            }
-            
-            if (!element.TryGetNote(out note))
-            {
-                return false;
-            }
-            
-            channel = element.Channel;
-            
-            return true;
+            return _elementMap.TryGetValue(elementName, out Element element) && element.TryGetNote(out note);
         }
     }
 }

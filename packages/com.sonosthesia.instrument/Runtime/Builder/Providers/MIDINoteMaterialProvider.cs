@@ -5,8 +5,6 @@ namespace Sonosthesia.Instrument
 {
     public abstract class MIDINoteMaterialProvider : ObservableBehaviour
     {
-        
-        
         public abstract Material MaterialForNote(int note);
     }
 }

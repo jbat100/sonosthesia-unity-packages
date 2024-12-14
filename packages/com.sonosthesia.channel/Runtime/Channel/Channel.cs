@@ -21,24 +21,25 @@ namespace Sonosthesia.Channel
         
         public void Push(Guid id, IObservable<T> stream)
         {
-            this.LogVerbose($"{this} new stream {id}");
+            this.LogWarning($"{this} new stream {id}");
             stream.Subscribe(
-                valueEvent =>
+                v =>
                 {
-                    _values[id] = valueEvent;
+                    this.LogVerbose($"{this} new stream value {v}");
+                    _values[id] = v;
                     Register(id);
                 }, 
                 error =>
                 {
                     _values.Remove(id);
                     Unregister(id);
-                    this.LogVerbose($"{this} end stream {id}");
+                    this.LogWarning($"{this} error end stream {id}");
                 },
                 () =>
                 {
                     _values.Remove(id);
                     Unregister(id);
-                    this.LogVerbose($"{this} end stream {id}");
+                    this.LogWarning($"{this} completion end stream {id}");
                 });
             
             _subject.OnNext(new KeyValuePair<Guid, IObservable<T>>(id, stream));

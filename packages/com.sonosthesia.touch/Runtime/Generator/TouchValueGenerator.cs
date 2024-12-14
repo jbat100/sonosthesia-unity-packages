@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
@@ -6,6 +7,8 @@ namespace Sonosthesia.Touch
     /// Generates a value for a TriggerChannelSource
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
+    ///
+    [Obsolete("Use extractor configuration scriptable objects")]
     public abstract class TouchValueGenerator<TValue> : MonoBehaviour where TValue : struct
     {
         public abstract bool BeginTouch(ITouchData touchData, out TValue value);

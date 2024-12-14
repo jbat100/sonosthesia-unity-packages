@@ -20,13 +20,6 @@ namespace Sonosthesia.Interaction
         private readonly CompositeDisposable _subscriptions = new();
 
         protected virtual IObserver<TEvent> MakeController(Guid id) => null;
-        
-        protected virtual void HandleStream(Guid id, IObservable<TEvent> stream)
-        {
-            
-        }
-
-        protected virtual bool CheckCompatibility(TEvent e) => true;
 
         // a bit of a pain to have to use async, but we need to wait for the first stream element to check
         private async UniTaskVoid OnStream(Guid id, IObservable<TEvent> stream)
@@ -34,11 +27,6 @@ namespace Sonosthesia.Interaction
             stream = stream.TakeUntilDisable(this);
 
             TEvent e = await stream.ToUniTask(true);
-            
-            if (!CheckCompatibility(e))
-            {
-                return;
-            }
 
             foreach (InteractionAffordanceGate gate in _gates)
             {
@@ -69,8 +57,6 @@ namespace Sonosthesia.Interaction
                 // Debug.LogWarning($"{this} created new controller {id}");
                 stream.Subscribe(controller);
             }
-            
-            HandleStream(id, stream);
 
             if (_relay)
             {

@@ -32,14 +32,14 @@ namespace Sonosthesia.Trigger
         {
             float result = TriggerController.Update();
 
-            result = _postProcessor.Process(result);
-
             if (_dynamicPostProcessor != null)
             {
                 result = _dynamicPostProcessor.Process(result, Time.time);
             }
             
-            Broadcast(_postProcessor.Process(result));
+            result = _postProcessor.Process(result);
+
+            Broadcast(result);
         }
 
         protected override void OnDestroy()

@@ -2,7 +2,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 namespace Sonosthesia.Interaction
 {
-    public interface IInteractionEndpoint
+    public interface IInteractionEndpoint 
     {
         InteractionLayerMask InteractionLayers { get; }
         

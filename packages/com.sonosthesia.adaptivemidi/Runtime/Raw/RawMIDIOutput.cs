@@ -5,7 +5,8 @@ namespace Sonosthesia.AdaptiveMIDI
 {
     public class RawMIDIOutput : MIDIOutput
     {
-        private readonly MIDIEncoder _encoder = new();
+        private static readonly MIDIEncoder _encoder = new ();
+        
         [SerializeField] private RawMIDIOutputStream _rawOutput;
 
         protected virtual void Awake()

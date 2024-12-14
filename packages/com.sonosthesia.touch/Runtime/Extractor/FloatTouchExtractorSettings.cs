@@ -1,4 +1,5 @@
 using System;
+using Sonosthesia.Ease;
 using Sonosthesia.Utils;
 using Unity.Mathematics;
 using UnityEngine;
@@ -27,7 +28,9 @@ namespace Sonosthesia.Touch
         public enum DistanceType
         {
             ActorToSource,
-            ActorRelative
+            ActorRelative,
+            ActorComponent,
+            Height
         }
 
         [Flags]
@@ -86,7 +89,9 @@ namespace Sonosthesia.Touch
                 {
                     DistanceType.ActorToSource => new ActorToSourceDistanceSession(_distanceAxes, _normalizedDistance),
                     DistanceType.ActorRelative => new ActorRelativeDistanceSession(_distanceAxes),
-                    _ => null
+                    DistanceType.ActorComponent => new ActorComponentDistanceSession(_distanceAxes, _normalizedDistance),
+                    DistanceType.Height => new HeightDistanceSession(),
+                    _ => throw new ArgumentOutOfRangeException()
                 };
             }
             
@@ -97,7 +102,7 @@ namespace Sonosthesia.Touch
                 ExtractorType.Velocity => new VelocitySession(_velocityType),
                 ExtractorType.Distance => DistanceSession(),
                 ExtractorType.Twist => new TwistSession(),
-                _ => null
+                _ => throw new ArgumentOutOfRangeException()
             };
 
             if (_actorModulationType != TouchActorModulationType.None)
@@ -281,6 +286,58 @@ namespace Sonosthesia.Touch
 
             public bool Update(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
         }
+        
+        private class ActorComponentDistanceSession : ITouchExtractorSession<float>
+        {
+            private readonly bool _normalized;
+            private readonly Axes _axes;
+
+            private float _referenceDistance;
+
+            public ActorComponentDistanceSession(Axes axes, bool normalized)
+            {
+                _normalized = normalized;
+                _axes = axes;
+            }
+
+            private bool Common(TouchEvent touchEvent, out float value)
+            {
+                float distance = touchEvent.ActorPositionInSourceSpace().FilterAxes(_axes).Sum();
+                value = _normalized ? distance / _referenceDistance : distance;
+                return true;
+            }
+            
+            public bool Setup(TouchEvent touchEvent, out float value)
+            {
+                _referenceDistance = touchEvent.ActorPositionInSourceSpace().FilterAxes(_axes).Sum();
+                if (math.abs(_referenceDistance) < 1e-3f)
+                {
+                    _referenceDistance = 1e-3f;
+                }
+                return Common(touchEvent, out value);
+            }
+
+            public bool Update(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
+        }
+
+        private class HeightDistanceSession : ITouchExtractorSession<float>
+        {
+            private float _referenceHeight;
+
+            private bool Common(TouchEvent touchEvent, out float value)
+            {
+                value = touchEvent.touchData.Actor.transform.position.y - _referenceHeight;
+                return true;
+            }
+            
+            public bool Setup(TouchEvent touchEvent, out float value)
+            {
+                _referenceHeight = touchEvent.touchData.Actor.transform.position.y;
+                return Common(touchEvent, out value);
+            }
+
+            public bool Update(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
+        }
 
         private class TwistSession : ITouchExtractorSession<float>
         {
@@ -301,5 +358,20 @@ namespace Sonosthesia.Touch
 
             public bool Update(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
         }
+
+        
+        
+        private class BinSession : TouchExtractorSessionProcessor<float>
+        {
+            private readonly AnimationCurve _curve;
+            
+            public BinSession(ITouchExtractorSession<float> session, AnimationCurve curve) : base(session)
+            {
+                _curve = curve;
+            }
+
+            protected override float Process(TouchEvent touchEvent, float value) => _curve.Evaluate(value);
+        }
+        
     }
 }

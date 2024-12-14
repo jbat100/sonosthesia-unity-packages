@@ -7,7 +7,8 @@
     "com.cysharp.unitask": "2.5.10",
     "com.sonosthesia.utils": "1.11.0",
     "com.sonosthesia.channel": "1.11.0",
-    "com.sonosthesia.trigger": "1.11.0"
+    "com.sonosthesia.trigger": "1.11.0",
+    "com.sonosthesia.ease": "1.11.0"
   },
   "description": "Sonosthesia unity interaction",
   "displayName": "Sonosthesia Interaction",
