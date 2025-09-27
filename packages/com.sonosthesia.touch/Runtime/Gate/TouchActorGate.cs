@@ -6,11 +6,11 @@ namespace Sonosthesia.Touch
     {
         [SerializeField] private bool _bypass;
 
-        public bool Check(TouchSource source, TouchActor actor)
+        public bool Check(ATouchSource source, TouchActor actor)
         {
             return _bypass || PerformCheck(source, actor);
         }
         
-        protected abstract bool PerformCheck(TouchSource source, TouchActor actor);
+        protected abstract bool PerformCheck(ATouchSource source, TouchActor actor);
     }
 }

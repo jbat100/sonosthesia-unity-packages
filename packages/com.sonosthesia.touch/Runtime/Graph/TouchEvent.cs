@@ -26,7 +26,7 @@ namespace Sonosthesia.Touch
         TouchStart Start { get; }
         Collider Collider { get; }
         bool Colliding { get; }
-        TouchSource Source { get; }
+        ATouchSource Source { get; }
         TouchActor Actor { get; }
     }
 

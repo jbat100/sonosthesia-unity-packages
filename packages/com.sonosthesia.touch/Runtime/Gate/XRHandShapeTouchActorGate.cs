@@ -45,7 +45,7 @@ namespace Sonosthesia.Touch
             _subscription?.Dispose();
         }
 
-        protected override bool PerformCheck(TouchSource source, TouchActor actor)
+        protected override bool PerformCheck(ATouchSource source, TouchActor actor)
         {
             return _match;
         }

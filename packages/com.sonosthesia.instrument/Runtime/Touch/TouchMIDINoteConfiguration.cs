@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Instrument
 {
-    [CreateAssetMenu(fileName = "TouchMIDINoteConfiguration", menuName = "Sonosthesia/Touch/TouchMIDINoteConfiguration")]
+    [CreateAssetMenu(fileName = "TouchMIDINoteConfiguration", menuName = "Sonosthesia/Instrument/TouchMIDINoteConfiguration")]
     public class TouchMIDINoteConfiguration : ScriptableObject
     {
         [SerializeField] private bool _applyPressure;

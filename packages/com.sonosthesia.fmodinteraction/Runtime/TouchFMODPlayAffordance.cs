@@ -10,12 +10,27 @@ namespace Sonosthesia.FMODInteraction
     {
         [SerializeField] private StudioEventEmitter _emitter;
         
-        protected override void HandleStream(Guid id, IObservable<TouchEvent> stream)
+        private class Controller : AffordanceController<TouchEvent, TouchFMODPlayAffordance>, IDisposable
         {
-            if (_emitter)
+            public Controller(Guid eventId, TouchFMODPlayAffordance affordance) : base(eventId, affordance)
             {
-                _emitter.Play();
+            }
+            
+            protected override void Setup(TouchEvent e)
+            {
+                base.Setup(e);
+
+                if (Affordance._emitter)
+                {
+                    Affordance._emitter.Play();
+                }
+            }
+
+            public void Dispose()
+            {
             }
         }
+
+        protected override IObserver<TouchEvent> MakeController(Guid id) => new Controller(id, this);
     }
 }

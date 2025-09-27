@@ -66,7 +66,7 @@ namespace Sonosthesia.Interaction
 
         protected virtual void OnEnable()
         {
-            foreach (var channel in _inputs.Where(channel => channel))
+            foreach (Channel.Channel<TEvent> channel in _inputs.Where(channel => channel))
             {
                 _subscriptions.Add(channel.Observable.Subscribe(pair =>
                 {
