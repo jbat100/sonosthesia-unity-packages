@@ -12,7 +12,7 @@ namespace Sonosthesia.Instrument
 
         private class Controller : ChannelAffordanceController<MIDINote, TouchEvent, TouchMIDINoteAffordance>
         {
-            private ITouchExtractorSession<float> _pressure;
+            private IExtractorSession<TouchEvent, float> _pressure;
             
             public Controller(Guid eventId, TouchMIDINoteAffordance affordance) : base(eventId, affordance)
             {

@@ -13,9 +13,9 @@ namespace Sonosthesia.Instrument
 
         private class Controller : ChannelAffordanceController<MPENote, TouchEvent, TouchMPENoteAffordance>
         {
-            private ITouchExtractorSession<float> _pressure;
-            private ITouchExtractorSession<float> _slide;
-            private ITouchExtractorSession<float> _bend;
+            private IExtractorSession<TouchEvent, float> _pressure;
+            private IExtractorSession<TouchEvent, float> _slide;
+            private IExtractorSession<TouchEvent, float> _bend;
             
             public Controller(Guid eventId, TouchMPENoteAffordance affordance) : base(eventId, affordance)
             {

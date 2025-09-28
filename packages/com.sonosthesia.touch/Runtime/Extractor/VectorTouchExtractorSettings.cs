@@ -1,4 +1,5 @@
 ﻿using System;
+using Sonosthesia.Interaction;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
@@ -38,7 +39,7 @@ namespace Sonosthesia.Touch
         
         [SerializeField] private ExtractorType _extractorType;
 
-        [SerializeField] private TouchExtractor<Vector3> _extractor;
+        [SerializeField] private Extractor<TouchEvent, Vector3> _extractor;
 
         [SerializeField] private VelocityType _velocityType;
         
@@ -50,9 +51,9 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private float _scale = 1f;
 
-        public ITouchExtractorSession<Vector3> MakeSession()
+        public IExtractorSession<TouchEvent, Vector3> MakeSession()
         {
-            ITouchExtractorSession<Vector3> session = _extractorType switch
+            IExtractorSession<TouchEvent, Vector3> session = _extractorType switch
             {
                 ExtractorType.Custom => _extractor.MakeSession(),
                 ExtractorType.Static => new StaticSession(_space, _direction),
@@ -75,27 +76,27 @@ namespace Sonosthesia.Touch
             return session;
         }
 
-        public ITouchExtractorSession<Vector3> SetupSession(TouchEvent e, out Vector3 result)
+        public IExtractorSession<TouchEvent, Vector3> SetupSession(TouchEvent e, out Vector3 result)
         {
-            ITouchExtractorSession<Vector3> session = MakeSession();
+            IExtractorSession<TouchEvent, Vector3> session = MakeSession();
             session.Setup(e, out result);
             return session;
         }
 
-        private class NormalizeSession : TouchExtractorSessionProcessor<Vector3>
+        private class NormalizeSession : ExtractorSessionProcessor<TouchEvent, Vector3>
         {
-            public NormalizeSession(ITouchExtractorSession<Vector3> session) : base(session)
+            public NormalizeSession(IExtractorSession<TouchEvent, Vector3> session) : base(session)
             {
             }
 
             protected override Vector3 Process(TouchEvent touchEvent, Vector3 value) => value.normalized;
         }
 
-        private class ScaleSession : TouchExtractorSessionProcessor<Vector3>
+        private class ScaleSession : ExtractorSessionProcessor<TouchEvent, Vector3>
         {
             private readonly float _scale;
             
-            public ScaleSession(ITouchExtractorSession<Vector3> session, float scale) : base(session)
+            public ScaleSession(IExtractorSession<TouchEvent, Vector3> session, float scale) : base(session)
             {
                 _scale = scale;
             }
@@ -103,7 +104,7 @@ namespace Sonosthesia.Touch
             protected override Vector3 Process(TouchEvent touchEvent, Vector3 value) => value * _scale;
         }
 
-        private class StaticSession : ITouchExtractorSession<Vector3>
+        private class StaticSession : IExtractorSession<TouchEvent, Vector3>
         {
             private readonly Space _space;
             private readonly Vector3 _direction;
@@ -130,7 +131,7 @@ namespace Sonosthesia.Touch
             public bool Update(TouchEvent touchEvent, out Vector3 value) => Common(touchEvent, out value);
         }
 
-        private class VelocitySession : ITouchExtractorSession<Vector3>
+        private class VelocitySession : IExtractorSession<TouchEvent, Vector3>
         {
             private readonly VelocityType _velocityType;
             
@@ -158,7 +159,7 @@ namespace Sonosthesia.Touch
             public bool Update(TouchEvent touchEvent, out Vector3 value) => Common(touchEvent, out value);
         }
 
-        private class RelativeSession : ITouchExtractorSession<Vector3>
+        private class RelativeSession : IExtractorSession<TouchEvent, Vector3>
         {
             private static bool Common(TouchEvent touchEvent, out Vector3 value)
             {
@@ -171,7 +172,7 @@ namespace Sonosthesia.Touch
             public bool Update(TouchEvent touchEvent, out Vector3 value) => Common(touchEvent, out value);
         }
 
-        private class AxisSession : ITouchExtractorSession<Vector3>
+        private class AxisSession : IExtractorSession<TouchEvent, Vector3>
         {
             private static bool Common(TouchEvent touchEvent, out Vector3 value)
             {

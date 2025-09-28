@@ -1,5 +1,6 @@
 using System;
 using Sonosthesia.Envelope;
+using Sonosthesia.Interaction;
 using Sonosthesia.Trigger;
 using Unity.Mathematics;
 using UnityEngine;
@@ -8,6 +9,8 @@ namespace Sonosthesia.Touch
 {
     public interface ITouchEnvelopeSession
     {
+        // TODO : observables to handle indicator ? or maybe just a current value
+        
         void StartTouch(TouchEvent e);
         void UpdateTouch(TouchEvent e);
         void EndTouch(TouchEvent e, out float release);
@@ -37,8 +40,6 @@ namespace Sonosthesia.Touch
             session.StartTouch(e);
             return session;
         }
-
-        
 
         private class TouchEnvelopeSession : ITouchEnvelopeSession
         {
@@ -76,7 +77,7 @@ namespace Sonosthesia.Touch
 
         private class ConstantTouchEnvelopeSession : TouchEnvelopeSession
         {
-            private ITouchExtractorSession<float> _valueScaleSession;
+            private IExtractorSession<TouchEvent, float> _valueScaleSession;
             
             private float _valueScale;
 
@@ -166,7 +167,7 @@ namespace Sonosthesia.Touch
         
         private class ContactTouchEnvelopeSession : TouchEnvelopeSession
         {
-            private ITouchExtractorSession<float> _valueScaleSession;
+            private IExtractorSession<TouchEvent, float> _valueScaleSession;
 
             public ContactTouchEnvelopeSession(TouchEnvelopeSettings settings, TriggerController controller) 
                 : base(settings, controller)

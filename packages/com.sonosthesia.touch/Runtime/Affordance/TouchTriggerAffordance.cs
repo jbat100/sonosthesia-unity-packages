@@ -11,6 +11,8 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private TouchEnvelopeConfiguration _configuration;
         
+        // TODO : scriptable object for indicator, takes _configuration as argument with extra info, key, color, offset
+        
         private class Controller : AffordanceController<TouchEvent, TouchTriggerAffordance>
         {
             private ITouchEnvelopeSession _session; 

@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+﻿using Sonosthesia.Interaction;
+using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class VectorTouchExtractor : TouchExtractor<Vector3>
+    public class VectorTouchExtractor : Extractor<TouchEvent, Vector3>
     {
         [SerializeField] private VectorTouchExtractorSettings _settings;
 
-        public override ITouchExtractorSession<Vector3> MakeSession() => _settings.MakeSession();
+        public override IExtractorSession<TouchEvent, Vector3> MakeSession() => _settings.MakeSession();
     }
 }

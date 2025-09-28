@@ -26,7 +26,7 @@ namespace Sonosthesia.Touch
         
         private class Controller : AffordanceController<TouchEvent, TouchTorqueAffordance>, IDisposable
         {
-            private ITouchExtractorSession<Vector3> _torqueSession;
+            private IExtractorSession<TouchEvent, Vector3> _torqueSession;
             private ITouchEnvelopeSession _intensitySession;
             
             private Vector3 _torque;
