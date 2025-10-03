@@ -34,7 +34,7 @@ namespace Sonosthesia.FMODInteraction
             private struct ParameterSession
             {
                 private string name;
-                private ITouchEnvelopeSession envelope;
+                private IInteractiveEnvelopeSession<TouchEvent> envelope;
                 private bool valid;
                 private StudioEventEmitter emitter;
                 
@@ -50,9 +50,9 @@ namespace Sonosthesia.FMODInteraction
                     };
                 }
 
-                public void UpdateTouch(TouchEvent e) => envelope.UpdateTouch(e);
+                public void UpdateTouch(TouchEvent e) => envelope.Update(e);
 
-                public void EndTouch(TouchEvent e, out float release) => envelope.EndTouch(e, out release);
+                public void EndTouch(TouchEvent e, out float release) => envelope.End(e, out release);
 
                 public float Update()
                 {

@@ -15,7 +15,7 @@ namespace Sonosthesia.Touch
         
         private class Controller : AffordanceController<TouchEvent, TouchTriggerAffordance>
         {
-            private ITouchEnvelopeSession _session; 
+            private IInteractiveEnvelopeSession<TouchEvent> _session; 
             
             public Controller(Guid eventId, TouchTriggerAffordance affordance) : base(eventId, affordance)
             {
@@ -32,13 +32,13 @@ namespace Sonosthesia.Touch
             protected override void Update(TouchEvent e)
             {
                 base.Update(e);
-                _session.UpdateTouch(e);
+                _session.Update(e);
             }
 
             protected override void Teardown(TouchEvent e)
             {
                 base.Teardown(e);
-                _session.EndTouch(e, out float _);
+                _session.End(e, out float _);
             }
         }
 

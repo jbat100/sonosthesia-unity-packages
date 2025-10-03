@@ -1,21 +1,18 @@
 using System;
 using Sonosthesia.Ease;
 using Sonosthesia.Envelope;
+using Sonosthesia.Interaction;
 using Sonosthesia.Trigger;
 using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
+
+    
     [Serializable]
-    public class TouchEnvelopeSettings
+    public class TouchEnvelopeSettings : IInteractiveEnvelopeSettings<TouchEvent>
     {
-        public enum TouchType
-        {
-            Constant,
-            Pulse,
-            Contact
-        }
 
         public enum FilterType
         {
@@ -32,24 +29,24 @@ namespace Sonosthesia.Touch
         [SerializeField] private OneEuroFilterSettings _oneEuroFilter;
         public OneEuroFilterSettings OneEuroFilter => _oneEuroFilter;
         
-        [SerializeField] private TouchType _type;
-        public TouchType Type => _type;
+        [SerializeField] private InteractiveEnvelopeType _type;
+        public InteractiveEnvelopeType Type => _type;
         
         [SerializeField] private FloatTouchExtractorSettings _constantExtractor;
-        public FloatTouchExtractorSettings ConstantExtractor => _constantExtractor;
+        public FloatExtractorSettings<TouchEvent> ConstantExtractor => _constantExtractor;
         
         [SerializeField] private FloatTouchExtractorSettings _valueScaleExtractor;
-        public FloatTouchExtractorSettings ValueScaleExtractor => _valueScaleExtractor;
+        public FloatExtractorSettings<TouchEvent> ValueScaleExtractor => _valueScaleExtractor;
         
         [SerializeField] private FloatTouchExtractorSettings _timeScaleExtractor;
-        public FloatTouchExtractorSettings TimeScaleExtractor => _timeScaleExtractor;
+        public FloatExtractorSettings<TouchEvent> TimeScaleExtractor => _timeScaleExtractor;
         
         [SerializeField] private EnvelopeSettings _envelope
             = EnvelopeSettings.ADS(EnvelopePhase.InOutSine(0.1f), EnvelopePhase.InOutSine(0.3f), 0.5f);
         public EnvelopeSettings Envelope => _envelope;
 
         [SerializeField] private FloatTouchExtractorSettings _releaseExtractor;
-        public FloatTouchExtractorSettings ReleaseExtractor => _releaseExtractor;
+        public FloatExtractorSettings<TouchEvent> ReleaseExtractor => _releaseExtractor;
 
         [SerializeField] private EaseType _releaseType = EaseType.easeInOutSine;
         public EaseType ReleaseType => _releaseType;
@@ -57,7 +54,7 @@ namespace Sonosthesia.Touch
 
     public static class TrackedTouchEnvelopeSettingsExtensions
     {
-        public static ITouchEnvelopeSession SetupSession(this TouchEnvelopeSettings settings, TouchEvent e,
+        public static IInteractiveEnvelopeSession<TouchEvent> SetupSession(this TouchEnvelopeSettings settings, TouchEvent e,
             TriggerController controller = null)
         {
             return TouchEnvelopeSessionUtil.StartSession(e, settings, controller);

@@ -1,3 +1,4 @@
+using Sonosthesia.Interaction;
 using Sonosthesia.Utils;
 using Sonosthesia.Utils.Editor;
 using UnityEditor;
@@ -49,19 +50,19 @@ namespace Sonosthesia.Touch.Editor
             
             void UpdateVisibility()
             {
-                TouchEnvelopeSettings.TouchType type = (TouchEnvelopeSettings.TouchType)typeProp.enumValueIndex;
+                InteractiveEnvelopeType type = (InteractiveEnvelopeType)typeProp.enumValueIndex;
                 TouchEnvelopeSettings.FilterType filter = (TouchEnvelopeSettings.FilterType)filterProp.enumValueIndex;
                 
                 oneEuroFilterField.Show(filter is TouchEnvelopeSettings.FilterType.OneEuro);
                 
-                constantExtractorField.Show(type is TouchEnvelopeSettings.TouchType.Constant);
+                constantExtractorField.Show(type is InteractiveEnvelopeType.Constant);
                 
-                valueScaleExtractorField.Show(type is not TouchEnvelopeSettings.TouchType.Constant);
-                timeScaleExtractorField.Show(type is not TouchEnvelopeSettings.TouchType.Constant);
-                envelopeField.Show(type is not TouchEnvelopeSettings.TouchType.Constant);
+                valueScaleExtractorField.Show(type is not InteractiveEnvelopeType.Constant);
+                timeScaleExtractorField.Show(type is not InteractiveEnvelopeType.Constant);
+                envelopeField.Show(type is not InteractiveEnvelopeType.Constant);
                 
-                releaseExtractorField.Show(type is TouchEnvelopeSettings.TouchType.Contact);
-                releaseTypeField.Show(type is TouchEnvelopeSettings.TouchType.Contact);
+                releaseExtractorField.Show(type is InteractiveEnvelopeType.Contact);
+                releaseTypeField.Show(type is InteractiveEnvelopeType.Contact);
             }
 
             UpdateVisibility();

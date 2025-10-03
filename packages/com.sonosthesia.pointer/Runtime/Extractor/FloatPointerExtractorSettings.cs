@@ -16,10 +16,21 @@ namespace Sonosthesia.Pointer
             Drag
         }
         
+        private enum AxisType
+        {
+            Raycast,
+            Position
+        }
+        
         [SerializeField] private ExtractorType _extractorType = ExtractorType.Static;
+        
+        [SerializeField] private bool _relative;
+        
+        [SerializeField] private bool _track;
+        
+        [SerializeField] private AxisType _axisType;
 
-
-        public IExtractorSession<PointerEvent, float> MakeSession()
+        public override IExtractorSession<PointerEvent, float> MakeSession()
         {
             IExtractorSession<PointerEvent, float> session = _extractorType switch
             {

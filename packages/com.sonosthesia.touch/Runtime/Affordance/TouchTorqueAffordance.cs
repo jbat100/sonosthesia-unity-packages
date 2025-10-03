@@ -27,7 +27,7 @@ namespace Sonosthesia.Touch
         private class Controller : AffordanceController<TouchEvent, TouchTorqueAffordance>, IDisposable
         {
             private IExtractorSession<TouchEvent, Vector3> _torqueSession;
-            private ITouchEnvelopeSession _intensitySession;
+            private IInteractiveEnvelopeSession<TouchEvent> _intensitySession;
             
             private Vector3 _torque;
             private float _intensity;
@@ -69,13 +69,13 @@ namespace Sonosthesia.Touch
                 {
                     _torqueSession.Update(e, out _torque);   
                 }
-                _intensitySession.UpdateTouch(e);
+                _intensitySession.Update(e);
             }
 
             protected override void Teardown(TouchEvent e)
             {
                 base.Teardown(e);
-                _intensitySession.EndTouch(e, out float _release);
+                _intensitySession.End(e, out float _release);
                 Observable.Timer(TimeSpan.FromSeconds(_release)).Subscribe(_ => Dispose());
             }
 

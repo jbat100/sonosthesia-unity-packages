@@ -21,10 +21,10 @@ namespace Sonosthesia.DeformInteraction
             // - it is not called beyond teardown
             // feels like this is common enough that it justifies an inbuilt mechanism 
 
-            private ITouchEnvelopeSession _displacementSession;
-            private ITouchEnvelopeSession _radiusSession;
-            private ITouchEnvelopeSession _frequencySession;
-            private ITouchEnvelopeSession _speedSession;
+            private IInteractiveEnvelopeSession<TouchEvent> _displacementSession;
+            private IInteractiveEnvelopeSession<TouchEvent> _radiusSession;
+            private IInteractiveEnvelopeSession<TouchEvent> _frequencySession;
+            private IInteractiveEnvelopeSession<TouchEvent> _speedSession;
 
             private float3 _center;
             
@@ -87,10 +87,10 @@ namespace Sonosthesia.DeformInteraction
                     _center = ExtractPosition(e);
                 }
                 
-                _displacementSession.UpdateTouch(e);
-                _radiusSession.UpdateTouch(e);
-                _frequencySession.UpdateTouch(e);
-                _speedSession.UpdateTouch(e);
+                _displacementSession.Update(e);
+                _radiusSession.Update(e);
+                _frequencySession.Update(e);
+                _speedSession.Update(e);
             }
 
             protected override void Teardown(TouchEvent e)
@@ -99,10 +99,10 @@ namespace Sonosthesia.DeformInteraction
                 
                 TouchPathNoiseAffordance affordance = Affordance;
 
-                _displacementSession.EndTouch(e, out float displacementRelease);
-                _radiusSession.EndTouch(e, out float radiusRelease);
-                _frequencySession.EndTouch(e, out float frequencyRelease);
-                _speedSession.EndTouch(e, out float speedRelease);
+                _displacementSession.End(e, out float displacementRelease);
+                _radiusSession.End(e, out float radiusRelease);
+                _frequencySession.End(e, out float frequencyRelease);
+                _speedSession.End(e, out float speedRelease);
 
                 float duration = Mathf.Max(displacementRelease, radiusRelease, frequencyRelease, speedRelease);
 

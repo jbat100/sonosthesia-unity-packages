@@ -49,16 +49,9 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private TouchActorModulationType _actorModulationType;
         [SerializeField] private FloatModulationSettings _actorModulation;
-
-        // used when only the initial value is needed, creates a session, sets it up and returns extracted value
-        public bool Extract(TouchEvent e, out float value)
-        {
-            IExtractorSession<TouchEvent, float> session = MakeSession();
-            return session.Setup(e, out value);
-        }
         
         // used when the value can change with time and may require state, such as relative distance etc...
-        public IExtractorSession<TouchEvent, float> MakeSession()
+        public override IExtractorSession<TouchEvent, float> MakeSession()
         {
             IExtractorSession<TouchEvent, float> DistanceSession()
             {

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Sonosthesia.Interaction
 {
     [Serializable]
-    public class FloatExtractorSettings<TEvent> where TEvent : IInteractionEvent
+    public abstract class FloatExtractorSettings<TEvent> where TEvent : IInteractionEvent
     {
         [Flags]
         public enum PostProcessingType
@@ -13,6 +13,15 @@ namespace Sonosthesia.Interaction
             Curve = 1 << 0,
             Remap = 1 << 1,
             Clamp = 1 << 2
+        }
+
+        public abstract IExtractorSession<TEvent, float> MakeSession();
+        
+        // used when only the initial value is needed, creates a session, sets it up and returns extracted value
+        public bool Extract(TEvent e, out float value)
+        {
+            IExtractorSession<TEvent, float> session = MakeSession();
+            return session.Setup(e, out value);
         }
         
         // ----------- custom -------------

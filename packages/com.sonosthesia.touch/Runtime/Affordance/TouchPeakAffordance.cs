@@ -16,11 +16,11 @@ namespace Sonosthesia.Touch
         
         private class Controller : AffordanceController<TouchEvent, TouchPeakAffordance>, IDisposable
         {
-            private ITouchEnvelopeSession _magnitude;
-            private ITouchEnvelopeSession _duration;
+            private IInteractiveEnvelopeSession<TouchEvent> _magnitude;
+            private IInteractiveEnvelopeSession<TouchEvent> _duration;
             
-            private ITouchEnvelopeSession _speed;
-            private ITouchEnvelopeSession _chaos;
+            private IInteractiveEnvelopeSession<TouchEvent> _speed;
+            private IInteractiveEnvelopeSession<TouchEvent> _chaos;
             
             private ISchedulerSession _schedulerSession;
             
@@ -65,19 +65,19 @@ namespace Sonosthesia.Touch
             protected override void Update(TouchEvent e)
             {
                 base.Update(e);
-                _magnitude.UpdateTouch(e);
-                _duration.UpdateTouch(e);
-                _speed.UpdateTouch(e);
-                _chaos.UpdateTouch(e);
+                _magnitude.Update(e);
+                _duration.Update(e);
+                _speed.Update(e);
+                _chaos.Update(e);
             }
 
             protected override void Teardown(TouchEvent e)
             {
                 base.Teardown(e);
-                _magnitude.EndTouch(e, out float _);
-                _duration.EndTouch(e, out float _);
-                _speed.EndTouch(e, out float _);
-                _chaos.EndTouch(e, out float _);
+                _magnitude.End(e, out float _);
+                _duration.End(e, out float _);
+                _speed.End(e, out float _);
+                _chaos.End(e, out float _);
                 Dispose();
             }
 

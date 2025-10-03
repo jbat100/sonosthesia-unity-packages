@@ -17,9 +17,9 @@ namespace Sonosthesia.DeformInteraction
         
         private class Controller : AffordanceController<TouchEvent, TouchMeshNoiseAffordance>, IDisposable
         {
-            private ITouchEnvelopeSession _displacementSession;
-            private ITouchEnvelopeSession _radiusSession;
-            private ITouchEnvelopeSession _speedSession;
+            private IInteractiveEnvelopeSession<TouchEvent> _displacementSession;
+            private IInteractiveEnvelopeSession<TouchEvent> _radiusSession;
+            private IInteractiveEnvelopeSession<TouchEvent> _speedSession;
 
             private IDynamicTrackingSession _actorTrackingSession;
 
@@ -94,9 +94,9 @@ namespace Sonosthesia.DeformInteraction
             {
                 base.Update(e);
                 
-                _displacementSession.UpdateTouch(e);
-                _radiusSession.UpdateTouch(e);
-                _speedSession.UpdateTouch(e);
+                _displacementSession.Update(e);
+                _radiusSession.Update(e);
+                _speedSession.Update(e);
             }
             
             protected override void Teardown(TouchEvent e)
@@ -105,9 +105,9 @@ namespace Sonosthesia.DeformInteraction
                 
                 TouchMeshNoiseAffordance affordance = Affordance;
 
-                _displacementSession.EndTouch(e, out float displacementRelease);
-                _radiusSession.EndTouch(e, out float radiusRelease);
-                _speedSession.EndTouch(e, out float speedRelease);
+                _displacementSession.End(e, out float displacementRelease);
+                _radiusSession.End(e, out float radiusRelease);
+                _speedSession.End(e, out float speedRelease);
 
                 float duration = Mathf.Max(displacementRelease, radiusRelease, speedRelease);
 
