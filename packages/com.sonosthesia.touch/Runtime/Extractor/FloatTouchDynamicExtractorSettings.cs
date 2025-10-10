@@ -1,7 +1,6 @@
 using System;
 using Sonosthesia.Interaction;
 using Sonosthesia.Utils;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
@@ -15,14 +14,7 @@ namespace Sonosthesia.Touch
             Constant,
             Velocity,
             Distance,
-            Twist
-        }
-
-        public enum DistanceType
-        {
-            ActorToSource,
-            ActorRelative,
-            ActorComponent,
+            Twist,
             Height
         }
 
@@ -34,9 +26,7 @@ namespace Sonosthesia.Touch
 
         // ----------- distance -------------
         
-        [SerializeField] private DistanceType _distanceType = DistanceType.ActorToSource;
-        [SerializeField] private Axes _distanceAxes = Axes.X | Axes.Y | Axes.Z;
-        [SerializeField] private bool _normalizedDistance;
+        [SerializeField] private Axes _axes = Axes.X | Axes.Y | Axes.Z;
 
         // ----------- actor modulation -------------
 
@@ -47,25 +37,14 @@ namespace Sonosthesia.Touch
 
         protected override IDynamicExtractorSession<TouchEvent, float> MakeRawSession()
         {
-            IDynamicExtractorSession<TouchEvent, float> DistanceSession()
-            {
-                return _distanceType switch
-                {
-                    DistanceType.ActorToSource => new ActorToSourceDistanceSession(_distanceAxes, _normalizedDistance),
-                    DistanceType.ActorRelative => new ActorRelativeDistanceSession(_distanceAxes),
-                    DistanceType.ActorComponent => new ActorComponentDistanceSession(_distanceAxes, _normalizedDistance),
-                    DistanceType.Height => new HeightDistanceSession(),
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-            }
-            
             IDynamicExtractorSession<TouchEvent, float> session = _extractorType switch
             {
                 ExtractorType.Custom => CustomSession(),
                 ExtractorType.Constant => ConstantSession(),
                 ExtractorType.Velocity => new VelocitySession(_velocityType),
-                ExtractorType.Distance => DistanceSession(),
+                ExtractorType.Distance => new ActorToSourceDistanceSession(_axes),
                 ExtractorType.Twist => new TwistSession(),
+                ExtractorType.Height => new HeightDistanceSession(),
                 _ => throw new ArgumentOutOfRangeException()
             };
             
@@ -111,93 +90,20 @@ namespace Sonosthesia.Touch
             }
         }
         
-        private class ActorRelativeDistanceSession : IDynamicExtractorSession<TouchEvent, float>
+        private class ActorToSourceDistanceSession : StatelessExtractorSession<TouchEvent, float>
         {
             private readonly Axes _axes;
-
-            private Vector3 _actorPositionReference;
-
-            public ActorRelativeDistanceSession(Axes axes)
+            
+            public ActorToSourceDistanceSession(Axes axes)
             {
                 _axes = axes;
             }
 
-            private bool Common(TouchEvent touchEvent, out float value)
+            protected override bool Extract(TouchEvent e, out float value)
             {
-                Vector3 actorPosition = touchEvent.ActorPositionInSourceSpace().FilterAxes(_axes);
-                value = (_actorPositionReference - actorPosition).magnitude;
+                value = e.ActorPositionInSourceSpace().FilterAxes(_axes).magnitude;
                 return true;
             }
-            
-            public bool Setup(TouchEvent touchEvent, out float value)
-            {
-                _actorPositionReference = touchEvent.ActorPositionInSourceSpace().FilterAxes(_axes);
-                return Common(touchEvent, out value);
-            }
-
-            public bool Update(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
-        }
-        
-        private class ActorToSourceDistanceSession : IDynamicExtractorSession<TouchEvent, float>
-        {
-            private readonly bool _normalized;
-            private readonly Axes _axes;
-
-            private float _referenceDistance;
-
-            public ActorToSourceDistanceSession(Axes axes, bool normalized)
-            {
-                _normalized = normalized;
-                _axes = axes;
-            }
-
-            private bool Common(TouchEvent touchEvent, out float value)
-            {
-                float distance = touchEvent.ActorPositionInSourceSpace().FilterAxes(_axes).magnitude;
-                value = _normalized ? distance / _referenceDistance : distance;
-                return true;
-            }
-            
-            public bool Setup(TouchEvent touchEvent, out float value)
-            {
-                _referenceDistance = math.max(touchEvent.ActorPositionInSourceSpace().FilterAxes(_axes).magnitude, 1e-3f);
-                return Common(touchEvent, out value);
-            }
-
-            public bool Update(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
-        }
-        
-        private class ActorComponentDistanceSession : IDynamicExtractorSession<TouchEvent, float>
-        {
-            private readonly bool _normalized;
-            private readonly Axes _axes;
-
-            private float _referenceDistance;
-
-            public ActorComponentDistanceSession(Axes axes, bool normalized)
-            {
-                _normalized = normalized;
-                _axes = axes;
-            }
-
-            private bool Common(TouchEvent touchEvent, out float value)
-            {
-                float distance = touchEvent.ActorPositionInSourceSpace().FilterAxes(_axes).Sum();
-                value = _normalized ? distance / _referenceDistance : distance;
-                return true;
-            }
-            
-            public bool Setup(TouchEvent touchEvent, out float value)
-            {
-                _referenceDistance = touchEvent.ActorPositionInSourceSpace().FilterAxes(_axes).Sum();
-                if (math.abs(_referenceDistance) < 1e-3f)
-                {
-                    _referenceDistance = 1e-3f;
-                }
-                return Common(touchEvent, out value);
-            }
-
-            public bool Update(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
         }
 
         private class HeightDistanceSession : StatelessExtractorSession<TouchEvent, float>

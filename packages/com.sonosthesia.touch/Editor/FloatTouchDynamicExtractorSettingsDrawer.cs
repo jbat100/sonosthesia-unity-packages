@@ -31,14 +31,8 @@ namespace Sonosthesia.Touch.Editor
             root.AddRelativeField(property, "_velocityType", 
                 out SerializedProperty _, out PropertyField velocityTypeField);
 
-            root.AddRelativeField(property, "_distanceType", 
-                out SerializedProperty distanceTypeProp, out PropertyField distanceTypeField);
-
-            root.AddRelativeField(property, "_distanceAxes", 
-                out SerializedProperty _, out PropertyField distanceAxesField);
-            
-            root.AddRelativeField(property, "_normalizedDistance", 
-                out SerializedProperty _, out PropertyField normalizedDistanceField);
+            root.AddRelativeField(property, "_axes", 
+                out SerializedProperty _, out PropertyField axesField);
             
             root.AddRelativeField(property, "_actorModulationType", 
                 out SerializedProperty actorModulationTypeProp, out PropertyField actorModulationTypeField);
@@ -62,18 +56,13 @@ namespace Sonosthesia.Touch.Editor
             {
                 FloatTouchDynamicExtractorSettings.ExtractorType extractorType = (FloatTouchDynamicExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
                 FloatTouchDynamicExtractorSettings.PostProcessingType postProcessingType = (FloatTouchDynamicExtractorSettings.PostProcessingType)postProcessingProp.enumValueFlag;
-                FloatTouchDynamicExtractorSettings.DistanceType distanceType = (FloatTouchDynamicExtractorSettings.DistanceType)distanceTypeProp.enumValueIndex;
                 TouchActorModulationType actorModulationType = (TouchActorModulationType)actorModulationTypeProp.enumValueIndex;
 
                 followStrategyField.Show(extractorType is not FloatTouchDynamicExtractorSettings.ExtractorType.Constant);
                 extractorField.Show(extractorType is FloatTouchDynamicExtractorSettings.ExtractorType.Custom);
                 constantValueField.Show(extractorType is FloatTouchDynamicExtractorSettings.ExtractorType.Constant);
                 velocityTypeField.Show(extractorType is FloatTouchDynamicExtractorSettings.ExtractorType.Velocity);
-                
-                distanceTypeField.Show(extractorType is FloatTouchDynamicExtractorSettings.ExtractorType.Distance);
-                distanceAxesField.Show(extractorType is FloatTouchDynamicExtractorSettings.ExtractorType.Distance);
-                normalizedDistanceField.Show(extractorType is FloatTouchDynamicExtractorSettings.ExtractorType.Distance && 
-                                             distanceType is FloatTouchDynamicExtractorSettings.DistanceType.ActorToSource);
+                axesField.Show(extractorType is FloatTouchDynamicExtractorSettings.ExtractorType.Distance);
                 
                 actorModulationField.Show(actorModulationType is not TouchActorModulationType.None);
 
@@ -86,7 +75,6 @@ namespace Sonosthesia.Touch.Editor
 
             extractorTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());
             postProcessingField.RegisterValueChangeCallback(_ => UpdateVisibility());
-            distanceTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());
             actorModulationTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());
             
             return root;

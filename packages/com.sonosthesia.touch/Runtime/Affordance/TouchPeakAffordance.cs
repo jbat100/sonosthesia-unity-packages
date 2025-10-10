@@ -38,11 +38,11 @@ namespace Sonosthesia.Touch
                 TouchPeakConfiguration peakConfiguration = Affordance._peakConfiguration;
                 Signal<Peak> target = Affordance._target;
 
-                _magnitude = peakConfiguration.Magnitude.SetupSession(e);
-                _duration = peakConfiguration.Duration.SetupSession(e);
+                _magnitude = peakConfiguration.Magnitude.StartSession(e);
+                _duration = peakConfiguration.Duration.StartSession(e);
 
-                _speed = peakConfiguration.Speed.SetupSession(e);
-                _chaos = peakConfiguration.Chaos.SetupSession(e);
+                _speed = peakConfiguration.Speed.StartSession(e);
+                _chaos = peakConfiguration.Chaos.StartSession(e);
 
                 _schedulerSession = peakConfiguration.Scheduler.MakeSession(_speed.Update(), _chaos.Update());
                 

@@ -11,9 +11,15 @@ namespace Sonosthesia.Interaction
             IInteractiveEnvelopeSettings<TEvent> settings,
             TriggerController controller = null)
         {
-            IInteractiveEnvelopeSession<TEvent> session = InteractiveEnvelopeSessionUtil.MakeSession(settings, controller);
+            IInteractiveEnvelopeSession<TEvent> session = MakeSession(settings, controller);
             session.Start(e);
             return session;
+        }
+        
+        public static IInteractiveEnvelopeSession<TEvent> StartSession<TEvent>(this IInteractiveEnvelopeSettings<TEvent> settings, TEvent e,
+            TriggerController controller = null)
+        {
+            return StartSession(e, settings, controller);
         }
 
         public static IInteractiveEnvelopeSession<TEvent> MakeSession<TEvent>(

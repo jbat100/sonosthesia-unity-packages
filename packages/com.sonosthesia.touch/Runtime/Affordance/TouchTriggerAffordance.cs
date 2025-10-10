@@ -26,7 +26,7 @@ namespace Sonosthesia.Touch
             {
                 base.Setup(e);
                 TouchEnvelopeSettings settings = Affordance._configuration.Settings;
-                _session = settings.SetupSession(e, Affordance._trigger.TriggerController);
+                _session = settings.StartSession(e, Affordance._trigger.TriggerController);
             }
 
             protected override void Update(TouchEvent e)

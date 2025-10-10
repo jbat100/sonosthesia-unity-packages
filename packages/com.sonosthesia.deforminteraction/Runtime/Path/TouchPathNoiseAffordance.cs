@@ -48,10 +48,10 @@ namespace Sonosthesia.DeformInteraction
 
                 _center = ExtractPosition(e);
                 
-                _displacementSession = configuration.Displacement.SetupSession(e);
-                _frequencySession = configuration.Frequency.SetupSession(e);
-                _speedSession = configuration.Speed.SetupSession(e);
-                _radiusSession = configuration.Radius.SetupSession(e);
+                _displacementSession = configuration.Displacement.StartSession(e);
+                _frequencySession = configuration.Frequency.StartSession(e);
+                _speedSession = configuration.Speed.StartSession(e);
+                _radiusSession = configuration.Radius.StartSession(e);
 
                 // don't start time from 0 or we get always the same noise effect, the choice of Time.time 
                 // is arbitrary, it could be a random number

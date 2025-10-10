@@ -40,9 +40,9 @@ namespace Sonosthesia.DeformInteraction
                     configuration.ActorTracking,
                     e.touchData.Actor.DynamicsMonitor);
                 
-                _displacementSession = configuration.Displacement.SetupSession(e);
-                _radiusSession = configuration.Radius.SetupSession(e);
-                _speedSession = configuration.Speed.SetupSession(e);
+                _displacementSession = configuration.Displacement.StartSession(e);
+                _radiusSession = configuration.Radius.StartSession(e);
+                _speedSession = configuration.Speed.StartSession(e);
 
                 // don't start time from 0 or we get always the same noise effect, the choice of Time.time 
                 // is arbitrary, it could be a random number

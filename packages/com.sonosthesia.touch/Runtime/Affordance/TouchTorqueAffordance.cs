@@ -49,7 +49,7 @@ namespace Sonosthesia.Touch
                 TouchTorqueConfiguration configuration = Affordance._configuration;
 
                 _torqueSession = configuration.Torque.SetupSession(e, out _torque);
-                _intensitySession = configuration.Intensity.SetupSession(e);
+                _intensitySession = configuration.Intensity.StartSession(e);
 
                 _updateSubscription = Observable.EveryUpdate().StartWith(0).Subscribe(_ =>
                 {

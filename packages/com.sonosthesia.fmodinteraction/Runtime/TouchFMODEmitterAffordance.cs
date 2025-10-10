@@ -45,7 +45,7 @@ namespace Sonosthesia.FMODInteraction
                     {
                         name = name,
                         emitter = emitter,
-                        envelope = settings.SetupSession(e),
+                        envelope = settings.StartSession(e),
                         valid = emitter.HasParameter(name)
                     };
                 }

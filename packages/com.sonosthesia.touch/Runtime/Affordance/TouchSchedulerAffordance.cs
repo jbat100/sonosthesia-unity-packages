@@ -32,8 +32,8 @@ namespace Sonosthesia.Touch
                 TouchSchedulerConfiguration configuration = Affordance._configuration;
                 Signal<SchedulerEvent> target = Affordance._target;
 
-                _speedSession = configuration.Speed.SetupSession(e);
-                _chaosSession = configuration.Chaos.SetupSession(e);
+                _speedSession = configuration.Speed.StartSession(e);
+                _chaosSession = configuration.Chaos.StartSession(e);
 
                 _schedulerSession =  configuration.Scheduler.MakeSession(_speedSession.Update(), _chaosSession.Update());
                 
