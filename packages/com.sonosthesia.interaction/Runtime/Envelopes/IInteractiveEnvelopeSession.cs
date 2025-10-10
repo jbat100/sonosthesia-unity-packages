@@ -1,6 +1,6 @@
 ﻿namespace Sonosthesia.Interaction
 {
-    public interface IInteractiveEnvelopeSession<in TEvent> where TEvent : IInteractionEvent
+    public interface IInteractiveEnvelopeSession<in TEvent>
     {
         void Start(TEvent e);
         void Update(TEvent e);

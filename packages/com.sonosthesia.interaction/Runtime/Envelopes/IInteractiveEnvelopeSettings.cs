@@ -19,7 +19,7 @@ namespace Sonosthesia.Interaction
         OneEuro
     }
     
-    public interface IInteractiveEnvelopeSettings<in TEvent> where TEvent : IInteractionEvent
+    public interface IInteractiveEnvelopeSettings<in TEvent>
     {
         EnvelopeInteraction Interaction { get; }
         IDynamicExtractor<TEvent, float> ValueScaleExtractor { get; }

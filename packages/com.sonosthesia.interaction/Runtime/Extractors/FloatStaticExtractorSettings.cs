@@ -8,7 +8,7 @@ namespace Sonosthesia.Interaction
     // for situations where after touch is not possible (e.g. MIDI note, velocity or channel selection) 
     
     [Serializable]
-    public abstract class FloatStaticExtractorSettings<TEvent> : IStaticExtractor<TEvent, float> where TEvent : IInteractionEvent
+    public abstract class FloatStaticExtractorSettings<TEvent> : IStaticExtractor<TEvent, float>
     {
         [Flags]
         public enum PostProcessingType

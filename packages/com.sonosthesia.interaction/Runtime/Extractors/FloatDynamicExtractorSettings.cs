@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Sonosthesia.Interaction
 {
     [Serializable]
-    public abstract class FloatDynamicExtractorSettings<TEvent> : IDynamicExtractor<TEvent, float> where TEvent : IInteractionEvent
+    public abstract class FloatDynamicExtractorSettings<TEvent> : IDynamicExtractor<TEvent, float>
     {
         [Flags]
         public enum PostProcessingType

@@ -9,7 +9,7 @@ namespace Sonosthesia.Interaction
     {
         public static IInteractiveEnvelopeSession<TEvent> StartSession<TEvent>(TEvent e, 
             IInteractiveEnvelopeSettings<TEvent> settings,
-            TriggerController controller = null) where TEvent : IInteractionEvent
+            TriggerController controller = null)
         {
             IInteractiveEnvelopeSession<TEvent> session = InteractiveEnvelopeSessionUtil.MakeSession(settings, controller);
             session.Start(e);
@@ -18,7 +18,7 @@ namespace Sonosthesia.Interaction
 
         public static IInteractiveEnvelopeSession<TEvent> MakeSession<TEvent>(
             IInteractiveEnvelopeSettings<TEvent> settings,
-            TriggerController controller) where TEvent : IInteractionEvent
+            TriggerController controller)
         {
             IInteractiveEnvelopeSession<TEvent> session = settings.Interaction switch
             {
@@ -35,7 +35,7 @@ namespace Sonosthesia.Interaction
             return session;
         }
         
-        private class EnvelopeSession<TEvent> : IInteractiveEnvelopeSession<TEvent> where TEvent : IInteractionEvent
+        private class EnvelopeSession<TEvent> : IInteractiveEnvelopeSession<TEvent>
         {
             protected readonly IInteractiveEnvelopeSettings<TEvent> Settings;
             protected readonly TriggerController Controller;
@@ -68,7 +68,7 @@ namespace Sonosthesia.Interaction
             }
         }
 
-        private class ConstantEnvelopeSession<TEvent> : EnvelopeSession<TEvent> where TEvent : IInteractionEvent
+        private class ConstantEnvelopeSession<TEvent> : EnvelopeSession<TEvent>
         {
             private IDynamicExtractorSession<TEvent, float> _valueScaleSession;
             
@@ -113,7 +113,7 @@ namespace Sonosthesia.Interaction
             }
         }
         
-        private class PulseEnvelopeSession<TEvent> : EnvelopeSession<TEvent> where TEvent : IInteractionEvent
+        private class PulseEnvelopeSession<TEvent> : EnvelopeSession<TEvent>
         {
             private IDynamicExtractorSession<TEvent, float> _valueScaleSession;
 
@@ -158,7 +158,7 @@ namespace Sonosthesia.Interaction
             }
         }
         
-        private class ContactEnvelopeSession<TEvent> : EnvelopeSession<TEvent> where TEvent : IInteractionEvent
+        private class ContactEnvelopeSession<TEvent> : EnvelopeSession<TEvent>
         {
             private IDynamicExtractorSession<TEvent, float> _valueScaleSession;
 

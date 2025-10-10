@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
-    public abstract class InteractiveEnvelopeSessionProcessor<TEvent> : IInteractiveEnvelopeSession<TEvent> where TEvent : IInteractionEvent
+    public abstract class InteractiveEnvelopeSessionProcessor<TEvent> : IInteractiveEnvelopeSession<TEvent>
     {
         private readonly IInteractiveEnvelopeSession<TEvent> _session;
 
@@ -24,7 +24,7 @@ namespace Sonosthesia.Interaction
     }
 
     // tracks settings, used for testing for build use StaticTouchEnvelopeSessionOneEuroFilter
-    public class InteractiveEnvelopeSessionOneEuroFilter<TEvent>  : InteractiveEnvelopeSessionProcessor<TEvent> where TEvent : IInteractionEvent
+    public class InteractiveEnvelopeSessionOneEuroFilter<TEvent>  : InteractiveEnvelopeSessionProcessor<TEvent>
     {
         private readonly OneEuroFilter1 _filter;
         private readonly OneEuroFilterSettings _settings;
@@ -45,7 +45,7 @@ namespace Sonosthesia.Interaction
         }
     }
     
-    public class StaticInteractiveEnvelopeSessionOneEuroFilter<TEvent>  : InteractiveEnvelopeSessionProcessor<TEvent> where TEvent : IInteractionEvent
+    public class StaticInteractiveEnvelopeSessionOneEuroFilter<TEvent>  : InteractiveEnvelopeSessionProcessor<TEvent>
     {
         private readonly OneEuroFilter1 _filter;
         private readonly float _startTime;
