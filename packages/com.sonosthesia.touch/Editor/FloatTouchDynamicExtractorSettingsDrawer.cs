@@ -6,8 +6,8 @@ using Sonosthesia.Utils.Editor;
 
 namespace Sonosthesia.Touch.Editor
 {
-    [CustomPropertyDrawer(typeof(FloatTouchExtractorSettings))]
-    public class FloatTouchExtractorSettingsDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(FloatTouchDynamicExtractorSettings))]
+    public class FloatTouchDynamicExtractorSettingsDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
@@ -19,11 +19,14 @@ namespace Sonosthesia.Touch.Editor
             root.AddRelativeField(property, "_extractorType", 
                 out SerializedProperty extractorTypeProp, out PropertyField extractorTypeField);
             
+            root.AddRelativeField(property, "_followStrategy", 
+                out SerializedProperty _, out PropertyField followStrategyField);
+            
             root.AddRelativeField(property, "_extractor", 
                 out SerializedProperty _, out PropertyField extractorField);
             
-            root.AddRelativeField(property, "_staticValue", 
-                out SerializedProperty _, out PropertyField staticValueField);
+            root.AddRelativeField(property, "_constantValue", 
+                out SerializedProperty _, out PropertyField constantValueField);
 
             root.AddRelativeField(property, "_velocityType", 
                 out SerializedProperty _, out PropertyField velocityTypeField);
@@ -57,29 +60,26 @@ namespace Sonosthesia.Touch.Editor
             
             void UpdateVisibility()
             {
-                FloatTouchExtractorSettings.ExtractorType extractorType = (FloatTouchExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
-                FloatTouchExtractorSettings.PostProcessingType postProcessingType = (FloatTouchExtractorSettings.PostProcessingType)postProcessingProp.enumValueFlag;
-                FloatTouchExtractorSettings.DistanceType distanceType = (FloatTouchExtractorSettings.DistanceType)distanceTypeProp.enumValueIndex;
+                FloatTouchDynamicExtractorSettings.ExtractorType extractorType = (FloatTouchDynamicExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
+                FloatTouchDynamicExtractorSettings.PostProcessingType postProcessingType = (FloatTouchDynamicExtractorSettings.PostProcessingType)postProcessingProp.enumValueFlag;
+                FloatTouchDynamicExtractorSettings.DistanceType distanceType = (FloatTouchDynamicExtractorSettings.DistanceType)distanceTypeProp.enumValueIndex;
                 TouchActorModulationType actorModulationType = (TouchActorModulationType)actorModulationTypeProp.enumValueIndex;
 
-                extractorField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Custom);
-                staticValueField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Static);
-                velocityTypeField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Velocity);
+                followStrategyField.Show(extractorType is not FloatTouchDynamicExtractorSettings.ExtractorType.Constant);
+                extractorField.Show(extractorType is FloatTouchDynamicExtractorSettings.ExtractorType.Custom);
+                constantValueField.Show(extractorType is FloatTouchDynamicExtractorSettings.ExtractorType.Constant);
+                velocityTypeField.Show(extractorType is FloatTouchDynamicExtractorSettings.ExtractorType.Velocity);
                 
-                distanceTypeField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Distance);
-                distanceAxesField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Distance);
-                normalizedDistanceField.Show(extractorType is FloatTouchExtractorSettings.ExtractorType.Distance && 
-                                             distanceType is FloatTouchExtractorSettings.DistanceType.ActorToSource);
+                distanceTypeField.Show(extractorType is FloatTouchDynamicExtractorSettings.ExtractorType.Distance);
+                distanceAxesField.Show(extractorType is FloatTouchDynamicExtractorSettings.ExtractorType.Distance);
+                normalizedDistanceField.Show(extractorType is FloatTouchDynamicExtractorSettings.ExtractorType.Distance && 
+                                             distanceType is FloatTouchDynamicExtractorSettings.DistanceType.ActorToSource);
                 
                 actorModulationField.Show(actorModulationType is not TouchActorModulationType.None);
 
-                bool curve = postProcessingType.HasFlag(FloatTouchExtractorSettings.PostProcessingType.Curve);
-                bool remap = postProcessingType.HasFlag(FloatTouchExtractorSettings.PostProcessingType.Remap);
-                bool clamp = postProcessingType.HasFlag(FloatTouchExtractorSettings.PostProcessingType.Clamp);
-
-                curveField.Show(curve);
-                remapField.Show(remap);
-                clampField.Show(clamp);
+                curveField.Show(postProcessingType.HasFlag(FloatTouchDynamicExtractorSettings.PostProcessingType.Curve));
+                remapField.Show(postProcessingType.HasFlag(FloatTouchDynamicExtractorSettings.PostProcessingType.Remap));
+                clampField.Show(postProcessingType.HasFlag(FloatTouchDynamicExtractorSettings.PostProcessingType.Clamp));
             }
 
             UpdateVisibility();

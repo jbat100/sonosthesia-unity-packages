@@ -70,7 +70,7 @@ namespace Sonosthesia.Interaction
 
         private class ConstantEnvelopeSession<TEvent> : EnvelopeSession<TEvent> where TEvent : IInteractionEvent
         {
-            private IExtractorSession<TEvent, float> _valueScaleSession;
+            private IDynamicExtractorSession<TEvent, float> _valueScaleSession;
             
             private float _valueScale;
 
@@ -82,7 +82,7 @@ namespace Sonosthesia.Interaction
 
             public override void Start(TEvent e)
             {
-                _valueScaleSession = Settings.ConstantExtractor.MakeSession();
+                _valueScaleSession = Settings.ValueScaleExtractor.MakeSession();
                 
                 if (!_valueScaleSession.Setup(e, out _valueScale))
                 {
@@ -94,11 +94,6 @@ namespace Sonosthesia.Interaction
 
             public override void Update(TEvent e)
             {
-                if (!Settings.Track)
-                {
-                    return;
-                }
-                
                 if (_valueScaleSession.Update(e, out _valueScale))
                 {
                     Controller.UpdateTrigger(TriggerId, _valueScale);
@@ -120,6 +115,9 @@ namespace Sonosthesia.Interaction
         
         private class PulseEnvelopeSession<TEvent> : EnvelopeSession<TEvent> where TEvent : IInteractionEvent
         {
+            private IDynamicExtractorSession<TEvent, float> _valueScaleSession;
+
+            
             private float _endTime;
             
             public PulseEnvelopeSession(IInteractiveEnvelopeSettings<TEvent> settings, TriggerController controller) 
@@ -131,8 +129,10 @@ namespace Sonosthesia.Interaction
             public override void Start(TEvent e)
             {
                 IEnvelope envelope = Settings.Envelope.Build();
-
-                if (!Settings.ValueScaleExtractor.Extract(e, out float valueScale))
+                
+                _valueScaleSession = Settings.ValueScaleExtractor.MakeSession();
+                
+                if (!_valueScaleSession.Setup(e, out float valueScale))
                 {
                     valueScale = 1f;
                 }
@@ -160,7 +160,7 @@ namespace Sonosthesia.Interaction
         
         private class ContactEnvelopeSession<TEvent> : EnvelopeSession<TEvent> where TEvent : IInteractionEvent
         {
-            private IExtractorSession<TEvent, float> _valueScaleSession;
+            private IDynamicExtractorSession<TEvent, float> _valueScaleSession;
 
             public ContactEnvelopeSession(IInteractiveEnvelopeSettings<TEvent> settings, TriggerController controller) 
                 : base(settings, controller)
@@ -187,10 +187,6 @@ namespace Sonosthesia.Interaction
 
             public override void Update(TEvent e)
             {
-                if (!Settings.Track)
-                {
-                    return;
-                }
                 if (_valueScaleSession.Update(e, out float valueScale))
                 {
                     Controller.UpdateTrigger(TriggerId, valueScale);

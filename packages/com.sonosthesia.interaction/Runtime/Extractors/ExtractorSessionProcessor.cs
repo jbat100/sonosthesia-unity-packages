@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
-    public abstract class ExtractorSessionProcessor<TEvent, TValue> : IExtractorSession<TEvent, TValue> 
+    public abstract class ExtractorSessionProcessor<TEvent, TValue> : IDynamicExtractorSession<TEvent, TValue> 
         where TEvent : IInteractionEvent where TValue : struct
     {
-        private readonly IExtractorSession<TEvent, TValue> _session;
+        private readonly IDynamicExtractorSession<TEvent, TValue> _session;
         
-        public ExtractorSessionProcessor(IExtractorSession<TEvent, TValue> session)
+        public ExtractorSessionProcessor(IDynamicExtractorSession<TEvent, TValue> session)
         {
             _session = session;
         }
@@ -40,7 +40,7 @@ namespace Sonosthesia.Interaction
     {
         private readonly RemapSettings _settings;
         
-        public FloatRemapSession(IExtractorSession<TEvent, float> session, RemapSettings settings) : base(session)
+        public FloatRemapSession(IDynamicExtractorSession<TEvent, float> session, RemapSettings settings) : base(session)
         {
             _settings = settings;
         }
@@ -52,7 +52,7 @@ namespace Sonosthesia.Interaction
     {
         private readonly AnimationCurve _curve;
         
-        public FloatCurveSession(IExtractorSession<TEvent, float> session, AnimationCurve curve) : base(session)
+        public FloatCurveSession(IDynamicExtractorSession<TEvent, float> session, AnimationCurve curve) : base(session)
         {
             _curve = curve;
         }
@@ -64,7 +64,7 @@ namespace Sonosthesia.Interaction
     {
         private readonly FloatRange _range;
         
-        public FloatClampSession(IExtractorSession<TEvent, float> session, FloatRange range) : base(session)
+        public FloatClampSession(IDynamicExtractorSession<TEvent, float> session, FloatRange range) : base(session)
         {
             _range = range;
         }
@@ -72,33 +72,29 @@ namespace Sonosthesia.Interaction
         protected override float Process(TEvent e, float value) => _range.Clamp(value);
     }
 
-    public class FloatStaticSession<TEvent> : IExtractorSession<TEvent, float> where TEvent : IInteractionEvent
+    public class FloatConstantSession<TEvent> : StatelessExtractorSession<TEvent, float> where TEvent : IInteractionEvent
     {
         private readonly float _staticValue;
         
-        public FloatStaticSession(float staticValue)
+        public FloatConstantSession(float staticValue)
         {
             _staticValue = staticValue;
         }
-        
-        private bool Common(TEvent e, out float value)
+
+        protected override bool Extract(TEvent interactionEvent, out float value)
         {
             value = _staticValue;
             return true;
         }
-
-        public bool Setup(TEvent e, out float value) => Common(e, out value);
-
-        public bool Update(TEvent e, out float value) => Common(e, out value);
     }
 
-    public class InitialSession<TEvent, TValue> : IExtractorSession<TEvent, TValue> 
+    public class InitialSession<TEvent, TValue> : IDynamicExtractorSession<TEvent, TValue> 
         where TEvent : IInteractionEvent where TValue : struct
     {
-        private readonly IExtractorSession<TEvent, TValue> _session;
+        private readonly IDynamicExtractorSession<TEvent, TValue> _session;
         private TValue? _initial;
         
-        public InitialSession(IExtractorSession<TEvent, TValue> session)
+        public InitialSession(IDynamicExtractorSession<TEvent, TValue> session)
         {
             _session = session;
         }
@@ -125,13 +121,13 @@ namespace Sonosthesia.Interaction
         }
     }
     
-    public abstract class RelativeSession<TEvent, TValue> : IExtractorSession<TEvent, TValue> 
+    public abstract class RelativeSession<TEvent, TValue> : IDynamicExtractorSession<TEvent, TValue> 
         where TEvent : IInteractionEvent where TValue : struct
     {
-        private readonly IExtractorSession<TEvent, TValue> _session;
+        private readonly IDynamicExtractorSession<TEvent, TValue> _session;
         private TValue? _reference;
 
-        protected RelativeSession(IExtractorSession<TEvent, TValue> session)
+        protected RelativeSession(IDynamicExtractorSession<TEvent, TValue> session)
         {
             _session = session;
         }
@@ -163,10 +159,46 @@ namespace Sonosthesia.Interaction
 
     public class FloatRelativeSession<TEvent> : RelativeSession<TEvent, float> where TEvent : IInteractionEvent
     {
-        public FloatRelativeSession(IExtractorSession<TEvent, float> session) : base(session)
+        public FloatRelativeSession(IDynamicExtractorSession<TEvent, float> session) : base(session)
         {
         }
 
         protected override float Relative(float value, float reference) => value - reference;
+    }
+
+    public class FloatNormalizedSession<TEvent> : IDynamicExtractorSession<TEvent, float>
+        where TEvent : IInteractionEvent
+    {
+        private readonly IDynamicExtractorSession<TEvent, float> _session;
+        private float? _reference;
+        
+        public FloatNormalizedSession(IDynamicExtractorSession<TEvent, float> session)
+        {
+            _session = session;
+        }
+        
+        public bool Setup(TEvent e, out float value)
+        {
+            if (_session.Setup(e, out float raw))
+            {
+                _reference = raw;
+                value = 1f;
+                return true;
+            }
+            value = 0;
+            return false;
+        }
+        
+        public bool Update(TEvent e, out float value)
+        {
+            if (_reference.HasValue && _reference.Value != 0 && _session.Update(e, out float raw))
+            {
+                value = raw / _reference.Value;
+                return true;
+            }
+
+            value = 0;
+            return false;
+        }
     }
 }

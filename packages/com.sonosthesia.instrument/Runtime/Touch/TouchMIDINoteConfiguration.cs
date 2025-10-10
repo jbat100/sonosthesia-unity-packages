@@ -15,10 +15,10 @@ namespace Sonosthesia.Instrument
         [SerializeField] private MIDIPitchTouchExtractorSettings _pitch;
         public MIDIPitchTouchExtractorSettings Pitch => _pitch;
 
-        [SerializeField] private FloatTouchExtractorSettings _velocity;
-        public FloatTouchExtractorSettings Velocity => _velocity;
+        [SerializeField] private FloatTouchDynamicExtractorSettings _velocity;
+        public FloatTouchDynamicExtractorSettings Velocity => _velocity;
 
-        [SerializeField] private FloatTouchExtractorSettings _pressure;
-        public FloatTouchExtractorSettings Pressure => _pressure;
+        [SerializeField] private FloatTouchDynamicExtractorSettings _pressure;
+        public FloatTouchDynamicExtractorSettings Pressure => _pressure;
     }
 }

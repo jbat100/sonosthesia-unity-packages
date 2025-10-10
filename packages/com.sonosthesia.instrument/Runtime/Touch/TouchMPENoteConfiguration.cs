@@ -18,16 +18,16 @@ namespace Sonosthesia.Instrument
         [SerializeField] private MIDIPitchTouchExtractorSettings _pitch;
         public MIDIPitchTouchExtractorSettings Pitch => _pitch;
 
-        [SerializeField] private FloatTouchExtractorSettings _velocity;
-        public FloatTouchExtractorSettings Velocity => _velocity;
+        [SerializeField] private FloatTouchDynamicExtractorSettings _velocity;
+        public FloatTouchDynamicExtractorSettings Velocity => _velocity;
 
-        [SerializeField] private FloatTouchExtractorSettings _pressure;
-        public FloatTouchExtractorSettings Pressure => _pressure;
+        [SerializeField] private FloatTouchDynamicExtractorSettings _pressure;
+        public FloatTouchDynamicExtractorSettings Pressure => _pressure;
         
-        [SerializeField] private FloatTouchExtractorSettings _slide;
-        public FloatTouchExtractorSettings Slide => _slide;
+        [SerializeField] private FloatTouchDynamicExtractorSettings _slide;
+        public FloatTouchDynamicExtractorSettings Slide => _slide;
         
-        [SerializeField] private FloatTouchExtractorSettings _bend;
-        public FloatTouchExtractorSettings Bend => _bend;
+        [SerializeField] private FloatTouchDynamicExtractorSettings _bend;
+        public FloatTouchDynamicExtractorSettings Bend => _bend;
     }
 }

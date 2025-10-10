@@ -5,12 +5,12 @@ using UnityEngine;
 namespace Sonosthesia.Touch
 {
     [Serializable]
-    public class VectorTouchExtractorSettings
+    public class VectorTouchDynamicExtractorSettings
     {
         public enum ExtractorType
         {
             Custom,
-            Static,
+            Constant,
             Velocity,
             Relative,
             Axis
@@ -21,13 +21,6 @@ namespace Sonosthesia.Touch
             World,
             Source,
             Actor
-        }
-
-        public enum VelocityType
-        {
-            Actor,
-            Source,
-            Relative
         }
 
         [Flags]
@@ -41,7 +34,7 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private DynamicExtractor<TouchEvent, Vector3> _extractor;
 
-        [SerializeField] private VelocityType _velocityType;
+        [SerializeField] private TouchVelocityType _velocityType;
         
         [SerializeField] private Space _space;
 
@@ -51,12 +44,12 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private float _scale = 1f;
 
-        public IExtractorSession<TouchEvent, Vector3> MakeSession()
+        public IDynamicExtractorSession<TouchEvent, Vector3> MakeSession()
         {
-            IExtractorSession<TouchEvent, Vector3> session = _extractorType switch
+            IDynamicExtractorSession<TouchEvent, Vector3> session = _extractorType switch
             {
                 ExtractorType.Custom => _extractor.MakeSession(),
-                ExtractorType.Static => new StaticSession(_space, _direction),
+                ExtractorType.Constant => new ConstantSession(_space, _direction),
                 ExtractorType.Velocity => new VelocitySession(_velocityType),
                 ExtractorType.Relative => new RelativeSession(),
                 ExtractorType.Axis => new AxisSession(),
@@ -76,16 +69,16 @@ namespace Sonosthesia.Touch
             return session;
         }
 
-        public IExtractorSession<TouchEvent, Vector3> SetupSession(TouchEvent e, out Vector3 result)
+        public IDynamicExtractorSession<TouchEvent, Vector3> SetupSession(TouchEvent e, out Vector3 result)
         {
-            IExtractorSession<TouchEvent, Vector3> session = MakeSession();
+            IDynamicExtractorSession<TouchEvent, Vector3> session = MakeSession();
             session.Setup(e, out result);
             return session;
         }
 
         private class NormalizeSession : ExtractorSessionProcessor<TouchEvent, Vector3>
         {
-            public NormalizeSession(IExtractorSession<TouchEvent, Vector3> session) : base(session)
+            public NormalizeSession(IDynamicExtractorSession<TouchEvent, Vector3> session) : base(session)
             {
             }
 
@@ -96,7 +89,7 @@ namespace Sonosthesia.Touch
         {
             private readonly float _scale;
             
-            public ScaleSession(IExtractorSession<TouchEvent, Vector3> session, float scale) : base(session)
+            public ScaleSession(IDynamicExtractorSession<TouchEvent, Vector3> session, float scale) : base(session)
             {
                 _scale = scale;
             }
@@ -104,18 +97,18 @@ namespace Sonosthesia.Touch
             protected override Vector3 Process(TouchEvent touchEvent, Vector3 value) => value * _scale;
         }
 
-        private class StaticSession : IExtractorSession<TouchEvent, Vector3>
+        private class ConstantSession : StatelessExtractorSession<TouchEvent, Vector3>
         {
             private readonly Space _space;
             private readonly Vector3 _direction;
             
-            public StaticSession(Space space, Vector3 direction)
+            public ConstantSession(Space space, Vector3 direction)
             {
                 _space = space;
                 _direction = direction;
             }
             
-            private bool Common(TouchEvent touchEvent, out Vector3 value)
+            protected override bool Extract(TouchEvent touchEvent, out Vector3 value)
             {
                 value = _space switch
                 {
@@ -125,66 +118,41 @@ namespace Sonosthesia.Touch
                 };
                 return true;
             }
-
-            public bool Setup(TouchEvent touchEvent, out Vector3 value) => Common(touchEvent, out value);
-
-            public bool Update(TouchEvent touchEvent, out Vector3 value) => Common(touchEvent, out value);
         }
 
-        private class VelocitySession : IExtractorSession<TouchEvent, Vector3>
+        private class VelocitySession : StatelessExtractorSession<TouchEvent, Vector3>
         {
-            private readonly VelocityType _velocityType;
+            private readonly TouchVelocityType _velocityType;
             
-            public VelocitySession(VelocityType velocityType)
+            public VelocitySession(TouchVelocityType velocityType)
             {
                 _velocityType = velocityType;
             }
             
-            private bool Common(TouchEvent touchEvent, out Vector3 value)
+            protected override bool Extract(TouchEvent touchEvent, out Vector3 value)
             {
-                value = _velocityType switch
-                {
-                    VelocityType.Actor => touchEvent.touchData.Actor.DynamicsMonitor.Velocity.Position,
-                    VelocityType.Source => touchEvent.touchData.Source.DynamicsMonitor.Velocity.Position,
-                    VelocityType.Relative => touchEvent.touchData.Actor.DynamicsMonitor.Velocity.Position -
-                                         touchEvent.touchData.Source.DynamicsMonitor.Velocity.Position,
-                    _ => Vector3.zero
-                };
-
-                return true;
+                return TouchExtractionUtils.ExtractVelocity(touchEvent, _velocityType, out value);
             }
-            
-            public bool Setup(TouchEvent touchEvent, out Vector3 value) => Common(touchEvent, out value);
-
-            public bool Update(TouchEvent touchEvent, out Vector3 value) => Common(touchEvent, out value);
         }
 
-        private class RelativeSession : IExtractorSession<TouchEvent, Vector3>
+        private class RelativeSession : StatelessExtractorSession<TouchEvent, Vector3>
         {
-            private static bool Common(TouchEvent touchEvent, out Vector3 value)
+            protected override bool Extract(TouchEvent touchEvent, out Vector3 value)
             {
                 value = touchEvent.touchData.Actor.transform.position - touchEvent.touchData.Source.transform.position;
                 return true;
             }
-            
-            public bool Setup(TouchEvent touchEvent, out Vector3 value) => Common(touchEvent, out value);
-
-            public bool Update(TouchEvent touchEvent, out Vector3 value) => Common(touchEvent, out value);
         }
 
-        private class AxisSession : IExtractorSession<TouchEvent, Vector3>
+        private class AxisSession : StatelessExtractorSession<TouchEvent, Vector3>
         {
-            private static bool Common(TouchEvent touchEvent, out Vector3 value)
+            protected override bool Extract(TouchEvent touchEvent, out Vector3 value)
             {
                 Vector3 actorToSource = touchEvent.touchData.Source.transform.position - touchEvent.touchData.Actor.transform.position;
                 Vector3 actorVelocity = touchEvent.touchData.Actor.DynamicsMonitor.Velocity.Position;
                 value = Vector3.Cross(actorVelocity, actorToSource);
                 return true;
             }
-            
-            public bool Setup(TouchEvent touchEvent, out Vector3 value) => Common(touchEvent, out value);
-
-            public bool Update(TouchEvent touchEvent, out Vector3 value) => Common(touchEvent, out value);
         }
     }
 }

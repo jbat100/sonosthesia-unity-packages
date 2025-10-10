@@ -26,5 +26,10 @@ namespace Sonosthesia.Utils
         {
             return SetAxes(input, Vector3.zero, ~axes);
         }
+
+        public static Vector2 FilterAxes(this Vector2 input, Axes axes)
+        {
+            return SetAxes(input, Vector3.zero, ~axes);
+        }
     }
 }

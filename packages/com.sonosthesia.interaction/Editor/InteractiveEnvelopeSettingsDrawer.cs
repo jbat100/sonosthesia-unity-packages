@@ -30,9 +30,6 @@ namespace Sonosthesia.Touch.Editor
             root.AddRelativeField(property, "_interaction", 
                 out SerializedProperty typeProp, out PropertyField typeField);
             
-            root.AddRelativeField(property, "_constantExtractor", 
-                out SerializedProperty _, out PropertyField constantExtractorField);
-            
             root.AddRelativeField(property, "_valueScaleExtractor", 
                 out SerializedProperty _, out PropertyField valueScaleExtractorField);
             
@@ -55,9 +52,8 @@ namespace Sonosthesia.Touch.Editor
                 
                 oneEuroFilterField.Show(filter is EnvelopeFilter.OneEuro);
                 
-                constantExtractorField.Show(type is EnvelopeInteraction.Constant);
+                valueScaleExtractorField.Show(true);
                 
-                valueScaleExtractorField.Show(type is not EnvelopeInteraction.Constant);
                 timeScaleExtractorField.Show(type is not EnvelopeInteraction.Constant);
                 envelopeField.Show(type is not EnvelopeInteraction.Constant);
                 

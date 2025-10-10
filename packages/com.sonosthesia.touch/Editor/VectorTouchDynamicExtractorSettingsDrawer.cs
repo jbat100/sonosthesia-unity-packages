@@ -6,8 +6,8 @@ using UnityEngine.UIElements;
 
 namespace Sonosthesia.Touch.Editor
 {
-    [CustomPropertyDrawer(typeof(VectorTouchExtractorSettings))]
-    public class VectorTouchExtractorSettingsDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(VectorTouchDynamicExtractorSettings))]
+    public class VectorTouchDynamicExtractorSettingsDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
@@ -40,18 +40,18 @@ namespace Sonosthesia.Touch.Editor
             
             void UpdateVisibility()
             {
-                VectorTouchExtractorSettings.ExtractorType extractorType = 
-                    (VectorTouchExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
+                VectorTouchDynamicExtractorSettings.ExtractorType extractorType = 
+                    (VectorTouchDynamicExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
 
-                extractorField.Show(extractorType is VectorTouchExtractorSettings.ExtractorType.Custom);
-                velocityTypeField.Show(extractorType is VectorTouchExtractorSettings.ExtractorType.Velocity);
-                spaceField.Show(extractorType is VectorTouchExtractorSettings.ExtractorType.Static);
-                directionField.Show(extractorType is VectorTouchExtractorSettings.ExtractorType.Static);
+                extractorField.Show(extractorType is VectorTouchDynamicExtractorSettings.ExtractorType.Custom);
+                velocityTypeField.Show(extractorType is VectorTouchDynamicExtractorSettings.ExtractorType.Velocity);
+                spaceField.Show(extractorType is VectorTouchDynamicExtractorSettings.ExtractorType.Constant);
+                directionField.Show(extractorType is VectorTouchDynamicExtractorSettings.ExtractorType.Constant);
 
-                VectorTouchExtractorSettings.PostProcessingType postProcessingType =
-                    (VectorTouchExtractorSettings.PostProcessingType)postProcessingProp.enumValueFlag;
+                VectorTouchDynamicExtractorSettings.PostProcessingType postProcessingType =
+                    (VectorTouchDynamicExtractorSettings.PostProcessingType)postProcessingProp.enumValueFlag;
                 
-                scaleField.Show(postProcessingType.HasFlag(VectorTouchExtractorSettings.PostProcessingType.Scale));
+                scaleField.Show(postProcessingType.HasFlag(VectorTouchDynamicExtractorSettings.PostProcessingType.Scale));
             }
 
             UpdateVisibility();

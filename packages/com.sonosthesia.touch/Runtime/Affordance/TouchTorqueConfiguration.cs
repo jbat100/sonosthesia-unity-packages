@@ -14,8 +14,8 @@ namespace Sonosthesia.Touch
         [SerializeField] private bool _relative;
         public bool Relative => _relative;
         
-        [SerializeField] private VectorTouchExtractorSettings _torque;
-        public VectorTouchExtractorSettings Torque => _torque;
+        [SerializeField] private VectorTouchDynamicExtractorSettings _torque;
+        public VectorTouchDynamicExtractorSettings Torque => _torque;
 
         [SerializeField] private TouchEnvelopeSettings _intensity;
         public TouchEnvelopeSettings Intensity => _intensity;

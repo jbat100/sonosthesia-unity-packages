@@ -7,22 +7,15 @@ using UnityEngine;
 namespace Sonosthesia.Touch
 {
     [Serializable]
-    public class FloatTouchExtractorSettings : FloatExtractorSettings<TouchEvent>
+    public class FloatTouchDynamicExtractorSettings : FloatDynamicExtractorSettings<TouchEvent>
     {
         public enum ExtractorType
         {
             Custom,
-            Static,
+            Constant,
             Velocity,
             Distance,
             Twist
-        }
-
-        public enum VelocityType
-        {
-            Actor,
-            Source,
-            Relative
         }
 
         public enum DistanceType
@@ -33,11 +26,11 @@ namespace Sonosthesia.Touch
             Height
         }
 
-        [SerializeField] private ExtractorType _extractorType = ExtractorType.Static;
+        [SerializeField] private ExtractorType _extractorType = ExtractorType.Constant;
 
         // ----------- velocity -------------
         
-        [SerializeField] private VelocityType _velocityType = VelocityType.Actor;
+        [SerializeField] private TouchVelocityType _velocityType = TouchVelocityType.Actor;
 
         // ----------- distance -------------
         
@@ -49,11 +42,12 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private TouchActorModulationType _actorModulationType;
         [SerializeField] private FloatModulationSettings _actorModulation;
-        
-        // used when the value can change with time and may require state, such as relative distance etc...
-        public override IExtractorSession<TouchEvent, float> MakeSession()
+
+        protected override bool BypassFollow => _extractorType == ExtractorType.Constant;
+
+        protected override IDynamicExtractorSession<TouchEvent, float> MakeRawSession()
         {
-            IExtractorSession<TouchEvent, float> DistanceSession()
+            IDynamicExtractorSession<TouchEvent, float> DistanceSession()
             {
                 return _distanceType switch
                 {
@@ -65,22 +59,22 @@ namespace Sonosthesia.Touch
                 };
             }
             
-            IExtractorSession<TouchEvent, float> session = _extractorType switch
+            IDynamicExtractorSession<TouchEvent, float> session = _extractorType switch
             {
                 ExtractorType.Custom => CustomSession(),
-                ExtractorType.Static => StaticSession(),
+                ExtractorType.Constant => ConstantSession(),
                 ExtractorType.Velocity => new VelocitySession(_velocityType),
                 ExtractorType.Distance => DistanceSession(),
                 ExtractorType.Twist => new TwistSession(),
                 _ => throw new ArgumentOutOfRangeException()
             };
-
+            
             if (_actorModulationType != TouchActorModulationType.None)
             {
                 session = new ActorModulationSession(session, _actorModulationType, _actorModulation);
             }
 
-            return PostProcessSession(session);
+            return session;
         }
 
         private class ActorModulationSession : ExtractorSessionProcessor<TouchEvent, float>
@@ -88,7 +82,7 @@ namespace Sonosthesia.Touch
             private readonly TouchActorModulationType _type;
             private readonly FloatModulationSettings _settings;
             
-            public ActorModulationSession(IExtractorSession<TouchEvent, float> session, TouchActorModulationType type, FloatModulationSettings settings) 
+            public ActorModulationSession(IDynamicExtractorSession<TouchEvent, float> session, TouchActorModulationType type, FloatModulationSettings settings) 
                 : base(session)
             {
                 _type = type;
@@ -102,35 +96,22 @@ namespace Sonosthesia.Touch
             }
         }
 
-        private class VelocitySession : IExtractorSession<TouchEvent, float>
+        private class VelocitySession : StatelessExtractorSession<TouchEvent, float>
         {
-            private readonly VelocityType _type;
+            private readonly TouchVelocityType _type;
             
-            public VelocitySession(VelocityType type)
+            public VelocitySession(TouchVelocityType type)
             {
                 _type = type;
             }
 
-            private bool Common(TouchEvent touchEvent, out float value)
+            protected override bool Extract(TouchEvent touchEvent, out float value)
             {
-                value = _type switch
-                {
-                    VelocityType.Actor => touchEvent.touchData.Actor.DynamicsMonitor.Velocity.Position.magnitude,
-                    VelocityType.Source => touchEvent.touchData.Source.DynamicsMonitor.Velocity.Position.magnitude,
-                    VelocityType.Relative => (touchEvent.touchData.Actor.DynamicsMonitor.Velocity.Position - 
-                                              touchEvent.touchData.Source.DynamicsMonitor.Velocity.Position).magnitude,
-                    _ => 0f
-                };
-
-                return true;
+                return TouchExtractionUtils.ExtractVelocity(touchEvent, _type, out value);
             }
-
-            public bool Setup(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
-
-            public bool Update(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
         }
         
-        private class ActorRelativeDistanceSession : IExtractorSession<TouchEvent, float>
+        private class ActorRelativeDistanceSession : IDynamicExtractorSession<TouchEvent, float>
         {
             private readonly Axes _axes;
 
@@ -157,7 +138,7 @@ namespace Sonosthesia.Touch
             public bool Update(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
         }
         
-        private class ActorToSourceDistanceSession : IExtractorSession<TouchEvent, float>
+        private class ActorToSourceDistanceSession : IDynamicExtractorSession<TouchEvent, float>
         {
             private readonly bool _normalized;
             private readonly Axes _axes;
@@ -186,7 +167,7 @@ namespace Sonosthesia.Touch
             public bool Update(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
         }
         
-        private class ActorComponentDistanceSession : IExtractorSession<TouchEvent, float>
+        private class ActorComponentDistanceSession : IDynamicExtractorSession<TouchEvent, float>
         {
             private readonly bool _normalized;
             private readonly Axes _axes;
@@ -219,26 +200,16 @@ namespace Sonosthesia.Touch
             public bool Update(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
         }
 
-        private class HeightDistanceSession : IExtractorSession<TouchEvent, float>
+        private class HeightDistanceSession : StatelessExtractorSession<TouchEvent, float>
         {
-            private float _referenceHeight;
-
-            private bool Common(TouchEvent touchEvent, out float value)
+            protected override bool Extract(TouchEvent e, out float value)
             {
-                value = touchEvent.touchData.Actor.transform.position.y - _referenceHeight;
+                value = e.touchData.Actor.transform.position.y;
                 return true;
             }
-            
-            public bool Setup(TouchEvent touchEvent, out float value)
-            {
-                _referenceHeight = touchEvent.touchData.Actor.transform.position.y;
-                return Common(touchEvent, out value);
-            }
-
-            public bool Update(TouchEvent touchEvent, out float value) => Common(touchEvent, out value);
         }
 
-        private class TwistSession : IExtractorSession<TouchEvent, float>
+        private class TwistSession : IDynamicExtractorSession<TouchEvent, float>
         {
             private Quaternion _referenceRotation;
 
@@ -262,7 +233,7 @@ namespace Sonosthesia.Touch
         {
             private readonly AnimationCurve _curve;
             
-            public BinSession(IExtractorSession<TouchEvent, float> session, AnimationCurve curve) : base(session)
+            public BinSession(IDynamicExtractorSession<TouchEvent, float> session, AnimationCurve curve) : base(session)
             {
                 _curve = curve;
             }
