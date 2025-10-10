@@ -7,18 +7,32 @@ namespace Sonosthesia.Interaction
 {
     public static class InteractiveEnvelopeSessionUtil
     {
+        public static IInteractiveEnvelopeSession<TEvent> StartSession<TEvent>(TEvent e, 
+            IInteractiveEnvelopeSettings<TEvent> settings,
+            TriggerController controller = null) where TEvent : IInteractionEvent
+        {
+            IInteractiveEnvelopeSession<TEvent> session = InteractiveEnvelopeSessionUtil.MakeSession(settings, controller);
+            session.Start(e);
+            return session;
+        }
+
         public static IInteractiveEnvelopeSession<TEvent> MakeSession<TEvent>(
-            InteractiveEnvelopeType envelopeType, 
             IInteractiveEnvelopeSettings<TEvent> settings,
             TriggerController controller) where TEvent : IInteractionEvent
         {
-            return envelopeType switch
+            IInteractiveEnvelopeSession<TEvent> session = settings.Interaction switch
             {
-                InteractiveEnvelopeType.Constant => new ConstantEnvelopeSession<TEvent>(settings, controller),
-                InteractiveEnvelopeType.Pulse => new PulseEnvelopeSession<TEvent>(settings, controller),
-                InteractiveEnvelopeType.Contact => new ContactEnvelopeSession<TEvent>(settings, controller),
+                EnvelopeInteraction.Constant => new ConstantEnvelopeSession<TEvent>(settings, controller),
+                EnvelopeInteraction.Pulse => new PulseEnvelopeSession<TEvent>(settings, controller),
+                EnvelopeInteraction.Contact => new ContactEnvelopeSession<TEvent>(settings, controller),
                 _ => throw new ArgumentOutOfRangeException()
             };   
+            if (settings.Filter == EnvelopeFilter.OneEuro)
+            {
+                session = new StaticInteractiveEnvelopeSessionOneEuroFilter<TEvent>(session, settings.OneEuroFilter);
+            }
+
+            return session;
         }
         
         private class EnvelopeSession<TEvent> : IInteractiveEnvelopeSession<TEvent> where TEvent : IInteractionEvent
@@ -80,7 +94,7 @@ namespace Sonosthesia.Interaction
 
             public override void Update(TEvent e)
             {
-                if (!Settings.TrackValue)
+                if (!Settings.Track)
                 {
                     return;
                 }
@@ -173,7 +187,7 @@ namespace Sonosthesia.Interaction
 
             public override void Update(TEvent e)
             {
-                if (!Settings.TrackValue)
+                if (!Settings.Track)
                 {
                     return;
                 }

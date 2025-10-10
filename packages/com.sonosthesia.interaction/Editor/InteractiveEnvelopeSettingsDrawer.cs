@@ -7,8 +7,8 @@ using UnityEngine.UIElements;
 
 namespace Sonosthesia.Touch.Editor
 {
-    [CustomPropertyDrawer(typeof(TouchEnvelopeSettings))]
-    public class TouchEnvelopeSettingsDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(IInteractiveEnvelopeSettings<>), true)]
+    public class InteractiveEnvelopeSettingsDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
@@ -18,8 +18,8 @@ namespace Sonosthesia.Touch.Editor
             
             root.Add(UIElementUtils.SectionLabel(property.name.PropertyNameToLabel()));
             
-            root.AddRelativeField(property, "_trackValue", 
-                out SerializedProperty _, out PropertyField trackValueField);
+            root.AddRelativeField(property, "_track", 
+                out SerializedProperty _, out PropertyField _);
             
             root.AddRelativeField(property, "_filter", 
                 out SerializedProperty filterProp, out PropertyField filterField);
@@ -27,7 +27,7 @@ namespace Sonosthesia.Touch.Editor
             root.AddRelativeField(property, "_oneEuroFilter", 
                 out SerializedProperty _, out PropertyField oneEuroFilterField);
             
-            root.AddRelativeField(property, "_type", 
+            root.AddRelativeField(property, "_interaction", 
                 out SerializedProperty typeProp, out PropertyField typeField);
             
             root.AddRelativeField(property, "_constantExtractor", 
@@ -50,19 +50,19 @@ namespace Sonosthesia.Touch.Editor
             
             void UpdateVisibility()
             {
-                InteractiveEnvelopeType type = (InteractiveEnvelopeType)typeProp.enumValueIndex;
-                TouchEnvelopeSettings.FilterType filter = (TouchEnvelopeSettings.FilterType)filterProp.enumValueIndex;
+                EnvelopeInteraction type = (EnvelopeInteraction)typeProp.enumValueIndex;
+                EnvelopeFilter filter = (EnvelopeFilter)filterProp.enumValueIndex;
                 
-                oneEuroFilterField.Show(filter is TouchEnvelopeSettings.FilterType.OneEuro);
+                oneEuroFilterField.Show(filter is EnvelopeFilter.OneEuro);
                 
-                constantExtractorField.Show(type is InteractiveEnvelopeType.Constant);
+                constantExtractorField.Show(type is EnvelopeInteraction.Constant);
                 
-                valueScaleExtractorField.Show(type is not InteractiveEnvelopeType.Constant);
-                timeScaleExtractorField.Show(type is not InteractiveEnvelopeType.Constant);
-                envelopeField.Show(type is not InteractiveEnvelopeType.Constant);
+                valueScaleExtractorField.Show(type is not EnvelopeInteraction.Constant);
+                timeScaleExtractorField.Show(type is not EnvelopeInteraction.Constant);
+                envelopeField.Show(type is not EnvelopeInteraction.Constant);
                 
-                releaseExtractorField.Show(type is InteractiveEnvelopeType.Contact);
-                releaseTypeField.Show(type is InteractiveEnvelopeType.Contact);
+                releaseExtractorField.Show(type is EnvelopeInteraction.Contact);
+                releaseTypeField.Show(type is EnvelopeInteraction.Contact);
             }
 
             UpdateVisibility();

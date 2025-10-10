@@ -16,6 +16,7 @@ namespace Sonosthesia.Pointer
             Drag
         }
         
+        
         private enum AxisType
         {
             Raycast,
@@ -24,9 +25,7 @@ namespace Sonosthesia.Pointer
         
         [SerializeField] private ExtractorType _extractorType = ExtractorType.Static;
         
-        [SerializeField] private bool _relative;
-        
-        [SerializeField] private bool _track;
+        [SerializeField] private FollowStrategy _followStrategy;
         
         [SerializeField] private AxisType _axisType;
 

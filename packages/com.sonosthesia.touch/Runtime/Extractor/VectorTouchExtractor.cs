@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public class VectorTouchExtractor : Extractor<TouchEvent, Vector3>
+    public class VectorTouchExtractor : DynamicExtractor<TouchEvent, Vector3>
     {
         [SerializeField] private VectorTouchExtractorSettings _settings;
 

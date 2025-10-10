@@ -14,6 +14,13 @@ namespace Sonosthesia.Interaction
             Remap = 1 << 1,
             Clamp = 1 << 2
         }
+        
+        private enum FollowStrategy
+        {
+            Initial,
+            Track,
+            Relative
+        }
 
         public abstract IExtractorSession<TEvent, float> MakeSession();
         
@@ -26,7 +33,7 @@ namespace Sonosthesia.Interaction
         
         // ----------- custom -------------
         
-        [SerializeField] private Extractor<TEvent, float> _extractor;
+        [SerializeField] private DynamicExtractor<TEvent, float> _extractor;
         protected IExtractorSession<TEvent, float> CustomSession() => _extractor.MakeSession();
 
         // ----------- static -------------
@@ -34,12 +41,26 @@ namespace Sonosthesia.Interaction
         [SerializeField] private float _staticValue = 1;
         protected IExtractorSession<TEvent, float> StaticSession() => new FloatStaticSession<TEvent>(_staticValue);
         
+        // ----------- follow -------------
+
+        [SerializeField] private FollowStrategy _followStrategy;
+        
         // ----------- postprocess -------------
         
         [SerializeField] private PostProcessingType _postProcessing;
         [SerializeField] private AnimationCurve _curve;
         [SerializeField] private RemapSettings _remap;
         [SerializeField] private FloatRange _clamp;
+
+        protected IExtractorSession<TEvent, float> FollowSession(IExtractorSession<TEvent, float> session)
+        {
+            return _followStrategy switch
+            {
+                FollowStrategy.Initial => new InitialSession<TEvent, float>(session),
+                FollowStrategy.Relative => new FloatRelativeSession<TEvent>(session),
+                _ => session
+            };
+        }
 
         protected IExtractorSession<TEvent, float> PostProcessSession(IExtractorSession<TEvent, float> session)
         {

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Sonosthesia.Touch
 {
     [CreateAssetMenu(fileName = "FloatTouchExtractor", menuName = "Sonosthesia/Touch/FloatTouchExtractor")]
-    public class FloatTouchExtractor : Extractor<TouchEvent, float>
+    public class FloatTouchExtractor : DynamicExtractor<TouchEvent, float>
     {
         [SerializeField] private FloatTouchExtractorSettings _settings;
 

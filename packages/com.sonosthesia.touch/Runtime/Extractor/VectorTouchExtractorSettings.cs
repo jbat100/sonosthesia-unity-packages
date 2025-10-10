@@ -39,7 +39,7 @@ namespace Sonosthesia.Touch
         
         [SerializeField] private ExtractorType _extractorType;
 
-        [SerializeField] private Extractor<TouchEvent, Vector3> _extractor;
+        [SerializeField] private DynamicExtractor<TouchEvent, Vector3> _extractor;
 
         [SerializeField] private VelocityType _velocityType;
         

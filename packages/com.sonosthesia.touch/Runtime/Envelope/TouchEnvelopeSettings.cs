@@ -8,29 +8,20 @@ using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-
-    
     [Serializable]
     public class TouchEnvelopeSettings : IInteractiveEnvelopeSettings<TouchEvent>
     {
-
-        public enum FilterType
-        {
-            None,
-            OneEuro
-        }
+        [SerializeField] private bool _track;
+        public bool Track => _track;
         
-        [SerializeField] private bool _trackValue;
-        public bool TrackValue => _trackValue;
-        
-        [SerializeField] private FilterType _filter;
-        public FilterType Filter => _filter;
+        [SerializeField] private EnvelopeFilter _filter;
+        public EnvelopeFilter Filter => _filter;
 
         [SerializeField] private OneEuroFilterSettings _oneEuroFilter;
         public OneEuroFilterSettings OneEuroFilter => _oneEuroFilter;
         
-        [SerializeField] private InteractiveEnvelopeType _type;
-        public InteractiveEnvelopeType Type => _type;
+        [SerializeField] private EnvelopeInteraction _interaction;
+        public EnvelopeInteraction Interaction => _interaction;
         
         [SerializeField] private FloatTouchExtractorSettings _constantExtractor;
         public FloatExtractorSettings<TouchEvent> ConstantExtractor => _constantExtractor;
@@ -57,7 +48,7 @@ namespace Sonosthesia.Touch
         public static IInteractiveEnvelopeSession<TouchEvent> SetupSession(this TouchEnvelopeSettings settings, TouchEvent e,
             TriggerController controller = null)
         {
-            return TouchEnvelopeSessionUtil.StartSession(e, settings, controller);
+            return InteractiveEnvelopeSessionUtil.StartSession(e, settings, controller);
         }
     }
 }
