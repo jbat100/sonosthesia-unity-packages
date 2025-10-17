@@ -1,4 +1,4 @@
-﻿using Sonosthesia.Utils;
+using Sonosthesia.Utils;
 using Sonosthesia.Utils.Editor;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -6,8 +6,8 @@ using UnityEngine.UIElements;
 
 namespace Sonosthesia.Pointer.Editor
 {
-    [CustomPropertyDrawer(typeof(FloatPointerDynamicExtractorSettings))]
-    public class FloatPointerDynamicExtractorSettingsDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(FloatPointerStaticExtractorSettings))]
+    public class FloatPointerStaticExtractorSettingsDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
@@ -18,10 +18,7 @@ namespace Sonosthesia.Pointer.Editor
             
             root.AddRelativeField(property, "_extractorType", 
                 out SerializedProperty extractorTypeProp, out PropertyField extractorTypeField);
-            
-            root.AddRelativeField(property, "_followStrategy", 
-                out SerializedProperty _, out PropertyField followStrategyField);
-            
+
             root.AddRelativeField(property, "_extractor", 
                 out SerializedProperty _, out PropertyField extractorField);
             
@@ -36,7 +33,7 @@ namespace Sonosthesia.Pointer.Editor
             
             root.AddRelativeField(property, "_selector", 
                 out SerializedProperty _, out PropertyField selectorField);
-
+            
             root.AddRelativeField(property, "_postProcessing", 
                 out SerializedProperty postProcessingProp, out PropertyField postProcessingField);
 
@@ -51,25 +48,22 @@ namespace Sonosthesia.Pointer.Editor
             
             void UpdateVisibility()
             {
-                FloatPointerDynamicExtractorSettings.ExtractorType extractorType = (FloatPointerDynamicExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
-                FloatPointerDynamicExtractorSettings.PostProcessingType postProcessingType = (FloatPointerDynamicExtractorSettings.PostProcessingType)postProcessingProp.enumValueFlag;
+                FloatPointerStaticExtractorSettings.ExtractorType extractorType = (FloatPointerStaticExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
+                FloatPointerStaticExtractorSettings.PostProcessingType postProcessingType = (FloatPointerStaticExtractorSettings.PostProcessingType)postProcessingProp.enumValueFlag;
                 
-                followStrategyField.Show(extractorType is not FloatPointerDynamicExtractorSettings.ExtractorType.Constant);
-                extractorField.Show(extractorType is FloatPointerDynamicExtractorSettings.ExtractorType.Custom);
-                constantValueField.Show(extractorType is FloatPointerDynamicExtractorSettings.ExtractorType.Constant);
+                extractorField.Show(extractorType is FloatPointerStaticExtractorSettings.ExtractorType.Custom);
+                constantValueField.Show(extractorType is FloatPointerStaticExtractorSettings.ExtractorType.Constant);
                 
-                spaceField.Show(extractorType is FloatPointerDynamicExtractorSettings.ExtractorType.Raycast);
+                spaceField.Show(extractorType is FloatPointerStaticExtractorSettings.ExtractorType.Raycast);
                 
-                axesField.Show(extractorType is FloatPointerDynamicExtractorSettings.ExtractorType.Scroll 
-                    or FloatPointerDynamicExtractorSettings.ExtractorType.Raycast 
-                    or FloatPointerDynamicExtractorSettings.ExtractorType.Screen);
-                selectorField.Show(extractorType is FloatPointerDynamicExtractorSettings.ExtractorType.Scroll
-                    or FloatPointerDynamicExtractorSettings.ExtractorType.Raycast 
-                    or FloatPointerDynamicExtractorSettings.ExtractorType.Screen);
+                axesField.Show(extractorType is FloatPointerStaticExtractorSettings.ExtractorType.Raycast 
+                    or FloatPointerStaticExtractorSettings.ExtractorType.Screen);
+                selectorField.Show(extractorType is FloatPointerStaticExtractorSettings.ExtractorType.Raycast 
+                    or FloatPointerStaticExtractorSettings.ExtractorType.Screen);
                 
-                curveField.Show(postProcessingType.HasFlag(FloatPointerDynamicExtractorSettings.PostProcessingType.Curve));
-                remapField.Show(postProcessingType.HasFlag(FloatPointerDynamicExtractorSettings.PostProcessingType.Remap));
-                clampField.Show(postProcessingType.HasFlag(FloatPointerDynamicExtractorSettings.PostProcessingType.Clamp));
+                curveField.Show(postProcessingType.HasFlag(FloatPointerStaticExtractorSettings.PostProcessingType.Curve));
+                remapField.Show(postProcessingType.HasFlag(FloatPointerStaticExtractorSettings.PostProcessingType.Remap));
+                clampField.Show(postProcessingType.HasFlag(FloatPointerStaticExtractorSettings.PostProcessingType.Clamp));
             }
 
             UpdateVisibility();

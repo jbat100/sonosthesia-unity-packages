@@ -1,10 +1,60 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UniRx;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Sonosthesia.Pointer
 {
-    public class PointerSource : MonoBehaviour
+    public class PointerSource : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler
     {
-        [SerializeField] private PointerEventChannel _eventChannel;
-        public PointerEventChannel EventChannel => _eventChannel;
+        [SerializeField] private Channel.Channel<PointerEvent> _eventChannel;
+        public Channel.Channel<PointerEvent> EventChannel => _eventChannel;
+        
+        private Dictionary<int, InternalData> _internal = new();
+
+        private class InternalData
+        {
+            public BehaviorSubject<PointerEvent> EventSubject;
+            public float StartTime;
+        }
+        
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            PointerEvent pointerEvent = new PointerEvent(eventData, Time.time);
+
+            InternalData internalData = new InternalData()
+            {
+                StartTime = Time.time,
+                EventSubject = new BehaviorSubject<PointerEvent>(pointerEvent)
+            };
+
+            _internal[eventData.pointerId] = internalData;
+            _eventChannel.Push(Guid.NewGuid(), internalData.EventSubject);
+        }
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            if (!_internal.TryGetValue(eventData.pointerId, out InternalData internalData))
+            {
+                return;
+            }
+            
+            internalData.EventSubject.OnNext(new PointerEvent(eventData, internalData.StartTime));
+            internalData.EventSubject.OnCompleted();
+            internalData.EventSubject.Dispose();
+
+            _internal.Remove(eventData.pointerId);
+        }
+
+        public void OnPointerMove(PointerEventData eventData)
+        {
+            if (!_internal.TryGetValue(eventData.pointerId, out InternalData internalData))
+            {
+                return;
+            }
+            
+            internalData.EventSubject.OnNext(new PointerEvent(eventData, internalData.StartTime));
+        }
     }
 }

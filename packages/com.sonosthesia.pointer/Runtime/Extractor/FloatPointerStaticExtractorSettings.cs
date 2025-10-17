@@ -1,9 +1,11 @@
-﻿using Sonosthesia.Interaction;
+﻿using System;
+using Sonosthesia.Interaction;
 using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Pointer
 {
+    [Serializable]
     public class FloatPointerStaticExtractorSettings : FloatStaticExtractorSettings<PointerEvent>
     {
         public enum ExtractorType
@@ -21,6 +23,8 @@ namespace Sonosthesia.Pointer
         
         [SerializeField] private Axes _axes = Axes.X | Axes.Y | Axes.Z;
 
+        [SerializeField] private VectorFloatSelector _selector;
+
         protected override bool ExtractRaw(PointerEvent e, out float value)
         {
             switch (_extractorType)
@@ -34,9 +38,9 @@ namespace Sonosthesia.Pointer
                     value = e.Data.pressure;
                     return true;
                 case ExtractorType.Screen:
-                    return e.ExtractScreen(_axes, out value);
+                    return e.ExtractScreen(_axes, _selector, out value);
                 case ExtractorType.Raycast:
-                    return e.ExtractRaycast(_space, _axes, out value);
+                    return e.ExtractRaycast(_space, _axes, _selector, out value);
             }
             
             value = 0f;

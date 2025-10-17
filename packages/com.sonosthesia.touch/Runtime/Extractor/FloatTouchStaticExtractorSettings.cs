@@ -1,9 +1,11 @@
-﻿using Sonosthesia.Interaction;
+﻿using System;
+using Sonosthesia.Interaction;
 using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
+    [Serializable]
     public class FloatTouchStaticExtractorSettings : FloatStaticExtractorSettings<TouchEvent>
     {
         public enum ExtractorType
@@ -34,10 +36,10 @@ namespace Sonosthesia.Touch
                 case ExtractorType.Distance:
                     value = e.ActorPositionInSourceSpace().FilterAxes(_distanceAxes).magnitude;
                     return true;
+                default:
+                    value = 0;
+                    return false;
             }
-            
-            value = 0;
-            return false;
         }
     }
 }

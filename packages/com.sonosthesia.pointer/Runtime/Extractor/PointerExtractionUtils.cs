@@ -11,13 +11,15 @@ namespace Sonosthesia.Pointer
     
     public static class PointerExtractionUtils
     {
-        public static bool ExtractScreen(this PointerEvent e, Axes axes, out float value)
+        public static bool ExtractScreen(this PointerEvent e, 
+            Axes axes, VectorFloatSelector selector, out float value)
         {
             value = e.Data.position.FilterAxes(axes).magnitude;
             return true;
         }
         
-        public static bool ExtractRaycast(this PointerEvent e, PointerRaycastSpace space, Axes axes, out float value)
+        public static bool ExtractRaycast(this PointerEvent e, PointerRaycastSpace space, 
+            Axes axes, VectorFloatSelector selector, out float value)
         {
             Vector3 Project(Vector3 position) => space switch
             {

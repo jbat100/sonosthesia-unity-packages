@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
-    public class InteractionAffordance<TEvent> : MonoBehaviour, ILogSwitch where TEvent : struct, IInteractionEvent
+    public class InteractionAffordance<TEvent> : MonoBehaviour, ILogSwitch where TEvent : struct
     {
         [SerializeField] private bool _log;
         public bool Log => _log;
@@ -39,9 +39,9 @@ namespace Sonosthesia.Interaction
                         return;
                     }
                 }
-                else if (gate is IInteractionAffordanceGate interactionGate)
+                else if (gate is IInteractionAffordanceGate interactionGate && e is IInteractionEvent ie)
                 {
-                    if (!interactionGate.Check(e))
+                    if (!interactionGate.Check(ie))
                     {
                         this.LogVerbose($"{this} bailout on gate {e}");
                         return;    

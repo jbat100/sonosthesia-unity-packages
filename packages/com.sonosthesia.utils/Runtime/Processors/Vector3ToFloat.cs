@@ -8,7 +8,7 @@ namespace Sonosthesia.Utils
     {
         [SerializeField] private Axes _filter;
 
-        [SerializeField] private Vector3Selector _selector;
+        [SerializeField] private VectorFloatSelector _selector;
 
         public float ExtractFloat(Vector3 v)
         {

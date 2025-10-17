@@ -7,13 +7,15 @@ namespace Sonosthesia.Pointer
     public readonly struct PointerEvent : IInteractionEvent
     {
         public readonly PointerEventData Data;
+        public readonly float StartTime;
         
-        public PointerEvent(PointerEventData data)
+        public PointerEvent(PointerEventData data, float startTime)
         {
             Data = data;
+            StartTime = startTime;
         }
 
-        public float StartTime => 0;
+        float IInteractionEvent.StartTime => 0;
         public IInteractionEndpoint Source => null;
         public IInteractionEndpoint Actor => null;
     }

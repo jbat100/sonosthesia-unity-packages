@@ -7,7 +7,7 @@ namespace Sonosthesia.Interaction
         public bool Check(IInteractionEvent e);
     }
     
-    public interface IInteractionAffordanceGate<in TEvent> where TEvent : IInteractionEvent
+    public interface IInteractionAffordanceGate<in TEvent>
     {
         public bool Check(TEvent e);
     }

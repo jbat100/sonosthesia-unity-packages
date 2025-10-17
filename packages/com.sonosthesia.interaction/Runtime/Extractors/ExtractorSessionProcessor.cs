@@ -7,8 +7,8 @@ namespace Sonosthesia.Interaction
         where TValue : struct
     {
         private readonly IDynamicExtractorSession<TEvent, TValue> _session;
-        
-        public ExtractorSessionProcessor(IDynamicExtractorSession<TEvent, TValue> session)
+
+        protected ExtractorSessionProcessor(IDynamicExtractorSession<TEvent, TValue> session)
         {
             _session = session;
         }

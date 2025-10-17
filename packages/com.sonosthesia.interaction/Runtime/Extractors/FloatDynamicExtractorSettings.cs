@@ -70,7 +70,7 @@ namespace Sonosthesia.Interaction
         // ----------- postprocess -------------
         
         [SerializeField] private PostProcessingType _postProcessing;
-        [SerializeField] private AnimationCurve _curve;
+        [SerializeField] private AnimationCurve _curve = AnimationCurve.Linear(0, 0, 1, 1);
         [SerializeField] private RemapSettings _remap;
         [SerializeField] private FloatRange _clamp;
 

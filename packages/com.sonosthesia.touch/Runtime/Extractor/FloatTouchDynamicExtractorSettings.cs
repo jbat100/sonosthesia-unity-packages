@@ -19,17 +19,11 @@ namespace Sonosthesia.Touch
         }
 
         [SerializeField] private ExtractorType _extractorType = ExtractorType.Constant;
-
-        // ----------- velocity -------------
         
         [SerializeField] private TouchVelocityType _velocityType = TouchVelocityType.Actor;
 
-        // ----------- distance -------------
-        
         [SerializeField] private Axes _axes = Axes.X | Axes.Y | Axes.Z;
-
-        // ----------- actor modulation -------------
-
+        
         [SerializeField] private TouchActorModulationType _actorModulationType;
         [SerializeField] private FloatModulationSettings _actorModulation;
 

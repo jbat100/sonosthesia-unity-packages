@@ -25,7 +25,6 @@ namespace Sonosthesia.Touch
         
         internal static bool ExtractVelocity(TouchEvent touchEvent, TouchVelocityType velocityType, out Vector3 value)
         {
-
             value = default;
             switch (velocityType)
             {
