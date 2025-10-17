@@ -4,4 +4,9 @@ namespace Sonosthesia.Instrument
     {
         int MIDIChannel { get; set; }
     }
+
+    public static class IMIDIChannelProviderExtensions
+    {
+        
+    }
 }

@@ -2,7 +2,6 @@ using System;
 using UniRx;
 using UnityEngine;
 using Sonosthesia.Channel;
-using Sonosthesia.Utils;
 
 namespace Sonosthesia.Interaction
 {
@@ -10,7 +9,7 @@ namespace Sonosthesia.Interaction
     
     public abstract class ChannelAffordanceController<TValue, TEvent, TAffordance> : AffordanceController<TEvent, TAffordance> 
         where TValue : struct
-        where TEvent : struct, IInteractionEvent 
+        where TEvent : struct
         where TAffordance : ChannelAffordance<TValue, TEvent>
     {
         private bool _active;
@@ -72,9 +71,12 @@ namespace Sonosthesia.Interaction
                     endpointOutput.Push(EventId, output);
                 }
             }
-            
-            PushToEndpoint(e.Actor);
-            PushToEndpoint(e.Source);
+
+            if (e is IInteractionEvent ie)
+            {
+                PushToEndpoint(ie.Actor);
+                PushToEndpoint(ie.Source);   
+            }
         }
 
         protected sealed override void Update(TEvent e)
@@ -100,7 +102,7 @@ namespace Sonosthesia.Interaction
 
     public class ChannelAffordance<TValue, TEvent> : InteractionAffordance<TEvent>
         where TValue : struct
-        where TEvent : struct, IInteractionEvent
+        where TEvent : struct
     {
         [SerializeField] private Channel<ValueEvent<TValue, TEvent>> _output;
         public Channel<ValueEvent<TValue, TEvent>> Output => _output;

@@ -1,8 +1,11 @@
+using Sonosthesia.Pointer;
 using UnityEngine;
 
 namespace Sonosthesia.Instrument
 {
-    public class PointerMPENoteConfiguration : ScriptableObject
+    [CreateAssetMenu(fileName = "PointerMPENoteConfiguration", menuName = "Sonosthesia/Instrument/PointerMPENoteConfiguration")]
+    public class PointerMPENoteConfiguration : MPENoteConfiguration<PointerEvent, MIDIPitchPointerExtractorSettings, 
+        FloatPointerStaticExtractorSettings, FloatPointerDynamicExtractorSettings>
     {
         
     }
