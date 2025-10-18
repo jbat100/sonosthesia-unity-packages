@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
-    public class DragAffordance<TEvent> : InteractionAffordance<TEvent> where TEvent : struct, IInteractionEvent
+    public class DragAffordance<TEvent> : InteractionAffordance<TEvent> where TEvent : struct
     {
         // TODO : use pools 
 

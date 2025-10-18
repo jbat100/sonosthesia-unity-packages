@@ -1,26 +1,15 @@
-using System;
 using System.Collections.Generic;
 using Sonosthesia.Dynamic;
 using Sonosthesia.Interaction;
 using Sonosthesia.Utils;
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
 
 namespace Sonosthesia.Touch
 {
-    public abstract class TouchEndpoint : MonoBehaviour, IInteractionEndpoint, ILogSwitch
+    public abstract class TouchEndpoint : InteractionEndpoint
     {
-        [SerializeField] private bool _log;
-        public bool Log => _log;
-        
         [SerializeField] private bool _mute;
         public bool Mute => _mute;
-        
-        [SerializeField] private int _domain;
-        public int Domain => _domain;        
-        
-        [SerializeField] private InteractionLayerMask _interactionLayers = ~0;
-        public InteractionLayerMask InteractionLayers => _interactionLayers;
 
         [SerializeField] private TouchNode _node;
         public TouchNode Node => _node;

@@ -33,7 +33,7 @@ namespace Sonosthesia.Interaction
     
     [Serializable]
     public class InteractiveEnvelopeSettings<TEvent, TDynamicExtractor, TStaticExtractor> : IInteractiveEnvelopeSettings<TEvent> 
-        where TEvent : IInteractionEvent
+        where TEvent : struct
         where TDynamicExtractor : IDynamicExtractor<TEvent, float>
         where TStaticExtractor : IStaticExtractor<TEvent, float>
     {

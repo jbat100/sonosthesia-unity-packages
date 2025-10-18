@@ -6,7 +6,7 @@ using Object = UnityEngine.Object;
 namespace Sonosthesia.Pointer
 {
     public abstract class DragAffordanceController<TEvent, TAffordance> : AffordanceController<TEvent, TAffordance> 
-            where TEvent : struct, IInteractionEvent 
+            where TEvent : struct 
             where TAffordance : DragAffordance<TEvent>
     {
         private GameObject _root;

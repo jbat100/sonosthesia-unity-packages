@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using Sonosthesia.Interaction;
+using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Sonosthesia.Pointer
 {
-    public class PointerSource : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler
+    public class PointerSource : InteractionEndpoint, 
+        IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler, 
+        IDragHandler, IBeginDragHandler, IEndDragHandler
     {
         [SerializeField] private Channel.Channel<PointerEvent> _eventChannel;
         public Channel.Channel<PointerEvent> EventChannel => _eventChannel;
         
-        private Dictionary<int, InternalData> _internal = new();
+        private readonly Dictionary<int, InternalData> _internal = new();
 
         private class InternalData
         {
@@ -21,7 +25,7 @@ namespace Sonosthesia.Pointer
         
         public void OnPointerDown(PointerEventData eventData)
         {
-            PointerEvent pointerEvent = new PointerEvent(eventData, Time.time);
+            PointerEvent pointerEvent = new PointerEvent(eventData, this, Time.time);
 
             InternalData internalData = new InternalData()
             {
@@ -30,6 +34,9 @@ namespace Sonosthesia.Pointer
             };
 
             _internal[eventData.pointerId] = internalData;
+
+            this.LogWarning($"{this} new stream on {nameof(OnPointerDown)} {eventData}");
+            
             _eventChannel.Push(Guid.NewGuid(), internalData.EventSubject);
         }
 
@@ -40,10 +47,12 @@ namespace Sonosthesia.Pointer
                 return;
             }
             
-            internalData.EventSubject.OnNext(new PointerEvent(eventData, internalData.StartTime));
+            internalData.EventSubject.OnNext(new PointerEvent(eventData, this, internalData.StartTime));
             internalData.EventSubject.OnCompleted();
             internalData.EventSubject.Dispose();
-
+            
+            this.LogWarning($"{this} end stream on {nameof(OnPointerUp)} {eventData}");
+            
             _internal.Remove(eventData.pointerId);
         }
 
@@ -54,7 +63,24 @@ namespace Sonosthesia.Pointer
                 return;
             }
             
-            internalData.EventSubject.OnNext(new PointerEvent(eventData, internalData.StartTime));
+            this.LogVerbose($"{this} update stream on {nameof(OnPointerMove)} {eventData}");
+            
+            internalData.EventSubject.OnNext(new PointerEvent(eventData, this, internalData.StartTime));
+        }
+
+        public void OnDrag(PointerEventData eventData)
+        {
+            this.LogVerbose($"{this} {nameof(OnDrag)} {eventData}");
+        }
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            this.LogVerbose($"{this} {nameof(OnDrag)} {eventData}");
+        }
+
+        public void OnEndDrag(PointerEventData eventData)
+        {
+            this.LogVerbose($"{this} {nameof(OnDrag)} {eventData}");
         }
     }
 }
