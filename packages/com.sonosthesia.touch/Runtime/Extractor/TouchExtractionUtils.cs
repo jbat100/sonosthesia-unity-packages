@@ -53,6 +53,5 @@ namespace Sonosthesia.Touch
             }
             return false;
         }
-
     }
 }
