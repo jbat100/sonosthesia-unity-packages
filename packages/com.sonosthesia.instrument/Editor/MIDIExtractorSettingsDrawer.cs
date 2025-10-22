@@ -28,7 +28,11 @@ namespace Sonosthesia.Instrument.Editor
 
             root.AddRelativeField(property, "_provider", 
                 out SerializedProperty _, out PropertyField providerField);
+
+            root.UpdateVisibility(UpdateVisibility, extractorTypeProp, originProp);
             
+            return root;
+
             void UpdateVisibility()
             {
                 MIDIExtractorSettings.ExtractorType type 
@@ -42,13 +46,6 @@ namespace Sonosthesia.Instrument.Editor
                 extractorField.Show(type is MIDIExtractorSettings.ExtractorType.Interactive && origin is MIDIExtractorSettings.Origin.Self);
                 providerField.Show(type is MIDIExtractorSettings.ExtractorType.Provider && origin is MIDIExtractorSettings.Origin.Self);
             }
-
-            UpdateVisibility();
-
-            extractorTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());
-            originField.RegisterValueChangeCallback(_ => UpdateVisibility());
-            
-            return root;
         }
     }
 }

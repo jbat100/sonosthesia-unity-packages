@@ -25,7 +25,11 @@ namespace Sonosthesia.Utils.Editor
 
             root.AddRelativeField(property, "_prefabs", 
                 out SerializedProperty _, out PropertyField prefabsField);
+
+            root.UpdateVisibility(UpdateVisibility, selectorTypeProp);
             
+            return root;
+
             void UpdateVisibility()
             {
                 PrefabSelectorType selectorType = (PrefabSelectorType)selectorTypeProp.enumValueIndex;
@@ -34,12 +38,6 @@ namespace Sonosthesia.Utils.Editor
                 multiSelectionField.Show(selectorType is PrefabSelectorType.Multi);
                 prefabsField.Show(selectorType is PrefabSelectorType.Multi);
             }
-
-            UpdateVisibility();
-
-            selectorTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());
-            
-            return root;
         }
     }
 }

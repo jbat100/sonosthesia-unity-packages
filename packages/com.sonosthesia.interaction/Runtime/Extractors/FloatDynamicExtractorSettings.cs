@@ -1,20 +1,11 @@
 using System;
-using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
     [Serializable]
-    public abstract class FloatDynamicExtractorSettings<TEvent> : IDynamicExtractor<TEvent, float>
+    public abstract class FloatDynamicExtractorSettings<TEvent> : FloatPostProcessingSettings, IDynamicExtractor<TEvent, float>
     {
-        [Flags]
-        public enum PostProcessingType
-        {
-            Curve = 1 << 0,
-            Remap = 1 << 1,
-            Clamp = 1 << 2
-        }
-        
         public enum FollowStrategy
         {
             Initial,
@@ -46,17 +37,10 @@ namespace Sonosthesia.Interaction
         
         protected abstract IDynamicExtractorSession<TEvent, float> MakeRawSession();
         
-        // used when only the initial value is needed, creates a session, sets it up and returns extracted value
-        public bool Extract(TEvent e, out float value)
-        {
-            IDynamicExtractorSession<TEvent, float> session = MakeSession();
-            return session.Setup(e, out value);
-        }
-        
         // ----------- custom -------------
         
-        [SerializeField] private DynamicExtractor<TEvent, float> _extractor;
-        protected IDynamicExtractorSession<TEvent, float> CustomSession() => _extractor.MakeSession();
+        [SerializeField] private InterfaceReference<IDynamicExtractor<TEvent, float>> _extractor;
+        protected IDynamicExtractorSession<TEvent, float> CustomSession() => _extractor.Value.MakeSession();
 
         // ----------- static -------------
         
@@ -67,13 +51,6 @@ namespace Sonosthesia.Interaction
 
         [SerializeField] private FollowStrategy _followStrategy;
         
-        // ----------- postprocess -------------
-        
-        [SerializeField] private PostProcessingType _postProcessing;
-        [SerializeField] private AnimationCurve _curve = AnimationCurve.Linear(0, 0, 1, 1);
-        [SerializeField] private RemapSettings _remap;
-        [SerializeField] private FloatRange _clamp;
-
         private IDynamicExtractorSession<TEvent, float> FollowSession(IDynamicExtractorSession<TEvent, float> session)
         {
             return _followStrategy switch
@@ -87,22 +64,7 @@ namespace Sonosthesia.Interaction
 
         private IDynamicExtractorSession<TEvent, float> PostProcessSession(IDynamicExtractorSession<TEvent, float> session)
         {
-            if (_postProcessing.HasFlag(PostProcessingType.Curve))
-            {
-                session = new FloatCurveSession<TEvent>(session, _curve);
-            }
-
-            if (_postProcessing.HasFlag(PostProcessingType.Remap))
-            {
-                session = new FloatRemapSession<TEvent>(session, _remap);
-            }
-
-            if (_postProcessing.HasFlag(PostProcessingType.Clamp))
-            {
-                session = new FloatClampSession<TEvent>(session, _clamp);
-            }
-
-            return session;
+            return new FloatFuncSession<TEvent>(session, PostProcess);;
         }
     }
 }

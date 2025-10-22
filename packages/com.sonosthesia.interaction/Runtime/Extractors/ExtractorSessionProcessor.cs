@@ -1,3 +1,4 @@
+using System;
 using Sonosthesia.Utils;
 using UnityEngine;
 
@@ -36,6 +37,18 @@ namespace Sonosthesia.Interaction
         }
     }
 
+    public class FloatFuncSession<TEvent> : ExtractorSessionProcessor<TEvent, float>
+    {
+        private readonly Func<float, float> _process;
+
+        public FloatFuncSession(IDynamicExtractorSession<TEvent, float> session, Func<float, float> process) : base(session)
+        {
+            _process = process;
+        }
+
+        protected override float Process(TEvent e, float value) => _process(value);
+    }
+    
     public class FloatRemapSession<TEvent> : ExtractorSessionProcessor<TEvent, float>
     {
         private readonly RemapSettings _settings;

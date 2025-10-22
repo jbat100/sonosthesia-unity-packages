@@ -51,11 +51,15 @@ namespace Sonosthesia.Touch.Editor
             
             root.AddRelativeField(property, "_clamp",
                 out SerializedProperty _, out PropertyField clampField);
+
+            root.UpdateVisibility(UpdateVisibility, extractorTypeProp, postProcessingProp, actorModulationTypeProp);
             
+            return root;
+
             void UpdateVisibility()
             {
                 FloatTouchDynamicExtractorSettings.ExtractorType extractorType = (FloatTouchDynamicExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
-                FloatTouchDynamicExtractorSettings.PostProcessingType postProcessingType = (FloatTouchDynamicExtractorSettings.PostProcessingType)postProcessingProp.enumValueFlag;
+                FloatProcessingType postProcessingType = (FloatProcessingType)postProcessingProp.enumValueFlag;
                 TouchActorModulationType actorModulationType = (TouchActorModulationType)actorModulationTypeProp.enumValueIndex;
 
                 followStrategyField.Show(extractorType is not FloatTouchDynamicExtractorSettings.ExtractorType.Constant);
@@ -66,18 +70,8 @@ namespace Sonosthesia.Touch.Editor
                 
                 actorModulationField.Show(actorModulationType is not TouchActorModulationType.None);
 
-                curveField.Show(postProcessingType.HasFlag(FloatTouchDynamicExtractorSettings.PostProcessingType.Curve));
-                remapField.Show(postProcessingType.HasFlag(FloatTouchDynamicExtractorSettings.PostProcessingType.Remap));
-                clampField.Show(postProcessingType.HasFlag(FloatTouchDynamicExtractorSettings.PostProcessingType.Clamp));
+                postProcessingType.Show(curveField, remapField, clampField);
             }
-
-            UpdateVisibility();
-
-            extractorTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());
-            postProcessingField.RegisterValueChangeCallback(_ => UpdateVisibility());
-            actorModulationTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());
-            
-            return root;
         }
     }
 }

@@ -37,9 +37,7 @@ namespace Sonosthesia.Utils.Editor
                 randomizeField.Show(postProcessingType.HasFlag(ExtractorPostProcessingType.Randomize));
             }
 
-            UpdateVisibility();
-            
-            postProcessingField.RegisterValueChangeCallback(_ => UpdateVisibility());
+            root.UpdateVisibility(UpdateVisibility, postProcessingProp);
             
             return root;
         }

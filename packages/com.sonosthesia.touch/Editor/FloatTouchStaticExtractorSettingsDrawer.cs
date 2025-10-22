@@ -42,28 +42,23 @@ namespace Sonosthesia.Touch.Editor
             
             root.AddRelativeField(property, "_clamp",
                 out SerializedProperty _, out PropertyField clampField);
+
+            root.UpdateVisibility(UpdateVisibility, extractorTypeProp, postProcessingProp);
             
+            return root;
+
             void UpdateVisibility()
             {
                 FloatTouchStaticExtractorSettings.ExtractorType extractorType = (FloatTouchStaticExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
-                FloatTouchStaticExtractorSettings.PostProcessingType postProcessingType = (FloatTouchStaticExtractorSettings.PostProcessingType)postProcessingProp.enumValueFlag;
+                FloatProcessingType postProcessingType = (FloatProcessingType)postProcessingProp.enumValueFlag;
                 
                 extractorField.Show(extractorType is FloatTouchStaticExtractorSettings.ExtractorType.Custom);
                 constantValueField.Show(extractorType is FloatTouchStaticExtractorSettings.ExtractorType.Constant);
                 velocityTypeField.Show(extractorType is FloatTouchStaticExtractorSettings.ExtractorType.Velocity);
                 axesField.Show(extractorType is FloatTouchStaticExtractorSettings.ExtractorType.Distance);
                 
-                curveField.Show(postProcessingType.HasFlag(FloatTouchStaticExtractorSettings.PostProcessingType.Curve));
-                remapField.Show(postProcessingType.HasFlag(FloatTouchStaticExtractorSettings.PostProcessingType.Remap));
-                clampField.Show(postProcessingType.HasFlag(FloatTouchStaticExtractorSettings.PostProcessingType.Clamp));
+                postProcessingType.Show(curveField, remapField, clampField);
             }
-
-            UpdateVisibility();
-
-            extractorTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());
-            postProcessingField.RegisterValueChangeCallback(_ => UpdateVisibility());
-            
-            return root;
         }
     }
 }

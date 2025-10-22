@@ -29,23 +29,17 @@ namespace Sonosthesia.Target.Editor
             root.AddField(serializedObject, "_materialSelector", out SerializedProperty materialSelectorProperty, out PropertyField materialSelectorField);
             root.AddField(serializedObject, "_materialIndex", out SerializedProperty materialIndexProperty, out PropertyField materialIndexField);
 
-            // Method to update the visibility of fields based on the enum value
+            root.UpdateVisibility(UpdateVisibility, usePropertyBlockProperty, materialSelectorProperty);
+            
+            return root;
+
             void UpdateVisibility()
             {
-                Debug.Log($"{this} {nameof(UpdateVisibility)}");
                 bool usePropertyBlock = usePropertyBlockProperty.boolValue;
                 MaterialSelector selector = (MaterialSelector)materialSelectorProperty.enumValueIndex;
                 materialSelectorField.Show(!usePropertyBlock);
                 materialIndexField.Show(!usePropertyBlock && selector is MaterialSelector.Indexed);
             }
-
-            // Initial visibility update
-            UpdateVisibility();
-
-            usePropertyBlockField.RegisterValueChangeCallback(evt => UpdateVisibility());
-            materialSelectorField.RegisterValueChangeCallback(evt => UpdateVisibility());
-            
-            return root;
         }
     }
 }

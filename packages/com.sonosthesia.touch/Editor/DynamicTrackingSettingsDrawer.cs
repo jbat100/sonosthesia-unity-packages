@@ -24,13 +24,11 @@ namespace Sonosthesia.Touch.Editor
 
             void UpdateVisibility()
             {
-                DynamicTrackingStrategy extractorType = (DynamicTrackingStrategy)strategyProp.enumValueIndex;
-                dragField.Show(extractorType is DynamicTrackingStrategy.FreezeVelocity);
+                DynamicTrackingStrategy strategy = (DynamicTrackingStrategy)strategyProp.enumValueIndex;
+                dragField.Show(strategy is DynamicTrackingStrategy.FreezeVelocity);
             }
 
-            UpdateVisibility();
-
-            strategyField.RegisterValueChangeCallback(_ => UpdateVisibility());
+            root.UpdateVisibility(UpdateVisibility, strategyProp);
             
             return root;
         }

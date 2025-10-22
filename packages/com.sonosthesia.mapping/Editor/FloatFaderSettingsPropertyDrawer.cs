@@ -1,3 +1,4 @@
+using Sonosthesia.Utils;
 using Sonosthesia.Utils.Editor;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -11,59 +12,36 @@ namespace Sonosthesia.Mapping.Editor
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             VisualElement root = new VisualElement();
-
-            SerializedProperty faderTypeProp = property.FindPropertyRelative("_faderType");
-            PropertyField faderTypeField = new PropertyField(faderTypeProp);
-            root.Add(faderTypeField);
-
-            SerializedProperty valueProp = property.FindPropertyRelative("_value");
-            PropertyField valueField = new PropertyField(valueProp);
-            root.Add(valueField);
             
-            SerializedProperty curveProp = property.FindPropertyRelative("_curve");
-            PropertyField curveField = new PropertyField(curveProp);
-            root.Add(curveField);
-
-            SerializedProperty remapInputProp = property.FindPropertyRelative("_remapInput");
-            PropertyField remapInputField = new PropertyField(remapInputProp, "Input Range");
-            root.Add(remapInputField);
+            root.AddRelativeField(property, "_faderType", 
+                out SerializedProperty faderTypeProp, out PropertyField faderTypeField);
             
+            root.AddRelativeField(property, "_constantValue", 
+                out SerializedProperty _, out PropertyField constantValueField);
             
-            SerializedProperty remapOutputProp = property.FindPropertyRelative("_remapOutput");
-            PropertyField remapOutputField = new PropertyField(remapOutputProp, "Output Range");
-            root.Add(remapOutputField);
+            root.AddRelativeField(property, "_processing", 
+                out SerializedProperty processingProp, out PropertyField processingField);
 
-            SerializedProperty clampProp = property.FindPropertyRelative("_clamp");
-            PropertyField clampField = new PropertyField(clampProp);
-            root.Add(clampField);
+            root.AddRelativeField(property, "_curve", 
+                out SerializedProperty _, out PropertyField curveField);
+
+            root.AddRelativeField(property, "_remap", 
+                out SerializedProperty _, out PropertyField remapField);
             
-            SerializedProperty clampRangeProp = property.FindPropertyRelative("_clampRange");
-            PropertyField clampRangeField = new PropertyField(clampRangeProp);
-            root.Add(clampRangeField);
-            
-            // Method to update the visibility of fields based on the enum value
-            void UpdateVisibility()
-            {
-                UnityEngine.Debug.Log($"{this} {nameof(UpdateVisibility)}");
-                
-                FloatFaderType type = (FloatFaderType)faderTypeProp.enumValueIndex;
-                bool clamp = clampProp.boolValue;
-                
-                valueField.Show(type is FloatFaderType.Constant);
-                curveField.Show(type is FloatFaderType.Curve);
-                remapInputField.Show(type is FloatFaderType.Remap);
-                remapOutputField.Show(type is FloatFaderType.Remap);
-                clampField.Show(type is not FloatFaderType.Constant);
-                clampRangeField.Show(clamp && type is not FloatFaderType.Constant);
-            }
+            root.AddRelativeField(property, "_clamp",
+                out SerializedProperty _, out PropertyField clampField);
 
-            // Initial visibility update
-            UpdateVisibility();
-
-            faderTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());
-            clampField.RegisterValueChangeCallback(_ => UpdateVisibility());
+            root.UpdateVisibility(UpdateVisibility, faderTypeProp, processingProp);
             
             return root;
+
+            void UpdateVisibility()
+            {
+                FloatFaderType type = (FloatFaderType)faderTypeProp.enumValueIndex;
+                FloatProcessingType processing = (FloatProcessingType)processingProp.enumValueFlag;
+                constantValueField.Show(type is FloatFaderType.Constant);
+                processing.Show(curveField, remapField, clampField);
+            }
         }
     }
 }

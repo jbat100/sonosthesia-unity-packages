@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System;
+using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -11,6 +12,22 @@ namespace Sonosthesia.Utils.Editor
         {
             element.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
         }
+
+        public static void UpdateVisibility(this VisualElement root, Action action, params SerializedProperty[] properties)
+        {
+            foreach (SerializedProperty property in properties)
+            {
+                root.TrackPropertyValue(property, _ => action());
+            }
+            root.schedule.Execute(action).ExecuteLater(0);
+        }
+
+        public static void Show(this FloatProcessingType processingType, PropertyField curve, PropertyField remap, PropertyField clamp)
+        {
+            curve.Show(processingType.HasFlag(FloatProcessingType.Curve));
+            remap.Show(processingType.HasFlag(FloatProcessingType.Remap));
+            clamp.Show(processingType.HasFlag(FloatProcessingType.Clamp));
+        }
         
         public static bool TryGetElementByName<T>(this VisualElement visualElement, string name, out T element) where T : VisualElement
         {
@@ -22,7 +39,6 @@ namespace Sonosthesia.Utils.Editor
             Debug.LogError($"Expected successful query for type {typeof(T).Name} with name {name}");
             return false;
         }
-
 
         public static void AddSpace(this VisualElement visualElement) => visualElement.AddSpace(10);
         

@@ -77,17 +77,17 @@ namespace Sonosthesia.Instrument
                 
                 if (_pressure != null && _pressure.Update(e, out float pressure))
                 {
-                    updated = updated.ChangePressure((int)pressure);
+                    updated = updated.WithPressure((int)pressure);
                 }
                 
                 if (_slide != null && _slide.Update(e, out float slide))
                 {
-                    updated = updated.ChangeSlide((int)slide);
+                    updated = updated.WithSlide((int)slide);
                 }
 
                 if (_bend != null && _bend.Update(e, out float bend))
                 {
-                    updated = updated.ChangeBend(bend);
+                    updated = updated.WithBend(bend);
                 }
 
                 return true;

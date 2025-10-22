@@ -1,49 +1,34 @@
 using System;
 using Sonosthesia.Utils;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Sonosthesia.Mapping
 {
     public enum FloatFaderType
     {
         Constant,
-        Remap,
-        Curve
+        Process
     }
     
     [Serializable]
-    public class FloatFaderSettings
+    public class FloatFaderSettings 
     {
         [SerializeField] private FloatFaderType _faderType;
 
-        [SerializeField] private float _value;
+        [SerializeField] private float _constantValue;
         
-        [SerializeField] private AnimationCurve _curve;
+        [SerializeField] private FloatProcessingType _processing;
+        [SerializeField] private AnimationCurve _curve = AnimationCurve.Linear(0, 0, 1, 1);
+        [SerializeField] private RemapSettings _remap;
+        [SerializeField] private FloatRange _clamp;
         
-        [SerializeField] private FloatRange _remapInput = new FloatRange(0, 1);
-        [SerializeField] private FloatRange _remapOutput = new FloatRange(0, 1);
-
-        [SerializeField] private bool _clamp;
-        [SerializeField] private FloatRange _clampRange = new FloatRange(0, 1);
-        
-        
-        public float Fade(float input)
+        public float Fade(float input) => _faderType switch
         {
-            float result = _faderType switch
-            {
-                FloatFaderType.Constant => _value,
-                FloatFaderType.Remap => input.Remap(_remapInput, _remapOutput),
-                FloatFaderType.Curve => _curve.Evaluate(input),
-                _ => 0
-            };
-
-            if (_clamp)
-            {
-                result = result.Clamp(_clampRange);
-            }
-
-            return result;
-        }
+            FloatFaderType.Constant => _constantValue,
+            FloatFaderType.Process => _processing.ProcessFloat(input, _curve, _remap, _clamp),
+            _ => 0
+        };
     }
     
     public abstract class FaderConfiguration<T> : ScriptableObject where T : struct

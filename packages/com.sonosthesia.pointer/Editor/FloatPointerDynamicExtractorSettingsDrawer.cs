@@ -48,11 +48,15 @@ namespace Sonosthesia.Pointer.Editor
             
             root.AddRelativeField(property, "_clamp",
                 out SerializedProperty _, out PropertyField clampField);
+
+            root.UpdateVisibility(UpdateVisibility, extractorTypeProp, postProcessingProp);
             
+            return root;
+
             void UpdateVisibility()
             {
                 FloatPointerDynamicExtractorSettings.ExtractorType extractorType = (FloatPointerDynamicExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
-                FloatPointerDynamicExtractorSettings.PostProcessingType postProcessingType = (FloatPointerDynamicExtractorSettings.PostProcessingType)postProcessingProp.enumValueFlag;
+                FloatProcessingType postProcessingType = (FloatProcessingType)postProcessingProp.enumValueFlag;
                 
                 followStrategyField.Show(extractorType is not FloatPointerDynamicExtractorSettings.ExtractorType.Constant);
                 extractorField.Show(extractorType is FloatPointerDynamicExtractorSettings.ExtractorType.Custom);
@@ -67,17 +71,8 @@ namespace Sonosthesia.Pointer.Editor
                     or FloatPointerDynamicExtractorSettings.ExtractorType.Raycast 
                     or FloatPointerDynamicExtractorSettings.ExtractorType.Screen);
                 
-                curveField.Show(postProcessingType.HasFlag(FloatPointerDynamicExtractorSettings.PostProcessingType.Curve));
-                remapField.Show(postProcessingType.HasFlag(FloatPointerDynamicExtractorSettings.PostProcessingType.Remap));
-                clampField.Show(postProcessingType.HasFlag(FloatPointerDynamicExtractorSettings.PostProcessingType.Clamp));
+                postProcessingType.Show(curveField, remapField, clampField);
             }
-
-            UpdateVisibility();
-
-            extractorTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());
-            postProcessingField.RegisterValueChangeCallback(_ => UpdateVisibility());
-            
-            return root;
         }
     }
 }

@@ -58,19 +58,14 @@ namespace Sonosthesia.Pointer
 
         public void OnPointerMove(PointerEventData eventData)
         {
-            if (!_internal.TryGetValue(eventData.pointerId, out InternalData internalData))
-            {
-                return;
-            }
-            
-            this.LogVerbose($"{this} update stream on {nameof(OnPointerMove)} {eventData}");
-            
-            internalData.EventSubject.OnNext(new PointerEvent(eventData, this, internalData.StartTime));
+            this.LogVerbose($"{this} {nameof(OnPointerMove)} {eventData}");
+            // UpdatePointerData(eventData);
         }
 
         public void OnDrag(PointerEventData eventData)
         {
             this.LogVerbose($"{this} {nameof(OnDrag)} {eventData}");
+            UpdatePointerData(eventData);
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -81,6 +76,18 @@ namespace Sonosthesia.Pointer
         public void OnEndDrag(PointerEventData eventData)
         {
             this.LogVerbose($"{this} {nameof(OnDrag)} {eventData}");
+        }
+
+        private void UpdatePointerData(PointerEventData eventData)
+        {
+            if (!_internal.TryGetValue(eventData.pointerId, out InternalData internalData))
+            {
+                return;
+            }
+            
+            this.LogVerbose($"{this} update stream on {nameof(OnPointerMove)} {eventData}");
+            
+            internalData.EventSubject.OnNext(new PointerEvent(eventData, this, internalData.StartTime));
         }
     }
 }

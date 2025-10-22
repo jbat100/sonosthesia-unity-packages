@@ -14,7 +14,7 @@ namespace Sonosthesia.Pointer
         public static bool ExtractScreen(this PointerEvent e, 
             Axes axes, VectorFloatSelector selector, out float value)
         {
-            value = e.Data.position.FilterAxes(axes).magnitude;
+            value = e.Data.position.FilterAxes(axes).Select(selector);
             return true;
         }
         
@@ -27,8 +27,8 @@ namespace Sonosthesia.Pointer
                 _ => position
             };
                 
-            Vector3 drag = Project(e.Data.position);   
-            value = drag.FilterAxes(axes).magnitude;
+            Vector3 drag = Project(e.Data.pointerCurrentRaycast.worldPosition);   
+            value = drag.FilterAxes(axes).Select(selector);
             return true;
         }
     }

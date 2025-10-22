@@ -54,10 +54,7 @@ namespace Sonosthesia.Touch.Editor
                 scaleField.Show(postProcessingType.HasFlag(VectorTouchDynamicExtractorSettings.PostProcessingType.Scale));
             }
 
-            UpdateVisibility();
-
-            extractorTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());
-            postProcessingField.RegisterValueChangeCallback(_ => UpdateVisibility());
+            root.UpdateVisibility(UpdateVisibility, extractorTypeProp, postProcessingProp);
             
             return root;
         }

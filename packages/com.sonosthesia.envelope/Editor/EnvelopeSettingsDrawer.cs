@@ -49,6 +49,10 @@ namespace Sonosthesia.Envelope.Editor
             root.AddRelativeField(property, "_sustain", 
                 out SerializedProperty _, out PropertyField sustainField);
 
+            root.UpdateVisibility(UpdateVisibility, envelopeTypeProp, phasedTypeProp);
+            
+            return root;
+
             void UpdateVisibility()
             {
                 // UnityEngine.Debug.Log($"{this} {nameof(UpdateVisibility)}");
@@ -81,13 +85,6 @@ namespace Sonosthesia.Envelope.Editor
                     sustainField.Show(false);
                 }
             }
-
-            UpdateVisibility();
-
-            envelopeTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());
-            phasedTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());
-            
-            return root;
         }
     }
 }

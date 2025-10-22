@@ -20,7 +20,7 @@ namespace Sonosthesia.MIDI
             Velocity = Mathf.Clamp(velocity, 0, 127);
             Slide = Mathf.Clamp(slide, 0, 127);
             Pressure = Mathf.Clamp(pressure, 0, 127);
-            Bend = Mathf.Clamp(bend, -48f, 48f);
+            Bend = Mathf.Clamp(bend, -BEND_RANGE, BEND_RANGE);
         }
 
         public MPENote(MIDINoteOn note)
@@ -34,17 +34,32 @@ namespace Sonosthesia.MIDI
 
         public MPENote ChangeSlide(int diff)
         {
-            return new MPENote(Note, Velocity, Mathf.Clamp(Slide + diff, 0, 127), Pressure, Bend);
+            return new MPENote(Note, Velocity, Slide + diff, Pressure, Bend);
+        }
+        
+        public MPENote WithSlide(int slide)
+        {
+            return new MPENote(Note, Velocity, slide, Pressure, Bend);
         }
         
         public MPENote ChangePressure(int diff)
         {
-            return new MPENote(Note, Velocity, Slide, Mathf.Clamp(Pressure + diff, 0, 127), Bend);
+            return new MPENote(Note, Velocity, Slide, Pressure + diff, Bend);
+        }
+        
+        public MPENote WithPressure(int pressure)
+        {
+            return new MPENote(Note, Velocity, Slide, pressure, Bend);
         }
         
         public MPENote ChangeBend(float diff)
         {
-            return new MPENote(Note, Velocity, Slide, Pressure, Mathf.Clamp(Bend + diff, -BEND_RANGE, BEND_RANGE));
+            return new MPENote(Note, Velocity, Slide, Pressure, Bend + diff);
+        }
+        
+        public MPENote WithBend(float bend)
+        {
+            return new MPENote(Note, Velocity, Slide, Pressure, bend);
         }
         
         public override string ToString()

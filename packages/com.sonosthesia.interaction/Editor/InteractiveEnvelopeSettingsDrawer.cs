@@ -44,7 +44,11 @@ namespace Sonosthesia.Touch.Editor
             
             root.AddRelativeField(property, "_releaseType", 
                 out SerializedProperty _, out PropertyField releaseTypeField);
+
+            root.UpdateVisibility(UpdateVisibility, typeProp, filterProp);
             
+            return root;
+
             void UpdateVisibility()
             {
                 EnvelopeInteraction type = (EnvelopeInteraction)typeProp.enumValueIndex;
@@ -60,12 +64,6 @@ namespace Sonosthesia.Touch.Editor
                 releaseExtractorField.Show(type is EnvelopeInteraction.Contact);
                 releaseTypeField.Show(type is EnvelopeInteraction.Contact);
             }
-
-            UpdateVisibility();
-            typeField.RegisterValueChangeCallback(_ => UpdateVisibility());
-            filterField.RegisterValueChangeCallback(_ => UpdateVisibility());
-            
-            return root;
         }
     }
 }
