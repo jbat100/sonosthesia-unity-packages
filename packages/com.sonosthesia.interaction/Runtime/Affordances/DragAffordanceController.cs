@@ -1,9 +1,8 @@
 using System;
-using Sonosthesia.Interaction;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Sonosthesia.Pointer
+namespace Sonosthesia.Interaction
 {
     public abstract class DragAffordanceController<TEvent, TAffordance> : AffordanceController<TEvent, TAffordance> 
             where TEvent : struct 

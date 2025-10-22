@@ -1,6 +1,5 @@
 using System;
 using Sonosthesia.Interaction;
-using Sonosthesia.Pointer;
 using UnityEngine;
 
 namespace Sonosthesia.Touch

@@ -1,4 +1,5 @@
 using System;
+using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 
@@ -6,7 +7,7 @@ namespace Sonosthesia.Channel
 {
     // allows observers who do not need specific types but are just interested in stream counts / ids
 
-    public class AbstractChannel : MonoBehaviour
+    public class AbstractChannel : MonoBehaviour, IGuidReactiveCollection
     {
         private readonly ReactiveCollection<Guid> _streamIds = new();
         public IReadOnlyReactiveCollection<Guid> Ids => _streamIds;

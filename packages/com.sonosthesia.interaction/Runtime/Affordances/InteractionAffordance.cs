@@ -13,12 +13,31 @@ namespace Sonosthesia.Interaction
         [SerializeField] private bool _log;
         public bool Log => _log;
 
-        [SerializeField] private List<InteractionAffordanceGate> _gates;
-        [SerializeField] private List<Channel.Channel<TEvent>> _inputs;
-        [SerializeField] private Channel.Channel<TEvent> _relay;
+        [SerializeField] 
+        private List<InteractionAffordanceGate> _gates;
+        
+        [SerializeField] 
+        private List<Channel.Channel<TEvent>> _inputs;
+        
+        [SerializeField] 
+        private Channel.Channel<TEvent> _relay;
 
         private readonly CompositeDisposable _subscriptions = new();
 
+        public void SetInputs(IEnumerable<Channel.Channel<TEvent>> inputs)
+        {
+            if (_inputs == null)
+            {
+                _inputs = new List<Channel.Channel<TEvent>>(inputs);
+            }
+            else
+            {
+                _inputs.Clear();
+                _inputs.AddRange(inputs);
+            }
+            ReloadSubscriptions();
+        }
+        
         protected virtual IObserver<TEvent> MakeController(Guid id) => null;
 
         // a bit of a pain to have to use async, but we need to wait for the first stream element to check
@@ -66,6 +85,14 @@ namespace Sonosthesia.Interaction
 
         protected virtual void OnEnable()
         {
+            ReloadSubscriptions();
+        }
+
+        protected virtual void OnDisable() => _subscriptions.Clear();
+
+        private void ReloadSubscriptions()
+        {
+            _subscriptions.Clear();
             foreach (Channel.Channel<TEvent> channel in _inputs.Where(channel => channel))
             {
                 _subscriptions.Add(channel.Observable.Subscribe(pair =>
@@ -75,7 +102,5 @@ namespace Sonosthesia.Interaction
                 }));
             }
         }
-
-        protected virtual void OnDisable() => _subscriptions.Clear();
     }
 }

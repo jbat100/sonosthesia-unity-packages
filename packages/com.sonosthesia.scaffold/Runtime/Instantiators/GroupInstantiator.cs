@@ -10,7 +10,6 @@ using UnityEditor;
 
 namespace Sonosthesia.Scaffold
 {
-
     // Based on object handling sections of SplineInstantiate.cs to ensure that the instantiation is done 
     // and cleaned up correctly
     
@@ -31,7 +30,7 @@ namespace Sonosthesia.Scaffold
         {
             get
             {
-                if (_instancesRoot == null)
+                if (!_instancesRoot)
                 {
                     //Debug.Log($"{this} {nameof(TryClearCache)} creating root");
                     _instancesRoot = new GameObject(k_InstancesRootName+GetInstanceID());
@@ -45,7 +44,21 @@ namespace Sonosthesia.Scaffold
         }
 
         private readonly List<TEntry> _instances = new ();
-        internal List<TEntry> Instances => _instances;
+        public IReadOnlyList<TEntry> Instances => _instances.AsReadOnly();
+
+        public override IEnumerable<GameObject> Objects
+        {
+            get
+            {
+                if (_instances != null)
+                {
+                    foreach (TEntry instance in _instances)
+                    {
+                        yield return instance.gameObject;
+                    }
+                }
+            }
+        }
         
         private bool _dirtyInstances = false;
 
@@ -228,6 +241,7 @@ namespace Sonosthesia.Scaffold
             EnsureCount(RequiredCount);
             _dirtyInstances = false;
             OnUpdatedInstances(_instances.AsReadOnly());
+            NotifyObjectsChanged();
         }
 
         protected virtual void OnUpdatedInstances(IReadOnlyList<TEntry> instances)

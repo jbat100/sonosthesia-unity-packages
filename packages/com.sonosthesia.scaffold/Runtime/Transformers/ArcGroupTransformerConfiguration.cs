@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace Sonosthesia.Scaffold
 {
-    [CreateAssetMenu(fileName = "ArcGroupTransfomerConfiguration", menuName = "Sonosthesia/Transformer/ArcGroupTransfomerConfiguration")]
-    public class ArcGroupTransfomerConfiguration : GroupTransformerConfiguration
+    [CreateAssetMenu(fileName = "ArcGroupTransformerConfiguration", menuName = "Sonosthesia/Transformer/ArcGroupTransformerConfiguration")]
+    public class ArcGroupTransformerConfiguration : GroupTransformerConfiguration
     {
         [SerializeField] private Vector3 _center;
         

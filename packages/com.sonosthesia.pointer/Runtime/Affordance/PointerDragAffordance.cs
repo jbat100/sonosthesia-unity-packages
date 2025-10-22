@@ -54,25 +54,29 @@ namespace Sonosthesia.Pointer
                 float offsetDistance = Mathf.Max(_camera.nearClipPlane, distance - Affordance._offset);
                 
                 origin = cameraPosition + look * (offsetDistance / distance);
+                
+                // not sure why I need to do this, I would have thought origin would be at screen value.Data.position
+                Plane plane = new Plane(-value.Source.transform.forward, origin);
+                Ray ray = _camera.ScreenPointToRay(value.Data.position);
+                if (!plane.Raycast(ray, out float enter))
+                {
+                    return false;
+                }
+                origin = ray.GetPoint(enter);
+                
                 return true;
             }
 
             protected override bool GetTargetPosition(bool initial, PointerEvent value, Vector3 origin, ref Vector3 target)
             {
-                Vector3 direction = _camera.transform.position - origin;
-
-                //Plane plane = new Plane(direction.normalized, _originPosition);
-                
-                Plane plane = new Plane(-Affordance.transform.forward, origin);
-                
+                Plane plane = new Plane(-value.Source.transform.forward, origin);
                 Ray ray = _camera.ScreenPointToRay(value.Data.position);
-
                 if (!plane.Raycast(ray, out float enter))
                 {
                     return false;
                 }
-                
                 target = ray.GetPoint(enter);
+                
                 return true;
             }
 
