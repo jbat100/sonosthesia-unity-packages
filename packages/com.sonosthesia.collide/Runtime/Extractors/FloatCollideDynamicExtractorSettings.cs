@@ -1,7 +1,9 @@
-﻿using Sonosthesia.Interaction;
+﻿using System;
+using Sonosthesia.Interaction;
 
 namespace Sonosthesia.Collide
 {
+    [Serializable]
     public class FloatCollideDynamicExtractorSettings : FloatDynamicExtractorSettings<CollideEvent>
     {
         public enum ExtractorType
@@ -10,8 +12,6 @@ namespace Sonosthesia.Collide
             Constant,
             Velocity
         }
-        
-        
         
         protected override IDynamicExtractorSession<CollideEvent, float> MakeRawSession()
         {

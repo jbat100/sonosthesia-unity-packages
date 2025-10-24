@@ -84,5 +84,12 @@ namespace Sonosthesia.Utils.Editor
             propertyField = new PropertyField(relativeProperty);
             visualElement.Add(propertyField);
         }
+        
+        public static void AddRelativeField(this VisualElement visualElement, SerializedProperty serializedProperty, string name, 
+            out SerializedProperty relativeProperty, out PropertyField propertyField, bool show)
+        {
+            visualElement.AddRelativeField(serializedProperty, name, out relativeProperty, out propertyField);
+            propertyField.Show(show);
+        }
     }
 }

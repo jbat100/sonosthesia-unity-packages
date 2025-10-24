@@ -1,70 +1,44 @@
 using System;
+using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
-    [Serializable]
-    public abstract class FloatDynamicExtractorSettings<TEvent> : FloatPostProcessingSettings, IDynamicExtractor<TEvent, float>
+    public enum FloatFollowStrategy
     {
-        public enum FollowStrategy
+        Initial,
+        Track,
+        Relative,
+        Normalized
+    }    
+    
+    [Serializable]
+    public abstract class FloatDynamicExtractorSettings<TEvent> 
+        : DynamicExtractorSettings<TEvent, float, FloatFollowStrategy, FloatPostProcessingSettings>
+    {
+        protected override IDynamicExtractorSession<TEvent, float> FollowSession(FloatFollowStrategy follow,
+            IDynamicExtractorSession<TEvent, float> session)
         {
-            Initial,
-            Track,
-            Relative,
-            Normalized
-        }
-
-        public IDynamicExtractorSession<TEvent, float> MakeSession()
-        {
-            IDynamicExtractorSession<TEvent, float> session = MakeRawSession();
-
-            if (!BypassFollow)
+            return follow switch
             {
-                session = FollowSession(session);
-            }
-            
-            if (!BypassPostProcess)
-            {
-                session = PostProcessSession(session);   
-            }
-            
-            return session;
-        }
-
-        protected virtual bool BypassFollow => false;
-        
-        protected virtual bool BypassPostProcess => false;
-        
-        protected abstract IDynamicExtractorSession<TEvent, float> MakeRawSession();
-        
-        // ----------- custom -------------
-        
-        [SerializeField] private InterfaceReference<IDynamicExtractor<TEvent, float>> _extractor;
-        protected IDynamicExtractorSession<TEvent, float> CustomSession() => _extractor.Value.MakeSession();
-
-        // ----------- static -------------
-        
-        [SerializeField] private float _constantValue = 1;
-        protected IDynamicExtractorSession<TEvent, float> ConstantSession() => new FloatConstantSession<TEvent>(_constantValue);
-        
-        // ----------- follow -------------
-
-        [SerializeField] private FollowStrategy _followStrategy;
-        
-        private IDynamicExtractorSession<TEvent, float> FollowSession(IDynamicExtractorSession<TEvent, float> session)
-        {
-            return _followStrategy switch
-            {
-                FollowStrategy.Initial => new InitialSession<TEvent, float>(session),
-                FollowStrategy.Relative => new FloatRelativeSession<TEvent>(session),
-                FollowStrategy.Normalized => new FloatNormalizedSession<TEvent>(session),
+                FloatFollowStrategy.Initial => new InitialSession<TEvent, float>(session),
+                FloatFollowStrategy.Relative => new FloatRelativeSession<TEvent>(session),
+                FloatFollowStrategy.Normalized => new FloatNormalizedSession<TEvent>(session),
                 _ => session
             };
         }
+    }
 
-        private IDynamicExtractorSession<TEvent, float> PostProcessSession(IDynamicExtractorSession<TEvent, float> session)
-        {
-            return new FloatFuncSession<TEvent>(session, PostProcess);;
-        }
+    public abstract class InteractionFloatDynamicExtractorSettings<TEvent> : FloatDynamicExtractorSettings<TEvent> 
+        where TEvent : IInteractionEvent
+    {
+        [SerializeField] private VelocityExtractionType _velocityType = VelocityExtractionType.Actor;
+        
+        [SerializeField] private Axes _axes = Axes.X | Axes.Y | Axes.Z;
+
+        protected IDynamicExtractorSession<TEvent, float> VelocitySession() => new VelocityFloatExtractorSession<TEvent>(_velocityType);
+        protected IDynamicExtractorSession<TEvent, float> DistanceSession() => new ActorToSourceDistanceSession<TEvent>(_axes);
+        protected IDynamicExtractorSession<TEvent, float> TwistSession() => new TwistFloatExtractorSession<TEvent>();
+        protected IDynamicExtractorSession<TEvent, float> HeightSession() => new HeightFloatExtractorSession<TEvent>();
     }
 }

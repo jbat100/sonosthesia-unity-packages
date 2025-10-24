@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Sonosthesia.Pointer
 {
     [Serializable]
-    public class FloatPointerStaticExtractorSettings : FloatStaticExtractorSettings<PointerEvent>
+    public class FloatPointerStaticExtractorSettings : StaticExtractorSettings<PointerEvent, float, FloatPostProcessingSettings>
     {
         public enum ExtractorType
         {

@@ -13,9 +13,6 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private TouchNode _node;
         public TouchNode Node => _node;
-
-        [SerializeField] private TransformDynamicsMonitor _dynamicsMonitor;
-        public TransformDynamicsMonitor DynamicsMonitor => _dynamicsMonitor;
         
         [SerializeField] private List<TouchActorGate> _gates;
         public IReadOnlyList<TouchActorGate> Gates => _gates.AsReadOnly();
@@ -23,14 +20,6 @@ namespace Sonosthesia.Touch
         private float? _enableTime;
         public float? TimeSinceEnable => Time.time - _enableTime;
         
-        protected virtual void Awake()
-        {
-            if (!_dynamicsMonitor)
-            {
-                _dynamicsMonitor = this.GetOrAddComponent<TransformDynamicsMonitor>();
-            }
-        }
-
         protected virtual void OnEnable()
         {
             _enableTime = Time.time;

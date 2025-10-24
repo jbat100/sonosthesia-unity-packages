@@ -36,8 +36,11 @@ namespace Sonosthesia.Touch.Editor
             
             root.AddRelativeField(property, "_scale",
                 out SerializedProperty _, out PropertyField scaleField);
+
+            root.UpdateVisibility(UpdateVisibility, extractorTypeProp, postProcessingProp);
             
-            
+            return root;
+
             void UpdateVisibility()
             {
                 VectorTouchDynamicExtractorSettings.ExtractorType extractorType = 
@@ -48,15 +51,11 @@ namespace Sonosthesia.Touch.Editor
                 spaceField.Show(extractorType is VectorTouchDynamicExtractorSettings.ExtractorType.Constant);
                 directionField.Show(extractorType is VectorTouchDynamicExtractorSettings.ExtractorType.Constant);
 
-                VectorTouchDynamicExtractorSettings.PostProcessingType postProcessingType =
-                    (VectorTouchDynamicExtractorSettings.PostProcessingType)postProcessingProp.enumValueFlag;
+                VectorProcessingType postProcessingType =
+                    (VectorProcessingType)postProcessingProp.enumValueFlag;
                 
-                scaleField.Show(postProcessingType.HasFlag(VectorTouchDynamicExtractorSettings.PostProcessingType.Scale));
+                scaleField.Show(postProcessingType.HasFlag(VectorProcessingType.Scale));
             }
-
-            root.UpdateVisibility(UpdateVisibility, extractorTypeProp, postProcessingProp);
-            
-            return root;
         }
     }
 }

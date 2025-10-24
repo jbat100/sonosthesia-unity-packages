@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Sonosthesia.Touch
 {
     [Serializable]
-    public class FloatTouchStaticExtractorSettings : FloatStaticExtractorSettings<TouchEvent>
+    public class FloatTouchStaticExtractorSettings : StaticExtractorSettings<TouchEvent, float, FloatPostProcessingSettings>
     {
         public enum ExtractorType
         {
@@ -18,7 +18,7 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private ExtractorType _extractorType = ExtractorType.Constant;
         
-        [SerializeField] private TouchVelocityType _velocityType = TouchVelocityType.Actor;
+        [SerializeField] private VelocityExtractionType _velocityType = VelocityExtractionType.Actor;
         
         [SerializeField] private Axes _distanceAxes = Axes.X | Axes.Y | Axes.Z;
         
@@ -32,7 +32,7 @@ namespace Sonosthesia.Touch
                     value = ConstantValue;
                     return true; 
                 case ExtractorType.Velocity:
-                    return TouchExtractionUtils.ExtractVelocity(e, _velocityType, out value);
+                    return e.ExtractVelocity(_velocityType, out value);
                 case ExtractorType.Distance:
                     value = e.ActorPositionInSourceSpace().FilterAxes(_distanceAxes).magnitude;
                     return true;

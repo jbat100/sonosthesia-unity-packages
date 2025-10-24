@@ -1,4 +1,5 @@
-﻿using Sonosthesia.Utils;
+﻿using Sonosthesia.Dynamic;
+using Sonosthesia.Utils;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -14,5 +15,18 @@ namespace Sonosthesia.Interaction
         
         [SerializeField] private InteractionLayerMask _interactionLayers = ~0;
         public InteractionLayerMask InteractionLayers => _interactionLayers;
+        
+        Transform IInteractionEndpoint.Transform => transform; 
+        
+        [SerializeField] private TransformDynamicsMonitor _dynamicsMonitor;
+        public TransformDynamicsMonitor DynamicsMonitor => _dynamicsMonitor;
+        
+        protected virtual void Awake()
+        {
+            if (!_dynamicsMonitor)
+            {
+                _dynamicsMonitor = this.GetOrAddComponent<TransformDynamicsMonitor>();
+            }
+        }
     }
 }

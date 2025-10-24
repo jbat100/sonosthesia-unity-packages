@@ -1,8 +1,10 @@
-﻿using Sonosthesia.Interaction;
+﻿using System;
+using Sonosthesia.Interaction;
 
 namespace Sonosthesia.Collide
 {
-    public class FloatCollideStaticExtractorSettings : FloatStaticExtractorSettings<CollideEvent>
+    [Serializable]
+    public class FloatCollideStaticExtractorSettings : StaticExtractorSettings<CollideEvent, float, FloatPostProcessingSettings>
     {
         protected override bool ExtractRaw(CollideEvent e, out float value)
         {

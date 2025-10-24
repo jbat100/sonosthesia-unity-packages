@@ -1,3 +1,5 @@
+using Sonosthesia.Dynamic;
+using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
 namespace Sonosthesia.Interaction
@@ -7,5 +9,9 @@ namespace Sonosthesia.Interaction
         InteractionLayerMask InteractionLayers { get; }
         
         int Domain { get; }
+        
+        Transform Transform { get; }
+        
+        TransformDynamicsMonitor DynamicsMonitor { get; }
     }
 }
