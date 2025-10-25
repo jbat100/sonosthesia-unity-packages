@@ -29,16 +29,37 @@ namespace Sonosthesia.Interaction
         }
     }
 
-    public abstract class InteractionFloatDynamicExtractorSettings<TEvent> : FloatDynamicExtractorSettings<TEvent> 
+    [Serializable]
+    public abstract class FloatInteractionDynamicExtractorSettings<TEvent> : FloatDynamicExtractorSettings<TEvent> 
         where TEvent : IInteractionEvent
     {
+        public enum ExtractorType
+        {
+            Custom,
+            Constant,
+            Velocity,
+            Distance,
+            Twist,
+            Height
+        }
+        
+        [SerializeField] private ExtractorType _extractorType = ExtractorType.Constant;
+        
         [SerializeField] private VelocityExtractionType _velocityType = VelocityExtractionType.Actor;
         
         [SerializeField] private Axes _axes = Axes.X | Axes.Y | Axes.Z;
-
-        protected IDynamicExtractorSession<TEvent, float> VelocitySession() => new VelocityFloatExtractorSession<TEvent>(_velocityType);
-        protected IDynamicExtractorSession<TEvent, float> DistanceSession() => new ActorToSourceDistanceSession<TEvent>(_axes);
-        protected IDynamicExtractorSession<TEvent, float> TwistSession() => new TwistFloatExtractorSession<TEvent>();
-        protected IDynamicExtractorSession<TEvent, float> HeightSession() => new HeightFloatExtractorSession<TEvent>();
+        
+        protected override bool BypassFollow => _extractorType == ExtractorType.Constant;
+        
+        protected override IDynamicExtractorSession<TEvent, float> MakeRawSession() => _extractorType switch
+        {
+            ExtractorType.Custom => CustomSession(),
+            ExtractorType.Constant => ConstantSession(),
+            ExtractorType.Velocity => new VelocityFloatExtractorSession<TEvent>(_velocityType),
+            ExtractorType.Distance => new ActorToSourceDistanceSession<TEvent>(_axes),
+            ExtractorType.Twist => new TwistFloatExtractorSession<TEvent>(),
+            ExtractorType.Height => new HeightFloatExtractorSession<TEvent>(),
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
 }

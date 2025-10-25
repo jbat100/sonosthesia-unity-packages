@@ -25,26 +25,20 @@ namespace Sonosthesia.Pointer
 
         [SerializeField] private VectorFloatSelector _selector;
 
-        protected override bool ExtractRaw(PointerEvent e, out float value)
+        protected bool ExtractPressure(PointerEvent e, out float value)
         {
-            switch (_extractorType)
-            {
-                case ExtractorType.Custom:
-                    return Custom(e, out value);
-                case ExtractorType.Constant:
-                    value = ConstantValue;
-                    return true;
-                case ExtractorType.Pressure:
-                    value = e.Data.pressure;
-                    return true;
-                case ExtractorType.Screen:
-                    return e.ExtractScreen(_axes, _selector, out value);
-                case ExtractorType.Raycast:
-                    return e.ExtractRaycast(_space, _axes, _selector, out value);
-            }
-            
-            value = 0f;
-            return false;
+            value = e.Data.pressure;
+            return true;
         }
+        
+        protected override bool ExtractRaw(PointerEvent e, out float value) => _extractorType switch
+        {
+            ExtractorType.Custom => ExtractCustom(e, out value),
+            ExtractorType.Constant => ExtractConstant(e, out value),
+            ExtractorType.Pressure => ExtractPressure(e, out value),
+            ExtractorType.Raycast => e.ExtractScreen(_axes, _selector, out value),
+            ExtractorType.Screen => e.ExtractRaycast(_space, _axes, _selector, out value),
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
 }

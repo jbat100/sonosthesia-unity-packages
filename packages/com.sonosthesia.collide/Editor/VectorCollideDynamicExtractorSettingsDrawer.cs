@@ -4,10 +4,10 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
-namespace Sonosthesia.Touch.Editor
+namespace Sonosthesia.Collide.Editor
 {
-    [CustomPropertyDrawer(typeof(VectorTouchDynamicExtractorSettings))]
-    public class VectorTouchDynamicExtractorSettingsDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(VectorCollideDynamicExtractorSettings))]
+    public class VectorCollideDynamicExtractorSettingsDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
@@ -43,14 +43,17 @@ namespace Sonosthesia.Touch.Editor
 
             void UpdateVisibility()
             {
-                VectorTouchDynamicExtractorSettings.ExtractorType extractorType = 
-                    (VectorTouchDynamicExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
+                VectorCollideDynamicExtractorSettings.ExtractorType extractorType = 
+                    (VectorCollideDynamicExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
 
-                extractorField.Show(extractorType is VectorTouchDynamicExtractorSettings.ExtractorType.Custom);
-                constantValueField.Show(extractorType is VectorTouchDynamicExtractorSettings.ExtractorType.Constant);
-                velocityTypeField.Show(extractorType is VectorTouchDynamicExtractorSettings.ExtractorType.Velocity);
-                directionField.Show(extractorType is VectorTouchDynamicExtractorSettings.ExtractorType.Direction);
-                spaceField.Show(extractorType is VectorTouchDynamicExtractorSettings.ExtractorType.Direction);
+                extractorField.Show(extractorType is VectorCollideDynamicExtractorSettings.ExtractorType.Custom);
+                constantValueField.Show(extractorType is VectorCollideDynamicExtractorSettings.ExtractorType.Constant);
+                velocityTypeField.Show(extractorType is VectorCollideDynamicExtractorSettings.ExtractorType.Velocity);
+                directionField.Show(extractorType is VectorCollideDynamicExtractorSettings.ExtractorType.Direction);
+                
+                spaceField.Show(extractorType is VectorCollideDynamicExtractorSettings.ExtractorType.Direction or 
+                    VectorCollideDynamicExtractorSettings.ExtractorType.ContactPoint or 
+                    VectorCollideDynamicExtractorSettings.ExtractorType.ContactNormal);
             }
         }
     }

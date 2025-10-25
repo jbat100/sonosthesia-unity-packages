@@ -36,6 +36,8 @@ namespace Sonosthesia.Interaction
 
         [SerializeField] private Vector3 _direction;
         
+        protected ExtractionSpace Space => _space;
+        
         protected IDynamicExtractorSession<TEvent, Vector3> DirectionSession() => new DirectionVectorExtractorSession<TEvent>(_space, _direction);
         protected IDynamicExtractorSession<TEvent, Vector3> VelocitySession() => new VelocityVectorExtractorSession<TEvent>(_velocityType);
         protected IDynamicExtractorSession<TEvent, Vector3> RelativeSession() => new RelativePositionVectorExtractionSession<TEvent>();

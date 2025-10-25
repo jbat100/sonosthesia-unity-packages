@@ -199,7 +199,7 @@ namespace Sonosthesia.Interaction
             _direction = direction;
         }
 
-        protected override bool Extract(TEvent e, out Vector3 value) => e.ExtractDirection(_space, _direction, out value);
+        protected override bool Extract(TEvent e, out Vector3 value) => e.TransformPoint(_space, _direction, out value);
     }
 
     public class VelocityVectorExtractorSession<TEvent> : StatelessExtractorSession<TEvent, Vector3> where TEvent : IInteractionEvent
@@ -242,11 +242,7 @@ namespace Sonosthesia.Interaction
             _axes = axes;
         }
 
-        protected override bool Extract(TEvent e, out float value)
-        {
-            value = e.ActorPositionInSourceSpace().FilterAxes(_axes).magnitude;
-            return true;
-        }
+        protected override bool Extract(TEvent e, out float value) => e.ActorToSourceDistance(_axes, out value);
     }
 
     public class HeightFloatExtractorSession<TEvent> : StatelessExtractorSession<TEvent, float> where TEvent : IInteractionEvent

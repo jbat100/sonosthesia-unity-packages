@@ -1,3 +1,4 @@
+using Sonosthesia.Interaction;
 using Sonosthesia.Utils;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -6,8 +7,8 @@ using Sonosthesia.Utils.Editor;
 
 namespace Sonosthesia.Touch.Editor
 {
-    [CustomPropertyDrawer(typeof(FloatTouchStaticExtractorSettings))]
-    public class FloatTouchStaticExtractorSettingsDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(FloatInteractionStaticExtractorSettings<,>), true)]
+    public class FloatInteractionStaticExtractorSettingsDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
@@ -40,12 +41,12 @@ namespace Sonosthesia.Touch.Editor
 
             void UpdateVisibility()
             {
-                FloatTouchStaticExtractorSettings.ExtractorType extractorType = (FloatTouchStaticExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
+                FloatInteractionStaticExtractorType extractorType = (FloatInteractionStaticExtractorType)extractorTypeProp.enumValueIndex;
                 
-                extractorField.Show(extractorType is FloatTouchStaticExtractorSettings.ExtractorType.Custom);
-                constantValueField.Show(extractorType is FloatTouchStaticExtractorSettings.ExtractorType.Constant);
-                velocityTypeField.Show(extractorType is FloatTouchStaticExtractorSettings.ExtractorType.Velocity);
-                axesField.Show(extractorType is FloatTouchStaticExtractorSettings.ExtractorType.Distance);
+                extractorField.Show(extractorType is FloatInteractionStaticExtractorType.Custom);
+                constantValueField.Show(extractorType is FloatInteractionStaticExtractorType.Constant);
+                velocityTypeField.Show(extractorType is FloatInteractionStaticExtractorType.Velocity);
+                axesField.Show(extractorType is FloatInteractionStaticExtractorType.Distance);
             }
         }
     }

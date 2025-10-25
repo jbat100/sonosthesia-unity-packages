@@ -4,11 +4,8 @@ using UnityEngine;
 namespace Sonosthesia.Pointer
 {
     [CreateAssetMenu(fileName = "FloatPointerDynamicExtractor", menuName = "Sonosthesia/Pointer/FloatPointerDynamicExtractor")]
-    public class FloatPointerDynamicExtractor : DynamicExtractor<PointerEvent, float>
+    public class FloatPointerDynamicExtractor : SettingsDynamicExtractor<PointerEvent, float, FloatPointerDynamicExtractorSettings>
     {
-        [SerializeField] private FloatPointerDynamicExtractorSettings _settings;
-
-        public override IDynamicExtractorSession<PointerEvent, float> MakeSession() => _settings.MakeSession();
+        
     }
-    
 }

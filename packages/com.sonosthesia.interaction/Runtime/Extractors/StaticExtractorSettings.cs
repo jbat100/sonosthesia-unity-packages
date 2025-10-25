@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using Sonosthesia.Utils;
+using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
@@ -15,9 +17,13 @@ namespace Sonosthesia.Interaction
         
         [SerializeField] private TValue _constantValue;
         
-        protected TValue ConstantValue => _constantValue;
-        
-        protected bool Custom(TEvent e, out TValue value) => _extractor.Value.Extract(e, out value);
+        protected bool ExtractCustom(TEvent e, out TValue value) => _extractor.Value.Extract(e, out value);
+
+        protected bool ExtractConstant(TEvent e, out TValue value)
+        {
+            value = _constantValue;
+            return true; 
+        }
 
         public bool Extract(TEvent e, out TValue value)
         {
@@ -31,5 +37,46 @@ namespace Sonosthesia.Interaction
         }
 
         protected abstract bool ExtractRaw(TEvent e, out TValue value);
+    }
+
+    public abstract class InteractionStaticExtractorSettings<TEvent, TValue, TProcessing>
+        : StaticExtractorSettings<TEvent, TValue, TProcessing>
+        where TEvent : IInteractionEvent
+        where TValue : struct
+        where TProcessing : IPostProcessing<TValue>
+    {
+        [SerializeField] private VelocityExtractionType _velocityType = VelocityExtractionType.Actor;
+        
+        [SerializeField] private Axes _axes = Axes.X | Axes.Y | Axes.Z;
+        
+        protected bool ExtractVelocity(TEvent e, out float value) => e.ExtractVelocity(_velocityType, out value);
+        protected bool ExtractDistance(TEvent e, out float value) => e.ExtractDistance(_axes, out value);
+    }
+
+    // can't nest in FloatInteractionStaticExtractorSettings because need to refer to it in template editor
+    public enum FloatInteractionStaticExtractorType
+    {
+        Custom,
+        Constant,
+        Velocity,
+        Distance
+    }
+    
+    public class FloatInteractionStaticExtractorSettings<TEvent, TProcessing>
+        : InteractionStaticExtractorSettings<TEvent, float, TProcessing>
+        where TEvent : IInteractionEvent
+        where TProcessing : IPostProcessing<float>
+    {
+        [SerializeField] private FloatInteractionStaticExtractorType _extractorType 
+            = FloatInteractionStaticExtractorType.Constant;
+        
+        protected override bool ExtractRaw(TEvent e, out float value) => _extractorType switch
+        {
+            FloatInteractionStaticExtractorType.Custom => ExtractCustom(e, out value),
+            FloatInteractionStaticExtractorType.Constant => ExtractConstant(e, out value),
+            FloatInteractionStaticExtractorType.Velocity => ExtractVelocity(e, out value),
+            FloatInteractionStaticExtractorType.Distance => ExtractDistance(e, out value),
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
 }

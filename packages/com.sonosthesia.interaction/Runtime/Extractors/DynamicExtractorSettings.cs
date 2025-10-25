@@ -24,6 +24,11 @@ namespace Sonosthesia.Interaction
             {
                 session = FollowSession(_followStrategy, session);
             }
+
+            if (!BypassModulate)
+            {
+                session = ModulateSession(session);
+            }
             
             if (!BypassPostProcess)
             {
@@ -41,14 +46,20 @@ namespace Sonosthesia.Interaction
         }
         
         protected virtual bool BypassFollow => false;
-        
         protected virtual bool BypassPostProcess => false;
+        protected virtual bool BypassModulate => false;
         
         protected abstract IDynamicExtractorSession<TEvent, TValue> MakeRawSession();
+        protected abstract IDynamicExtractorSession<TEvent, TValue> FollowSession(
+            TFollow follow, IDynamicExtractorSession<TEvent, TValue> session);
+
+        protected virtual IDynamicExtractorSession<TEvent, TValue> ModulateSession(
+            IDynamicExtractorSession<TEvent, TValue> session)
+            => session;
         
-        protected abstract IDynamicExtractorSession<TEvent, TValue> FollowSession(TFollow follow, IDynamicExtractorSession<TEvent, TValue> session);
-        
-        protected IDynamicExtractorSession<TEvent, TValue> CustomSession() => _extractor.Value.MakeSession();
-        protected IDynamicExtractorSession<TEvent, TValue> ConstantSession() => new ConstantExtractorSession<TEvent, TValue>(_constantValue);
+        protected IDynamicExtractorSession<TEvent, TValue> CustomSession() 
+            => _extractor.Value.MakeSession();
+        protected IDynamicExtractorSession<TEvent, TValue> ConstantSession() 
+            => new ConstantExtractorSession<TEvent, TValue>(_constantValue);
     }
 }
