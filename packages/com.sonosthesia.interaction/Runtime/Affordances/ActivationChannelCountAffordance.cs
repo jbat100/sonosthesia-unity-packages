@@ -12,7 +12,10 @@ namespace Sonosthesia.Interaction
             bool active = count > 0;
             foreach (GameObject target in _targets)
             {
-                target.SetActive(active);
+                if (target)
+                {
+                    target.SetActive(active);
+                }
             }
         }
     }

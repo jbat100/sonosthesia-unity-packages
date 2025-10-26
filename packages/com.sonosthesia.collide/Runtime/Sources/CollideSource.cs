@@ -8,6 +8,25 @@ using UnityEngine;
 
 namespace Sonosthesia.Collide
 {
+#if UNITY_EDITOR
+    using UnityEditor;
+
+    [CustomEditor(typeof(CollideSource), true)]
+    public class CollideSourceEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            DrawDefaultInspector();
+
+            CollideSource source = (CollideSource)target;
+            if(GUILayout.Button("Debug State"))
+            {
+                source.DebugState();
+            }
+        }
+    }
+#endif
+    
     public class CollideSource : InteractionEndpoint
     {
         [SerializeField] private Channel<CollideEvent> _channel;
@@ -28,6 +47,8 @@ namespace Sonosthesia.Collide
             public float StartTime;
             public float? EndTime;
 
+            public bool IsObsolete => EndTime.HasValue && EndTime.Value < Time.time;
+            
             public void End()
             {
                 if (Subject == null)
@@ -39,21 +60,46 @@ namespace Sonosthesia.Collide
                 Subject = null;
             }
         }
+
+        internal void DebugState()
+        {
+            Debug.Log($"{this} has {_collisionData.Count} collision data and {_residueData.Count} residue data");
+        }
         
         private readonly Dictionary<Collision, CollideData> _collisionData = new();
         private readonly HashSet<CollideData> _residueData = new();
         
         private static readonly HashSet<CollideData> _obsoleteData = new();
-
+        private static readonly HashSet<Collision> _obsoleteCollisions = new();
+        
         protected virtual void FixedUpdate()
         {
+            _obsoleteCollisions.Clear();
+            foreach (KeyValuePair<Collision, CollideData> pair in _collisionData)
+            {
+                if (pair.Value.IsObsolete)
+                {
+                    pair.Value.End();
+                    _obsoleteCollisions.Add(pair.Key);
+                }
+            }
+            foreach (Collision collision in _obsoleteCollisions)
+            {
+                _collisionData.Remove(collision);   
+            }
+            
             _obsoleteData.Clear();
             foreach (CollideData data in _residueData)
             {
-                if (data.EndTime.HasValue && data.EndTime.Value < Time.time)
+                Debug.Log($"{this} checking residue data end time {data.EndTime} time is {Time.time}");
+                if (data.IsObsolete)
                 {
                     data.End();
                     _obsoleteData.Add(data);
+                }
+                else
+                {
+                    data.Subject.OnNext(new CollideEvent(null, data.StartTime, this, data.Actor));
                 }
             }
             _residueData.ExceptWith(_obsoleteData);
@@ -76,6 +122,12 @@ namespace Sonosthesia.Collide
         protected virtual void OnCollisionEnter(Collision collision)
         {
             this.LogVerbose($"{this} {nameof(OnCollisionEnter)} {collision.ToDetailedString()}");
+
+            if (_collisionData.ContainsKey(collision))
+            {
+                this.LogWarning($"{this} {nameof(OnCollisionEnter)} already tracking collision {collision}");
+                return;
+            }
             
             CollideActor actor = collision.gameObject.GetComponent<CollideActor>();
 
