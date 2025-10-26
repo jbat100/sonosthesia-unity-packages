@@ -1,4 +1,5 @@
-﻿using Sonosthesia.Utils.Editor;
+﻿using Sonosthesia.Interaction;
+using Sonosthesia.Utils.Editor;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -35,16 +36,13 @@ namespace Sonosthesia.Instrument.Editor
 
             void UpdateVisibility()
             {
-                MIDIExtractorSettings.ExtractorType type 
-                    = (MIDIExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
+                MIDIExtractorType type = (MIDIExtractorType)extractorTypeProp.enumValueIndex;
+                InteractionExtractorOrigin origin = (InteractionExtractorOrigin)originProp.enumValueIndex;
                 
-                MIDIExtractorSettings.Origin origin 
-                    = (MIDIExtractorSettings.Origin)originProp.enumValueIndex;
-                
-                originField.Show(type is MIDIExtractorSettings.ExtractorType.Interactive or MIDIExtractorSettings.ExtractorType.Provider);
-                constantField.Show(type is MIDIExtractorSettings.ExtractorType.Constant);
-                extractorField.Show(type is MIDIExtractorSettings.ExtractorType.Interactive && origin is MIDIExtractorSettings.Origin.Self);
-                providerField.Show(type is MIDIExtractorSettings.ExtractorType.Provider && origin is MIDIExtractorSettings.Origin.Self);
+                originField.Show(type is MIDIExtractorType.Interactive or MIDIExtractorType.Provider);
+                constantField.Show(type is MIDIExtractorType.Constant);
+                extractorField.Show(type is MIDIExtractorType.Interactive && origin is InteractionExtractorOrigin.Self);
+                providerField.Show(type is MIDIExtractorType.Provider && origin is InteractionExtractorOrigin.Self);
             }
         }
     }

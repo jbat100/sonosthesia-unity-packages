@@ -46,8 +46,7 @@ namespace Sonosthesia.Collide.Editor
                 FloatCollideDynamicExtractorSettings.ExtractorType extractorType =
                     (FloatCollideDynamicExtractorSettings.ExtractorType)extractorTypeProp.enumValueIndex;
 
-                followStrategyField.Show(
-                    extractorType is not FloatCollideDynamicExtractorSettings.ExtractorType.Constant);
+                followStrategyField.Show(extractorType is not FloatCollideDynamicExtractorSettings.ExtractorType.Constant);
                 extractorField.Show(extractorType is FloatCollideDynamicExtractorSettings.ExtractorType.Custom);
                 constantValueField.Show(extractorType is FloatCollideDynamicExtractorSettings.ExtractorType.Constant);
                 velocityTypeField.Show(extractorType is FloatCollideDynamicExtractorSettings.ExtractorType.Velocity);

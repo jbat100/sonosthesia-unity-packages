@@ -1,27 +1,23 @@
-﻿using UnityEngine;
+﻿using System;
+using Sonosthesia.Interaction;
+using UnityEngine;
 
 namespace Sonosthesia.Instrument
 {
+    public enum MIDIExtractorType
+    {
+        Constant,
+        Provider,
+        Interactive
+    }
+    
+    [Serializable]
     public class MIDIExtractorSettings
     {
-        public enum ExtractorType
-        {
-            Constant,
-            Provider,
-            Interactive
-        }
-
-        public enum Origin
-        {
-            Self,
-            Source,
-            Actor
-        }
+        [SerializeField] private MIDIExtractorType _extractorType;
+        protected MIDIExtractorType ExtractorType => _extractorType;
         
-        [SerializeField] private ExtractorType _extractorType;
-        public ExtractorType extractorType => _extractorType;
-        
-        [SerializeField] private Origin _origin = Origin.Self;
-        public Origin origin => _origin;
+        [SerializeField] private InteractionExtractorOrigin _origin = InteractionExtractorOrigin.Self;
+        protected InteractionExtractorOrigin Origin => _origin;
     }
 }

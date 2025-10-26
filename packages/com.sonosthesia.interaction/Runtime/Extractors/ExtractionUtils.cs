@@ -1,8 +1,16 @@
-﻿using Sonosthesia.Utils;
+﻿using System;
+using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
+    public enum InteractionExtractorOrigin
+    {
+        Self,
+        Source,
+        Actor
+    }
+    
     public enum ExtractionSpace
     {
         World,
@@ -19,6 +27,18 @@ namespace Sonosthesia.Interaction
     
     public static class ExtractionUtils
     {
+        public static TComponent GetComponent<TEvent, TComponent>(this TEvent e, InteractionExtractorOrigin origin, TComponent self)
+            where TEvent : IInteractionEvent 
+        {
+            return origin switch
+            {
+                InteractionExtractorOrigin.Self => self,
+                InteractionExtractorOrigin.Source => e.Source.Transform.GetComponent<TComponent>(),
+                InteractionExtractorOrigin.Actor => e.Actor.Transform.GetComponent<TComponent>(),
+                _ => throw new NotSupportedException()
+            };
+        }
+        
         public static bool WorldToExtractionSpace<TEvent>(this TEvent e, ExtractionSpace extractionSpace, Vector3 point, out Vector3 result)
             where TEvent : IInteractionEvent
         {

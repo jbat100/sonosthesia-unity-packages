@@ -5,15 +5,13 @@ using Sonosthesia.Channel;
 
 namespace Sonosthesia.Interaction
 {
-    // Drives a ValueEvent<TValue, TEvent> channel from TEvent channel
-    
     public abstract class ChannelAffordanceController<TValue, TEvent, TAffordance> : AffordanceController<TEvent, TAffordance> 
         where TValue : struct
         where TEvent : struct
         where TAffordance : ChannelAffordance<TValue, TEvent>
     {
         private bool _active;
-        private BehaviorSubject<ValueEvent<TValue, TEvent>> _subject;
+        private BehaviorSubject<TValue> _subject;
         private TValue _original;
         
         public ChannelAffordanceController(Guid eventId, TAffordance affordance) : base(eventId, affordance)
@@ -35,21 +33,13 @@ namespace Sonosthesia.Interaction
                 return;
             }
 
-            ValueEvent<TValue, TEvent> valueEvent = new ValueEvent<TValue, TEvent>(_original, e);
+            _subject = new BehaviorSubject<TValue>(_original);
 
-            _subject = new BehaviorSubject<ValueEvent<TValue, TEvent>>(valueEvent);
-
-            IObservable<ValueEvent<TValue, TEvent>> output = _subject.AsObservable();
-            IObservable<TValue> values = output.Select(item => item.Value);
+            IObservable<TValue> values = _subject.AsObservable();
 
             if (Affordance.Output)
             {
-                Affordance.Output.Push(EventId, output);
-            }
-
-            if (Affordance.Values)
-            {
-                Affordance.Values.Push(EventId, values);
+                Affordance.Output.Push(EventId, values);
             }
 
             void PushToEndpoint(IInteractionEndpoint endpoint)
@@ -63,12 +53,6 @@ namespace Sonosthesia.Interaction
                 if (endpointValues)
                 {
                     endpointValues.Push(EventId, values);
-                }
-                
-                Channel<ValueEvent<TValue, TEvent>> endpointOutput = component.GetComponent<Channel<ValueEvent<TValue, TEvent>>>();
-                if (endpointOutput)
-                {
-                    endpointOutput.Push(EventId, output);
                 }
             }
 
@@ -88,7 +72,7 @@ namespace Sonosthesia.Interaction
                 return;
             }
 
-            _subject.OnNext(new ValueEvent<TValue, TEvent>(updated, e));
+            _subject.OnNext(updated);
         }
 
         protected sealed override void Teardown(TEvent e)
@@ -104,10 +88,7 @@ namespace Sonosthesia.Interaction
         where TValue : struct
         where TEvent : struct
     {
-        [SerializeField] private Channel<ValueEvent<TValue, TEvent>> _output;
-        public Channel<ValueEvent<TValue, TEvent>> Output => _output;
-        
-        [SerializeField] private Channel<TValue> _values;
-        public Channel<TValue> Values => _values;
+        [SerializeField] private Channel<TValue> _output;
+        public Channel<TValue> Output => _output;
     }
 }

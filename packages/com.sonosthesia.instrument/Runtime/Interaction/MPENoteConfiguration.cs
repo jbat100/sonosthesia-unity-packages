@@ -6,7 +6,8 @@ namespace Sonosthesia.Instrument
     public class MPENoteConfiguration<TEvent, TPitchExtractor, TStaticExtractor, TDynamicExtractor> 
         : ScriptableObject, IMPENoteConfiguration<TEvent>
         where TPitchExtractor : IMIDIPitchExtractor<TEvent>
-        where TStaticExtractor : IStaticExtractor<TEvent, float> where TDynamicExtractor : IDynamicExtractor<TEvent, float>
+        where TStaticExtractor : IStaticExtractor<TEvent, float> 
+        where TDynamicExtractor : IDynamicExtractor<TEvent, float>
     {
         [SerializeField] private bool _applyPressure;
         public bool ApplyPressure => _applyPressure;

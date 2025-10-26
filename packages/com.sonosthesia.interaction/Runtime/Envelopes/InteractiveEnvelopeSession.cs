@@ -66,7 +66,7 @@ namespace Sonosthesia.Interaction
             public virtual void End(TEvent e, out float release)
             {
                 release = 0f;
-            }
+            } 
 
             public virtual float Update()
             {

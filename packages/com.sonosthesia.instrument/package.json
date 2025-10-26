@@ -11,7 +11,8 @@
     "com.sonosthesia.pointer": "1.11.0",
     "com.sonosthesia.interaction": "1.11.0",
     "com.sonosthesia.scaffold": "1.11.0",
-    "com.sonosthesia.utils": "1.11.0"
+    "com.sonosthesia.utils": "1.11.0",
+    "com.sonosthesia.collide": "1.11.0"
   },
   "description": "Sonosthesia unity instrument",
   "displayName": "Sonosthesia Instrument",

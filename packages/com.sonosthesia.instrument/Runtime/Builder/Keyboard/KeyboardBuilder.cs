@@ -30,9 +30,11 @@ namespace Sonosthesia.Instrument
             public SingleUnityLayer Layer => _layer;
         }
         
-        [SerializeField] private int _startNote;
+        [SerializeField][Range(0, 15)] private int _channel;
         
-        [SerializeField] private int _endNote;
+        [SerializeField][Range(0, 127)] private int _startNote;
+        
+        [SerializeField][Range(0, 127)] private int _endNote;
 
         [SerializeField] private TransformProperties _whiteTransform;
 
