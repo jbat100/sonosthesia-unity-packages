@@ -38,12 +38,7 @@ namespace Sonosthesia.Interaction
             return session;
         }
         
-        public IDynamicExtractorSession<TEvent, TValue> SetupSession(TEvent e, out TValue result)
-        {
-            IDynamicExtractorSession<TEvent, TValue> session = MakeSession();
-            session.Setup(e, out result);
-            return session;
-        }
+
         
         protected virtual bool BypassFollow => false;
         protected virtual bool BypassPostProcess => false;

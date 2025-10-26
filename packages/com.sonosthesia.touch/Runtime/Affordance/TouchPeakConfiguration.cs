@@ -1,27 +1,11 @@
-﻿using Sonosthesia.Scheduler;
+﻿using Sonosthesia.Interaction;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
     [CreateAssetMenu(fileName = "TouchPeakConfiguration", menuName = "Sonosthesia/Touch/TouchPeakConfiguration")]
-    public class TouchPeakConfiguration: ScriptableObject
+    public class TouchPeakConfiguration : PeakConfiguration<TouchEvent, TouchEnvelopeSettings>
     {
-        [SerializeField] [Range(0, 1)] private float _randomization;
-        public float Randomization => _randomization;
-        
-        [SerializeField] private SchedulerSettings _scheduler;
-        public SchedulerSettings Scheduler => _scheduler;
 
-        [SerializeField] private TouchEnvelopeSettings _speed;
-        public TouchEnvelopeSettings Speed => _speed;
-        
-        [SerializeField] private TouchEnvelopeSettings _chaos;
-        public TouchEnvelopeSettings Chaos => _chaos;
-
-        [SerializeField] private TouchEnvelopeSettings _magnitude;
-        public TouchEnvelopeSettings Magnitude => _magnitude;
-
-        [SerializeField] private TouchEnvelopeSettings _duration;
-        public TouchEnvelopeSettings Duration => _duration;
     }
 }
