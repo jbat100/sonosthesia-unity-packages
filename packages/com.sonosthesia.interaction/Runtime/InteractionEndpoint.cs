@@ -1,4 +1,5 @@
-﻿using Sonosthesia.Dynamic;
+﻿using System.Collections.Generic;
+using Sonosthesia.Dynamic;
 using Sonosthesia.Utils;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
@@ -15,6 +16,9 @@ namespace Sonosthesia.Interaction
         
         [SerializeField] private InteractionLayerMask _interactionLayers = ~0;
         public InteractionLayerMask InteractionLayers => _interactionLayers;
+        
+        [SerializeField] private List<InteractionGate> _gates;
+        public IReadOnlyList<InteractionGate> Gates => _gates.AsReadOnly();
         
         Transform IInteractionEndpoint.Transform => transform; 
         

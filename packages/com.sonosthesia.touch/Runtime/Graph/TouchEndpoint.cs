@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using Sonosthesia.Dynamic;
 using Sonosthesia.Interaction;
-using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
@@ -13,9 +10,6 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private TouchNode _node;
         public TouchNode Node => _node;
-        
-        [SerializeField] private List<TouchActorGate> _gates;
-        public IReadOnlyList<TouchActorGate> Gates => _gates.AsReadOnly();
 
         private float? _enableTime;
         public float? TimeSinceEnable => Time.time - _enableTime;

@@ -11,7 +11,8 @@
     "com.sonosthesia.ease": "1.11.0",
     "com.sonosthesia.signal": "1.11.0",
     "com.sonosthesia.dynamic": "1.11.0",
-    "com.sonosthesia.scheduler": "1.11.0"
+    "com.sonosthesia.scheduler": "1.11.0",
+    "com.sonosthesia.xr": "1.11.0"
   },
   "description": "Sonosthesia unity interaction",
   "displayName": "Sonosthesia Interaction",

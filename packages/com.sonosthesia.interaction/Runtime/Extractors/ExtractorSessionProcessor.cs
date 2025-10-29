@@ -109,9 +109,10 @@ namespace Sonosthesia.Interaction
         
         public bool Setup(TEvent e, out TValue value)
         {
-            if (_session.Setup(e, out value))
+            value = default;
+            if (_session.Setup(e, out TValue reference))
             {
-                _reference = value;
+                _reference = reference;
                 return true;
             }
             return false;

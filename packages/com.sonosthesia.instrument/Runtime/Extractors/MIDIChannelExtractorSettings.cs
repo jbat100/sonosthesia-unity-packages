@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Sonosthesia.Instrument
 {
     [Serializable]
-    public abstract class MIDIChannelExtractorSettings<TEvent> : MIDIExtractorSettings, IMIDIChannelExtractor<TEvent>
+    public class MIDIChannelExtractorSettings<TEvent> : MIDIExtractorSettings, IMIDIChannelExtractor<TEvent>
         where TEvent : IInteractionEvent
     {
         [SerializeField] [Range(0, 15)] private int _constant;

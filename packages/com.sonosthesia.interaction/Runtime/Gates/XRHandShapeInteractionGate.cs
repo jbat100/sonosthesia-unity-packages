@@ -1,12 +1,12 @@
 using System;
-using Sonosthesia.XR;
 using UniRx;
 using UnityEngine;
 using UnityEngine.XR.Hands.Gestures;
+using Sonosthesia.XR;
 
-namespace Sonosthesia.Touch
+namespace Sonosthesia.Interaction
 {
-    public class XRHandShapeTouchActorGate : TouchActorGate
+    public class XRHandShapeInteractionGate : InteractionGate
     {
         [SerializeField] private XRHandShape _shape;
 
@@ -45,7 +45,7 @@ namespace Sonosthesia.Touch
             _subscription?.Dispose();
         }
 
-        protected override bool PerformCheck(ATouchSource source, TouchActor actor)
+        protected override bool PerformCheck(IInteractionEndpoint source, IInteractionEndpoint actor)
         {
             return _match;
         }

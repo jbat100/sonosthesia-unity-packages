@@ -1,9 +1,9 @@
 ﻿using Sonosthesia.Dynamic;
 using UnityEngine;
 
-namespace Sonosthesia.Touch
+namespace Sonosthesia.Interaction
 {
-    public class DirectionTouchActorGate : TouchActorGate
+    public class DirectionInteractionGate : InteractionGate
     {
         [SerializeField] private Vector3 _direction;
 
@@ -13,7 +13,7 @@ namespace Sonosthesia.Touch
 
         [SerializeField] private bool _local;
         
-        protected override bool PerformCheck(ATouchSource source, TouchActor actor)
+        protected override bool PerformCheck(IInteractionEndpoint source, IInteractionEndpoint actor)
         {
             TransformDynamicsMonitor monitor = actor.DynamicsMonitor;
             if (!monitor)
