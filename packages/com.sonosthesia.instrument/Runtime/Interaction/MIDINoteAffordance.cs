@@ -1,6 +1,7 @@
 ﻿using System;
 using Sonosthesia.Interaction;
 using Sonosthesia.MIDI;
+using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Instrument
@@ -71,6 +72,10 @@ namespace Sonosthesia.Instrument
 
         protected override IObserver<TEvent> MakeController(Guid id)
         {
+            if (_configuration?.Value == null)
+            {
+                this.LogError($"{this} expected configuration");
+            }
             return _configuration?.Value != null ? new Controller(id, this) : null;
         }
     }

@@ -30,7 +30,7 @@ namespace Sonosthesia.Interaction
     }
 
     [Serializable]
-    public abstract class FloatInteractionDynamicExtractorSettings<TEvent> : FloatDynamicExtractorSettings<TEvent> 
+    public class FloatInteractionDynamicExtractorSettings<TEvent> : FloatDynamicExtractorSettings<TEvent> 
         where TEvent : IInteractionEvent
     {
         public enum ExtractorType

@@ -5,9 +5,6 @@ namespace Sonosthesia.Touch
 {
     public abstract class TouchEndpoint : InteractionEndpoint
     {
-        [SerializeField] private bool _mute;
-        public bool Mute => _mute;
-
         [SerializeField] private TouchNode _node;
         public TouchNode Node => _node;
 

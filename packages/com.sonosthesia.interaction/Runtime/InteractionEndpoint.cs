@@ -17,6 +17,9 @@ namespace Sonosthesia.Interaction
         [SerializeField] private InteractionLayerMask _interactionLayers = ~0;
         public InteractionLayerMask InteractionLayers => _interactionLayers;
         
+        [SerializeField] private bool _mute;
+        public bool Mute => _mute;
+        
         [SerializeField] private List<InteractionGate> _gates;
         public IReadOnlyList<InteractionGate> Gates => _gates.AsReadOnly();
         
