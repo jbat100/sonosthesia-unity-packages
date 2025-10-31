@@ -11,6 +11,7 @@
     "com.sonosthesia.dynamic": "file:../../../packages/com.sonosthesia.dynamic",
     "com.sonosthesia.ease": "file:../../../packages/com.sonosthesia.ease",
     "com.sonosthesia.envelope": "file:../../../packages/com.sonosthesia.envelope",
+    "com.sonosthesia.extractor": "file:../../../packages/com.sonosthesia.extractor",
     "com.sonosthesia.flow": "file:../../../packages/com.sonosthesia.flow",
     "com.sonosthesia.fmod": "file:../../../packages/com.sonosthesia.fmod",
     "com.sonosthesia.fmodinteraction": "file:../../../packages/com.sonosthesia.fmodinteraction",
