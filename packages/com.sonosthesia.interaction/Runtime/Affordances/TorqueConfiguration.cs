@@ -1,4 +1,5 @@
 ﻿using System;
+using Sonosthesia.Extractor;
 using UnityEngine;
 
 namespace Sonosthesia.Interaction

@@ -6,6 +6,7 @@ using UnityEngine;
 namespace Sonosthesia.Trigger
 {
     [Serializable]
+    [Obsolete("Use EnvelopeSettings and float extractors")]
     public class ValueTriggerSettings<T> where T : struct
     {
         [SerializeField] private Selector<T> _valueSelector;
@@ -22,6 +23,7 @@ namespace Sonosthesia.Trigger
     }
 
     [Serializable]
+    [Obsolete("Use EnvelopeSettings and float extractors")]
     public class ValueStartTriggerSettings<T> where T : struct
     {
         [SerializeField] private Selector<T> _valueSelector;
@@ -46,6 +48,7 @@ namespace Sonosthesia.Trigger
     }
     
     [Serializable]
+    [Obsolete("Use EnvelopeSettings and float extractors")]
     public class ValueEndTriggerSettings<T> where T : struct
     {
         [SerializeField] private Selector<T> _timeSelector;

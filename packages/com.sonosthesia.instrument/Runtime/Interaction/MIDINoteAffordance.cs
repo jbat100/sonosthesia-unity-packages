@@ -1,4 +1,5 @@
 ﻿using System;
+using Sonosthesia.Extractor;
 using Sonosthesia.Interaction;
 using Sonosthesia.MIDI;
 using Sonosthesia.Utils;

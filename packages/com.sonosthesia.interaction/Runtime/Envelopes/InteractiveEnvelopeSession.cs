@@ -1,5 +1,6 @@
 ﻿using System;
 using Sonosthesia.Envelope;
+using Sonosthesia.Extractor;
 using Sonosthesia.Trigger;
 using UnityEngine;
 

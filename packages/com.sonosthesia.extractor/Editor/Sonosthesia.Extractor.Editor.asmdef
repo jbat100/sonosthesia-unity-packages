@@ -1,0 +1,21 @@
+{
+  "name": "Sonosthesia.Extractor.Editor",
+  "rootNamespace": "Sonosthesia.Extractor.Editor",
+  "references": [
+    "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+    "GUID:25e5e4b6f3916462c92ecc1d0ffca2c2",
+    "GUID:2245e48b5125eac4abb4249020b54111",
+    "GUID:da4dcb349cd2457b9de2fe9f9ea29a3d"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": true,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

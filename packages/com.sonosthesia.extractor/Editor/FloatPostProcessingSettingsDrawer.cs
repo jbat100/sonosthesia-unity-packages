@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
-namespace Sonosthesia.Interaction.Editor
+namespace Sonosthesia.Extractor.Editor
 {
     [CustomPropertyDrawer(typeof(FloatPostProcessingSettings))]
     public class FloatPostProcessingSettingsDrawer : PropertyDrawer

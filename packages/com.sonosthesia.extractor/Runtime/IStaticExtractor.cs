@@ -1,4 +1,4 @@
-﻿namespace Sonosthesia.Interaction
+﻿namespace Sonosthesia.Extractor
 {
     public interface IStaticExtractor<in TEvent, TValue>
     {

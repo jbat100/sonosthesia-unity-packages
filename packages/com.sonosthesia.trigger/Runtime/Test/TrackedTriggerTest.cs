@@ -27,7 +27,6 @@ namespace Sonosthesia.Trigger
     }
 #endif
     
-    [RequireComponent(typeof(Trigger))]
     public class TrackedTriggerTest : MonoBehaviour
     {
         [SerializeField] private float _valueScale = 1f;
@@ -38,12 +37,16 @@ namespace Sonosthesia.Trigger
         
         [SerializeField] private EnvelopeFactory _endEnvelope;
         
+        [SerializeField] private Trigger _trigger;
+        
         private Guid _current;
-        private Trigger _trigger;
 
         protected virtual void Awake()
         {
-            _trigger = GetComponent<Trigger>();
+            if (!_trigger)
+            {
+                _trigger = GetComponent<Trigger>();
+            }
         }
 
         public void StartTrigger() => StartTrigger(_valueScale, _timeScale);
@@ -55,7 +58,7 @@ namespace Sonosthesia.Trigger
                 EndTrigger(timeScale);
             }
             IEnvelope envelope = _startEnvelope.Build();
-            _current = _trigger.TriggerController.StartTrigger(envelope, valueScale, timeScale);
+            _current = _trigger.TriggerController.StartTrigger(envelope, valueScale * _valueScale, timeScale * _timeScale);
         }
 
         public void EndTrigger() => EndTrigger(_timeScale);

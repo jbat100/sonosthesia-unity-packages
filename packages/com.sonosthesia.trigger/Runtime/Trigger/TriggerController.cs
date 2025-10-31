@@ -1,6 +1,5 @@
 using System;
 using Sonosthesia.Envelope;
-using UnityEngine;
 
 namespace Sonosthesia.Trigger
 {

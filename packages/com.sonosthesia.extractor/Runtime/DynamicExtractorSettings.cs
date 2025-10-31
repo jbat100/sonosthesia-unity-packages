@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Sonosthesia.Interaction
+namespace Sonosthesia.Extractor
 {
     [Serializable]
     public abstract class DynamicExtractorSettings<TEvent, TValue, TFollow, TProcessing> : IDynamicExtractor<TEvent, TValue>

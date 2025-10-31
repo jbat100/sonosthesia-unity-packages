@@ -1,4 +1,4 @@
-﻿namespace Sonosthesia.Interaction
+﻿namespace Sonosthesia.Extractor
 {
     public interface IDynamicExtractor<in TEvent, TValue> where TValue : struct
     {

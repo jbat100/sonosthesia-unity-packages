@@ -1,8 +1,6 @@
 using System;
-using Sonosthesia.Utils;
-using UnityEngine;
 
-namespace Sonosthesia.Interaction
+namespace Sonosthesia.Extractor
 {
     public abstract class ExtractorSessionProcessor<TEvent, TValue> : IDynamicExtractorSession<TEvent, TValue> 
         where TValue : struct
@@ -176,103 +174,4 @@ namespace Sonosthesia.Interaction
             return false;
         }
     }
-    
-    public class VelocityFloatExtractorSession<TEvent> : StatelessExtractorSession<TEvent, float> where TEvent : IInteractionEvent
-    {
-        private readonly VelocityExtractionType _type;
-            
-        public VelocityFloatExtractorSession(VelocityExtractionType type)
-        {
-            _type = type;
-        }
-
-        protected override bool Extract(TEvent e, out float value) => e.ExtractVelocity(_type, out value);
-    }
-    
-    public class DirectionVectorExtractorSession<TEvent> : StatelessExtractorSession<TEvent, Vector3> where TEvent : IInteractionEvent
-    {
-        private readonly ExtractionSpace _space;
-        private readonly Vector3 _direction;
-            
-        public DirectionVectorExtractorSession(ExtractionSpace space, Vector3 direction)
-        {
-            _space = space;
-            _direction = direction;
-        }
-
-        protected override bool Extract(TEvent e, out Vector3 value) => e.TransformPoint(_space, _direction, out value);
-    }
-
-    public class VelocityVectorExtractorSession<TEvent> : StatelessExtractorSession<TEvent, Vector3> where TEvent : IInteractionEvent
-    {
-        private readonly VelocityExtractionType _velocityType;
-            
-        public VelocityVectorExtractorSession(VelocityExtractionType velocityType)
-        {
-            _velocityType = velocityType;
-        }
-            
-        protected override bool Extract(TEvent e, out Vector3 value) => e.ExtractVelocity(_velocityType, out value);
-    }
-    
-    public class VectorRelativeSession<TEvent> : RelativeSession<TEvent, Vector3>
-    {
-        public VectorRelativeSession(IDynamicExtractorSession<TEvent, Vector3> session) : base(session)
-        {
-        }
-
-        protected override Vector3 Relative(Vector3 value, Vector3 reference) => value - reference;
-    }
-
-    public class RelativePositionVectorExtractionSession<TEvent> : StatelessExtractorSession<TEvent, Vector3> where TEvent : IInteractionEvent
-    {
-        protected override bool Extract(TEvent e, out Vector3 value) => e.ExtractRelativePosition(out value);
-    }
-
-    public class AxisVectorExtractionSession<TEvent> : StatelessExtractorSession<TEvent, Vector3> where TEvent : IInteractionEvent
-    {
-        protected override bool Extract(TEvent e, out Vector3 value) => e.ExtractAxis(out value);
-    }
-    
-    public class ActorToSourceDistanceSession<TEvent> : StatelessExtractorSession<TEvent, float> where TEvent : IInteractionEvent
-    {
-        private readonly Axes _axes;
-            
-        public ActorToSourceDistanceSession(Axes axes)
-        {
-            _axes = axes;
-        }
-
-        protected override bool Extract(TEvent e, out float value) => e.ActorToSourceDistance(_axes, out value);
-    }
-
-    public class HeightFloatExtractorSession<TEvent> : StatelessExtractorSession<TEvent, float> where TEvent : IInteractionEvent
-    {
-        protected override bool Extract(TEvent e, out float value)
-        {
-            value = e.Actor.Transform.position.y;
-            return true;
-        }
-    }
-
-    public class TwistFloatExtractorSession<TEvent> : IDynamicExtractorSession<TEvent, float> where TEvent : IInteractionEvent
-    {
-        private Quaternion _referenceRotation;
-
-        private bool Common(TEvent e, out float value)
-        {
-            Quaternion rotation = e.Actor.Transform.rotation;
-            value = Quaternion.Angle(_referenceRotation, rotation) / 180f;
-            return true;
-        }
-            
-        public bool Setup(TEvent e, out float value)
-        {
-            _referenceRotation = e.Actor.Transform.rotation;
-            return Common(e, out value);
-        }
-
-        public bool Update(TEvent e, out float value) => Common(e, out value);
-    }
-
 }

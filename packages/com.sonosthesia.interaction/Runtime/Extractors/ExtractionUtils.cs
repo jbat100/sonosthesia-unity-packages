@@ -1,4 +1,5 @@
 ﻿using System;
+using Sonosthesia.Extractor;
 using Sonosthesia.Utils;
 using UnityEngine;
 
@@ -140,5 +141,207 @@ namespace Sonosthesia.Interaction
                     return false;
             }
         }
+    }
+    
+    public class VelocityFloatExtractorSession<TEvent> : StatelessExtractorSession<TEvent, float> where TEvent : IInteractionEvent
+    {
+        private readonly VelocityExtractionType _type;
+            
+        public VelocityFloatExtractorSession(VelocityExtractionType type)
+        {
+            _type = type;
+        }
+
+        protected override bool Extract(TEvent e, out float value) => e.ExtractVelocity(_type, out value);
+    }
+    
+    public class DirectionVectorExtractorSession<TEvent> : StatelessExtractorSession<TEvent, Vector3> where TEvent : IInteractionEvent
+    {
+        private readonly ExtractionSpace _space;
+        private readonly Vector3 _direction;
+            
+        public DirectionVectorExtractorSession(ExtractionSpace space, Vector3 direction)
+        {
+            _space = space;
+            _direction = direction;
+        }
+
+        protected override bool Extract(TEvent e, out Vector3 value) => e.TransformPoint(_space, _direction, out value);
+    }
+
+    public class VelocityVectorExtractorSession<TEvent> : StatelessExtractorSession<TEvent, Vector3> where TEvent : IInteractionEvent
+    {
+        private readonly VelocityExtractionType _velocityType;
+            
+        public VelocityVectorExtractorSession(VelocityExtractionType velocityType)
+        {
+            _velocityType = velocityType;
+        }
+            
+        protected override bool Extract(TEvent e, out Vector3 value) => e.ExtractVelocity(_velocityType, out value);
+    }
+    
+
+
+    public class RelativePositionVectorExtractionSession<TEvent> : StatelessExtractorSession<TEvent, Vector3> where TEvent : IInteractionEvent
+    {
+        protected override bool Extract(TEvent e, out Vector3 value) => e.ExtractRelativePosition(out value);
+    }
+
+    public class AxisVectorExtractionSession<TEvent> : StatelessExtractorSession<TEvent, Vector3> where TEvent : IInteractionEvent
+    {
+        protected override bool Extract(TEvent e, out Vector3 value) => e.ExtractAxis(out value);
+    }
+    
+    public class ActorToSourceDistanceSession<TEvent> : StatelessExtractorSession<TEvent, float> where TEvent : IInteractionEvent
+    {
+        private readonly Axes _axes;
+            
+        public ActorToSourceDistanceSession(Axes axes)
+        {
+            _axes = axes;
+        }
+
+        protected override bool Extract(TEvent e, out float value) => e.ActorToSourceDistance(_axes, out value);
+    }
+
+    public class HeightFloatExtractorSession<TEvent> : StatelessExtractorSession<TEvent, float> where TEvent : IInteractionEvent
+    {
+        protected override bool Extract(TEvent e, out float value)
+        {
+            value = e.Actor.Transform.position.y;
+            return true;
+        }
+    }
+
+    public class TwistFloatExtractorSession<TEvent> : IDynamicExtractorSession<TEvent, float> where TEvent : IInteractionEvent
+    {
+        private Quaternion _referenceRotation;
+
+        private bool Common(TEvent e, out float value)
+        {
+            Quaternion rotation = e.Actor.Transform.rotation;
+            value = Quaternion.Angle(_referenceRotation, rotation) / 180f;
+            return true;
+        }
+            
+        public bool Setup(TEvent e, out float value)
+        {
+            _referenceRotation = e.Actor.Transform.rotation;
+            return Common(e, out value);
+        }
+
+        public bool Update(TEvent e, out float value) => Common(e, out value);
+    }
+    
+    
+    [Serializable]
+    public class FloatInteractionDynamicExtractorSettings<TEvent> : FloatDynamicExtractorSettings<TEvent> 
+        where TEvent : IInteractionEvent
+    {
+        public enum ExtractorType
+        {
+            Custom,
+            Constant,
+            Velocity,
+            Distance,
+            Twist,
+            Height
+        }
+        
+        [SerializeField] private ExtractorType _extractorType = ExtractorType.Constant;
+        
+        [SerializeField] private VelocityExtractionType _velocityType = VelocityExtractionType.Actor;
+        
+        [SerializeField] private Axes _axes = Axes.X | Axes.Y | Axes.Z;
+        
+        protected override bool BypassFollow => _extractorType == ExtractorType.Constant;
+        
+        protected override IDynamicExtractorSession<TEvent, float> MakeRawSession() => _extractorType switch
+        {
+            ExtractorType.Custom => CustomSession(),
+            ExtractorType.Constant => ConstantSession(),
+            ExtractorType.Velocity => new VelocityFloatExtractorSession<TEvent>(_velocityType),
+            ExtractorType.Distance => new ActorToSourceDistanceSession<TEvent>(_axes),
+            ExtractorType.Twist => new TwistFloatExtractorSession<TEvent>(),
+            ExtractorType.Height => new HeightFloatExtractorSession<TEvent>(),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+    
+    
+    public abstract class InteractionStaticExtractorSettings<TEvent, TValue, TProcessing>
+        : StaticExtractorSettings<TEvent, TValue, TProcessing>
+        where TEvent : IInteractionEvent
+        where TValue : struct
+        where TProcessing : IPostProcessing<TValue>
+    {
+        [SerializeField] private VelocityExtractionType _velocityType = VelocityExtractionType.Actor;
+        
+        [SerializeField] private Axes _axes = Axes.X | Axes.Y | Axes.Z;
+        
+        protected bool ExtractVelocity(TEvent e, out float value) => e.ExtractVelocity(_velocityType, out value);
+        protected bool ExtractDistance(TEvent e, out float value) => e.ExtractDistance(_axes, out value);
+    }
+
+    // can't nest in FloatInteractionStaticExtractorSettings because need to refer to it in template editor
+    public enum FloatInteractionStaticExtractorType
+    {
+        Custom,
+        Constant,
+        Velocity,
+        Distance
+    }
+    
+    public class FloatInteractionStaticExtractorSettings<TEvent, TProcessing>
+        : InteractionStaticExtractorSettings<TEvent, float, TProcessing>
+        where TEvent : IInteractionEvent
+        where TProcessing : IPostProcessing<float>
+    {
+        [SerializeField] private FloatInteractionStaticExtractorType _extractorType 
+            = FloatInteractionStaticExtractorType.Constant;
+        
+        protected override bool ExtractRaw(TEvent e, out float value) => _extractorType switch
+        {
+            FloatInteractionStaticExtractorType.Custom => ExtractCustom(e, out value),
+            FloatInteractionStaticExtractorType.Constant => ExtractConstant(e, out value),
+            FloatInteractionStaticExtractorType.Velocity => ExtractVelocity(e, out value),
+            FloatInteractionStaticExtractorType.Distance => ExtractDistance(e, out value),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+    
+    
+    [Serializable]
+    public abstract class InteractionVectorDynamicExtractorSettings<TEvent> : VectorDynamicExtractorSettings<TEvent>
+        where TEvent : IInteractionEvent
+    {
+        [SerializeField] private VelocityExtractionType _velocityType;
+        
+        [SerializeField] private ExtractionSpace _space;
+
+        [SerializeField] private Vector3 _direction;
+        
+        protected ExtractionSpace Space => _space;
+        
+        protected IDynamicExtractorSession<TEvent, Vector3> DirectionSession() => new DirectionVectorExtractorSession<TEvent>(_space, _direction);
+        protected IDynamicExtractorSession<TEvent, Vector3> VelocitySession() => new VelocityVectorExtractorSession<TEvent>(_velocityType);
+        protected IDynamicExtractorSession<TEvent, Vector3> RelativeSession() => new RelativePositionVectorExtractionSession<TEvent>();
+        protected IDynamicExtractorSession<TEvent, Vector3> AxisSession() => new AxisVectorExtractionSession<TEvent>();
+    }
+    
+    public abstract class InteractionVectorStaticExtractorSettings<TEvent> : VectorStaticExtractorSettings<TEvent>
+        where TEvent : IInteractionEvent
+    {
+        [SerializeField] private VelocityExtractionType _velocityType;
+        
+        [SerializeField] private ExtractionSpace _space;
+
+        [SerializeField] private Vector3 _direction;
+        
+        protected bool ExtractDirection(TEvent e, out Vector3 value) => e.TransformPoint(_space, _direction, out value);
+        protected bool ExtractVelocity(TEvent e, out Vector3 value) => e.ExtractVelocity(_velocityType, out value);
+        protected bool ExtractRelative(TEvent e, out Vector3 value) => e.ExtractRelativePosition(out value);
+        protected bool ExtractAxis(TEvent e, out Vector3 value) => e.ExtractAxis(out value);
     }
 }

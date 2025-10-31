@@ -2,7 +2,7 @@
 using Sonosthesia.Utils;
 using UnityEngine;
 
-namespace Sonosthesia.Interaction
+namespace Sonosthesia.Extractor
 {
     [Serializable]
     public class FloatPostProcessingSettings : IPostProcessing<float>

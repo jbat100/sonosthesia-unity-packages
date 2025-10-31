@@ -22,7 +22,6 @@ namespace Sonosthesia.Trigger
     }
 #endif
     
-    [RequireComponent(typeof(Trigger))]
     public class TriggerTest : MonoBehaviour
     {
         [SerializeField] private float _valueScale = 1f;
@@ -31,13 +30,24 @@ namespace Sonosthesia.Trigger
 
         [SerializeField] private EnvelopeFactory _envelope;
         
-        private Trigger _trigger;
+        [SerializeField] private Trigger _trigger;
 
-        protected void Awake() => _trigger = GetComponent<Trigger>();
+        protected void Awake()
+        {
+            if (!_trigger)
+            {
+                _trigger = GetComponent<Trigger>();
+            }
+        } 
 
         public void Trigger()
         {
             _trigger.TriggerController.PlayTrigger(_envelope?.Build(), _valueScale, _timeScale);
+        }
+        
+        public void Trigger(float valueScale)
+        {
+            _trigger.TriggerController.PlayTrigger(_envelope?.Build(), _valueScale * valueScale, _timeScale);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Sonosthesia.Interaction
+namespace Sonosthesia.Extractor
 {
     public abstract class StaticExtractor<TEvent, TValue> : ScriptableObject, IStaticExtractor<TEvent, TValue>
        where TValue : struct

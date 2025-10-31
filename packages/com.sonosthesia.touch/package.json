@@ -16,7 +16,8 @@
     "com.sonosthesia.envelope": "1.11.0",
     "com.sonosthesia.ease": "1.11.0",
     "com.sonosthesia.xr": "1.11.0",
-    "com.sonosthesia.scheduler": "1.11.0"
+    "com.sonosthesia.scheduler": "1.11.0",
+    "com.sonosthesia.extractor": "1.11.0"
   },
   "description": "Sonosthesia unity touch",
   "displayName": "Sonosthesia Touch",

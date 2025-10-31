@@ -5,6 +5,7 @@ using UniRx;
 
 namespace Sonosthesia.Trigger
 {
+    [Obsolete("Use TriggerAffordance")]
     public class ChannelTrackedTrigger<T> : MonoBehaviour where T : struct
     {
         [Header("Source")]

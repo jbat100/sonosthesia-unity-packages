@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sonosthesia.Interaction
+namespace Sonosthesia.Extractor
 {
     public abstract class DynamicExtractor<TEvent, TValue> : ScriptableObject, IDynamicExtractor<TEvent, TValue>
         where TValue : struct

@@ -1,4 +1,4 @@
-﻿using Sonosthesia.Interaction;
+﻿using Sonosthesia.Extractor;
 
 namespace Sonosthesia.Instrument
 {

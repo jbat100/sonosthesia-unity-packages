@@ -1,4 +1,5 @@
 using System;
+using Sonosthesia.Extractor;
 using Sonosthesia.Interaction;
 using Sonosthesia.Utils;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine;
 namespace Sonosthesia.Pointer
 {
     [Serializable]
-    public class FloatPointerDynamicExtractorSettings : FloatDynamicExtractorSettings<PointerEvent>
+    public class FloatPointerDynamicExtractorSettings : FloatDynamicExtractorSettings<PointerEvent>, IDynamicExtractor<PointerEvent, float>
     {
         public enum ExtractorType
         {

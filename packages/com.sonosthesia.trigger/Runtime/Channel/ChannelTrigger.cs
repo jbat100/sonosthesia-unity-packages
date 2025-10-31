@@ -1,9 +1,7 @@
 using System;
 using UniRx;
 using UnityEngine;
-using Sonosthesia.Utils;
 using Sonosthesia.Channel;
-using Sonosthesia.Envelope;
 
 namespace Sonosthesia.Trigger
 {
@@ -12,6 +10,7 @@ namespace Sonosthesia.Trigger
     /// for value and time factors
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    [Obsolete("Use TriggerAffordance")]
     public class ChannelTrigger<T> : MonoBehaviour where T : struct
     {
         [Header("Source")]

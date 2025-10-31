@@ -1,5 +1,5 @@
 ﻿using System;
-using Sonosthesia.Interaction;
+using Sonosthesia.Extractor;
 using Sonosthesia.Utils;
 using UnityEngine;
 
