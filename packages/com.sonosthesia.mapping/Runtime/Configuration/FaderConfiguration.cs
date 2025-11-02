@@ -1,4 +1,5 @@
 using System;
+using Sonosthesia.Processing;
 using Sonosthesia.Utils;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -18,15 +19,12 @@ namespace Sonosthesia.Mapping
 
         [SerializeField] private float _constantValue;
         
-        [SerializeField] private FloatProcessingType _processing;
-        [SerializeField] private AnimationCurve _curve = AnimationCurve.Linear(0, 0, 1, 1);
-        [SerializeField] private RemapSettings _remap;
-        [SerializeField] private FloatRange _clamp;
+        [SerializeField] private FloatProcessorSettings _processorSettings;
         
         public float Fade(float input) => _faderType switch
         {
             FloatFaderType.Constant => _constantValue,
-            FloatFaderType.Process => _processing.ProcessFloat(input, _curve, _remap, _clamp),
+            FloatFaderType.Process => _processorSettings.Process(input),
             _ => 0
         };
     }

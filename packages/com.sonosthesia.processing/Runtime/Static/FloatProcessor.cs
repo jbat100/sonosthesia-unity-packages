@@ -1,7 +1,8 @@
 ﻿using System;
+using Sonosthesia.Utils;
 using UnityEngine;
 
-namespace Sonosthesia.Utils
+namespace Sonosthesia.Processing
 {
     [Flags]
     public enum FloatProcessingType
@@ -10,12 +11,13 @@ namespace Sonosthesia.Utils
         Remap = 1 << 1,
         Clamp = 1 << 2,
         Abs = 1 << 3,
+        Randomize = 1 << 4
     }
 
     public static class FloatProcessingExtensions
     {
         public static float ProcessFloat(this FloatProcessingType processingType, float value,
-            AnimationCurve curve, RemapSettings remap, FloatRange clamp)
+            AnimationCurve curve, RemapSettings remap, FloatRange clamp, float randomization)
         {
             if (processingType.HasFlag(FloatProcessingType.Curve))
             {
@@ -37,40 +39,12 @@ namespace Sonosthesia.Utils
                 value = Mathf.Abs(value);
             }
             
-            return value;
-        }
-    }
-    
-    [Serializable]
-    public class FloatProcessor : IProcessor<float>
-    {
-        [SerializeField] private bool _abs;
-        
-        [SerializeField] private float _scale = 1f;
-
-        [SerializeField] private float _offset;
-
-        [SerializeField] private bool _clamp;
-
-        [SerializeField] private Vector2 _clampRange;
-        
-        public float Process(float value)
-        {
-            float result = value;
-
-            if (_abs)
+            if (processingType.HasFlag(FloatProcessingType.Randomize))
             {
-                result = _abs ? Mathf.Abs(value) : value;
+                value = value.NormalizedRandomization(randomization);
             }
             
-            result = _offset + result * _scale;
-
-            if (_clamp)
-            {
-                result = Mathf.Clamp(result, _clampRange.x, _clampRange.y);
-            }
-
-            return result;
+            return value;
         }
     }
 }

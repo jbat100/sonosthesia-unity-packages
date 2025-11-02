@@ -1,8 +1,8 @@
-﻿using Sonosthesia.Utils;
+﻿using Sonosthesia.Processing;
 
 namespace Sonosthesia.Generator
 {
-    public class FloatSignalScanner : SignalScanner<float, FloatProcessor>
+    public class FloatSignalScanner : SignalScanner<float, FloatProcessorSettings>
     {
         
     }

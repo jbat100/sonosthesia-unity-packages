@@ -1,4 +1,5 @@
 using System;
+using Sonosthesia.Processing;
 using Sonosthesia.Utils;
 using UnityEngine;
 
@@ -14,10 +15,9 @@ namespace Sonosthesia.PeakDetector
         [SerializeField] private float _maximumDuration = .1f;
         public float MaximumDuration => _maximumDuration;
 
-        [SerializeField] private FloatProcessor _valuePostProcessor;
-        public FloatProcessor ValuePostProcessor => _valuePostProcessor;
+        [SerializeField] private FloatProcessorSettings _valuePostProcessor;
+        public FloatProcessorSettings ValuePostProcessor => _valuePostProcessor;
         
-        public override PeakDetectorSettings Settings =>
-            new PeakDetectorSettings(_magnitudeThreshold, _maximumDuration, _valuePostProcessor);
+        public override PeakDetectorSettings Settings => new (_magnitudeThreshold, _maximumDuration, _valuePostProcessor);
     }
 }

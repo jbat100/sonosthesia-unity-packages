@@ -14,10 +14,10 @@ namespace Sonosthesia.PeakDetector
         [SerializeField] private float _maximumDuration = .1f;
         public float MaximumDuration => _maximumDuration;
 
-        [SerializeField] private FloatProcessor _valuePostProcessor;
-        public FloatProcessor ValuePostProcessor => _valuePostProcessor;
+        [SerializeField] private FloatProcessorSettings _valuePostProcessor;
+        public FloatProcessorSettings ValuePostProcessor => _valuePostProcessor;
 
-        public PeakDetectorSettings(float magnitudeThreshold, float maximumDuration, FloatProcessor valuePostProcessor)
+        public PeakDetectorSettings(float magnitudeThreshold, float maximumDuration, FloatProcessorSettings valuePostProcessor)
         {
             _magnitudeThreshold = magnitudeThreshold;
             _maximumDuration = maximumDuration;

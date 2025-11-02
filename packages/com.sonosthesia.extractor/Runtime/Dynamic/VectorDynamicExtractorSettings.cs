@@ -1,4 +1,5 @@
 ﻿using System;
+using Sonosthesia.Processing;
 using UnityEngine;
 
 namespace Sonosthesia.Extractor
@@ -21,7 +22,7 @@ namespace Sonosthesia.Extractor
     
     [Serializable]
     public abstract class VectorDynamicExtractorSettings<TEvent> 
-        : DynamicExtractorSettings<TEvent, Vector3, VectorFollowStrategy, VectorPostProcessingSettings> 
+        : DynamicExtractorSettings<TEvent, Vector3, VectorFollowStrategy, VectorProcessorSettings> 
     {
         protected override IDynamicExtractorSession<TEvent, Vector3> FollowSession(VectorFollowStrategy follow, 
             IDynamicExtractorSession<TEvent, Vector3> session)

@@ -34,10 +34,10 @@ namespace Sonosthesia.Collide.Editor
             root.AddRelativeField(property, "_space", 
                 out SerializedProperty _, out PropertyField spaceField, false);
             
-            root.AddRelativeField(property, "_postProcessing", 
-                out SerializedProperty postProcessingProp, out PropertyField _);
+            root.AddRelativeField(property, "_processor", 
+                out SerializedProperty _, out PropertyField _);
 
-            root.UpdateVisibility(UpdateVisibility, extractorTypeProp, postProcessingProp);
+            root.UpdateVisibility(UpdateVisibility, extractorTypeProp);
             
             return root;
 

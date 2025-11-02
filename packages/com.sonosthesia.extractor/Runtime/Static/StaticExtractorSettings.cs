@@ -1,5 +1,4 @@
-﻿using System;
-using Sonosthesia.Utils;
+﻿using Sonosthesia.Processing;
 using UnityEngine;
 
 namespace Sonosthesia.Extractor
@@ -7,11 +6,11 @@ namespace Sonosthesia.Extractor
     // used for extracting a value based on a single TEvent, usually the first in the event stream 
     // for situations where after touch is not possible (e.g. MIDI note, velocity or channel selection) 
     
-    public abstract class StaticExtractorSettings<TEvent, TValue, TProcessing> : IStaticExtractor<TEvent, TValue>
+    public abstract class StaticExtractorSettings<TEvent, TValue, TProcessor> : IStaticExtractor<TEvent, TValue>
         where TValue : struct
-        where TProcessing : IPostProcessing<TValue>
+        where TProcessor : IProcessor<TValue>
     {
-        [SerializeField] private TProcessing _postProcessing;
+        [SerializeField] private TProcessor _processor;
         
         [SerializeField] private InterfaceReference<IStaticExtractor<TEvent, TValue>> _extractor;
         
@@ -32,7 +31,7 @@ namespace Sonosthesia.Extractor
                 return false;
             }
 
-            value = _postProcessing.PostProcess(value);
+            value = _processor.Process(value);
             return true;
         }
 

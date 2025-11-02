@@ -6,49 +6,52 @@ using UniRx;
 
 namespace Sonosthesia.Signal
 {
-    public abstract class Target<T> : MonoBehaviour, ILogSwitch where T : struct
+    public abstract class Target<TValue, TProcessor> : MonoBehaviour, ILogSwitch 
+        where TValue : struct where TProcessor : IProcessor<TValue>
     {
         [SerializeField] private bool _log;
         public bool Log => _log;
         
-        [SerializeField] private Signal<T> _source;
+        [SerializeField] private Signal<TValue> _source;
 
         [SerializeField] private bool _distinct = true; 
 
-        [SerializeField] private DynamicProcessorFactory<T> _processingFactory;
+        [SerializeField] private DynamicProcessorFactory<TValue> _processingFactory;
+        
+        [SerializeField] private TProcessor _processor;
 
         private IDisposable _subscription;
-        private IDynamicProcessor<T> _processor;
+        private IDynamicProcessor<TValue> _dynamicProcessor;
 
         protected virtual void Awake()
         {
             if (!_source)
             {
-                _source = GetComponent<Signal<T>>();
+                _source = GetComponent<Signal<TValue>>();
             }
         }
         
         protected virtual void OnEnable() 
         {
             _subscription?.Dispose();
-            _processor = null;
+            _dynamicProcessor = null;
             
             if (!_source)
             {
                 return;
             }
             
-            _processor = _processingFactory ? _processingFactory.Make() : null;
+            _dynamicProcessor = _processingFactory ? _processingFactory.Make() : null;
 
-            IObservable<T> observable =
+            IObservable<TValue> observable =
                 _distinct ? _source.SignalObservable.DistinctUntilChanged() : _source.SignalObservable;
 
-            if (_processor != null)
+            if (_dynamicProcessor != null)
             {
                 float startTime = Time.time;
                 _subscription = observable.Subscribe(value =>
                 {
-                    T processed = _processor.Process(value, Time.time - startTime); 
+                    TValue processed = _processor.Process(_dynamicProcessor.Process(value, Time.time - startTime)); 
                     this.LogVerbose($"{this} {nameof(Apply)} {processed}");
                     Apply(processed);
                 });    
@@ -58,18 +61,23 @@ namespace Sonosthesia.Signal
                 _subscription = observable.Subscribe(value =>
                 {
                     this.LogVerbose($"{this} {nameof(Apply)} {value}");
-                    Apply(value);
+                    Apply(_processor.Process(value));
                 }); 
             }
         }
 
         protected virtual void OnDisable()
         {
-            _processor = null;
+            _dynamicProcessor = null;
             _subscription?.Dispose();
             _subscription = null;
         }
 
-        protected abstract void Apply(T value);
+        protected abstract void Apply(TValue value);
+    }
+
+    public abstract class Target<TValue> : Target<TValue, PassthroughProcessor<TValue>> where TValue : struct
+    {
+        
     }
 }

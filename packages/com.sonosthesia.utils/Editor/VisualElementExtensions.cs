@@ -21,13 +21,7 @@ namespace Sonosthesia.Utils.Editor
             }
             root.schedule.Execute(action).ExecuteLater(0);
         }
-
-        public static void Show(this FloatProcessingType processingType, PropertyField curve, PropertyField remap, PropertyField clamp)
-        {
-            curve.Show(processingType.HasFlag(FloatProcessingType.Curve));
-            remap.Show(processingType.HasFlag(FloatProcessingType.Remap));
-            clamp.Show(processingType.HasFlag(FloatProcessingType.Clamp));
-        }
+        
         
         public static bool TryGetElementByName<T>(this VisualElement visualElement, string name, out T element) where T : VisualElement
         {

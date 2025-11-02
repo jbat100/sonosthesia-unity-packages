@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Trigger
 {
-    public class SignalTrigger<T, TExtractor> : MonoBehaviour, ILogSwitch where T : struct where TExtractor : IExtractor<T>
+    public class SignalTrigger<T> : MonoBehaviour, ILogSwitch where T : struct
     {
         [SerializeField] private bool _log;
         public bool Log => _log;
@@ -15,7 +15,7 @@ namespace Sonosthesia.Trigger
         
         [SerializeField] private Trigger _destination;
         
-        [SerializeField] private SignalTriggerConfiguration<T, TExtractor> _configuration;
+        [SerializeField] private InterfaceReference<ISignalTriggerConfiguration<T>> _configuration;
         
         private IDisposable _subscription;
 
@@ -40,7 +40,7 @@ namespace Sonosthesia.Trigger
             _subscription = observable.Subscribe(source =>
             {
                 this.LogVerbose($"{this} trigger on {source}");
-                _configuration.Trigger(_destination.TriggerController, source);
+                _configuration.Value.Trigger(_destination.TriggerController, source);
             });
         }
 

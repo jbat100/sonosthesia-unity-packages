@@ -2,7 +2,7 @@ using Sonosthesia.Utils;
 
 namespace Sonosthesia.Trigger
 {
-    public class PeakTrigger : SignalTrigger<Peak, PeakExtractorSettings>
+    public class PeakSignalTrigger : SignalTrigger<Peak>
     {
         protected override bool SkipFirst => true;
     }

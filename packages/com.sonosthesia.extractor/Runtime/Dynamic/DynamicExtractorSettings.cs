@@ -1,14 +1,16 @@
 ﻿using System;
+using Sonosthesia.Processing;
+using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Extractor
 {
     [Serializable]
-    public abstract class DynamicExtractorSettings<TEvent, TValue, TFollow, TProcessing> : IDynamicExtractor<TEvent, TValue>
+    public abstract class DynamicExtractorSettings<TEvent, TValue, TFollow, TProcessor> : IDynamicExtractor<TEvent, TValue>
         where TValue : struct
-        where TProcessing : IPostProcessing<TValue>
+        where TProcessor : IProcessor<TValue>
     {
-        [SerializeField] private TProcessing _postProcessing;
+        [SerializeField] private TProcessor _processor;
         
         [SerializeField] private InterfaceReference<IDynamicExtractor<TEvent, TValue>> _extractor;
         
@@ -32,7 +34,7 @@ namespace Sonosthesia.Extractor
             
             if (!BypassPostProcess)
             {
-                session = new FuncExtractionSessionProcessor<TEvent, TValue>(session, _postProcessing.PostProcess);
+                session = new FuncExtractionSessionProcessor<TEvent, TValue>(session, _processor.Process);
             }
             
             return session;

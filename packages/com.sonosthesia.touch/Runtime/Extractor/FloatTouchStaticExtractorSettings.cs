@@ -1,12 +1,12 @@
 ﻿using System;
-using Sonosthesia.Extractor;
 using Sonosthesia.Interaction;
+using Sonosthesia.Processing;
 
 namespace Sonosthesia.Touch
 {
     [Serializable]
     public class FloatTouchStaticExtractorSettings 
-        : FloatInteractionStaticExtractorSettings<TouchEvent, FloatPostProcessingSettings>
+        : FloatInteractionStaticExtractorSettings<TouchEvent, FloatProcessorSettings>
     {
         
     }

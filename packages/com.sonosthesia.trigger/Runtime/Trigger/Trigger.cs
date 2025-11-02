@@ -1,4 +1,5 @@
-﻿using Sonosthesia.Processing;
+﻿using Sonosthesia.Extractor;
+using Sonosthesia.Processing;
 using Sonosthesia.Signal;
 using Sonosthesia.Utils;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace Sonosthesia.Trigger
 
         [SerializeField] private DynamicProcessorFactory<float> _postProcessorFactory;
 
-        [SerializeField] private FloatProcessor _postProcessor;
+        [SerializeField] private FloatProcessorSettings _postProcessor;
         
         private IDynamicProcessor<float> _dynamicPostProcessor;
 

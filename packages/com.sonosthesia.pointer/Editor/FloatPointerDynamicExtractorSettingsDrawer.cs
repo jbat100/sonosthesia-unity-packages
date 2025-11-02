@@ -37,7 +37,7 @@ namespace Sonosthesia.Pointer.Editor
             root.AddRelativeField(property, "_selector", 
                 out SerializedProperty _, out PropertyField selectorField, false);
 
-            root.AddRelativeField(property, "_postProcessing", 
+            root.AddRelativeField(property, "_processor", 
                 out SerializedProperty _, out PropertyField _);
 
             root.UpdateVisibility(UpdateVisibility, extractorTypeProp);

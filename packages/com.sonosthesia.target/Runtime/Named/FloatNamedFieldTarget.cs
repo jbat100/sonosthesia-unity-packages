@@ -1,12 +1,9 @@
-using Sonosthesia.Utils;
-using UnityEngine;
+using Sonosthesia.Processing;
 
 namespace Sonosthesia.Target
 {
-    public class FloatNamedFieldTarget : NamedFieldTarget<float>
+    public class FloatNamedFieldTarget : NamedFieldTarget<float, FloatProcessorSettings>
     {
-        [SerializeField] private FloatProcessor _postProcessor;
 
-        protected override float PostProcess(float value) => _postProcessor.Process(value);
     }
 }

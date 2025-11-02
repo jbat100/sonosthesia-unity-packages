@@ -1,6 +1,5 @@
 using System;
-using Sonosthesia.Utils;
-using UnityEngine;
+using Sonosthesia.Processing;
 
 namespace Sonosthesia.Extractor
 {
@@ -14,7 +13,7 @@ namespace Sonosthesia.Extractor
     
     [Serializable]
     public abstract class FloatDynamicExtractorSettings<TEvent> 
-        : DynamicExtractorSettings<TEvent, float, FloatFollowStrategy, FloatPostProcessingSettings>
+        : DynamicExtractorSettings<TEvent, float, FloatFollowStrategy, FloatProcessorSettings>
     {
         protected override IDynamicExtractorSession<TEvent, float> FollowSession(FloatFollowStrategy follow,
             IDynamicExtractorSession<TEvent, float> session)

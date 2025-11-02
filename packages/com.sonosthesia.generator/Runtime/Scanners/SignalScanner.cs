@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Sonosthesia.Processing;
 using UnityEngine;
 using Sonosthesia.Signal;
-using Sonosthesia.Utils;
 
 namespace Sonosthesia.Generator
 {

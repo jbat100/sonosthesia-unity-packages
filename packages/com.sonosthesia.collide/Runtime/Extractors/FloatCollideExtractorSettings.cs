@@ -1,12 +1,12 @@
 ﻿using System;
-using Sonosthesia.Extractor;
 using Sonosthesia.Interaction;
+using Sonosthesia.Processing;
 
 namespace Sonosthesia.Collide
 {
     [Serializable]
     public class FloatCollideStaticExtractorSettings : 
-        FloatInteractionStaticExtractorSettings<CollideEvent, FloatPostProcessingSettings>
+        FloatInteractionStaticExtractorSettings<CollideEvent, FloatProcessorSettings>
     {
         
     }

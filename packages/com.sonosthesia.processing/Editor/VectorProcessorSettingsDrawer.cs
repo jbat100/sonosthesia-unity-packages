@@ -1,19 +1,18 @@
-﻿using Sonosthesia.Utils;
-using Sonosthesia.Utils.Editor;
+﻿using Sonosthesia.Utils.Editor;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
-namespace Sonosthesia.Extractor.Editor
+namespace Sonosthesia.Processing.Editor
 {
-    [CustomPropertyDrawer(typeof(VectorPostProcessingSettings))]
-    public class VectorPostProcessingSettingsDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(VectorProcessorSettings))]
+    public class VectorProcessorSettingsDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             VisualElement root = new VisualElement();
 
-            root.AddRelativeField(property, "_postProcessing",
+            root.AddRelativeField(property, "_processor",
                 out SerializedProperty postProcessingProp, out PropertyField _);
 
             root.AddRelativeField(property, "_scale",

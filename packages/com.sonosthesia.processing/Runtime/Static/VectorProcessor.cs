@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Sonosthesia.Utils
+namespace Sonosthesia.Processing
 {
     [Flags]
     public enum VectorProcessingType

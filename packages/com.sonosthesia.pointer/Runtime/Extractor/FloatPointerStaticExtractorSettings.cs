@@ -1,12 +1,13 @@
 ﻿using System;
 using Sonosthesia.Extractor;
+using Sonosthesia.Processing;
 using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Pointer
 {
     [Serializable]
-    public class FloatPointerStaticExtractorSettings : StaticExtractorSettings<PointerEvent, float, FloatPostProcessingSettings>
+    public class FloatPointerStaticExtractorSettings : StaticExtractorSettings<PointerEvent, float, FloatProcessorSettings>
     {
         public enum ExtractorType
         {

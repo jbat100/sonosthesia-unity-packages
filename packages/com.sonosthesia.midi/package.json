@@ -8,7 +8,8 @@
     "com.sonosthesia.mapping": "1.11.0",
     "com.sonosthesia.sequencer": "1.11.0",
     "com.sonosthesia.flow": "1.11.0",
-    "com.sonosthesia.trigger": "1.11.0"
+    "com.sonosthesia.trigger": "1.11.0",
+    "com.sonosthesia.processing": "1.11.0"
   },
   "description": "Sonosthesia unity midi",
   "displayName": "Sonosthesia MIDI",

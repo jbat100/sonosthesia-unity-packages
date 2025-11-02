@@ -1,5 +1,6 @@
 ﻿using System;
 using Sonosthesia.Extractor;
+using Sonosthesia.Processing;
 using Sonosthesia.Utils;
 using UnityEngine;
 
@@ -180,8 +181,6 @@ namespace Sonosthesia.Interaction
             
         protected override bool Extract(TEvent e, out Vector3 value) => e.ExtractVelocity(_velocityType, out value);
     }
-    
-
 
     public class RelativePositionVectorExtractionSession<TEvent> : StatelessExtractorSession<TEvent, Vector3> where TEvent : IInteractionEvent
     {
@@ -270,11 +269,11 @@ namespace Sonosthesia.Interaction
     }
     
     
-    public abstract class InteractionStaticExtractorSettings<TEvent, TValue, TProcessing>
-        : StaticExtractorSettings<TEvent, TValue, TProcessing>
+    public abstract class InteractionStaticExtractorSettings<TEvent, TValue, TProcessor>
+        : StaticExtractorSettings<TEvent, TValue, TProcessor>
         where TEvent : IInteractionEvent
         where TValue : struct
-        where TProcessing : IPostProcessing<TValue>
+        where TProcessor : IProcessor<TValue>
     {
         [SerializeField] private VelocityExtractionType _velocityType = VelocityExtractionType.Actor;
         
@@ -293,10 +292,10 @@ namespace Sonosthesia.Interaction
         Distance
     }
     
-    public class FloatInteractionStaticExtractorSettings<TEvent, TProcessing>
-        : InteractionStaticExtractorSettings<TEvent, float, TProcessing>
+    public class FloatInteractionStaticExtractorSettings<TEvent, TProcessor>
+        : InteractionStaticExtractorSettings<TEvent, float, TProcessor>
         where TEvent : IInteractionEvent
-        where TProcessing : IPostProcessing<float>
+        where TProcessor : IProcessor<float>
     {
         [SerializeField] private FloatInteractionStaticExtractorType _extractorType 
             = FloatInteractionStaticExtractorType.Constant;
@@ -330,6 +329,7 @@ namespace Sonosthesia.Interaction
         protected IDynamicExtractorSession<TEvent, Vector3> AxisSession() => new AxisVectorExtractionSession<TEvent>();
     }
     
+    [Serializable]
     public abstract class InteractionVectorStaticExtractorSettings<TEvent> : VectorStaticExtractorSettings<TEvent>
         where TEvent : IInteractionEvent
     {

@@ -6,7 +6,8 @@
     "com.sonosthesia.channel": "1.11.0",
     "com.sonosthesia.signal": "1.11.0",
     "com.sonosthesia.target": "1.11.0",
-    "com.sonosthesia.mesh": "1.11.0"
+    "com.sonosthesia.mesh": "1.11.0",
+    "com.sonosthesia.processing": "1.11.0"
   },
   "description": "Sonosthesia vfx",
   "displayName": "Sonosthesia VFX",

@@ -1,12 +1,9 @@
-using Sonosthesia.Utils;
-using UnityEngine;
+using Sonosthesia.Processing;
 
 namespace Sonosthesia.Generator
 {
-    public class FloatGeneratorSignal : GeneratorSignal<float>
+    public class FloatGeneratorSignal : GeneratorSignal<float, FloatProcessorSettings>
     {
-        [SerializeField] private FloatProcessor _postProcessor;
 
-        protected override float PostProcess(float value) => _postProcessor.Process(value);
     }
 }

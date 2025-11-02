@@ -1,11 +1,14 @@
-﻿namespace Sonosthesia.Utils
+﻿using System;
+
+namespace Sonosthesia.Processing
 {
     public interface IProcessor<T> where T : struct
     {
         T Process(T value);
     }
 
-    public struct PassthroughProcessor<T> : IProcessor<T> where T : struct
+    [Serializable]
+    public class PassthroughProcessor<T> : IProcessor<T> where T : struct
     {
         public T Process(T value) => value;
     }
