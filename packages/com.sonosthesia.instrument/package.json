@@ -13,7 +13,8 @@
     "com.sonosthesia.scaffold": "1.11.0",
     "com.sonosthesia.utils": "1.11.0",
     "com.sonosthesia.collide": "1.11.0",
-    "com.sonosthesia.extractor": "1.11.0"
+    "com.sonosthesia.extractor": "1.11.0",
+    "com.sonosthesia.processing": "1.11.0"
   },
   "description": "Sonosthesia unity instrument",
   "displayName": "Sonosthesia Instrument",

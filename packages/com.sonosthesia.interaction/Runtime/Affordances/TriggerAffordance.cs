@@ -16,7 +16,6 @@ namespace Sonosthesia.Interaction
             
             public Controller(Guid eventId, TriggerAffordance<TEvent> affordance) : base(eventId, affordance)
             {
-                
             }
 
             protected override void Setup(TEvent e)
