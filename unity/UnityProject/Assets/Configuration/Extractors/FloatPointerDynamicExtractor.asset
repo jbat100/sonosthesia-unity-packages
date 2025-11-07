@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: FloatPointerDynamicExtractor
   m_EditorClassIdentifier: 
   _settings:
-    _postProcessing:
-      _postProcessing: 3
+    _processor:
+      _processing: 18
       _curve:
         serializedVersion: 2
         m_Curve:
@@ -47,11 +47,12 @@ MonoBehaviour:
       _clamp:
         _min: 0
         _max: 0
+      _randomization: 0
     _extractor:
       underlyingValue: {fileID: 0}
     _followStrategy: 1
     _constantValue: 1
-    _extractorType: 1
+    _extractorType: 4
     _space: 1
     _axes: 6
     _selector: 1

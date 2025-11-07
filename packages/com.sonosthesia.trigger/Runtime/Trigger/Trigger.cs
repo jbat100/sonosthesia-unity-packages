@@ -1,7 +1,5 @@
-﻿using Sonosthesia.Extractor;
-using Sonosthesia.Processing;
+﻿using Sonosthesia.Processing;
 using Sonosthesia.Signal;
-using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Trigger

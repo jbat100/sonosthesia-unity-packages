@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Sonosthesia.Touch
+namespace Sonosthesia.Interaction
 {
     public enum DynamicTrackingStrategy
     {

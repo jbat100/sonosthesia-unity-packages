@@ -24,8 +24,8 @@ MonoBehaviour:
     _provider:
       underlyingValue: {fileID: 0}
   _velocity:
-    _postProcessing:
-      _postProcessing: 0
+    _processor:
+      _processing: 0
       _curve:
         serializedVersion: 2
         m_Curve:
@@ -58,62 +58,64 @@ MonoBehaviour:
       _clamp:
         _min: 0
         _max: 0
+      _randomization: 0
     _extractor:
       underlyingValue: {fileID: 0}
-    _constantValue: 0
-    _extractorType: 1
-    _velocityType: 0
-    _distanceAxes: 7
-  _pressure:
-    _postProcessing:
-      _postProcessing: 0
-      _curve:
-        serializedVersion: 2
-        m_Curve:
-        - serializedVersion: 3
-          time: 0
-          value: 0
-          inSlope: 0
-          outSlope: 1
-          tangentMode: 0
-          weightedMode: 0
-          inWeight: 0
-          outWeight: 0
-        - serializedVersion: 3
-          time: 1
-          value: 1
-          inSlope: 1
-          outSlope: 0
-          tangentMode: 0
-          weightedMode: 0
-          inWeight: 0
-          outWeight: 0
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      _remap:
-        _fromMin: 0
-        _fromMax: 1
-        _toMin: 0
-        _toMax: 1
-      _clamp:
-        _min: 0
-        _max: 0
-    _extractor:
-      underlyingValue: {fileID: 0}
-    _followStrategy: 0
     _constantValue: 0
     _velocityType: 0
     _axes: -1
     _extractorType: 1
+  _pressure:
+    _processor:
+      _processing: 0
+      _curve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 0
+          outSlope: 1
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 1
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      _remap:
+        _fromMin: 0
+        _fromMax: 1
+        _toMin: 0
+        _toMax: 1
+      _clamp:
+        _min: 0
+        _max: 0
+      _randomization: 0
+    _extractor:
+      underlyingValue: {fileID: 0}
+    _followStrategy: 0
+    _constantValue: 0
+    _extractorType: 1
+    _velocityType: 0
+    _axes: -1
     _actorModulationType: 0
     _actorModulation:
       _strategy: 1
       _scale: 1
       _offset: 0
   _slide:
-    _postProcessing:
-      _postProcessing: 0
+    _processor:
+      _processing: 0
       _curve:
         serializedVersion: 2
         m_Curve:
@@ -146,21 +148,22 @@ MonoBehaviour:
       _clamp:
         _min: 0
         _max: 0
+      _randomization: 0
     _extractor:
       underlyingValue: {fileID: 0}
     _followStrategy: 0
     _constantValue: 0
+    _extractorType: 1
     _velocityType: 0
     _axes: -1
-    _extractorType: 1
     _actorModulationType: 0
     _actorModulation:
       _strategy: 1
       _scale: 1
       _offset: 0
   _bend:
-    _postProcessing:
-      _postProcessing: 0
+    _processor:
+      _processing: 0
       _curve:
         serializedVersion: 2
         m_Curve:
@@ -193,13 +196,14 @@ MonoBehaviour:
       _clamp:
         _min: 0
         _max: 0
+      _randomization: 0
     _extractor:
       underlyingValue: {fileID: 0}
     _followStrategy: 0
     _constantValue: 0
+    _extractorType: 1
     _velocityType: 0
     _axes: -1
-    _extractorType: 1
     _actorModulationType: 0
     _actorModulation:
       _strategy: 1

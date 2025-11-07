@@ -3,7 +3,7 @@ using Sonosthesia.Dynamic;
 using Sonosthesia.Utils;
 using UnityEngine;
 
-namespace Sonosthesia.Touch
+namespace Sonosthesia.Interaction
 {
     public interface IDynamicTrackingSession
     {

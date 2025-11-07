@@ -19,8 +19,8 @@ MonoBehaviour:
       _minCutoff: 0.1
     _interaction: 2
     _valueScaleExtractor:
-      _postProcessing:
-        _postProcessing: 0
+      _processor:
+        _processing: 0
         _curve:
           serializedVersion: 2
           m_Curve:
@@ -53,21 +53,22 @@ MonoBehaviour:
         _clamp:
           _min: 0
           _max: 0
+        _randomization: 0
       _extractor:
         underlyingValue: {fileID: 0}
       _followStrategy: 0
       _constantValue: 0
+      _extractorType: 2
       _velocityType: 0
       _axes: -1
-      _extractorType: 1
       _actorModulationType: 0
       _actorModulation:
         _strategy: 1
         _scale: 1
         _offset: 0
     _timeScaleExtractor:
-      _postProcessing:
-        _postProcessing: 0
+      _processor:
+        _processing: 0
         _curve:
           serializedVersion: 2
           m_Curve:
@@ -100,12 +101,13 @@ MonoBehaviour:
         _clamp:
           _min: 0
           _max: 0
+        _randomization: 0
       _extractor:
         underlyingValue: {fileID: 0}
       _constantValue: 0
-      _extractorType: 1
       _velocityType: 0
-      _distanceAxes: 7
+      _axes: -1
+      _extractorType: 1
     _envelope:
       _envelopeType: 1
       _constantValue: 1
@@ -130,8 +132,8 @@ MonoBehaviour:
       _hold: 1
       _sustain: 0.5
     _releaseExtractor:
-      _postProcessing:
-        _postProcessing: 0
+      _processor:
+        _processing: 0
         _curve:
           serializedVersion: 2
           m_Curve:
@@ -164,10 +166,11 @@ MonoBehaviour:
         _clamp:
           _min: 0
           _max: 0
+        _randomization: 0
       _extractor:
         underlyingValue: {fileID: 0}
       _constantValue: 0
-      _extractorType: 1
       _velocityType: 0
-      _distanceAxes: 7
+      _axes: 7
+      _extractorType: 1
     _releaseType: 14

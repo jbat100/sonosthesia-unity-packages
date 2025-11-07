@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _settings:
     _processor:
-      _postProcessing: 0
+      _processing: 0
       _curve:
         serializedVersion: 2
         m_Curve:
@@ -52,7 +52,7 @@ MonoBehaviour:
       underlyingValue: {fileID: 0}
     _followStrategy: 0
     _constantValue: 0
-    _extractorType: 1
+    _extractorType: 4
     _space: 1
-    _axes: 7
+    _axes: -1
     _selector: 1

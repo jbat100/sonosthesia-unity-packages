@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 namespace Sonosthesia.DeformInteraction.Editor
 {
-    [CustomPropertyDrawer(typeof(TouchSpatialFalloffSettings))]
+    [CustomPropertyDrawer(typeof(SpatialFalloffSettings))]
     public class TouchSpatialFalloffSettingsDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)

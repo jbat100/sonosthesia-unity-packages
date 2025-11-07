@@ -19,13 +19,13 @@ namespace Sonosthesia.DeformInteraction
     // - planar actor orientation
     // - planar actor source
 
-    public enum TouchSpatialFalloffCenter
+    public enum SpatialFalloffCenter
     {
         Actor,
         Source
     }
     
-    public enum TouchSpatialFalloffSpace
+    public enum SpatialFalloffSpace
     {
         World,
         Source,
@@ -34,7 +34,7 @@ namespace Sonosthesia.DeformInteraction
     }
     
     [Serializable]
-    public class TouchSpatialFalloffSettings
+    public class SpatialFalloffSettings
     {
         [SerializeField] private bool _active;
         public bool Active => _active;
@@ -42,14 +42,14 @@ namespace Sonosthesia.DeformInteraction
         [SerializeField] private EaseType _easeType = EaseType.easeInOutSine;
         public EaseType EaseType => _easeType;
     
-        [SerializeField] private TouchSpatialFalloffCenter _center = TouchSpatialFalloffCenter.Actor;
-        public TouchSpatialFalloffCenter Center => _center;
+        [SerializeField] private SpatialFalloffCenter _center = SpatialFalloffCenter.Actor;
+        public SpatialFalloffCenter Center => _center;
 
         [SerializeField] private SpatialFalloffShape _shape = SpatialFalloffShape.Spherical;
         public SpatialFalloffShape Shape => _shape;
     
-        [SerializeField] private TouchSpatialFalloffSpace _space = TouchSpatialFalloffSpace.Actor;
-        public TouchSpatialFalloffSpace Space => _space;
+        [SerializeField] private SpatialFalloffSpace _space = SpatialFalloffSpace.Actor;
+        public SpatialFalloffSpace Space => _space;
 
         [SerializeField] private Vector3 offset = Vector3.up;
         public Vector3 Offset => offset;
