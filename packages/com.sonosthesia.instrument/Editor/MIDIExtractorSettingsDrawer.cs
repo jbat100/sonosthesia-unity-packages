@@ -16,7 +16,7 @@ namespace Sonosthesia.Instrument.Editor
             root.Add(titleLabel);
             
             root.AddRelativeField(property, "_extractorType", 
-                out SerializedProperty extractorTypeProp, out PropertyField extractorTypeField);
+                out SerializedProperty extractorTypeProp, out PropertyField _);
             
             root.AddRelativeField(property, "_origin", 
                 out SerializedProperty originProp, out PropertyField originField);
@@ -45,5 +45,17 @@ namespace Sonosthesia.Instrument.Editor
                 providerField.Show(type is MIDIExtractorType.Provider && origin is InteractionExtractorOrigin.Self);
             }
         }
+    }
+    
+    [CustomPropertyDrawer(typeof(MIDIChannelExtractorSettings<>), true)]
+    public class MIDIChannelExtractorSettingsDrawer : MIDIExtractorSettingsDrawer
+    {
+
+    }
+    
+    [CustomPropertyDrawer(typeof(MIDIPitchExtractorSettings<>), true)]
+    public class MIDIPitchExtractorSettingsDrawer : MIDIExtractorSettingsDrawer
+    {
+
     }
 }

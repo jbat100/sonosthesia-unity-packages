@@ -6,9 +6,14 @@ using UnityEngine.UIElements;
 
 namespace Sonosthesia.Extractor.Editor
 {
-    [CustomPropertyDrawer(typeof(PeakFloatStaticExtractorSettings))]
-    public class PeakFloatStaticExtractorSettingsDrawer : PropertyDrawer
+    // drawer for simple DynamicExtractorSettings which only add an _extractorType field which specifies 
+    // at least custom and constant cases as enumValueIndex
+    
+    public abstract class BaseFloatDynamicExtractorSettingsDrawer : PropertyDrawer
     {
+        protected abstract int ConstantIndex { get; }
+        protected abstract int CustomIndex { get; }
+        
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             VisualElement root = new VisualElement();
@@ -17,8 +22,11 @@ namespace Sonosthesia.Extractor.Editor
             root.Add(titleLabel);
 
             root.AddRelativeField(property, "_extractorType",
-                out SerializedProperty extractorTypeProp, out PropertyField extractorTypeField);
+                out SerializedProperty extractorTypeProp, out PropertyField _);
 
+            root.AddRelativeField(property, "_followStrategy",
+                out SerializedProperty _, out PropertyField _);
+            
             root.AddRelativeField(property, "_extractor",
                 out SerializedProperty _, out PropertyField extractorField);
 
@@ -28,16 +36,14 @@ namespace Sonosthesia.Extractor.Editor
             root.AddRelativeField(property, "_processor",
                 out SerializedProperty _, out PropertyField _);
             
-            
             root.UpdateVisibility(UpdateVisibility, extractorTypeProp);
 
             return root;
 
             void UpdateVisibility()
             {
-                PeakExtractorType extractorType = (PeakExtractorType)extractorTypeProp.enumValueIndex;
-                extractorField.Show(extractorType is PeakExtractorType.Custom);
-                constantValueField.Show(extractorType is PeakExtractorType.Constant);
+                extractorField.Show(extractorTypeProp.enumValueIndex == CustomIndex);
+                constantValueField.Show(extractorTypeProp.enumValueIndex == ConstantIndex);
             }
         }
     }

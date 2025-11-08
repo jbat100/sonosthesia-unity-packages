@@ -1,6 +1,5 @@
 ﻿using System;
 using Sonosthesia.Processing;
-using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Extractor

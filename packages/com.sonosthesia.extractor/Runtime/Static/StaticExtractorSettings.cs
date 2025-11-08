@@ -1,4 +1,5 @@
-﻿using Sonosthesia.Processing;
+﻿using System;
+using Sonosthesia.Processing;
 using UnityEngine;
 
 namespace Sonosthesia.Extractor
@@ -6,6 +7,7 @@ namespace Sonosthesia.Extractor
     // used for extracting a value based on a single TEvent, usually the first in the event stream 
     // for situations where after touch is not possible (e.g. MIDI note, velocity or channel selection) 
     
+    [Serializable]
     public abstract class StaticExtractorSettings<TEvent, TValue, TProcessor> : IStaticExtractor<TEvent, TValue>
         where TValue : struct
         where TProcessor : IProcessor<TValue>

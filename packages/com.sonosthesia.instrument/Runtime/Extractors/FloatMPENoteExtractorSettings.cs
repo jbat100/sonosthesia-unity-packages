@@ -35,7 +35,7 @@ namespace Sonosthesia.Instrument
     }
     
     [Serializable]
-    public class FloatMPENoteExtractorSettings : StaticExtractorSettings<MPENote, float, FloatProcessorSettings> 
+    public class FloatMPENoteStaticExtractorSettings : StaticExtractorSettings<MPENote, float, FloatProcessorSettings> 
     {
         [SerializeField] private FloatMPENoteExtractorType _extractorType = FloatMPENoteExtractorType.Constant;
         
