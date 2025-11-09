@@ -38,6 +38,8 @@ namespace Sonosthesia.Interaction
             ReloadSubscriptions();
         }
         
+        protected virtual void OnStartedStream(Guid id, TEvent e) { }
+        
         protected virtual IObserver<TEvent> MakeController(Guid id) => null;
 
         // a bit of a pain to have to use async, but we need to wait for the first stream element to check
@@ -76,6 +78,8 @@ namespace Sonosthesia.Interaction
                 // Debug.LogWarning($"{this} created new controller {id}");
                 stream.Subscribe(controller);
             }
+            
+            OnStartedStream(id, e);
 
             if (_relay)
             {

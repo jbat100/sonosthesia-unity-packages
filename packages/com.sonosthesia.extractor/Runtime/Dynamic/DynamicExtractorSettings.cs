@@ -39,8 +39,6 @@ namespace Sonosthesia.Extractor
             return session;
         }
         
-
-        
         protected virtual bool BypassFollow => false;
         protected virtual bool BypassPostProcess => false;
         protected virtual bool BypassModulate => false;
