@@ -3,11 +3,18 @@
   "dependencies": {
     "com.unity.visualeffectgraph": "14.0.9",
     "com.neuecc.unirx": "7.1.0",
+    "com.sonosthesia.utils": "1.11.0",
     "com.sonosthesia.channel": "1.11.0",
     "com.sonosthesia.signal": "1.11.0",
     "com.sonosthesia.target": "1.11.0",
     "com.sonosthesia.mesh": "1.11.0",
-    "com.sonosthesia.processing": "1.11.0"
+    "com.sonosthesia.processing": "1.11.0",
+    "com.sonosthesia.extractor": "1.11.0",
+    "com.sonosthesia.interaction": "1.11.0",
+    "com.sonosthesia.touch": "1.11.0",
+    "com.sonosthesia.collide": "1.11.0",
+    "com.sonosthesia.pointer": "1.11.0",
+    "com.sonosthesia.adaptivemidi": "1.11.0"
   },
   "description": "Sonosthesia vfx",
   "displayName": "Sonosthesia VFX",

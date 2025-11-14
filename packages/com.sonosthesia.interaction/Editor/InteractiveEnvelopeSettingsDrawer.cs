@@ -18,9 +18,6 @@ namespace Sonosthesia.Touch.Editor
             
             root.Add(UIElementUtils.SectionLabel(property.name.PropertyNameToLabel()));
             
-            root.AddRelativeField(property, "_track", 
-                out SerializedProperty _, out PropertyField _);
-            
             root.AddRelativeField(property, "_filter", 
                 out SerializedProperty filterProp, out PropertyField filterField);
             

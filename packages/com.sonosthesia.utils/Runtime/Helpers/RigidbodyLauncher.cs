@@ -40,7 +40,8 @@ namespace Sonosthesia.Utils
             Quaternion spawnRot = Quaternion.LookRotation(ray.direction, Vector3.up);
 
             Rigidbody instance = Instantiate(_prefab, spawnPos, spawnRot);
-            instance.velocity = ray.direction * _launchSpeed;
+
+            instance.SetLinearVelocity(ray.direction * _launchSpeed);
 
             if (_lifeTime > 0f)
             {

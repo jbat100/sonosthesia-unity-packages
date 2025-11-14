@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Sonosthesia.Utils;
+using UnityEngine;
 
 namespace Sonosthesia.Dynamic
 {
@@ -27,10 +28,10 @@ namespace Sonosthesia.Dynamic
         {
             if (_trackPosition)
             {    
-                _rigidbody.velocity *= (1f - _velocityDamping);
+                _rigidbody.SetLinearVelocity(_rigidbody.GetLinearVelocity() * (1f - _velocityDamping));
                 Vector3 positionDelta = _target.position - transform.position;
                 Vector3 velocity = positionDelta / Time.deltaTime;
-                _rigidbody.velocity += (velocity * _velocityScale);
+                _rigidbody.SetLinearVelocity(_rigidbody.GetLinearVelocity() + (velocity * _velocityScale));
             }
 
             if (_trackRotation)

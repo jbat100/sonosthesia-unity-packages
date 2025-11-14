@@ -63,5 +63,4 @@ namespace Sonosthesia.Interaction
         [SerializeField] private EaseType _releaseType = EaseType.easeInOutSine;
         public EaseType ReleaseType => _releaseType;
     }
-
 }

@@ -1,9 +1,10 @@
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 namespace Sonosthesia.XR
 {
-    // looked into using the affordance system but it's long winded for this use case and is deprecated in version 3
+    // looked into using the affordance system, but it's long-winded for this use case and is deprecated in version 3
     
     public class XRBoundedAxisGrabLineIndicator : MonoBehaviour
     {

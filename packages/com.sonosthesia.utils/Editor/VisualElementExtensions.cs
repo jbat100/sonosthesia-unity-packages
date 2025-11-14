@@ -19,7 +19,8 @@ namespace Sonosthesia.Utils.Editor
             {
                 root.TrackPropertyValue(property, _ => action());
             }
-            root.schedule.Execute(action).ExecuteLater(0);
+            //root.schedule.Execute(action).ExecuteLater(0);
+            root.RegisterCallback<AttachToPanelEvent>(_ => action());
         }
         
         
