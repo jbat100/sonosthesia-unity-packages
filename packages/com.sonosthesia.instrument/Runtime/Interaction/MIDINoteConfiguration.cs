@@ -3,6 +3,19 @@ using UnityEngine;
 
 namespace Sonosthesia.Instrument
 {
+    public interface IMIDINoteConfiguration<in TEvent>
+    {
+        bool ApplyPressure { get; }
+        
+        IMIDIChannelExtractor<TEvent> Channel { get; }
+        
+        IMIDIPitchExtractor<TEvent> Pitch { get; }
+        
+        IStaticExtractor<TEvent, float> Velocity { get; }
+        
+        IDynamicExtractor<TEvent, float> Pressure { get; }
+    }
+    
     public class MIDINoteConfiguration<TEvent, TChannelExtractor, TPitchExtractor, TStaticExtractor, TDynamicExtractor> 
         : ScriptableObject, IMIDINoteConfiguration<TEvent>
         where TChannelExtractor : IMIDIChannelExtractor<TEvent> where TPitchExtractor : IMIDIPitchExtractor<TEvent>
