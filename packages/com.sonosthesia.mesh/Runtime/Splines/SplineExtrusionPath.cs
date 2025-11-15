@@ -18,8 +18,9 @@ namespace Sonosthesia.Mesh
         
         [SerializeField] private int _innerBatchCount = 100;
         
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             Spline.Changed += OnSplineChanged;
         }
 

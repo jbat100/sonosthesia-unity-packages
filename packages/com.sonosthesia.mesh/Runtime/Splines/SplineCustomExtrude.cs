@@ -42,9 +42,10 @@ namespace Sonosthesia.Mesh
             Spline.Changed += OnSplineChanged;
         }
 
-        protected virtual void OnDisable()
+        protected override void OnDisable()
         {
             Spline.Changed -= OnSplineChanged;
+            base.OnDisable();
         }
 
         private void OnSplineChanged(Spline spline, int knotIndex, SplineModification modificationType)
