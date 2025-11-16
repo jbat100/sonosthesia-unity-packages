@@ -37,7 +37,7 @@ namespace Sonosthesia.Trigger
         {
             foreach (Trigger trigger in _signals)
             {
-                trigger.TriggerController.PlayTrigger(_envelope?.Build(), _valueScale, _timeScale);
+                trigger.TriggerImplementation.StartTrigger(_envelope.Build(), _valueScale, _timeScale, true);
             }
         }
     }

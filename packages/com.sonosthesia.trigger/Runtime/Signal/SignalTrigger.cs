@@ -40,7 +40,7 @@ namespace Sonosthesia.Trigger
             _subscription = observable.Subscribe(source =>
             {
                 this.LogVerbose($"{this} trigger on {source}");
-                _configuration.Value.Trigger(_destination.TriggerController, source);
+                _configuration.Value.Trigger(_destination.TriggerImplementation, source);
             });
         }
 

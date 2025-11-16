@@ -14,12 +14,12 @@ namespace Sonosthesia.Trigger
         
         private IDynamicProcessor<float> _dynamicPostProcessor;
 
-        public TriggerController TriggerController { get; private set; }
+        public TriggerImplementation TriggerImplementation { get; private set; }
         
         private void SetupState()
         {
-            TriggerController?.Clear();
-            TriggerController = new TriggerController(_accumulationMode);
+            TriggerImplementation?.Clear();
+            TriggerImplementation = new TriggerImplementation(_accumulationMode);
             _dynamicPostProcessor = _postProcessorFactory ? _postProcessorFactory.Make() : null;
         }
 
@@ -29,7 +29,7 @@ namespace Sonosthesia.Trigger
         
         protected virtual void Update()
         {
-            float result = TriggerController.Evaluate();
+            float result = TriggerImplementation.Evaluate();
             if (_dynamicPostProcessor != null)
             {
                 result = _dynamicPostProcessor.Process(result, Time.time);
@@ -41,8 +41,8 @@ namespace Sonosthesia.Trigger
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            TriggerController?.Clear();
-            TriggerController = null;
+            TriggerImplementation?.Clear();
+            TriggerImplementation = null;
         }
     }
 }

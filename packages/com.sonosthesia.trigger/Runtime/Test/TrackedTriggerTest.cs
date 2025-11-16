@@ -58,7 +58,7 @@ namespace Sonosthesia.Trigger
                 EndTrigger(timeScale);
             }
             IEnvelope envelope = _startEnvelope.Build();
-            _current = _trigger.TriggerController.StartTrigger(envelope, valueScale * _valueScale, timeScale * _timeScale);
+            _current = _trigger.TriggerImplementation.StartTrigger(envelope, valueScale * _valueScale, timeScale * _timeScale, false);
         }
 
         public void EndTrigger() => EndTrigger(_timeScale);
@@ -70,7 +70,7 @@ namespace Sonosthesia.Trigger
                 return;
             }
             IEnvelope envelope = _endEnvelope.Build();
-            _trigger.TriggerController.EndTrigger(_current, envelope, timeScale);
+            _trigger.TriggerImplementation.EndTrigger(_current, envelope, timeScale);
             _current = Guid.Empty;
         }
     }

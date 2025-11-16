@@ -13,14 +13,14 @@ namespace Sonosthesia.Trigger
 
     public static class SignalTriggerConfigurationExtensions
     {
-        public static void Trigger<T>(this ISignalTriggerConfiguration<T> configuration, TriggerController controller, T input) where T : struct
+        public static void Trigger<T>(this ISignalTriggerConfiguration<T> configuration, TriggerImplementation controller, T input) where T : struct
         {
             if (!configuration.ValueExtractor.Extract(input, out float value) || !configuration.TimeExtractor.Extract(input, out float time))
             {
                 return;
             }
             IEnvelope envelope = configuration.Envelope.Build();
-            controller.PlayTrigger(envelope, value, time);
+            controller.StartTrigger(envelope, value, time, true);
         }
     }
     

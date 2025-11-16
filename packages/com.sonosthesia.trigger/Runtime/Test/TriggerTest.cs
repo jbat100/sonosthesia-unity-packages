@@ -42,12 +42,12 @@ namespace Sonosthesia.Trigger
 
         public void Trigger()
         {
-            _trigger.TriggerController.PlayTrigger(_envelope?.Build(), _valueScale, _timeScale);
+            _trigger.TriggerImplementation.StartTrigger(_envelope.Build(), _valueScale, _timeScale, true);
         }
         
         public void Trigger(float valueScale)
         {
-            _trigger.TriggerController.PlayTrigger(_envelope?.Build(), _valueScale * valueScale, _timeScale);
+            _trigger.TriggerImplementation.StartTrigger(_envelope.Build(), _valueScale * valueScale, _timeScale, true);
         }
     }
 }
