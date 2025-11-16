@@ -58,8 +58,8 @@ namespace Sonosthesia.Touch.Editor
                 timeScaleExtractorField.Show(type is not EnvelopeInteraction.Constant);
                 envelopeField.Show(type is not EnvelopeInteraction.Constant);
                 
-                releaseExtractorField.Show(type is EnvelopeInteraction.Contact);
-                releaseTypeField.Show(type is EnvelopeInteraction.Contact);
+                releaseExtractorField.Show(type is EnvelopeInteraction.Hold);
+                releaseTypeField.Show(type is EnvelopeInteraction.Hold);
             }
         }
     }

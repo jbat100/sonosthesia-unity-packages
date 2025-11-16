@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Sonosthesia.Envelope;
-using UniRx;
 
 namespace Sonosthesia.Trigger
 {
@@ -32,42 +31,38 @@ namespace Sonosthesia.Trigger
             _obsolete.Clear();
         }
 
-        public Guid StartTrigger(IEnvelope envelope, float valueScale, float timeScale)
+        public Guid StartTrigger(IEnvelope envelope, float value, float attack)
         {
             Guid id = Guid.NewGuid();
-            StartTrigger(id, envelope, valueScale, timeScale);
+            StartTrigger(id, envelope, value, attack);
             return id;
         }
         
-        public void StartTrigger(Guid id, IEnvelope envelope, float valueScale, float timeScale)
+        public void StartTrigger(Guid id, IEnvelope envelope, float value, float attack)
         {
             if (_entries.ContainsKey(id))
             {
                 throw new ArgumentException($"Trigger with id {id} already exists");
             }
-            _entries[id] = new Entry(new WarpedEnvelope(envelope ?? _defaultStartEnvelope, valueScale, timeScale));
+            _entries[id] = new Entry(new WarpedEnvelope(envelope ?? _defaultStartEnvelope, value, attack));
         }
         
-        public bool UpdateTrigger(Guid id, float valueScale)
+        public bool UpdateTrigger(Guid id, float value)
         {
             if (_entries.TryGetValue(id, out Entry entry))
             {
-                entry.ValueScale = valueScale;
+                entry.ValueScale = value;
                 return true;
             }
 
             return false;
         }
 
-        public bool EndTrigger(Guid id, IEnvelope envelope, float timescale = 1f)
+        public bool EndTrigger(Guid id, IEnvelope envelope, float release = 1f)
         {
             if (_entries.TryGetValue(id, out Entry entry))
             {
-                if (Math.Abs(timescale - 1f) > 1e-6)
-                {
-                    envelope = new WarpedEnvelope(envelope ?? _defaultEndEnvelope, 1f, timescale);
-                }
-                entry.End(envelope);
+                entry.End(new WarpedEnvelope(envelope ?? _defaultEndEnvelope, 1f, release));
                 // note : don't remove from _entries, the end phase of the trigger must complete
                 return true;
             }
@@ -75,8 +70,12 @@ namespace Sonosthesia.Trigger
             return false;
         }
         
-        public void EndAll(IEnvelope envelope, float timescale = 1)
+        public void EndAll(IEnvelope envelope, float release = 1)
         {
+            if (Math.Abs(release - 1f) > 1e-6)
+            {
+                envelope = new WarpedEnvelope(envelope ?? _defaultEndEnvelope, 1f, release);
+            }
             foreach (Entry entry in _entries.Values)
             {
                 entry.End(envelope);

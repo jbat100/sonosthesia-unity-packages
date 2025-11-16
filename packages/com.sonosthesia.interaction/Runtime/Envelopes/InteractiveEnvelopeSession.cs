@@ -1,207 +1,237 @@
 ﻿using System;
+using Sonosthesia.Ease;
 using Sonosthesia.Envelope;
 using Sonosthesia.Extractor;
-using Sonosthesia.Trigger;
 using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
+    internal class InteractiveEnvelopeImplementation
+    {
+        private class PhaseInfo
+        {
+            private static float CurrentTime => Time.time;
+            
+            public float ReferenceTime;
+            public IEnvelope Envelope;
+
+            public bool IsComplete => CurrentTime - ReferenceTime > Envelope.Duration;
+
+            public float Evaluate()
+            {
+                return IsComplete ? Envelope.FinalValue : Envelope.Evaluate(CurrentTime - ReferenceTime);
+            }
+        }
+
+        private readonly PhaseInfo _start;
+        private PhaseInfo _end;
+
+        private PhaseInfo CurrentPhase => _end ?? _start;
+        
+        public InteractiveEnvelopeImplementation(IEnvelope envelope, float value)
+        {
+            Value = value;
+            _start = new PhaseInfo
+            {
+                ReferenceTime = Time.time,
+                Envelope = envelope
+            };
+        }
+
+        public float Evaluate() => Value * CurrentPhase.Evaluate();
+        
+        public float Value;
+
+        public void End(IEnvelope envelope)
+        {
+            if (_end != null)
+            {
+                return;
+            }
+
+            float valueScale = envelope.InitialValue == 0f ? 1f : _start.Evaluate() / envelope.InitialValue;
+            
+            _end = new PhaseInfo
+            {
+                ReferenceTime = Time.time,
+                Envelope = new WarpedEnvelope(envelope, valueScale, 1f)
+            };
+        }
+    }
+    
     public static class InteractiveEnvelopeSessionUtil
     {
         public static IInteractiveEnvelopeSession<TEvent> StartSession<TEvent>(TEvent e, 
-            IInteractiveEnvelopeSettings<TEvent> settings,
-            TriggerController controller = null)
+            IInteractiveEnvelopeSettings<TEvent> settings)
         {
-            IInteractiveEnvelopeSession<TEvent> session = MakeSession(settings, controller);
+            IInteractiveEnvelopeSession<TEvent> session = MakeSession(settings);
             session.Start(e);
             return session;
         }
         
-        public static IInteractiveEnvelopeSession<TEvent> StartSession<TEvent>(this IInteractiveEnvelopeSettings<TEvent> settings, TEvent e,
-            TriggerController controller = null)
+        public static IInteractiveEnvelopeSession<TEvent> StartSession<TEvent>(this IInteractiveEnvelopeSettings<TEvent> settings, TEvent e)
         {
-            return StartSession(e, settings, controller);
+            return StartSession(e, settings);
         }
 
-        public static IInteractiveEnvelopeSession<TEvent> MakeSession<TEvent>(
-            IInteractiveEnvelopeSettings<TEvent> settings,
-            TriggerController controller)
+        public static IInteractiveEnvelopeSession<TEvent> MakeSession<TEvent>(IInteractiveEnvelopeSettings<TEvent> s)
         {
-            IInteractiveEnvelopeSession<TEvent> session = settings.Interaction switch
+            IInteractiveEnvelopeSession<TEvent> session = s.Interaction switch
             {
-                EnvelopeInteraction.Constant => new ConstantEnvelopeSession<TEvent>(settings, controller),
-                EnvelopeInteraction.Pulse => new PulseEnvelopeSession<TEvent>(settings, controller),
-                EnvelopeInteraction.Contact => new ContactEnvelopeSession<TEvent>(settings, controller),
+                EnvelopeInteraction.Constant => new BypassEnvelopeSession<TEvent>(s.ValueExtractor),
+                EnvelopeInteraction.Pulse => new PulseEnvelopeSession<TEvent>(s.Envelope, s.AttackExtractor, s.ValueExtractor),
+                EnvelopeInteraction.Hold => new HoldEnvelopeSession<TEvent>(s.Envelope, s.AttackExtractor, s.ReleaseExtractor, s.ReleaseType, s.ValueExtractor),
                 _ => throw new ArgumentOutOfRangeException()
             };   
-            if (settings.Filter == EnvelopeFilter.OneEuro)
+            if (s.Filter == EnvelopeFilter.OneEuro)
             {
-                session = new StaticInteractiveEnvelopeSessionOneEuroFilter<TEvent>(session, settings.OneEuroFilter);
+                session = new StaticInteractiveEnvelopeSessionOneEuroFilter<TEvent>(session, s.OneEuroFilter);
             }
 
             return session;
         }
-        
-        private class EnvelopeSession<TEvent> : IInteractiveEnvelopeSession<TEvent> 
+
+        private class BypassEnvelopeSession<TEvent> : IInteractiveEnvelopeSession<TEvent> 
         {
-            protected readonly IInteractiveEnvelopeSettings<TEvent> Settings;
-            protected readonly TriggerController Controller;
-            protected readonly Guid TriggerId = Guid.NewGuid();
-
-            public EnvelopeSession(IInteractiveEnvelopeSettings<TEvent> settings, TriggerController controller)
-            {
-                Settings = settings;
-                Controller = controller ?? new TriggerController(AccumulationMode.Max);
-            }
+            private readonly IDynamicExtractor<TEvent, float> _extractor;
+            private IDynamicExtractorSession<TEvent, float> _session;
             
-            public virtual void Start(TEvent e)
+            private float _value;
+
+            public BypassEnvelopeSession(IDynamicExtractor<TEvent, float> extractor)
             {
-                
+                _extractor = extractor;
             }
 
-            public virtual void Update(TEvent e)
+            public void Start(TEvent e)
             {
+                _session = _extractor.MakeSession();
                 
-            }
-
-            public virtual void End(TEvent e, out float release)
-            {
-                release = 0f;
-            }
-
-            public virtual float Evaluate() => 0;
-        }
-
-        private class ConstantEnvelopeSession<TEvent> : EnvelopeSession<TEvent>
-        {
-            private IDynamicExtractorSession<TEvent, float> _valueScaleSession;
-            
-            private float _valueScale;
-
-            public ConstantEnvelopeSession(IInteractiveEnvelopeSettings<TEvent> settings, TriggerController controller) 
-                : base(settings, controller)
-            {
-                
-            }
-
-            public override void Start(TEvent e)
-            {
-                _valueScaleSession = Settings.ValueExtractor.MakeSession();
-                
-                if (!_valueScaleSession.Setup(e, out _valueScale))
+                if (!_session.Setup(e, out _value))
                 {
-                    _valueScale = 0f;
-                }
-
-                Controller.StartTrigger(TriggerId, new ConstantEnvelope(1f, float.PositiveInfinity), _valueScale, 1f);
-            }
-
-            public override void Update(TEvent e)
-            {
-                if (_valueScaleSession.Update(e, out _valueScale))
-                {
-                    Controller.UpdateTrigger(TriggerId, _valueScale);
+                    _value = 0f;
                 }
             }
 
-            public override void End(TEvent e, out float release)
+            public void Update(TEvent e)
+            {
+                _session.Update(e, out _value);
+            }
+
+            public void End(TEvent e, out float release)
             {
                 release = 0;
-                Controller.EndTrigger(TriggerId, null, 0);
             }
 
-            // maintain value beyond trigger for affordances which use multiple envelopes
-            public override float Evaluate() => _valueScale;
+            public float Evaluate() => _value;
         }
         
-        private class PulseEnvelopeSession<TEvent> : EnvelopeSession<TEvent>
+        private class PulseEnvelopeSession<TEvent> : IInteractiveEnvelopeSession<TEvent> 
         {
-            private IDynamicExtractorSession<TEvent, float> _valueScaleSession;
-
+            private readonly EnvelopeSettings _envelope;
+            private readonly IStaticExtractor<TEvent, float> _attackExtractor;
+            private readonly IDynamicExtractor<TEvent, float> _valueExtractor;
             
+            private IDynamicExtractorSession<TEvent, float> _valueSession;
+            private InteractiveEnvelopeImplementation _implementation;
             private float _endTime;
             
-            public PulseEnvelopeSession(IInteractiveEnvelopeSettings<TEvent> settings, TriggerController controller) 
-                : base(settings, controller)
+            public PulseEnvelopeSession(EnvelopeSettings envelope, IStaticExtractor<TEvent, float> attackExtractor, 
+                IDynamicExtractor<TEvent, float> valueExtractor)
             {
-                
+                _envelope = envelope;
+                _attackExtractor = attackExtractor;
+                _valueExtractor = valueExtractor;
             }
             
-            public override void Start(TEvent e)
+            public void Start(TEvent e)
             {
-                IEnvelope envelope = Settings.Envelope.Build();
-                
-                _valueScaleSession = Settings.ValueExtractor.MakeSession();
-                
-                if (!_valueScaleSession.Setup(e, out float valueScale))
+                _valueSession = _valueExtractor.MakeSession();
+                if (!_valueSession.Setup(e, out float value))
                 {
-                    valueScale = 1f;
+                    value = 1f;
                 }
-                if (!Settings.AttackExtractor.Extract(e, out float timeScale))
+                if (!_attackExtractor.Extract(e, out float attack))
                 {
-                    timeScale = 1f;
+                    attack = 1f;
                 }
+                IEnvelope envelope = new WarpedEnvelope(_envelope.Build(), 1f, attack);
+                _endTime = Time.time + envelope.Duration;
+                _implementation = new InteractiveEnvelopeImplementation(envelope, value);
+            }
 
-                _endTime = Time.time + envelope.Duration * timeScale;
-
-                Controller.PlayTrigger(envelope, valueScale, timeScale);
+            public void Update(TEvent e)
+            {
+                if (_valueSession.Update(e, out float value))
+                {
+                    _implementation.Value = value;   
+                }
             }
             
-            public override void End(TEvent e, out float release)
+            public void End(TEvent e, out float release)
             {
                 // make sure pulse has time to complete
                 release = Mathf.Max(0, _endTime - Time.time);
             }
 
-            public override float Evaluate() => Controller.Evaluate();
+            public float Evaluate() => _implementation.Evaluate();
         }
         
-        private class ContactEnvelopeSession<TEvent> : EnvelopeSession<TEvent>
+        private class HoldEnvelopeSession<TEvent> : IInteractiveEnvelopeSession<TEvent>
         {
+            private readonly EnvelopeSettings _envelope;
+            private readonly IStaticExtractor<TEvent, float> _attackExtractor;
+            private readonly IStaticExtractor<TEvent, float> _releaseExtractor;
+            private readonly EaseType _releaseType;
+            private readonly IDynamicExtractor<TEvent, float> _valueExtractor;
+            
             private IDynamicExtractorSession<TEvent, float> _valueSession;
+            private InteractiveEnvelopeImplementation _implementation;
 
-            public ContactEnvelopeSession(IInteractiveEnvelopeSettings<TEvent> settings, TriggerController controller) 
-                : base(settings, controller)
+            public HoldEnvelopeSession(EnvelopeSettings envelope, IStaticExtractor<TEvent, float> attackExtractor, 
+                IStaticExtractor<TEvent, float> releaseExtractor, EaseType releaseType, 
+                IDynamicExtractor<TEvent, float> valueExtractor)
             {
-                
+                _envelope = envelope;
+                _attackExtractor = attackExtractor;
+                _releaseExtractor = releaseExtractor;
+                _releaseType = releaseType;
+                _valueExtractor = valueExtractor;
             }
             
-            public override void Start(TEvent e)
+            public void Start(TEvent e)
             {
-                _valueSession = Settings.ValueExtractor.MakeSession(); 
-                IEnvelope envelope = Settings.Envelope.Build();
-
-                if (!_valueSession.Setup(e, out float valueScale))
+                _valueSession = _valueExtractor.MakeSession(); 
+                if (!_valueSession.Setup(e, out float value))
                 {
-                    valueScale = 1f;
+                    value = 1f;
                 }
-                if (!Settings.AttackExtractor.Extract(e, out float timeScale))
+                if (!_attackExtractor.Extract(e, out float attack))
                 {
-                    timeScale = 1f;
+                    attack = 1f;
                 }
-
-                Controller.StartTrigger(TriggerId, envelope, valueScale, timeScale);
+                IEnvelope envelope = new WarpedEnvelope(_envelope.Build(), 1f, attack);
+                _implementation = new InteractiveEnvelopeImplementation(envelope, value);
             }
 
-            public override void Update(TEvent e)
+            public void Update(TEvent e)
             {
-                if (_valueSession.Update(e, out float valueScale))
+                if (_valueSession.Update(e, out float value))
                 {
-                    Controller.UpdateTrigger(TriggerId, valueScale);
+                    _implementation.Value = value;
                 }
             }
 
-            public override void End(TEvent e, out float release)
+            public void End(TEvent e, out float release)
             {
-                if (!Settings.ReleaseExtractor.Extract(e, out release))
+                if (!_releaseExtractor.Extract(e, out release))
                 {
                     release = 1f;
                 }
-                IEnvelope envelope = Settings.ReleaseType.ReleaseEnvelope(release);
-                Controller.EndTrigger(TriggerId, envelope);
+                _implementation.End(_releaseType.ReleaseEnvelope(release));
             }
 
-            public override float Evaluate() => Controller.Evaluate();
+            public float Evaluate() => _implementation.Evaluate();
         }
     }
 }

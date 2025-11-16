@@ -5,9 +5,10 @@ namespace Sonosthesia.Trigger
         None,
         Sum,
         Max,
-        Min
+        Min,
+        Weighted
     }
-
+    
     public static class AccumulationModeExtensions
     {
         public static float Seed(this AccumulationMode mode)

@@ -12,7 +12,7 @@ namespace Sonosthesia.Instrument
 
         [SerializeField] private InterfaceReference<IMIDIMessageBroadcaster> _output;
 
-        private WeightedTriggerImplementation _weightedTrigger;
+        private TriggerImplementation _trigger;
         
         
         private class Controller : AffordanceController<TEvent, MIDIControlAffordance<TEvent>> 

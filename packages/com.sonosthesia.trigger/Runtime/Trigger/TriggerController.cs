@@ -6,7 +6,10 @@ namespace Sonosthesia.Trigger
     public class TriggerController
     {
         private readonly PlayTriggerImplementation _playTriggerController;
+        public PlayTriggerImplementation Play => _playTriggerController;
+        
         private readonly TrackedTriggerImplementation _trackedTriggerController;
+        public TrackedTriggerImplementation Tracked => _trackedTriggerController;
         
         public TriggerController(AccumulationMode accumulationMode)
         {
