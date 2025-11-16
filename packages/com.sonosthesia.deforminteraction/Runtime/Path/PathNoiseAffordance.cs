@@ -106,7 +106,7 @@ namespace Sonosthesia.DeformInteraction
 
                 float duration = Mathf.Max(displacementRelease, radiusRelease, frequencyRelease, speedRelease);
 
-                Debug.LogWarning($"{this} {nameof(Teardown)} Dispose in {duration} seconds");
+                Affordance.LogWarning($"{this} {nameof(Teardown)} Dispose in {duration} seconds");
                 Observable.Timer(TimeSpan.FromSeconds(duration))
                     .TakeUntilDisable(affordance)
                     .Subscribe(_ => {}, Dispose);
@@ -114,12 +114,8 @@ namespace Sonosthesia.DeformInteraction
 
             public void Dispose()
             {
-                Debug.LogWarning($"{this} Dispose");
+                Affordance.LogWarning($"{this} Dispose");
                 _updateSubscription?.Dispose();
-                _displacementSession.Dispose();
-                _radiusSession.Dispose();
-                _frequencySession.Dispose();
-                _speedSession.Dispose();
                 Affordance._processor.Unregister(EventId);
             }
         }

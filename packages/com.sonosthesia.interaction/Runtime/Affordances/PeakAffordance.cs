@@ -34,8 +34,7 @@ namespace Sonosthesia.Interaction
                 base.Setup(e);
 
                 IPeakConfiguration<TEvent> configuration = Affordance._configuration.Value;
-                Signal.Signal<Peak> target = Affordance._target;
-
+                
                 _magnitude = configuration.Magnitude.StartSession(e);
                 _duration = configuration.Duration.StartSession(e);
 
@@ -54,7 +53,7 @@ namespace Sonosthesia.Interaction
                 {
                     float duration = _duration.Evaluate().NormalizedRandomization(configuration.Randomization);
                     float magnitude = _magnitude.Evaluate().NormalizedRandomization(configuration.Randomization);
-                    target.Broadcast(new Peak(duration, magnitude, 0));
+                    Affordance._target.Broadcast(new Peak(duration, magnitude, 0));
                 });
             }
 

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Trigger
 {
-    public class PlayTriggerImplementation : IDisposable
+    public class PlayTriggerImplementation
     {
         private const float THRESHOLD = 1e-6f;
         
@@ -20,13 +20,10 @@ namespace Sonosthesia.Trigger
 
         private readonly HashSet<Entry> _entries = new ();
         private readonly AccumulationMode _accumulationMode;
-        
-        private IDisposable _subscription;
-        
+
         public PlayTriggerImplementation(AccumulationMode accumulationMode)
         {
             _accumulationMode = accumulationMode;
-            _subscription = Observable.EveryUpdate().Subscribe(_ => Update());
         }
 
         public void Clear()
@@ -90,6 +87,7 @@ namespace Sonosthesia.Trigger
 
         public float Evaluate()
         {
+            Purge();
             if (_entries.Count == 0)
             {
                 return 0f;
@@ -98,7 +96,7 @@ namespace Sonosthesia.Trigger
                     (current, entry) => entry.Accumulate(_accumulationMode, current));
         }
         
-        private void Update()
+        private void Purge()
         {
             int previousCount = _entries.Count;
             _obsolete.Clear();
@@ -111,12 +109,6 @@ namespace Sonosthesia.Trigger
             {
                 // Debug.Log($"{this} removed {previousCount - currentCount} obsolete entries");
             }
-        }
-
-        public void Dispose()
-        {
-            _subscription?.Dispose();
-            _subscription = null;
         }
     }
 }

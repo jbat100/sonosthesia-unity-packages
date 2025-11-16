@@ -3,7 +3,7 @@ using Sonosthesia.Envelope;
 
 namespace Sonosthesia.Trigger
 {
-    public class TriggerController : IDisposable
+    public class TriggerController
     {
         private readonly PlayTriggerImplementation _playTriggerController;
         private readonly TrackedTriggerImplementation _trackedTriggerController;
@@ -53,12 +53,6 @@ namespace Sonosthesia.Trigger
         public void EndAll(IEnvelope envelope, float timescale = 1)
         {
             _trackedTriggerController.EndAll(envelope, timescale);
-        }
-
-        public void Dispose()
-        {
-            _playTriggerController?.Dispose();
-            _trackedTriggerController?.Dispose();
         }
     }
 }

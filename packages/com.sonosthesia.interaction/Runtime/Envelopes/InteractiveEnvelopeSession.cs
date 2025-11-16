@@ -47,13 +47,9 @@ namespace Sonosthesia.Interaction
             protected readonly IInteractiveEnvelopeSettings<TEvent> Settings;
             protected readonly TriggerController Controller;
             protected readonly Guid TriggerId = Guid.NewGuid();
-            
-            // only dispose controller if it was self created, shared controllers should be disposed by their owner
-            private readonly bool _ownController;
-            
+
             public EnvelopeSession(IInteractiveEnvelopeSettings<TEvent> settings, TriggerController controller)
             {
-                _ownController = controller == null;
                 Settings = settings;
                 Controller = controller ?? new TriggerController(AccumulationMode.Max);
             }
@@ -71,20 +67,9 @@ namespace Sonosthesia.Interaction
             public virtual void End(TEvent e, out float release)
             {
                 release = 0f;
-            } 
-
-            public virtual float Evaluate()
-            {
-                return 0;
             }
 
-            public void Dispose()
-            {
-                if (_ownController)
-                {
-                    Controller?.Dispose();   
-                }
-            }
+            public virtual float Evaluate() => 0;
         }
 
         private class ConstantEnvelopeSession<TEvent> : EnvelopeSession<TEvent>

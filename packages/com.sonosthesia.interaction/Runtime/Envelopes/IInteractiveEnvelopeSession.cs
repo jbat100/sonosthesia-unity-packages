@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace Sonosthesia.Interaction
+﻿namespace Sonosthesia.Interaction
 {
-    public interface IInteractiveEnvelopeSession<in TEvent> : IDisposable
+    public interface IInteractiveEnvelopeSession<in TEvent>
     {
         void Start(TEvent e);
         void Update(TEvent e);

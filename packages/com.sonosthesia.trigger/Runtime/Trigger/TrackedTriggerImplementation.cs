@@ -7,16 +7,13 @@ using UniRx;
 
 namespace Sonosthesia.Trigger
 {
-    public class TrackedTriggerImplementation : IDisposable
+    public class TrackedTriggerImplementation
     {
         private readonly Dictionary<Guid, Entry> _entries = new ();
 
-        // avoid alloc
         private static readonly HashSet<Guid> _obsolete = new();
 
         private readonly AccumulationMode _accumulationMode;
-        
-        private IDisposable _subscription;
 
         private static readonly IEnvelope _defaultStartEnvelope =
             new ADSEnvelope(EnvelopePhase.Linear(0.3f), EnvelopePhase.Linear(0.5f), 0.5f);
@@ -27,7 +24,6 @@ namespace Sonosthesia.Trigger
         public TrackedTriggerImplementation(AccumulationMode accumulationMode)
         {
             _accumulationMode = accumulationMode;
-            _subscription = Observable.EveryUpdate().Subscribe(_ => Update());
         }
 
         public void Clear()
@@ -89,6 +85,7 @@ namespace Sonosthesia.Trigger
 
         public float Evaluate()
         {
+            Purge();
             if (_entries.Count == 0)
             {
                 return 0f;
@@ -97,7 +94,7 @@ namespace Sonosthesia.Trigger
                     (current, entry) => entry.Accumulate(_accumulationMode, current));
         }
         
-        private void Update()
+        private void Purge()
         {
             _obsolete.Clear();
             foreach (KeyValuePair<Guid, Entry> pair in _entries)
@@ -190,12 +187,6 @@ namespace Sonosthesia.Trigger
                     _ => 0
                 };
             }
-        }
-
-        public void Dispose()
-        {
-            _subscription?.Dispose();
-            _subscription = null;
         }
     }
 }
