@@ -30,7 +30,7 @@ namespace Sonosthesia.Interaction
             }
             
             protected override void Setup(TEvent e)
-            {
+            { 
                 base.Setup(e);
 
                 IPeakConfiguration<TEvent> configuration = Affordance._configuration.Value;
@@ -42,20 +42,18 @@ namespace Sonosthesia.Interaction
                 _speed = configuration.Speed.StartSession(e);
                 _chaos = configuration.Chaos.StartSession(e);
 
-                _schedulerSession = configuration.Scheduler.MakeSession(_speed.Update(), _chaos.Update());
+                _schedulerSession = configuration.Scheduler.MakeSession(_speed.Evaluate(), _chaos.Evaluate());
                 
                 _updateSubscription = Observable.EveryUpdate().Subscribe(_ =>
                 {
-                    _magnitude.Update();
-                    _duration.Update();
-                    _schedulerSession.Speed = _speed.Update();
-                    _schedulerSession.Chaos = _chaos.Update();
+                    _schedulerSession.Speed = _speed.Evaluate();
+                    _schedulerSession.Chaos = _chaos.Evaluate();
                 });
 
                 _eventSubscription = _schedulerSession.Stream.Subscribe(s =>
                 {
-                    float duration = _duration.Update().NormalizedRandomization(configuration.Randomization);
-                    float magnitude = _magnitude.Update().NormalizedRandomization(configuration.Randomization);
+                    float duration = _duration.Evaluate().NormalizedRandomization(configuration.Randomization);
+                    float magnitude = _magnitude.Evaluate().NormalizedRandomization(configuration.Randomization);
                     target.Broadcast(new Peak(duration, magnitude, 0));
                 });
             }

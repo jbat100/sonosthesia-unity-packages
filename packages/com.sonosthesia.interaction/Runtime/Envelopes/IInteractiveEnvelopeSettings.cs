@@ -23,8 +23,8 @@ namespace Sonosthesia.Interaction
     public interface IInteractiveEnvelopeSettings<in TEvent>
     {
         EnvelopeInteraction Interaction { get; }
-        IDynamicExtractor<TEvent, float> ValueScaleExtractor { get; }
-        IStaticExtractor<TEvent, float> TimeScaleExtractor { get; }
+        IDynamicExtractor<TEvent, float> ValueExtractor { get; }
+        IStaticExtractor<TEvent, float> AttackExtractor { get; }
         IStaticExtractor<TEvent, float> ReleaseExtractor { get; }
         EnvelopeSettings Envelope { get; }
         EnvelopeFilter Filter { get; }
@@ -47,11 +47,11 @@ namespace Sonosthesia.Interaction
         [SerializeField] private EnvelopeInteraction _interaction;
         public EnvelopeInteraction Interaction => _interaction;
         
-        [SerializeField] private TDynamicExtractor _valueScaleExtractor;
-        public IDynamicExtractor<TEvent, float> ValueScaleExtractor => _valueScaleExtractor;
+        [SerializeField] private TDynamicExtractor _valueExtractor;
+        public IDynamicExtractor<TEvent, float> ValueExtractor => _valueExtractor;
         
-        [SerializeField] private TStaticExtractor _timeScaleExtractor;
-        public IStaticExtractor<TEvent, float> TimeScaleExtractor => _timeScaleExtractor;
+        [SerializeField] private TStaticExtractor _attackExtractor;
+        public IStaticExtractor<TEvent, float> AttackExtractor => _attackExtractor;
         
         [SerializeField] private EnvelopeSettings _envelope
             = EnvelopeSettings.ADS(EnvelopePhase.InOutSine(0.1f), EnvelopePhase.InOutSine(0.3f), 0.5f);

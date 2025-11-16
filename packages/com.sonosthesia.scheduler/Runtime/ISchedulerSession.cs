@@ -41,7 +41,6 @@ namespace Sonosthesia.Scheduler
     {
         public float Speed { get; set; } = 1f;
         public float Chaos { get; set; } = 0f;
-
         
         private Subject<SchedulerEvent> _subject = new();
         private readonly IDisposable _updateSubscription;

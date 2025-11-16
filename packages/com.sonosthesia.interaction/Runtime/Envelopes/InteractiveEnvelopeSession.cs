@@ -42,14 +42,18 @@ namespace Sonosthesia.Interaction
             return session;
         }
         
-        private class EnvelopeSession<TEvent> : IInteractiveEnvelopeSession<TEvent>
+        private class EnvelopeSession<TEvent> : IInteractiveEnvelopeSession<TEvent> 
         {
             protected readonly IInteractiveEnvelopeSettings<TEvent> Settings;
             protected readonly TriggerController Controller;
             protected readonly Guid TriggerId = Guid.NewGuid();
             
+            // only dispose controller if it was self created, shared controllers should be disposed by their owner
+            private readonly bool _ownController;
+            
             public EnvelopeSession(IInteractiveEnvelopeSettings<TEvent> settings, TriggerController controller)
             {
+                _ownController = controller == null;
                 Settings = settings;
                 Controller = controller ?? new TriggerController(AccumulationMode.Max);
             }
@@ -69,9 +73,17 @@ namespace Sonosthesia.Interaction
                 release = 0f;
             } 
 
-            public virtual float Update()
+            public virtual float Evaluate()
             {
                 return 0;
+            }
+
+            public void Dispose()
+            {
+                if (_ownController)
+                {
+                    Controller?.Dispose();   
+                }
             }
         }
 
@@ -89,7 +101,7 @@ namespace Sonosthesia.Interaction
 
             public override void Start(TEvent e)
             {
-                _valueScaleSession = Settings.ValueScaleExtractor.MakeSession();
+                _valueScaleSession = Settings.ValueExtractor.MakeSession();
                 
                 if (!_valueScaleSession.Setup(e, out _valueScale))
                 {
@@ -113,11 +125,8 @@ namespace Sonosthesia.Interaction
                 Controller.EndTrigger(TriggerId, null, 0);
             }
 
-            public override float Update()
-            {
-                // maintain value beyond trigger for affordances which use multiple envelopes
-                return _valueScale;
-            }
+            // maintain value beyond trigger for affordances which use multiple envelopes
+            public override float Evaluate() => _valueScale;
         }
         
         private class PulseEnvelopeSession<TEvent> : EnvelopeSession<TEvent>
@@ -137,13 +146,13 @@ namespace Sonosthesia.Interaction
             {
                 IEnvelope envelope = Settings.Envelope.Build();
                 
-                _valueScaleSession = Settings.ValueScaleExtractor.MakeSession();
+                _valueScaleSession = Settings.ValueExtractor.MakeSession();
                 
                 if (!_valueScaleSession.Setup(e, out float valueScale))
                 {
                     valueScale = 1f;
                 }
-                if (!Settings.TimeScaleExtractor.Extract(e, out float timeScale))
+                if (!Settings.AttackExtractor.Extract(e, out float timeScale))
                 {
                     timeScale = 1f;
                 }
@@ -159,15 +168,12 @@ namespace Sonosthesia.Interaction
                 release = Mathf.Max(0, _endTime - Time.time);
             }
 
-            public override float Update()
-            {
-                return Controller.Update();
-            }
+            public override float Evaluate() => Controller.Evaluate();
         }
         
         private class ContactEnvelopeSession<TEvent> : EnvelopeSession<TEvent>
         {
-            private IDynamicExtractorSession<TEvent, float> _valueScaleSession;
+            private IDynamicExtractorSession<TEvent, float> _valueSession;
 
             public ContactEnvelopeSession(IInteractiveEnvelopeSettings<TEvent> settings, TriggerController controller) 
                 : base(settings, controller)
@@ -177,14 +183,14 @@ namespace Sonosthesia.Interaction
             
             public override void Start(TEvent e)
             {
-                _valueScaleSession = Settings.ValueScaleExtractor.MakeSession(); 
+                _valueSession = Settings.ValueExtractor.MakeSession(); 
                 IEnvelope envelope = Settings.Envelope.Build();
 
-                if (!_valueScaleSession.Setup(e, out float valueScale))
+                if (!_valueSession.Setup(e, out float valueScale))
                 {
                     valueScale = 1f;
                 }
-                if (!Settings.TimeScaleExtractor.Extract(e, out float timeScale))
+                if (!Settings.AttackExtractor.Extract(e, out float timeScale))
                 {
                     timeScale = 1f;
                 }
@@ -194,7 +200,7 @@ namespace Sonosthesia.Interaction
 
             public override void Update(TEvent e)
             {
-                if (_valueScaleSession.Update(e, out float valueScale))
+                if (_valueSession.Update(e, out float valueScale))
                 {
                     Controller.UpdateTrigger(TriggerId, valueScale);
                 }
@@ -210,10 +216,7 @@ namespace Sonosthesia.Interaction
                 Controller.EndTrigger(TriggerId, envelope);
             }
 
-            public override float Update()
-            {
-                return Controller.Update();
-            }
+            public override float Evaluate() => Controller.Evaluate();
         }
     }
 }

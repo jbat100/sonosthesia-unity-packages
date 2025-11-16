@@ -53,7 +53,7 @@ namespace Sonosthesia.Interaction
 
                 _updateSubscription = Observable.EveryUpdate().StartWith(0).Subscribe(_ =>
                 {
-                    _intensity = _intensitySession.Update();
+                    _intensity = _intensitySession.Evaluate();
                 });
                 
                 _fixedUpdateSubscription = Observable.EveryFixedUpdate().Subscribe(_ =>

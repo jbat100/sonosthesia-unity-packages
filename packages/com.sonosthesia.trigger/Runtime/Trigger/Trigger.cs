@@ -29,15 +29,12 @@ namespace Sonosthesia.Trigger
         
         protected virtual void Update()
         {
-            float result = TriggerController.Update();
-
+            float result = TriggerController.Evaluate();
             if (_dynamicPostProcessor != null)
             {
                 result = _dynamicPostProcessor.Process(result, Time.time);
             }
-            
             result = _postProcessor.Process(result);
-
             Broadcast(result);
         }
 

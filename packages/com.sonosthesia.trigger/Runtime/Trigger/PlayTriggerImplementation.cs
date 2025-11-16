@@ -1,11 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sonosthesia.Envelope;
+using UniRx;
 using UnityEngine;
 
 namespace Sonosthesia.Trigger
 {
-    internal class PlayTriggerImplementation
+    public class PlayTriggerImplementation : IDisposable
     {
         private const float THRESHOLD = 1e-6f;
         
@@ -19,9 +21,12 @@ namespace Sonosthesia.Trigger
         private readonly HashSet<Entry> _entries = new ();
         private readonly AccumulationMode _accumulationMode;
         
+        private IDisposable _subscription;
+        
         public PlayTriggerImplementation(AccumulationMode accumulationMode)
         {
             _accumulationMode = accumulationMode;
+            _subscription = Observable.EveryUpdate().Subscribe(_ => Update());
         }
 
         public void Clear()
@@ -82,8 +87,18 @@ namespace Sonosthesia.Trigger
                 };
             }
         }
+
+        public float Evaluate()
+        {
+            if (_entries.Count == 0)
+            {
+                return 0f;
+            }
+            return _entries.Aggregate(_accumulationMode.Seed(), 
+                    (current, entry) => entry.Accumulate(_accumulationMode, current));
+        }
         
-        public float Update()
+        private void Update()
         {
             int previousCount = _entries.Count;
             _obsolete.Clear();
@@ -96,14 +111,12 @@ namespace Sonosthesia.Trigger
             {
                 // Debug.Log($"{this} removed {previousCount - currentCount} obsolete entries");
             }
+        }
 
-            if (_entries.Count == 0)
-            {
-                return 0f;
-            }
-            
-            return _entries.Aggregate(_accumulationMode.Seed(), 
-                (current, entry) => entry.Accumulate(_accumulationMode, current));
+        public void Dispose()
+        {
+            _subscription?.Dispose();
+            _subscription = null;
         }
     }
 }

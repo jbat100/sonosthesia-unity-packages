@@ -62,16 +62,16 @@ namespace Sonosthesia.DeformInteraction
                     .TakeUntilDisable(affordance)
                     .Subscribe(_ =>
                     {
-                        time += Time.deltaTime * _speedSession.Update();
+                        time += Time.deltaTime * _speedSession.Evaluate();
                         CompoundPathNoiseInfo info = new CompoundPathNoiseInfo(
                             configuration.NoiseType,
-                            _displacementSession.Update(),
+                            _displacementSession.Evaluate(),
                             configuration.FalloffType,
                             _center,
-                            _radiusSession.Update(),
+                            _radiusSession.Evaluate(),
                             time,
                             float3.zero,
-                            _frequencySession.Update()
+                            _frequencySession.Evaluate()
                         );
                         affordance._processor.Register(EventId, info);
                     }, err => Dispose(), Dispose);
@@ -116,6 +116,10 @@ namespace Sonosthesia.DeformInteraction
             {
                 Debug.LogWarning($"{this} Dispose");
                 _updateSubscription?.Dispose();
+                _displacementSession.Dispose();
+                _radiusSession.Dispose();
+                _frequencySession.Dispose();
+                _speedSession.Dispose();
                 Affordance._processor.Unregister(EventId);
             }
         }

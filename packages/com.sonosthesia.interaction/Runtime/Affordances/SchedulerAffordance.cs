@@ -33,12 +33,12 @@ namespace Sonosthesia.Interaction
                 _speedSession = configuration.Speed.StartSession(e);
                 _chaosSession = configuration.Chaos.StartSession(e);
 
-                _schedulerSession =  configuration.Scheduler.MakeSession(_speedSession.Update(), _chaosSession.Update());
+                _schedulerSession =  configuration.Scheduler.MakeSession(_speedSession.Evaluate(), _chaosSession.Evaluate());
                 
                 _updateSubscription = Observable.EveryUpdate().Subscribe(_ =>
                 {
-                    _schedulerSession.Speed = _speedSession.Update();
-                    _schedulerSession.Chaos = _chaosSession.Update();
+                    _schedulerSession.Speed = _speedSession.Evaluate();
+                    _schedulerSession.Chaos = _chaosSession.Evaluate();
                 });
 
                 _eventSubscription = _schedulerSession.Stream.Subscribe(s => target.Broadcast(s));

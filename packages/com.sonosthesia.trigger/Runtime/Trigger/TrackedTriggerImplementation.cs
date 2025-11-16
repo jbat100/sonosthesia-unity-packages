@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Sonosthesia.Envelope;
+using UniRx;
 
 namespace Sonosthesia.Trigger
 {
-    internal class TrackedTriggerImplementation
+    public class TrackedTriggerImplementation : IDisposable
     {
         private readonly Dictionary<Guid, Entry> _entries = new ();
 
@@ -14,6 +15,8 @@ namespace Sonosthesia.Trigger
         private static readonly HashSet<Guid> _obsolete = new();
 
         private readonly AccumulationMode _accumulationMode;
+        
+        private IDisposable _subscription;
 
         private static readonly IEnvelope _defaultStartEnvelope =
             new ADSEnvelope(EnvelopePhase.Linear(0.3f), EnvelopePhase.Linear(0.5f), 0.5f);
@@ -24,6 +27,7 @@ namespace Sonosthesia.Trigger
         public TrackedTriggerImplementation(AccumulationMode accumulationMode)
         {
             _accumulationMode = accumulationMode;
+            _subscription = Observable.EveryUpdate().Subscribe(_ => Update());
         }
 
         public void Clear()
@@ -82,8 +86,18 @@ namespace Sonosthesia.Trigger
                 entry.End(envelope);
             }
         }
+
+        public float Evaluate()
+        {
+            if (_entries.Count == 0)
+            {
+                return 0f;
+            }
+            return _entries.Values.Aggregate(_accumulationMode.Seed(), 
+                    (current, entry) => entry.Accumulate(_accumulationMode, current));
+        }
         
-        public float Update()
+        private void Update()
         {
             _obsolete.Clear();
             foreach (KeyValuePair<Guid, Entry> pair in _entries)
@@ -97,14 +111,6 @@ namespace Sonosthesia.Trigger
             {
                 _entries.Remove(id);
             }
-
-            if (_entries.Count == 0)
-            {
-                return 0f;
-            }
-
-            return _entries.Values.Aggregate(_accumulationMode.Seed(), 
-                (current, entry) => entry.Accumulate(_accumulationMode, current));
         }
 
         private class Entry
@@ -184,6 +190,12 @@ namespace Sonosthesia.Trigger
                     _ => 0
                 };
             }
+        }
+
+        public void Dispose()
+        {
+            _subscription?.Dispose();
+            _subscription = null;
         }
     }
 }

@@ -57,7 +57,7 @@ namespace Sonosthesia.DeformInteraction
                     // .TakeUntilDisable(affordance)
                     .Subscribe(_ =>
                     {
-                        time += Time.deltaTime * _speedSession.Update();
+                        time += Time.deltaTime * _speedSession.Evaluate();
                         Vector3 actor = _actorTrackingSession.Update(Time.deltaTime);
                         Vector3 center = configuration.SpatialFalloff.Center switch
                         {
@@ -76,11 +76,11 @@ namespace Sonosthesia.DeformInteraction
                             configuration.SpatialFalloff.Active,
                             configuration.SpatialFalloff.Shape,
                             configuration.SpatialFalloff.EaseType,
-                            center, handle, _radiusSession.Update());
+                            center, handle, _radiusSession.Evaluate());
                         CompoundMeshNoiseInfo info = new CompoundMeshNoiseInfo(
                             configuration.CrossFadeType,
                             configuration.NoiseType,
-                            _displacementSession.Update(),
+                            _displacementSession.Evaluate(),
                             rts,
                             falloffInfo,
                             time,
@@ -121,6 +121,9 @@ namespace Sonosthesia.DeformInteraction
             {
                 // Debug.LogWarning($"{this} Dispose");
                 _updateSubscription?.Dispose();
+                _displacementSession?.Dispose();
+                _radiusSession?.Dispose();
+                _speedSession?.Dispose();
                 Affordance._controller.Unregister(EventId);
             }
         }

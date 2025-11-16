@@ -18,9 +18,11 @@ namespace Sonosthesia.Interaction
 
         public void End(TEvent e, out float release) => _session.End(e, out release);
 
-        public float Update() => Process(_session.Update());
+        public float Evaluate() => Process(_session.Evaluate());
 
         protected abstract float Process(float value);
+        
+        public void Dispose() => _session.Dispose();
     }
 
     // tracks settings, used for testing for build use StaticTouchEnvelopeSessionOneEuroFilter

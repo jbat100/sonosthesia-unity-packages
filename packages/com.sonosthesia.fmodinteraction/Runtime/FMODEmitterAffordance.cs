@@ -30,7 +30,7 @@ namespace Sonosthesia.FMODInteraction
 
         private class Controller : AffordanceController<TEvent, FMODEmitterAffordance<TEvent>>, IDisposable
         {
-            private struct ParameterSession
+            private class ParameterSession : IDisposable
             {
                 private string name;
                 private IInteractiveEnvelopeSession<TEvent> envelope;
@@ -57,12 +57,17 @@ namespace Sonosthesia.FMODInteraction
                 {
                     if (valid)
                     {
-                        float value = envelope.Update();
-                        emitter.SetParameter(name, envelope.Update());
+                        float value = envelope.Evaluate();
+                        emitter.SetParameter(name, value);
                         return value;
                     }
 
                     return float.NaN;
+                }
+
+                public void Dispose()
+                {
+                    envelope?.Dispose();
                 }
             }
             
@@ -148,6 +153,9 @@ namespace Sonosthesia.FMODInteraction
             {
                 Affordance.LogWarning($"{this} Dispose");
                 _updateSubscription?.Dispose();
+                _volumeSession.Dispose();
+                _excitationSession.Dispose();
+                _bodySession.Dispose();
                 Destroy(_emitter.gameObject);
             }
         }
