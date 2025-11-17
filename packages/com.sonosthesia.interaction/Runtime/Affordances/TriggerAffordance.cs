@@ -12,7 +12,7 @@ namespace Sonosthesia.Interaction
         
         private class Controller : AffordanceController<TEvent, TriggerAffordance<TEvent>>
         {
-            private IInteractiveEnvelopeSession<TEvent> _session; 
+            private IInteractiveTriggerSession<TEvent> _session; 
             
             public Controller(Guid eventId, TriggerAffordance<TEvent> affordance) : base(eventId, affordance)
             {
@@ -21,8 +21,8 @@ namespace Sonosthesia.Interaction
             protected override void Setup(TEvent e)
             { 
                 base.Setup(e);
-                IInteractiveEnvelopeSettings<TEvent> settings = Affordance._configuration.Value.Settings;
-                _session = settings.StartSession(e, Affordance._trigger.TriggerController);
+                IInteractiveTriggerSettings<TEvent> settings = Affordance._configuration.Value.Settings;
+                _session = settings.StartSession(e, Affordance._trigger.TriggerImplementation);
             }
 
             protected override void Update(TEvent e)

@@ -1,5 +1,4 @@
 using System;
-using Sonosthesia.Ease;
 using Sonosthesia.Envelope;
 using Sonosthesia.Extractor;
 using Sonosthesia.Trigger;
@@ -26,50 +25,40 @@ namespace Sonosthesia.Interaction
         public static IInteractiveTriggerSession<TEvent> MakeSession<TEvent>(
             IInteractiveTriggerSettings<TEvent> s, TriggerImplementation trigger)
         {
-            IInteractiveTriggerSession<TEvent> session = s.Interaction switch
-            {
-                TriggerInteraction.Pulse => new PulseTriggerSession<TEvent>(trigger, s.Envelope, s.AttackExtractor, s.ValueExtractor),
-                TriggerInteraction.Hold => new HoldEnvelopeSession<TEvent>(trigger, s.Envelope, s.AttackExtractor, s.ReleaseExtractor, s.ReleaseType, s.ValueExtractor),
-                _ => throw new ArgumentOutOfRangeException()
-            };
-            return session;
+            return new TriggerSession<TEvent>(trigger, s);
         }
         
-        private class PulseTriggerSession<TEvent> : IInteractiveTriggerSession<TEvent> 
+        private class TriggerSession<TEvent> : IInteractiveTriggerSession<TEvent> 
         {
             private readonly Guid _id = Guid.NewGuid();
-            private readonly EnvelopeSettings _envelope;
-            private readonly IStaticExtractor<TEvent, float> _attackExtractor;
-            private readonly IDynamicExtractor<TEvent, float> _valueExtractor;
+            private readonly IInteractiveTriggerSettings<TEvent> _settings;
             private readonly TriggerImplementation _implementation;
+            private readonly bool _autoRelease;
             
             private IDynamicExtractorSession<TEvent, float> _valueSession;
             private float _endTime;
-            
-            public PulseTriggerSession(TriggerImplementation implementation,
-                EnvelopeSettings envelope, IStaticExtractor<TEvent, float> attackExtractor, 
-                IDynamicExtractor<TEvent, float> valueExtractor)
+
+            public TriggerSession(TriggerImplementation implementation, IInteractiveTriggerSettings<TEvent> settings)
             {
-                _envelope = envelope;
-                _attackExtractor = attackExtractor;
-                _valueExtractor = valueExtractor;
+                _settings = settings;
                 _implementation = implementation;
+                _autoRelease = _settings.Interaction == TriggerInteraction.Pulse;
             }
             
             public void Start(TEvent e)
             {
-                _valueSession = _valueExtractor.MakeSession();
+                _valueSession = _settings.ValueExtractor.MakeSession();
                 if (!_valueSession.Setup(e, out float value))
                 {
                     value = 1f;
                 }
-                if (!_attackExtractor.Extract(e, out float attack))
+                if (!_settings.AttackExtractor.Extract(e, out float attack))
                 {
                     attack = 1f;
                 }
-                IEnvelope envelope = _envelope.Build();
+                IEnvelope envelope = _settings.Envelope.Build();
                 _endTime = Time.time + envelope.Duration * attack;
-                _implementation.StartTrigger(_id, _envelope.Build(), value, attack, true);
+                _implementation.StartTrigger(_id, envelope, value, attack, _autoRelease);
             }
 
             public void Update(TEvent e)
@@ -82,64 +71,19 @@ namespace Sonosthesia.Interaction
             
             public void End(TEvent e, out float release)
             {
-                // make sure pulse has time to complete
-                release = Mathf.Max(0, _endTime - Time.time);
-            }
-        }
-        
-        private class HoldEnvelopeSession<TEvent> : IInteractiveTriggerSession<TEvent> 
-        {
-            private readonly Guid _id = Guid.NewGuid();
-            private readonly EnvelopeSettings _envelope;
-            private readonly IStaticExtractor<TEvent, float> _attackExtractor;
-            private readonly IStaticExtractor<TEvent, float> _releaseExtractor;
-            private readonly EaseType _releaseType;
-            private readonly IDynamicExtractor<TEvent, float> _valueExtractor;
-            
-            private IDynamicExtractorSession<TEvent, float> _valueSession;
-            private TriggerImplementation _implementation;
-
-            public HoldEnvelopeSession(TriggerImplementation implementation,
-                EnvelopeSettings envelope, IStaticExtractor<TEvent, float> attackExtractor, 
-                IStaticExtractor<TEvent, float> releaseExtractor, EaseType releaseType, 
-                IDynamicExtractor<TEvent, float> valueExtractor)
-            {
-                _envelope = envelope;
-                _attackExtractor = attackExtractor;
-                _releaseExtractor = releaseExtractor;
-                _releaseType = releaseType;
-                _valueExtractor = valueExtractor;
-            }
-            
-            public void Start(TEvent e)
-            {
-                _valueSession = _valueExtractor.MakeSession(); 
-                if (!_valueSession.Setup(e, out float value))
+                if (_autoRelease)
                 {
-                    value = 1f;
+                    // make sure pulse has time to complete
+                    release = Mathf.Max(0, _endTime - Time.time);   
                 }
-                if (!_attackExtractor.Extract(e, out float attack))
+                else
                 {
-                    attack = 1f;
+                    if (!_settings.ReleaseExtractor.Extract(e, out release))
+                    {
+                        release = 1f;
+                    }
+                    _implementation.EndTrigger(_id, _settings.ReleaseType.ReleaseEnvelope(release), 1f);
                 }
-                _implementation.StartTrigger(_id, _envelope.Build(), value, attack, false);
-            }
-
-            public void Update(TEvent e)
-            {
-                if (_valueSession.Update(e, out float value))
-                {
-                    _implementation.UpdateTrigger(_id, value);
-                }
-            }
-
-            public void End(TEvent e, out float release)
-            {
-                if (!_releaseExtractor.Extract(e, out release))
-                {
-                    release = 1f;
-                }
-                _implementation.EndTrigger(_id, _releaseType.ReleaseEnvelope(release), 1f);
             }
         }
     }

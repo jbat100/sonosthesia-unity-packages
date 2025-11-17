@@ -78,9 +78,8 @@ namespace Sonosthesia.Interaction
         {
             IInteractiveEnvelopeSession<TEvent> session = s.Interaction switch
             {
-                EnvelopeInteraction.Constant => new BypassEnvelopeSession<TEvent>(s.ValueExtractor),
-                EnvelopeInteraction.Pulse => new PulseEnvelopeSession<TEvent>(s.Envelope, s.AttackExtractor, s.ValueExtractor),
-                EnvelopeInteraction.Hold => new HoldEnvelopeSession<TEvent>(s.Envelope, s.AttackExtractor, s.ReleaseExtractor, s.ReleaseType, s.ValueExtractor),
+                EnvelopeInteraction.Bypass => new BypassEnvelopeSession<TEvent>(s.ValueExtractor),
+                EnvelopeInteraction.Pulse or EnvelopeInteraction.Hold => new EnvelopeSession<TEvent>(s),
                 _ => throw new ArgumentOutOfRangeException()
             };   
             if (s.Filter == EnvelopeFilter.OneEuro)
@@ -106,7 +105,6 @@ namespace Sonosthesia.Interaction
             public void Start(TEvent e)
             {
                 _session = _extractor.MakeSession();
-                
                 if (!_session.Setup(e, out _value))
                 {
                     _value = 0f;
@@ -125,37 +123,35 @@ namespace Sonosthesia.Interaction
 
             public float Evaluate() => _value;
         }
-        
-        private class PulseEnvelopeSession<TEvent> : IInteractiveEnvelopeSession<TEvent> 
+
+
+        private class EnvelopeSession<TEvent> : IInteractiveEnvelopeSession<TEvent>
         {
-            private readonly EnvelopeSettings _envelope;
-            private readonly IStaticExtractor<TEvent, float> _attackExtractor;
-            private readonly IDynamicExtractor<TEvent, float> _valueExtractor;
+            private readonly IInteractiveEnvelopeSettings<TEvent> _settings;
+            private readonly bool _autoRelease;
             
             private IDynamicExtractorSession<TEvent, float> _valueSession;
             private InteractiveEnvelopeImplementation _implementation;
             private float _endTime;
-            
-            public PulseEnvelopeSession(EnvelopeSettings envelope, IStaticExtractor<TEvent, float> attackExtractor, 
-                IDynamicExtractor<TEvent, float> valueExtractor)
+
+            public EnvelopeSession(IInteractiveEnvelopeSettings<TEvent> settings)
             {
-                _envelope = envelope;
-                _attackExtractor = attackExtractor;
-                _valueExtractor = valueExtractor;
+                _settings = settings;
+                _autoRelease = settings.Interaction == EnvelopeInteraction.Pulse;
             }
             
             public void Start(TEvent e)
             {
-                _valueSession = _valueExtractor.MakeSession();
+                _valueSession = _settings.ValueExtractor.MakeSession();
                 if (!_valueSession.Setup(e, out float value))
                 {
                     value = 1f;
                 }
-                if (!_attackExtractor.Extract(e, out float attack))
+                if (!_settings.AttackExtractor.Extract(e, out float attack))
                 {
                     attack = 1f;
                 }
-                IEnvelope envelope = new WarpedEnvelope(_envelope.Build(), 1f, attack);
+                IEnvelope envelope = new WarpedEnvelope(_settings.Envelope.Build(), 1f, attack);
                 _endTime = Time.time + envelope.Duration;
                 _implementation = new InteractiveEnvelopeImplementation(envelope, value);
             }
@@ -170,67 +166,21 @@ namespace Sonosthesia.Interaction
             
             public void End(TEvent e, out float release)
             {
-                // make sure pulse has time to complete
-                release = Mathf.Max(0, _endTime - Time.time);
-            }
-
-            public float Evaluate() => _implementation.Evaluate();
-        }
-        
-        private class HoldEnvelopeSession<TEvent> : IInteractiveEnvelopeSession<TEvent>
-        {
-            private readonly EnvelopeSettings _envelope;
-            private readonly IStaticExtractor<TEvent, float> _attackExtractor;
-            private readonly IStaticExtractor<TEvent, float> _releaseExtractor;
-            private readonly EaseType _releaseType;
-            private readonly IDynamicExtractor<TEvent, float> _valueExtractor;
-            
-            private IDynamicExtractorSession<TEvent, float> _valueSession;
-            private InteractiveEnvelopeImplementation _implementation;
-
-            public HoldEnvelopeSession(EnvelopeSettings envelope, IStaticExtractor<TEvent, float> attackExtractor, 
-                IStaticExtractor<TEvent, float> releaseExtractor, EaseType releaseType, 
-                IDynamicExtractor<TEvent, float> valueExtractor)
-            {
-                _envelope = envelope;
-                _attackExtractor = attackExtractor;
-                _releaseExtractor = releaseExtractor;
-                _releaseType = releaseType;
-                _valueExtractor = valueExtractor;
+                if (_autoRelease)
+                {
+                    // make sure pulse has time to complete
+                    release = Mathf.Max(0, _endTime - Time.time);
+                }
+                else
+                {
+                    if (!_settings.ReleaseExtractor.Extract(e, out release))
+                    {
+                        release = 1f;
+                    }
+                    _implementation.End(_settings.ReleaseType.ReleaseEnvelope(release));
+                }
             }
             
-            public void Start(TEvent e)
-            {
-                _valueSession = _valueExtractor.MakeSession(); 
-                if (!_valueSession.Setup(e, out float value))
-                {
-                    value = 1f;
-                }
-                if (!_attackExtractor.Extract(e, out float attack))
-                {
-                    attack = 1f;
-                }
-                IEnvelope envelope = new WarpedEnvelope(_envelope.Build(), 1f, attack);
-                _implementation = new InteractiveEnvelopeImplementation(envelope, value);
-            }
-
-            public void Update(TEvent e)
-            {
-                if (_valueSession.Update(e, out float value))
-                {
-                    _implementation.Value = value;
-                }
-            }
-
-            public void End(TEvent e, out float release)
-            {
-                if (!_releaseExtractor.Extract(e, out release))
-                {
-                    release = 1f;
-                }
-                _implementation.End(_releaseType.ReleaseEnvelope(release));
-            }
-
             public float Evaluate() => _implementation.Evaluate();
         }
     }

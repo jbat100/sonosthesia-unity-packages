@@ -6,8 +6,8 @@ using UnityEngine.UIElements;
 
 namespace Sonosthesia.Interaction.Editor
 {
-    [CustomPropertyDrawer(typeof(IInteractiveEnvelopeSettings<>), true)]
-    public class InteractiveEnvelopeSettingsDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(IInteractiveTriggerSettings<>), true)]
+    public class InteractiveTriggerSettingsDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
@@ -16,12 +16,6 @@ namespace Sonosthesia.Interaction.Editor
             root.Add(UIElementUtils.Separator());
             
             root.Add(UIElementUtils.SectionLabel(property.name.PropertyNameToLabel()));
-            
-            root.AddRelativeField(property, "_filter", 
-                out SerializedProperty filterProp, out PropertyField filterField);
-            
-            root.AddRelativeField(property, "_oneEuroFilter", 
-                out SerializedProperty _, out PropertyField oneEuroFilterField);
             
             root.AddRelativeField(property, "_interaction", 
                 out SerializedProperty typeProp, out PropertyField typeField);
@@ -41,16 +35,13 @@ namespace Sonosthesia.Interaction.Editor
             root.AddRelativeField(property, "_releaseType", 
                 out SerializedProperty _, out PropertyField releaseTypeField);
 
-            root.UpdateVisibility(UpdateVisibility, typeProp, filterProp);
+            root.UpdateVisibility(UpdateVisibility, typeProp);
             
             return root;
 
             void UpdateVisibility()
             {
                 EnvelopeInteraction type = (EnvelopeInteraction)typeProp.enumValueIndex;
-                EnvelopeFilter filter = (EnvelopeFilter)filterProp.enumValueIndex;
-                
-                oneEuroFilterField.Show(filter is EnvelopeFilter.OneEuro);
                 
                 valueScaleExtractorField.Show(true);
                 

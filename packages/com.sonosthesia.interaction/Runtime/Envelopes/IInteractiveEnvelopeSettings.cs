@@ -9,7 +9,7 @@ namespace Sonosthesia.Interaction
 {
     public enum EnvelopeInteraction
     {
-        Constant,
+        Bypass,
         Pulse,
         Hold
     }

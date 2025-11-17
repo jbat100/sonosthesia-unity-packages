@@ -5,7 +5,7 @@ using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using Sonosthesia.Utils.Editor;
 
-namespace Sonosthesia.Touch.Editor
+namespace Sonosthesia.Interaction.Editor
 {
     [CustomPropertyDrawer(typeof(FloatInteractionStaticExtractorSettings<,>), true)]
     public class FloatInteractionStaticExtractorSettingsDrawer : PropertyDrawer

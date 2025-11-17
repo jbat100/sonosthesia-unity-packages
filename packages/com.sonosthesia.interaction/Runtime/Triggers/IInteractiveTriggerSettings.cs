@@ -2,7 +2,6 @@ using System;
 using Sonosthesia.Ease;
 using Sonosthesia.Envelope;
 using Sonosthesia.Extractor;
-using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Interaction
@@ -20,7 +19,6 @@ namespace Sonosthesia.Interaction
         IStaticExtractor<TEvent, float> AttackExtractor { get; }
         IStaticExtractor<TEvent, float> ReleaseExtractor { get; }
         EnvelopeSettings Envelope { get; }
-        OneEuroFilterSettings OneEuroFilter { get; }
         EaseType ReleaseType { get; }
     }
     
@@ -30,9 +28,6 @@ namespace Sonosthesia.Interaction
         where TDynamicExtractor : IDynamicExtractor<TEvent, float>
         where TStaticExtractor : IStaticExtractor<TEvent, float>
     {
-        [SerializeField] private OneEuroFilterSettings _oneEuroFilter;
-        public OneEuroFilterSettings OneEuroFilter => _oneEuroFilter;
-        
         [SerializeField] private TriggerInteraction _interaction;
         public TriggerInteraction Interaction => _interaction;
         

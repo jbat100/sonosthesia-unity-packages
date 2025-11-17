@@ -5,7 +5,7 @@ namespace Sonosthesia.Interaction
 {
     public interface ITriggerConfiguration<in TEvent>
     {
-        IInteractiveEnvelopeSettings<TEvent> Settings { get; }
+        IInteractiveTriggerSettings<TEvent> Settings { get; }
     }
     
     public class TriggerConfiguration<TEvent, TDynamicExtractor, TStaticExtractor> : ScriptableObject, ITriggerConfiguration<TEvent>
@@ -13,7 +13,7 @@ namespace Sonosthesia.Interaction
         where TDynamicExtractor : IDynamicExtractor<TEvent, float> 
         where TStaticExtractor : IStaticExtractor<TEvent, float>
     {
-        [SerializeField] private InteractiveEnvelopeSettings<TEvent, TDynamicExtractor, TStaticExtractor> _settings;
-        public IInteractiveEnvelopeSettings<TEvent> Settings => _settings;
+        [SerializeField] private InteractiveTriggerSettings<TEvent, TDynamicExtractor, TStaticExtractor> _settings;
+        public IInteractiveTriggerSettings<TEvent> Settings => _settings;
     }
 }
