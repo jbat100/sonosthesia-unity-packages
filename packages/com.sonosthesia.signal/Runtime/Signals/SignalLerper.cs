@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Signal
 {
-    public abstract class SignalLerper<T> : Signal<T> where T : struct
+    public abstract class SignalLerper<T> : StatefulSignal<T> where T : struct
     {
         [SerializeField] private Signal<T> _source;
 
@@ -38,7 +38,7 @@ namespace Sonosthesia.Signal
                 return;
             }
             _reference = _target = new Point(Value, Time.time);
-            _subscription = _source.SignalObservable.Subscribe(value =>
+            _subscription = _source.Observable.Subscribe(value =>
             {
                 _aligned = false;
                 _reference = new Point(Value, Time.time);

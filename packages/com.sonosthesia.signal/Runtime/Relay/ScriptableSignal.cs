@@ -5,14 +5,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Signal
 {
-    public interface ISignal<T> where T : struct
-    {
-        IObservable<T> Observable { get; }
-        
-        void Broadcast(T value);
-    }
-    
-    public class Signal<T> : MonoBehaviour, ILogSwitch, ISignal<T> where T : struct
+    public abstract class ScriptableSignal<T> : ScriptableObject, ILogSwitch, ISignal<T> where T : struct
     {
         private readonly Subject<T> _signalSubject = new ();
         public IObservable<T> Observable => _distinct ? _signalSubject.DistinctUntilChanged() : _signalSubject.AsObservable();

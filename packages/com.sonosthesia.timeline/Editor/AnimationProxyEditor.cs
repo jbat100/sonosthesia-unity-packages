@@ -70,7 +70,7 @@ namespace Sonosthesia.Timeline.Editor
         {
             Type type = obj.GetType();
 
-            Signal<float> CreateSignal(FieldInfo field, Transform parent)
+            StatefulSignal<float> CreateSignal(FieldInfo field, Transform parent)
             {
                 string fieldName = ConvertToPascalCase(field.Name);
                 GameObject child = new GameObject(fieldName);
@@ -87,11 +87,11 @@ namespace Sonosthesia.Timeline.Editor
                     {
                         // Proxy is a struct which makes things a little harder, but no choice
                         AnimationProxy.Proxy proxy = (AnimationProxy.Proxy)field.GetValue(obj);
-                        if (proxy.signal)
+                        if (proxy.signal.Value != null)
                         {
                             continue;
                         }
-                        proxy.signal = CreateSignal(field, parent);
+                        proxy.signal.Value = CreateSignal(field, parent);
                         field.SetValue(obj, proxy);
                     }
                     else if (typeof(IProxyContainer).IsAssignableFrom(field.FieldType))
@@ -130,11 +130,12 @@ namespace Sonosthesia.Timeline.Editor
                     {
                         // Proxy is a struct which makes things a little harder, but no choice
                         AnimationProxy.Proxy proxy = (AnimationProxy.Proxy)field.GetValue(obj);
-                        if (!proxy.signal)
+                        MonoBehaviour signalBehaviour = proxy.signal.Value as MonoBehaviour;
+                        if (!signalBehaviour)
                         {
                             continue;
                         }
-                        DestroyImmediate(proxy.signal.gameObject);
+                        DestroyImmediate(signalBehaviour.gameObject);
                         proxy.signal = null;
                         field.SetValue(obj, proxy);
                     }

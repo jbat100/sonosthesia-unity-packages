@@ -33,7 +33,7 @@ namespace Sonosthesia.Flow
             _subscriptions.Clear();
             foreach (Signal<TValue> input in _inputs.Where(input => input))
             {
-                _subscriptions.Add(input.SignalObservable.Subscribe(value =>
+                _subscriptions.Add(input.Observable.Subscribe(value =>
                 {
                     _current[input] = value;
                     _dirty = true;

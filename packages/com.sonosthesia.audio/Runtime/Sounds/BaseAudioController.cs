@@ -7,7 +7,7 @@ namespace Sonosthesia.Audio
 {
     public abstract class BaseAudioController : MonoBehaviour
     {
-        [SerializeField] private IntentSignalRelay _intents;
+        [SerializeField] private IntentScriptableSignal _intents;
 
         private IDisposable _subscription;
 

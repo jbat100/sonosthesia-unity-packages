@@ -41,7 +41,7 @@ namespace Sonosthesia.PeakDetector
             _midsImplementation = _configuration.Mids.MakeImplementation(_mids.Broadcast);
             _highsImplementation = _configuration.Highs.MakeImplementation(_highs.Broadcast);
             
-            _subscription = _source.SignalObservable.Subscribe(tri =>
+            _subscription = _source.Observable.Subscribe(tri =>
             {
                 _lowsImplementation.Process(tri.Low);
                 _midsImplementation.Process(tri.Mid);

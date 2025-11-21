@@ -33,7 +33,7 @@ namespace Sonosthesia.Audio
             _subscription?.Dispose();
             if (_source)
             {
-                _subscription = _source.SignalObservable.Subscribe(analysis =>
+                _subscription = _source.Observable.Subscribe(analysis =>
                 {
                     Signal<Peak> signal = SignalForChannel(analysis.channel);
                     if (signal)

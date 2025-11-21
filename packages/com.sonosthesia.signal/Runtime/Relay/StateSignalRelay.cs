@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Sonosthesia.Signal
 {
     [CreateAssetMenu(fileName = "StateSignalRelay", menuName = "Sonosthesia/Relays/StateSignalRelay")]
-    public class StateSignalRelay : StatefulSignalRelay<State>
+    public class StateSignalRelay : StatefulScriptableSignal<State>
     {
         
     }

@@ -6,7 +6,7 @@ namespace Sonosthesia.Application
 {
     public class DemoUIWindowTest : MonoBehaviour
     {
-        [SerializeField] private IntentSignalRelay _intent;
+        [SerializeField] private IntentScriptableSignal _intent;
 
         [SerializeField] private StateSignalRelay _currentScene;
 

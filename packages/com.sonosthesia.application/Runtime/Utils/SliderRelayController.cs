@@ -12,7 +12,7 @@ namespace Sonosthesia.Application
     [RequireComponent(typeof(Slider))]
     public class SliderRelayController : MonoBehaviour, IPointerUpHandler, IPointerDownHandler
     {
-        [SerializeField] private IntentSignalRelay _intent;
+        [SerializeField] private IntentScriptableSignal _intent;
 
         [SerializeField] private FloatSignalRelay _value;
         

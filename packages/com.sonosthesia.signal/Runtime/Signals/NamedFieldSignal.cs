@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Signal
 {
-    public abstract class NamedFieldSignal<T> : Signal<T> where T: struct
+    public abstract class NamedFieldSignal<T> : StatefulSignal<T> where T: struct
     {
         [SerializeField] private Component _component;
 

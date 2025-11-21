@@ -7,11 +7,11 @@ namespace Sonosthesia.MIDI
 {
     public class MIDIControlSink : Target<MIDIControl>
     {
-        [SerializeField] private MIDIOutput _output;
+        [SerializeField] private InterfaceReference<IMIDIMessageBroadcaster> _output;
         
         protected override void Apply(MIDIControl value)
         {
-            _output.Broadcast(value);
+            _output.Value.Broadcast(value);
         }
     }
 }

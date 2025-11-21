@@ -24,7 +24,7 @@ namespace Sonosthesia.Audio
             _subscription?.Dispose();
             if (_source)
             {
-                _subscription = _source.SignalObservable.Subscribe(a =>
+                _subscription = _source.Observable.Subscribe(a =>
                 {
                     if (_rms)
                     {

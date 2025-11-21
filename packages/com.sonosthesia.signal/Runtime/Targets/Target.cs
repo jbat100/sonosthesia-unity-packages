@@ -44,7 +44,7 @@ namespace Sonosthesia.Signal
             _dynamicProcessor = _processingFactory ? _processingFactory.Make() : null;
 
             IObservable<TValue> observable =
-                _distinct ? _source.SignalObservable.DistinctUntilChanged() : _source.SignalObservable;
+                _distinct ? _source.Observable.DistinctUntilChanged() : _source.Observable;
 
             if (_dynamicProcessor != null)
             {

@@ -12,7 +12,7 @@ namespace Sonosthesia.Flow
             {
                 return Disposable.Empty;
             }
-            return source.SignalObservable.Subscribe(value =>
+            return source.Observable.Subscribe(value =>
             {
                 Broadcast(Bypass ? value : Process(value));
             });

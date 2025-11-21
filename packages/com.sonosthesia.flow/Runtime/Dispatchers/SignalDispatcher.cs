@@ -26,7 +26,7 @@ namespace Sonosthesia.Flow
                 return;
             }
             
-            _subscription = _source.SignalObservable.Subscribe(value =>
+            _subscription = _source.Observable.Subscribe(value =>
             {
                 if (_destinations.Count == 0)
                 {

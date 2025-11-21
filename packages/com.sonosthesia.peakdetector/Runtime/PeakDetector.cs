@@ -102,7 +102,7 @@ namespace Sonosthesia.PeakDetector
 
         private PeakDetectorImplementation _implementation;
         
-        protected override IDisposable Setup(Signal<float> source) => source.SignalObservable.Subscribe(value => _implementation?.Process(value));
+        protected override IDisposable Setup(Signal<float> source) => source.Observable.Subscribe(value => _implementation?.Process(value));
 
         protected override void OnEnable()
         {

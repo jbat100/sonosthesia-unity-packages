@@ -21,7 +21,7 @@ namespace Sonosthesia.Generator
             _subscription?.Dispose();
             if (_timeSignal)
             {
-                _timeSignal.SignalObservable.Subscribe(time =>
+                _timeSignal.Observable.Subscribe(time =>
                 {
                     TValue raw = _generator.Evaluate(time);
                     Broadcast(_processor.Process(raw));

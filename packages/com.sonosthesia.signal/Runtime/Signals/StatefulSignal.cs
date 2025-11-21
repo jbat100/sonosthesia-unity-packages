@@ -1,21 +1,22 @@
-using System;
+﻿using System;
 using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 
 namespace Sonosthesia.Signal
 {
-    public interface ISignal<T> where T : struct
+    public interface IStatefulSignal<T> : ISignal<T> where T : struct
     {
-        IObservable<T> Observable { get; }
-        
-        void Broadcast(T value);
+        T Value { get; }
     }
     
-    public class Signal<T> : MonoBehaviour, ILogSwitch, ISignal<T> where T : struct
+    public class StatefulSignal<T> : MonoBehaviour, ILogSwitch, IStatefulSignal<T> where T : struct
     {
-        private readonly Subject<T> _signalSubject = new ();
-        public IObservable<T> Observable => _distinct ? _signalSubject.DistinctUntilChanged() : _signalSubject.AsObservable();
+        private readonly BehaviorSubject<T> _signalSubject = new (default);
+        public IObservable<T> Observable => _distinct ? 
+            _signalSubject.DistinctUntilChanged() : _signalSubject.AsObservable();
+
+        public T Value => _signalSubject.Value;
          
         [SerializeField] private bool _log;
         public bool Log => _log;

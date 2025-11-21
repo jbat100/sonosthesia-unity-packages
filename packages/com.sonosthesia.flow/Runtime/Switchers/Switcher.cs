@@ -20,7 +20,7 @@ namespace Sonosthesia.Flow
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = _signal.SignalObservable.Subscribe(value =>
+            _subscription = _signal.Observable.Subscribe(value =>
             {
                 _targets.TryGetIndex(value, _safeIndex, out T selected);
                 foreach (T target in _targets)

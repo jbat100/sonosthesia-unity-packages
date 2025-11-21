@@ -29,13 +29,13 @@ namespace Sonosthesia.Timeline
         public struct Proxy
         {
             public float value;
-            public Signal<float> signal;
+            public InterfaceReference<ISignal<float>> signal;
 
             public void Update()
             {
-                if (signal)
+                if (signal.Value != null)
                 {
-                    signal.Broadcast(value);
+                    signal.Value.Broadcast(value);
                 }
             }
         }

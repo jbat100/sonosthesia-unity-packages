@@ -30,7 +30,7 @@ namespace Sonosthesia.Trigger
                 return;
             }
 
-            IObservable<T> observable = _source.SignalObservable;
+            IObservable<T> observable = _source.Observable;
 
             if (SkipFirst)
             {

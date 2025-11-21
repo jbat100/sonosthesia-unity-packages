@@ -46,7 +46,7 @@ namespace Sonosthesia.Signal
             if (_source)
             {
                 // the skip is there to prevent immediate instantiation due to underlying BehaviourSubject
-                _subscription = _source.SignalObservable.Skip(1).Subscribe(Instantiate);
+                _subscription = _source.Observable.Skip(1).Subscribe(Instantiate);
             }
         }
 

@@ -7,7 +7,7 @@ namespace Sonosthesia.Signal
 {
     public class IntentOnAwake : MonoBehaviour
     {
-        [SerializeField] private IntentSignalRelay _intent;
+        [SerializeField] private InterfaceReference<ISignal<Intent>> _intent;
 
         [SerializeField] private string _key;
 
@@ -24,7 +24,7 @@ namespace Sonosthesia.Signal
                     return;
                 }
                 
-                _intent.Broadcast(new Intent(_key));
+                _intent.Value.Broadcast(new Intent(_key));
             });
         }
     }

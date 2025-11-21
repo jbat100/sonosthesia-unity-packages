@@ -18,7 +18,7 @@ namespace Sonosthesia.Application
             _subscription?.Dispose();
             if (_source)
             {
-                _subscription = _source.SignalObservable.Subscribe(value =>
+                _subscription = _source.Observable.Subscribe(value =>
                 {
                     if (!_fade)
                     {

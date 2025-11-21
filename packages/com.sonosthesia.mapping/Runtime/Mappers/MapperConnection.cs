@@ -50,7 +50,7 @@ namespace Sonosthesia.Mapping
 
                 if (processors.Count == 0)
                 {
-                    return source._signal.SignalObservable
+                    return source._signal.Observable
                         .Subscribe(value =>
                         {
                             _signal.Broadcast(value);
@@ -59,7 +59,7 @@ namespace Sonosthesia.Mapping
 
                 float startTime = Time.time;
                 DynamicProcessorChain<TValue> chain = new DynamicProcessorChain<TValue>(processors.ToArray());
-                return source._signal.SignalObservable
+                return source._signal.Observable
                     .Subscribe(value =>
                     {
                         _signal.Broadcast(chain.Process(value, Time.time - startTime));

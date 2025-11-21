@@ -15,7 +15,7 @@ namespace Sonosthesia.Flow
 
         protected override IDisposable Setup(Signal<float> source)
         {
-            return source.SignalObservable.Subscribe(value =>
+            return source.Observable.Subscribe(value =>
             {
                 TTarget mapped = Map(value * _scale + _offset);
                 Broadcast(mapped);

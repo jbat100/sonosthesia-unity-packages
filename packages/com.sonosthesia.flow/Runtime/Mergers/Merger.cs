@@ -21,8 +21,8 @@ namespace Sonosthesia.Flow
             _subscription?.Dispose();
             if (_first && _second)
             {
-                _subscription = _first.SignalObservable
-                    .CombineLatest(_second.SignalObservable, (f, s) => new KeyValuePair<T1, T2>(f, s))
+                _subscription = _first.Observable
+                    .CombineLatest(_second.Observable, (f, s) => new KeyValuePair<T1, T2>(f, s))
                     .Subscribe(pair => Combine(pair.Key, pair.Value));
             }
         }

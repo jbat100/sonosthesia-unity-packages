@@ -1,6 +1,6 @@
 namespace Sonosthesia.Signal
 {
-    public class FloatSignal : Signal<float>
+    public class FloatSignal : StatefulSignal<float>
     {
         
     }
