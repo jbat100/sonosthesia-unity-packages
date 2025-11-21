@@ -4,7 +4,8 @@ using UnityEngine;
 namespace Sonosthesia.Touch
 {
     [CreateAssetMenu(fileName = "TouchPeakConfiguration", menuName = "Sonosthesia/Touch/TouchPeakConfiguration")]
-    public class TouchPeakConfiguration : PeakConfiguration<TouchEvent, TouchEnvelopeSettings>
+    public class TouchPeakConfiguration : PeakConfiguration<TouchEvent, 
+        InteractiveEnvelopeSettings<TouchEvent, FloatTouchDynamicExtractorSettings, FloatTouchStaticExtractorSettings>>
     {
 
     }

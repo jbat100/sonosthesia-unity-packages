@@ -18,16 +18,16 @@ namespace Sonosthesia.Interaction.Editor
             root.Add(UIElementUtils.SectionLabel(property.name.PropertyNameToLabel()));
             
             root.AddRelativeField(property, "_interaction", 
-                out SerializedProperty typeProp, out PropertyField typeField);
+                out SerializedProperty typeProp, out PropertyField _);
             
-            root.AddRelativeField(property, "_valueScaleExtractor", 
-                out SerializedProperty _, out PropertyField valueScaleExtractorField);
+            root.AddRelativeField(property, "_valueExtractor", 
+                out SerializedProperty _, out PropertyField _);
             
-            root.AddRelativeField(property, "_timeScaleExtractor", 
-                out SerializedProperty _, out PropertyField timeScaleExtractorField);
+            root.AddRelativeField(property, "_attackExtractor", 
+                out SerializedProperty _, out PropertyField _);
             
             root.AddRelativeField(property, "_envelope", 
-                out SerializedProperty _, out PropertyField envelopeField);
+                out SerializedProperty _, out PropertyField _);
 
             root.AddRelativeField(property, "_releaseExtractor", 
                 out SerializedProperty _, out PropertyField releaseExtractorField);
@@ -41,15 +41,9 @@ namespace Sonosthesia.Interaction.Editor
 
             void UpdateVisibility()
             {
-                EnvelopeInteraction type = (EnvelopeInteraction)typeProp.enumValueIndex;
-                
-                valueScaleExtractorField.Show(true);
-                
-                timeScaleExtractorField.Show(type is not EnvelopeInteraction.Bypass);
-                envelopeField.Show(type is not EnvelopeInteraction.Bypass);
-                
-                releaseExtractorField.Show(type is EnvelopeInteraction.Hold);
-                releaseTypeField.Show(type is EnvelopeInteraction.Hold);
+                TriggerInteraction type = (TriggerInteraction)typeProp.enumValueIndex;
+                releaseExtractorField.Show(type is TriggerInteraction.Hold);
+                releaseTypeField.Show(type is TriggerInteraction.Hold);
             }
         }
     }

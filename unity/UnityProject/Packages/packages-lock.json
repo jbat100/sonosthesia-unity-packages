@@ -121,7 +121,9 @@
         "com.sonosthesia.mesh": "1.11.0",
         "com.sonosthesia.noise": "1.11.0",
         "com.sonosthesia.dynamic": "1.11.0",
-        "com.sonosthesia.collide": "1.11.0"
+        "com.sonosthesia.collide": "1.11.0",
+        "com.sonosthesia.interaction": "1.11.0",
+        "com.sonosthesia.extractor": "1.11.0"
       }
     },
     "com.sonosthesia.dynamic": {

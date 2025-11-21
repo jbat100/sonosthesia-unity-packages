@@ -26,10 +26,10 @@ namespace Sonosthesia.Interaction.Editor
             root.AddRelativeField(property, "_interaction", 
                 out SerializedProperty typeProp, out PropertyField typeField);
             
-            root.AddRelativeField(property, "_valueScaleExtractor", 
+            root.AddRelativeField(property, "_valueExtractor", 
                 out SerializedProperty _, out PropertyField valueScaleExtractorField);
             
-            root.AddRelativeField(property, "_timeScaleExtractor", 
+            root.AddRelativeField(property, "_attackExtractor", 
                 out SerializedProperty _, out PropertyField timeScaleExtractorField);
             
             root.AddRelativeField(property, "_envelope", 
