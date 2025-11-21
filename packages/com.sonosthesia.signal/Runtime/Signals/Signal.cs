@@ -11,6 +11,11 @@ namespace Sonosthesia.Signal
         
         void Broadcast(T value);
     }
+
+    public class SignalImplementation
+    {
+        
+    }
     
     public class Signal<T> : MonoBehaviour, ILogSwitch, ISignal<T> where T : struct
     {
@@ -25,7 +30,6 @@ namespace Sonosthesia.Signal
         public void Broadcast(T value)
         {
             this.LogVerbose($"{this} {nameof(Broadcast)} {value}");
-            OnBroadcast(value);
             _signalSubject.OnNext(value);
         }
 
@@ -34,8 +38,5 @@ namespace Sonosthesia.Signal
             _signalSubject.OnCompleted();
             _signalSubject.Dispose();
         }
-        
-        // hook for subclasses to react with predictable order (which is not the case for signal subscription)
-        protected virtual void OnBroadcast(T value) { }
     }
 }

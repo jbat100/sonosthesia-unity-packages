@@ -5,22 +5,8 @@ using UnityEngine;
 
 namespace Sonosthesia.Channel
 {
-    public class AbstractScriptableChannel : ScriptableObject, IGuidReactiveCollection
+    public abstract class AbstractScriptableChannel : ScriptableObject, IGuidReactiveCollection
     {
-        private readonly ReactiveCollection<Guid> _streamIds = new();
-        public IReadOnlyReactiveCollection<Guid> Ids => _streamIds;
-
-        protected void Register(Guid identifier)
-        {
-            if (!_streamIds.Contains(identifier))
-            {
-                _streamIds.Add(identifier);   
-            }
-        }
-
-        protected void Unregister(Guid identifier)
-        {
-            _streamIds.Remove(identifier);
-        }
+        public abstract IReadOnlyReactiveCollection<Guid> Ids { get; }
     }
 }

@@ -11,38 +11,13 @@ namespace Sonosthesia.Channel
         [SerializeField] private bool _log;
         public bool Log => _log;
         
-        private readonly ReactiveDictionary<Guid, T> _values = new();
-        public IReadOnlyReactiveDictionary<Guid, T> Values => _values;
+        private ChannelImplementation<T> _implementation;
+        private ChannelImplementation<T> Implementation => _implementation ??= new ChannelImplementation<T>(this);
         
-        private readonly Subject<KeyValuePair<Guid, IObservable<T>>> _subject = new ();
-        public IObservable<KeyValuePair<Guid, IObservable<T>>> Observable => _subject.AsObservable();
+        public override IReadOnlyReactiveCollection<Guid> Ids => Implementation.Ids;
+        public IReadOnlyReactiveDictionary<Guid, T> Values => Implementation.Values;
+        public IObservable<KeyValuePair<Guid, IObservable<T>>> Observable => Implementation.Observable;
         
-        public void Push(KeyValuePair<Guid, IObservable<T>> pair) 
-        {
-            Guid id = pair.Key;
-            IObservable<T> stream = pair.Value;
-            this.LogWarning($"{this} new stream {id}");
-            pair.Value.Subscribe(
-                v =>
-                {
-                    this.LogVerbose($"{this} new stream value {v}");
-                    _values[id] = v;
-                    Register(id);
-                }, 
-                error =>
-                {
-                    _values.Remove(id);
-                    Unregister(id);
-                    this.LogWarning($"{this} error end stream {id}");
-                },
-                () =>
-                {
-                    _values.Remove(id);
-                    Unregister(id);
-                    this.LogWarning($"{this} completion end stream {id}");
-                });
-            
-            _subject.OnNext(new KeyValuePair<Guid, IObservable<T>>(id, stream));
-        }
+        public void Push(KeyValuePair<Guid, IObservable<T>> pair) => _implementation.Push(pair);
     }
 }
