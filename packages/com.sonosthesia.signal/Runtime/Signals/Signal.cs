@@ -5,6 +5,8 @@ using UnityEngine;
 
 namespace Sonosthesia.Signal
 {
+    
+    
     public class Signal<T> : MonoBehaviour, ILogSwitch where T : struct
     {
         private readonly BehaviorSubject<T> _signalSubject = new (default);

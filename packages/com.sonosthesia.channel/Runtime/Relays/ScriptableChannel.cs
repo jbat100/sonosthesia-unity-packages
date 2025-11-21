@@ -1,34 +1,12 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Sonosthesia.Utils;
-using UnityEngine;
 using UniRx;
+using UnityEngine;
 
 namespace Sonosthesia.Channel
 {
-    public interface IChannel<T> : IGuidReactiveCollection
-    {
-        IReadOnlyReactiveDictionary<Guid, T> Values { get; }
-        
-        IObservable<KeyValuePair<Guid, IObservable<T>>> Observable { get; }
-
-        void Push(KeyValuePair<Guid, IObservable<T>> pair);
-    }
-
-    public static class ChannelExtension
-    {
-        public static void Push<T>(this IChannel<T> channel, Guid id, IObservable<T> stream)
-        {
-            channel.Push(new KeyValuePair<Guid, IObservable<T>>(id, stream));
-        }
-        
-        public static IDisposable Pipe<T>(this IChannel<T> channel, IChannel<T> other)
-        {
-            return other.Observable.Subscribe(channel.Push);
-        }
-    }
-    
-    public class Channel<T> : AbstractChannel, IChannel<T>, ILogSwitch where T : struct
+    public class ScriptableChannel<T> : AbstractScriptableChannel, IChannel<T>, ILogSwitch where T : struct
     {
         [SerializeField] private bool _log;
         public bool Log => _log;

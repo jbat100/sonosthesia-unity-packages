@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Sonosthesia.Channel;
 using Sonosthesia.Interaction;
 using Sonosthesia.Utils;
 using UniRx;
