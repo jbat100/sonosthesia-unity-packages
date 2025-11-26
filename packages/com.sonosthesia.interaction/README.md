@@ -9,7 +9,16 @@ Foundational interaction framework for Sonosthesia packages. It defines how sour
 
 ## Affordance pipeline
 - `InteractionAffordance<TEvent>` subscribes to channel streams, evaluates gates, and hands off to controllers or relays while keeping logging and relay wiring unified across packages.【F:packages/com.sonosthesia.interaction/Runtime/Affordances/InteractionAffordance.cs†L12-L110】
-- Specialized affordances (drag, peak, trigger, torque, scheduler, channel-count, activation) build on the base to spawn visuals, drive envelopes, or coordinate schedulers while reusing the same stream lifecycle.
+- Specialized affordances build on the base to spawn visuals, drive envelopes, or coordinate schedulers while reusing the same stream lifecycle.
+
+### Affordance effects
+- **Drag** — Spawns optional origin/target prefabs and a line renderer per interaction, then keeps their positions updated so streams can visualize drags or pulls between endpoints.【F:packages/com.sonosthesia.interaction/Runtime/Affordances/DragAffordance.cs†L6-L16】【F:packages/com.sonosthesia.interaction/Runtime/Affordances/DragAffordanceController.cs†L20-L80】
+- **Peak** — Uses envelope-driven magnitude, duration, speed, and chaos controls to schedule peak events and broadcast them to a signal target, randomizing values per configuration.【F:packages/com.sonosthesia.interaction/Runtime/Affordances/PeakAffordance.cs†L10-L67】
+- **Trigger** — Wraps an interactive trigger session so affordances can start, update, and end `Trigger.Trigger` playback using shared trigger settings and configuration objects.【F:packages/com.sonosthesia.interaction/Runtime/Affordances/TriggerAffordance.cs†L8-L46】
+- **Torque** — Evaluates a torque extractor and intensity envelope to apply torque (relative or world) on a configured rigidbody every fixed update, optionally tracking changes over the stream.【F:packages/com.sonosthesia.interaction/Runtime/Affordances/TorqueAffordance.cs†L10-L70】
+- **Scheduler** — Feeds speed and chaos envelopes into a scheduler session and forwards generated scheduler events to a signal channel for downstream consumers.【F:packages/com.sonosthesia.interaction/Runtime/Affordances/SchedulerAffordance.cs†L10-L58】
+- **Channel-count** — Watches configured channel inputs and notifies subclasses when the aggregate active channel count changes, enabling count-driven effects.【F:packages/com.sonosthesia.interaction/Runtime/Affordances/ChannelCountAffordance.cs†L10-L36】
+- **Activation** — A channel-count implementation that toggles target GameObjects on when any channels are active and off when they are all idle.【F:packages/com.sonosthesia.interaction/Runtime/Affordances/ActivationChannelCountAffordance.cs†L6-L18】
 
 ## Extractors, triggers, and envelopes
 - Extraction utilities provide reusable float and vector extractors (velocity, distance, twist, relative position, axis) plus configurable static/dynamic extractor settings that downstream packages compose for their own event types.【F:packages/com.sonosthesia.interaction/Runtime/Extractors/ExtractionUtils.cs†L9-L346】
