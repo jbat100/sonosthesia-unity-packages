@@ -5,13 +5,17 @@ using Sonosthesia.Utils;
 
 namespace Sonosthesia.Flow
 {
-    public abstract class Adaptor<TSource, TTarget> : StatelessSignal<TTarget> where TSource : struct where TTarget : struct
+    public abstract class Adaptor<TSource, TTarget> : MonoBehaviour where TSource : struct where TTarget : struct
     {
         [SerializeField] private InterfaceReference<ISignal<TSource>> _source;
+        
+        [SerializeField] private InterfaceReference<ISignal<TTarget>> _target;
 
         private IDisposable _subscription;
 
         protected virtual IDisposable Setup(ISignal<TSource> source) => null;
+        
+        protected void Broadcast(TTarget value) => _target.Value?.Broadcast(value);
         
         protected virtual void OnEnable()
         {

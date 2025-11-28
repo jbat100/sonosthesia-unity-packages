@@ -61,7 +61,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _log: 0
-  _source: {fileID: -3260011935969151065}
+  _source:
+    underlyingValue: {fileID: -3260011935969151065}
   _destination: {fileID: 3827906815535779526}
   _configuration:
     underlyingValue: {fileID: 0}
