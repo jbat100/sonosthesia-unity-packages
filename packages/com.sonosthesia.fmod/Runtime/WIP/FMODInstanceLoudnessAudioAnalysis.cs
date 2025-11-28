@@ -562,7 +562,7 @@ namespace Sonosthesia.FMOD
     
     public class FMODInstanceLoudnessAudioAnalysis : FMODInstanceProcessor
     {
-        [SerializeField] private Signal<ContinuousAnalysis> _target;
+        [SerializeField] private InterfaceReference<ISignal<ContinuousAnalysis>> _target;
 
         [SerializeField] private LoudnessSelector _selector = LoudnessSelector.Momentary;
 
@@ -640,7 +640,7 @@ namespace Sonosthesia.FMOD
 
         protected override void Process()
         {
-            if (!_target)
+            if (_target.Value == null)
             {
                 return;
             }
@@ -661,7 +661,7 @@ namespace Sonosthesia.FMOD
                 highs = highs
             };
             
-            _target.Broadcast(analysis);
+            _target.Value.Broadcast(analysis);
         }
     }
 }

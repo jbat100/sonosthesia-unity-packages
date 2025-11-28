@@ -2,7 +2,7 @@ using Sonosthesia.Utils;
 
 namespace Sonosthesia.Signal
 {
-    public class PeakSignal : Signal<Peak>
+    public class PeakSignal : StatelessSignal<Peak>
     {
         
     }

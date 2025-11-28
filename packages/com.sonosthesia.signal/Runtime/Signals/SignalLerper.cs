@@ -6,7 +6,7 @@ namespace Sonosthesia.Signal
 {
     public abstract class SignalLerper<T> : StatefulSignal<T> where T : struct
     {
-        [SerializeField] private Signal<T> _source;
+        [SerializeField] private InterfaceReference<ISignal<T>> _source;
 
         [SerializeField] private float _lerp;
 
@@ -33,12 +33,8 @@ namespace Sonosthesia.Signal
         protected void OnEnable()
         {
             _subscription?.Dispose();
-            if (!_source)
-            {
-                return;
-            }
             _reference = _target = new Point(Value, Time.time);
-            _subscription = _source.Observable.Subscribe(value =>
+            _subscription = _source.Value.Observable.Subscribe(value =>
             {
                 _aligned = false;
                 _reference = new Point(Value, Time.time);

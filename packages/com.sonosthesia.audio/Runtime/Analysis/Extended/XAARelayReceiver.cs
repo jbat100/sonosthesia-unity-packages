@@ -12,8 +12,8 @@ namespace Sonosthesia.Audio
 
         [Header("Output")] 
         
-        [SerializeField] private Signal<ContinuousAnalysis> _continuous;
-        [SerializeField] private Signal<PeakAnalysis> _peaks;
+        [SerializeField] private InterfaceReference<ISignal<ContinuousAnalysis>> _continuous;
+        [SerializeField] private InterfaceReference<ISignal<PeakAnalysis>> _peaks;
 
         private readonly CompositeDisposable _subscriptions = new CompositeDisposable();
 
@@ -24,17 +24,11 @@ namespace Sonosthesia.Audio
             {
                 _subscriptions.Add(_relay.ContinuousAnalysisObservable.Subscribe(a =>
                 {
-                    if (_continuous)
-                    {
-                        _continuous.Broadcast(a);
-                    }
+                    _continuous.Value?.Broadcast(a);
                 }));
                 _subscriptions.Add(_relay.PeakAnalysisObservable.Subscribe(p =>
                 {
-                    if (_peaks)
-                    {
-                        _peaks.Broadcast(p);
-                    }
+                    _peaks.Value?.Broadcast(p);
                 }));
             }
         }

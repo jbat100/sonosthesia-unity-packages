@@ -8,38 +8,34 @@ namespace Sonosthesia.Audio
 {
     public class PeakAnalysisSplitter : MonoBehaviour
     {
-        [SerializeField] private Signal<PeakAnalysis> _source;
+        [SerializeField] private InterfaceReference<ISignal<PeakAnalysis>> _source;
 
         [Header("Outputs")] 
         
-        [SerializeField] private Signal<Peak> _main;
-        [SerializeField] private Signal<Peak> _lows;
-        [SerializeField] private Signal<Peak> _mids;
-        [SerializeField] private Signal<Peak> _highs;
+        [SerializeField] private  InterfaceReference<ISignal<Peak>> _main;
+        [SerializeField] private  InterfaceReference<ISignal<Peak>> _lows;
+        [SerializeField] private  InterfaceReference<ISignal<Peak>> _mids;
+        [SerializeField] private  InterfaceReference<ISignal<Peak>> _highs;
 
         private IDisposable _subscription;
 
-        protected virtual Signal<Peak> SignalForChannel(int channel) => channel switch
+        protected virtual ISignal<Peak> SignalForChannel(int channel) => channel switch
         {
-            0 => _main,
-            1 => _lows,
-            2 => _mids,
-            3 => _highs,
+            0 => _main.Value,
+            1 => _lows.Value,
+            2 => _mids.Value,
+            3 => _highs.Value,
             _ => null
         };
 
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            if (_source)
+            if (_source.Value != null)
             {
-                _subscription = _source.Observable.Subscribe(analysis =>
+                _subscription = _source.Value.Observable.Subscribe(analysis =>
                 {
-                    Signal<Peak> signal = SignalForChannel(analysis.channel);
-                    if (signal)
-                    {
-                        signal.Broadcast(analysis.ToPeak());
-                    }
+                    SignalForChannel(analysis.channel)?.Broadcast(analysis.ToPeak());
                 });
             }
         }

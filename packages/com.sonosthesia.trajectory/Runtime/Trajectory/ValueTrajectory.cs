@@ -7,9 +7,9 @@ namespace Sonosthesia.Trajectory
 {
     public abstract class ValueTrajectory<T> : MonoBehaviour where T : struct
     {
-        [SerializeField] private Signal<T> _positionTarget;
+        [SerializeField] private InterfaceReference<ISignal<T>> _positionTarget;
         
-        [SerializeField] private Signal<T> _velocityTarget;
+        [SerializeField] private InterfaceReference<ISignal<T>> _velocityTarget;
 
         public T Position => _currentState.Position;
         public T Velocity => _currentState.Velocity;
@@ -144,15 +144,8 @@ namespace Sonosthesia.Trajectory
         private void BroadcastState(T position, T velocity)
         {
             _currentState = new State(position, velocity);
-            if (_positionTarget)
-            {
-                _positionTarget.Broadcast(position);
-            }
-
-            if (_velocityTarget)
-            {
-                _velocityTarget.Broadcast(velocity);
-            }
+            _positionTarget.Value?.Broadcast(position);
+            _velocityTarget.Value?.Broadcast(velocity);
         }
     }
 }

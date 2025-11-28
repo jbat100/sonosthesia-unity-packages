@@ -2,7 +2,7 @@
 
 namespace Sonosthesia.Scheduler
 {
-    public class SchedulerEventSignal : Signal<SchedulerEvent>
+    public class SchedulerEventSignal : StatelessSignal<SchedulerEvent>
     {
         
     }

@@ -30,17 +30,13 @@ namespace Sonosthesia.PackAudio
                 {
                     for (int i = 0; i < bands.BandCount; i++)
                     {
-                        Signal<float> signal = GetSignal(i);
-                        if (signal)
-                        {
-                            signal.Broadcast(bands.GetBand(i));
-                        }
+                        GetSignal(i)?.Broadcast(bands.GetBand(i));
                     }
                 });
         }
 
         protected virtual void OnDisable() => _subscription?.Dispose();
 
-        private protected abstract Signal<float> GetSignal(int index);
+        private protected abstract ISignal<float> GetSignal(int index);
     }
 }

@@ -75,4 +75,10 @@ public class InterfaceReference<TInterface, TObject> where TObject : Object wher
 }
 
 [Serializable]
-public class InterfaceReference<TInterface> : InterfaceReference<TInterface, Object> where TInterface : class { }
+public class InterfaceReference<TInterface> : InterfaceReference<TInterface, Object> where TInterface : class
+{
+    public InterfaceReference(TInterface @interface)
+    {
+        Value = @interface; // runs validation
+    }
+}

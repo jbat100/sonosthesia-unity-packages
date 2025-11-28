@@ -1,5 +1,6 @@
 ﻿using System;
 using Sonosthesia.Scheduler;
+using Sonosthesia.Signal;
 using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace Sonosthesia.Interaction
 {
     public class PeakAffordance<TEvent> : InteractionAffordance<TEvent> where TEvent : struct
     {
-        [SerializeField] private Signal.Signal<Peak> _target;
+        [SerializeField] private InterfaceReference<ISignal<Peak>> _target;
 
         [SerializeField] private InterfaceReference<IPeakConfiguration<TEvent>> _configuration;
         
@@ -53,7 +54,7 @@ namespace Sonosthesia.Interaction
                 {
                     float duration = _duration.Evaluate().NormalizedRandomization(configuration.Randomization);
                     float magnitude = _magnitude.Evaluate().NormalizedRandomization(configuration.Randomization);
-                    Affordance._target.Broadcast(new Peak(duration, magnitude, 0));
+                    Affordance._target.Value?.Broadcast(new Peak(duration, magnitude, 0));
                 });
             }
 

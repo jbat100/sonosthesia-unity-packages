@@ -20,7 +20,7 @@ namespace Sonosthesia.Touch
     }
     
     [RequireComponent(typeof(TouchNode))]
-    public class TouchNodeAvailability : Signal<NodeAvailabilityState>
+    public class TouchNodeAvailability : StatefulSignal<NodeAvailabilityState>
     {
         private TouchNode _node;
 

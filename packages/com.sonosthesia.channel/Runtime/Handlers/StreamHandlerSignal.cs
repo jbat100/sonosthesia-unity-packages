@@ -9,7 +9,7 @@ namespace Sonosthesia.Channel
     /// and they will overlap 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class StreamHandlerSignal<T> : Signal<T>, IStreamHandler<T> where T : struct
+    public abstract class StreamHandlerSignal<T> : StatelessSignal<T>, IStreamHandler<T> where T : struct
     {
         public IObservable<Unit> HandleStream(IObservable<T> stream)
         {

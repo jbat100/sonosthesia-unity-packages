@@ -11,7 +11,7 @@ namespace Sonosthesia.Trigger
         [SerializeField] private bool _log;
         public bool Log => _log;
 
-        [SerializeField] private Signal<T> _source;
+        [SerializeField] private InterfaceReference<ISignal<T>> _source;
         
         [SerializeField] private Trigger _destination;
         
@@ -19,25 +19,10 @@ namespace Sonosthesia.Trigger
         
         private IDisposable _subscription;
 
-        protected virtual bool SkipFirst => false;
-        
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-
-            if (!_source)
-            {
-                return;
-            }
-
-            IObservable<T> observable = _source.Observable;
-
-            if (SkipFirst)
-            {
-                observable = observable.Skip(1);
-            }
-
-            _subscription = observable.Subscribe(source =>
+            _subscription = _source.Value.Observable.Subscribe(source =>
             {
                 this.LogVerbose($"{this} trigger on {source}");
                 _configuration.Value.Trigger(_destination.TriggerImplementation, source);

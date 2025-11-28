@@ -7,7 +7,7 @@ using Sonosthesia.Utils;
 
 namespace Sonosthesia.Application
 {
-    public class SceneSwitchFadeSignal : Signal<float>
+    public class SceneSwitchFadeSignal : StatefulSignal<float>
     {
         private SceneSwitcher _switcher;
         

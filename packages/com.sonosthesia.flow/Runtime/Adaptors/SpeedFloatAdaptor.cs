@@ -17,7 +17,7 @@ namespace Sonosthesia.Flow
 
         protected abstract TTarget Map(float value);
 
-        protected override IDisposable Setup(Signal<float> source)
+        protected override IDisposable Setup(ISignal<float> source)
         {
             return source.Observable.Subscribe(value =>
             {

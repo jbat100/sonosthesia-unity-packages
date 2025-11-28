@@ -11,7 +11,7 @@ namespace Sonosthesia.Channel
     {
         [SerializeField] private Selector<T> _selector;
         
-        [SerializeField] private Signal<float> _destination;
+        [SerializeField] private InterfaceReference<ISignal<float>> _destination;
         
         [SerializeField] private AnimationCurve _fadeIn;
         
@@ -29,7 +29,7 @@ namespace Sonosthesia.Channel
                 float fadeTime = Time.time - _completionTime.Value;
                 if (fadeTime < fadeDuration)
                 {
-                    _destination.Broadcast(_currentValue * _fadeOut.Evaluate(fadeTime));
+                    _destination.Value?.Broadcast(_currentValue * _fadeOut.Evaluate(fadeTime));
                 }
                 else
                 {
@@ -42,11 +42,11 @@ namespace Sonosthesia.Channel
                 float fadeTime = Time.time - _firstTime.Value;
                 if (fadeTime < fadeDuration)
                 {
-                    _destination.Broadcast(_currentValue * _fadeIn.Evaluate(fadeTime)); 
+                    _destination.Value?.Broadcast(_currentValue * _fadeIn.Evaluate(fadeTime)); 
                 }
                 else
                 {
-                    _destination.Broadcast(_currentValue);    
+                    _destination.Value?.Broadcast(_currentValue);    
                 }
             }
         }

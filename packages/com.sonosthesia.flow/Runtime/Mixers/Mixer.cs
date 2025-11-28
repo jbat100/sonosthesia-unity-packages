@@ -1,50 +1,29 @@
 using System.Collections.Generic;
-using System.Linq;
-using UniRx;
 using UnityEngine;
 using Sonosthesia.Signal;
 
 namespace Sonosthesia.Flow
 {
-    public abstract class Mixer<TValue> : Signal<TValue> where TValue : struct
+    public abstract class Mixer<TValue> : StatelessSignal<TValue> where TValue : struct
     {
-        [SerializeField] private List<Signal<TValue>> _inputs;
+        [SerializeField] private List<InterfaceReference<IStatefulSignal<TValue>>> _inputs;
 
-        // TODO : could use signal.Value instead of storing in dictionary
-        private readonly Dictionary<Signal<TValue>, TValue> _current = new();
-
-        private readonly CompositeDisposable _subscriptions = new();
-
-        private bool _dirty;
-
+        private static readonly List<TValue> _values = new ();
+        
         protected abstract TValue Mix(IEnumerable<TValue> values);
         
         protected virtual void Update()
         {
-            if (_dirty)
+            _values.Clear();
+            foreach (InterfaceReference<IStatefulSignal<TValue>> input in _inputs)
             {
-                _dirty = false;
-                Broadcast(Mix(_current.Values));
+                if (input.Value != null)
+                {
+                    _values.Add(input.Value.Value);
+                }
             }
+            Broadcast(Mix(_values));
         }
         
-        protected virtual void OnEnable()
-        {
-            _subscriptions.Clear();
-            foreach (Signal<TValue> input in _inputs.Where(input => input))
-            {
-                _subscriptions.Add(input.Observable.Subscribe(value =>
-                {
-                    _current[input] = value;
-                    _dirty = true;
-                }));
-            }
-        }
-
-        protected virtual void OnDisable()
-        {
-            _subscriptions.Clear();
-            _current.Clear();
-        }
     }
 }

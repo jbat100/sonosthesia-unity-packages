@@ -7,18 +7,18 @@ namespace Sonosthesia.FMOD
     {
         [SerializeField] private LoudnessSelector _selector = LoudnessSelector.Momentary;
         
-        [SerializeField] private Signal<float> _target;
+        [SerializeField] private InterfaceReference<ISignal<float>> _target;
         
         public override void Process()
         {
-            if (!_target)
+            if (_target.Value != null)
             {
                 return;
             }
             
             if (TryGetLoudness(_selector, out float loudness))
             {
-                _target.Broadcast(loudness);
+                _target.Value?.Broadcast(loudness);
             }
         }
 

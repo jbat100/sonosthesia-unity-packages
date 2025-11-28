@@ -61,17 +61,11 @@ namespace Sonosthesia.Interaction
     
     public static class InteractiveEnvelopeSessionUtil
     {
-        public static IInteractiveEnvelopeSession<TEvent> StartSession<TEvent>(TEvent e, 
-            IInteractiveEnvelopeSettings<TEvent> settings)
+        public static IInteractiveEnvelopeSession<TEvent> StartSession<TEvent>(this IInteractiveEnvelopeSettings<TEvent> settings, TEvent e)
         {
             IInteractiveEnvelopeSession<TEvent> session = MakeSession(settings);
             session.Start(e);
             return session;
-        }
-        
-        public static IInteractiveEnvelopeSession<TEvent> StartSession<TEvent>(this IInteractiveEnvelopeSettings<TEvent> settings, TEvent e)
-        {
-            return StartSession(e, settings);
         }
 
         public static IInteractiveEnvelopeSession<TEvent> MakeSession<TEvent>(IInteractiveEnvelopeSettings<TEvent> s)

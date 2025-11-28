@@ -1,6 +1,4 @@
 using System;
-using Sonosthesia.Utils;
-using UniRx;
 using UnityEngine;
 
 namespace Sonosthesia.Signal
@@ -12,31 +10,10 @@ namespace Sonosthesia.Signal
         void Broadcast(T value);
     }
 
-    public class SignalImplementation
+    public abstract class Signal<T> : MonoBehaviour, ISignal<T> where T : struct
     {
-        
-    }
-    
-    public class Signal<T> : MonoBehaviour, ILogSwitch, ISignal<T> where T : struct
-    {
-        private readonly Subject<T> _signalSubject = new ();
-        public IObservable<T> Observable => _distinct ? _signalSubject.DistinctUntilChanged() : _signalSubject.AsObservable();
-         
-        [SerializeField] private bool _log;
-        public bool Log => _log;
+        public abstract IObservable<T> Observable { get; }
 
-        [SerializeField] private bool _distinct;
-        
-        public void Broadcast(T value)
-        {
-            this.LogVerbose($"{this} {nameof(Broadcast)} {value}");
-            _signalSubject.OnNext(value);
-        }
-
-        protected virtual void OnDestroy()
-        {
-            _signalSubject.OnCompleted();
-            _signalSubject.Dispose();
-        }
+        public abstract void Broadcast(T value);
     }
 }

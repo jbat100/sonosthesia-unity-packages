@@ -23,10 +23,15 @@ namespace Sonosthesia.Channel
         }
     }
 #endif
+
+    public interface IChannel : IGuidReactiveCollection
+    {
+        
+    }
     
     // allows observers who do not need specific types but are just interested in stream counts / ids
 
-    public abstract class AbstractChannel : MonoBehaviour, IGuidReactiveCollection
+    public abstract class AbstractChannel : MonoBehaviour, IChannel
     {
         public abstract IReadOnlyReactiveCollection<Guid> Ids { get; }
     }

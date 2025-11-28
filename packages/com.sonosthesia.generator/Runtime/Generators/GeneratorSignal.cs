@@ -6,11 +6,11 @@ using UniRx;
 
 namespace Sonosthesia.Generator
 {
-    public class GeneratorSignal<TValue, TProcessor> : Signal<TValue> where TValue : struct where TProcessor : IProcessor<TValue>
+    public class GeneratorSignal<TValue, TProcessor> : StatelessSignal<TValue> where TValue : struct where TProcessor : IProcessor<TValue>
     {
         [SerializeField] private Generator<TValue> _generator;
 
-        [SerializeField] private Signal<float> _timeSignal;
+        [SerializeField] private InterfaceReference<ISignal<float>> _timeSignal;
 
         [SerializeField] private TProcessor _processor;
         
@@ -19,14 +19,11 @@ namespace Sonosthesia.Generator
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            if (_timeSignal)
+            _subscription = _timeSignal.Value?.Observable.Subscribe(time =>
             {
-                _timeSignal.Observable.Subscribe(time =>
-                {
-                    TValue raw = _generator.Evaluate(time);
-                    Broadcast(_processor.Process(raw));
-                });
-            }
+                TValue raw = _generator.Evaluate(time);
+                Broadcast(_processor.Process(raw));
+            });
         }
 
         protected virtual void OnDisable()

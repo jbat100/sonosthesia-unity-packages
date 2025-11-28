@@ -7,7 +7,7 @@ namespace Sonosthesia.Trigger
     public interface ISignalTriggerConfiguration<in T> where T : struct
     {
         IStaticExtractor<T, float> ValueExtractor { get; }
-        IStaticExtractor<T, float> TimeExtractor { get; }
+        IStaticExtractor<T, float> AttackExtractor { get; }
         EnvelopeSettings Envelope { get; }
     }
 
@@ -15,7 +15,7 @@ namespace Sonosthesia.Trigger
     {
         public static void Trigger<T>(this ISignalTriggerConfiguration<T> configuration, TriggerImplementation controller, T input) where T : struct
         {
-            if (!configuration.ValueExtractor.Extract(input, out float value) || !configuration.TimeExtractor.Extract(input, out float time))
+            if (!configuration.ValueExtractor.Extract(input, out float value) || !configuration.AttackExtractor.Extract(input, out float time))
             {
                 return;
             }
@@ -30,8 +30,8 @@ namespace Sonosthesia.Trigger
         [SerializeField] private TExtractor _value;
         public IStaticExtractor<T, float> ValueExtractor => _value;
         
-        [SerializeField] private TExtractor _time;
-        public IStaticExtractor<T, float> TimeExtractor => _time;
+        [SerializeField] private TExtractor _attack;
+        public IStaticExtractor<T, float> AttackExtractor => _attack;
 
         [SerializeField] private EnvelopeSettings _envelope;
         public EnvelopeSettings Envelope => _envelope;

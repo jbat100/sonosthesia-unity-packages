@@ -2,7 +2,7 @@ using Sonosthesia.Signal;
 
 namespace Sonosthesia.Audio
 {
-    public class ContinuousAnalysisSignal : Signal<ContinuousAnalysis>
+    public class ContinuousAnalysisSignal : StatelessSignal<ContinuousAnalysis>
     {
         
     }

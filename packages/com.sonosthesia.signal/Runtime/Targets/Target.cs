@@ -12,7 +12,7 @@ namespace Sonosthesia.Signal
         [SerializeField] private bool _log;
         public bool Log => _log;
         
-        [SerializeField] private Signal<TValue> _source;
+        [SerializeField] private InterfaceReference<ISignal<TValue>> _source;
 
         [SerializeField] private bool _distinct = true; 
 
@@ -25,10 +25,7 @@ namespace Sonosthesia.Signal
 
         protected virtual void Awake()
         {
-            if (!_source)
-            {
-                _source = GetComponent<Signal<TValue>>();
-            }
+            _source.Value ??= GetComponent<Signal<TValue>>();
         }
         
         protected virtual void OnEnable() 
@@ -36,7 +33,7 @@ namespace Sonosthesia.Signal
             _subscription?.Dispose();
             _dynamicProcessor = null;
             
-            if (!_source)
+            if (_source.Value == null)
             {
                 return;
             }
@@ -44,7 +41,7 @@ namespace Sonosthesia.Signal
             _dynamicProcessor = _processingFactory ? _processingFactory.Make() : null;
 
             IObservable<TValue> observable =
-                _distinct ? _source.Observable.DistinctUntilChanged() : _source.Observable;
+                _distinct ? _source.Value.Observable.DistinctUntilChanged() : _source.Value.Observable;
 
             if (_dynamicProcessor != null)
             {

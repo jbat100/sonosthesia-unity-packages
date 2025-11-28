@@ -9,7 +9,7 @@ namespace Sonosthesia.Flow
 {
     public abstract class Switcher<T> : MonoBehaviour where T : class
     {
-        [SerializeField] private Signal<float> _signal;
+        [SerializeField] private InterfaceReference<ISignal<float>> _signal;
 
         [SerializeField] private SafeIndex _safeIndex;
         
@@ -20,7 +20,7 @@ namespace Sonosthesia.Flow
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = _signal.Observable.Subscribe(value =>
+            _subscription = _signal.Value?.Observable.Subscribe(value =>
             {
                 _targets.TryGetIndex(value, _safeIndex, out T selected);
                 foreach (T target in _targets)

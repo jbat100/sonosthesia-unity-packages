@@ -6,9 +6,9 @@ using UniRx;
 
 namespace Sonosthesia.MIDI
 {
-    public class MIDIControlFloatSignal : Signal<float>
+    public class MIDIControlFloatSignal : StatelessSignal<float>
     {
-        [SerializeField] private MIDIInput _input;
+        [SerializeField] private InterfaceReference<IMIDIMessageReceiver> _input;
 
         [SerializeField] private int _channel;
 
@@ -18,20 +18,13 @@ namespace Sonosthesia.MIDI
         
         protected void Awake()
         {
-            if (!_input)
-            {
-                _input = GetComponentInParent<MIDIInput>();
-            }
+            _input.Value ??= GetComponentInParent<IMIDIMessageReceiver>();
         }
 
         protected void OnEnable()
         {
             _subscription?.Dispose();
-            if (!_input)
-            {
-                return;
-            }
-            _subscription = _input.ControlObservable
+            _subscription = _input.Value?.ControlObservable
                 .Where(control => control.Channel == _channel && control.Number == _number)
                 .Subscribe(control =>
                     {

@@ -6,7 +6,7 @@ using UniRx;
 
 namespace Sonosthesia.Channel
 {
-    public interface IChannel<T> : IGuidReactiveCollection
+    public interface IChannel<T> : IChannel
     {
         IReadOnlyReactiveDictionary<Guid, T> Values { get; }
         

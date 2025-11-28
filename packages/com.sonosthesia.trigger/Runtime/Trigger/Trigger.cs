@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Trigger
 {
-    public class Trigger : Signal<float>
+    public class Trigger : StatefulSignal<float>
     {
         [SerializeField] private AccumulationMode _accumulationMode = AccumulationMode.Max;
 

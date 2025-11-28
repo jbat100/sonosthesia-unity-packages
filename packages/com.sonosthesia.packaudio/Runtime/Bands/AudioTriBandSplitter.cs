@@ -6,15 +6,15 @@ namespace Sonosthesia.PackAudio
 {
     public class AudioTriBandSplitter : AudioBandSplitter<PackedAudioTriBands>
     {
-        [SerializeField] private Signal<float> _b1;
-        [SerializeField] private Signal<float> _b2;
-        [SerializeField] private Signal<float> _b3;
+        [SerializeField] private InterfaceReference<ISignal<float>> _b1;
+        [SerializeField] private InterfaceReference<ISignal<float>> _b2;
+        [SerializeField] private InterfaceReference<ISignal<float>> _b3;
 
-        private protected override Signal<float> GetSignal(int index) => index switch
+        private protected override ISignal<float> GetSignal(int index) => index switch
         {
-            0 => _b1,
-            1 => _b2,
-            2 => _b3,
+            0 => _b1.Value,
+            1 => _b2.Value,
+            2 => _b3.Value,
             _ => null
         };
     }

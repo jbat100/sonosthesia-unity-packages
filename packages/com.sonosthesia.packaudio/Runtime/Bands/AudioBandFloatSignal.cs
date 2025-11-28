@@ -6,7 +6,7 @@ using Sonosthesia.Pack;
 
 namespace Sonosthesia.PackAudio
 {
-    public class AudioBandFloatSignal<T> : Signal<float> where T : IPackedAudioBands
+    public class AudioBandFloatSignal<T> : StatefulSignal<float> where T : IPackedAudioBands
     {
         [SerializeField] private PackAudioBandReceiver<T> _receiver;
 

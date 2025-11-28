@@ -1,5 +1,6 @@
 ﻿using System;
 using Sonosthesia.Scheduler;
+using Sonosthesia.Signal;
 using UniRx;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ namespace Sonosthesia.Interaction
 {
     public class SchedulerAffordance<TEvent> : InteractionAffordance<TEvent> where TEvent : struct
     {
-        [SerializeField] private Signal.Signal<SchedulerEvent> _target;
+        [SerializeField] private InterfaceReference<ISignal<SchedulerEvent>> _target;
 
         [SerializeField] private InterfaceReference<ISchedulerConfiguration<TEvent>> _configuration;
 
@@ -28,7 +29,7 @@ namespace Sonosthesia.Interaction
                 base.Setup(e);
 
                 ISchedulerConfiguration<TEvent> configuration = Affordance._configuration.Value;
-                Signal.Signal<SchedulerEvent> target = Affordance._target;
+                ISignal<SchedulerEvent> target = Affordance._target.Value;
 
                 _speedSession = configuration.Speed.StartSession(e);
                 _chaosSession = configuration.Chaos.StartSession(e);

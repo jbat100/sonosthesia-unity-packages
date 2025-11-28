@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Signal
 {
-    public class Vector3Signal : Signal<Vector3>
+    public class Vector3Signal : StatefulSignal<Vector3>
     {
         
     }
