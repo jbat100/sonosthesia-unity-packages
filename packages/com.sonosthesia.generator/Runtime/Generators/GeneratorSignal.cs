@@ -2,6 +2,7 @@ using System;
 using Sonosthesia.Processing;
 using UnityEngine;
 using Sonosthesia.Signal;
+using Sonosthesia.Utils;
 using UniRx;
 
 namespace Sonosthesia.Generator

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 
@@ -12,13 +13,13 @@ namespace Sonosthesia.Channel
     
     public sealed class ChannelMerger<TValue> : MonoBehaviour where TValue : struct
     {
-        [SerializeField] private Channel<TValue> _target;
+        [SerializeField] private InterfaceReference<IChannel<TValue>> _target;
 
-        [SerializeField] private List<Channel<TValue>> _sources;
+        [SerializeField] private List<InterfaceReference<IChannel<TValue>>> _sources;
 
-        private readonly Dictionary<Channel<TValue>, IDisposable> _subscriptions = new();
+        private readonly Dictionary<IChannel<TValue>, IDisposable> _subscriptions = new();
 
-        private IDisposable Pipe(Channel<TValue> source, Channel<TValue> target)
+        private static IDisposable Pipe(IChannel<TValue> source, IChannel<TValue> target)
         {
             return source.Observable.Subscribe(target.Push);
         }
@@ -30,14 +31,13 @@ namespace Sonosthesia.Channel
             {
                 return;
             }
-            foreach (Channel<TValue> source in _sources)
+            foreach (InterfaceReference<IChannel<TValue>> source in _sources)
             {
                 if (!source)
                 {
                     continue;
                 }
-
-                _subscriptions[source] = Pipe(source, _target);
+                _subscriptions[source.Value] = Pipe(source.Value, _target.Value);
             }
         }
 
@@ -54,30 +54,5 @@ namespace Sonosthesia.Channel
             }
             _subscriptions.Clear();
         }
-
-        public void Add(Channel<TValue> source)
-        {
-            if (_sources.Contains(source))
-            {
-                return;
-            }
-            _sources.Add(source);
-            if (isActiveAndEnabled)
-            {
-                _subscriptions[source] = Pipe(source, _target);   
-            }
-        }
-
-        public void Remove(Channel<TValue> source)
-        {
-            _sources.Remove(source);
-            if (!_subscriptions.TryGetValue(source, out IDisposable subscription))
-            {
-                return;
-            }
-            subscription?.Dispose();
-            _subscriptions.Remove(source);
-        }
-
     }
 }

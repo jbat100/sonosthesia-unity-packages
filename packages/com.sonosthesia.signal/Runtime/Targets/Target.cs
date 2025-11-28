@@ -33,7 +33,7 @@ namespace Sonosthesia.Signal
             _subscription?.Dispose();
             _dynamicProcessor = null;
             
-            if (_source.Value == null)
+            if (!_source)
             {
                 return;
             }

@@ -5,35 +5,32 @@ using UniRx;
 using UnityEngine;
 using Sonosthesia.AdaptiveMIDI.Messages;
 using Sonosthesia.Channel;
+using Sonosthesia.Utils;
 
 namespace Sonosthesia.MIDI
 {
     public class MIDINoteChannelSource : MonoBehaviour
     {
         [SerializeField] private MIDIInput _input;
-
-        [SerializeField] private ChannelDriver<MIDINote> _driver;
-
+        [SerializeField] private InterfaceReference<IChannel<MIDINote>> _channel;
         [SerializeField] private bool _endOnZeroVelocity;
 
         [Header("Filtering")] 
         
         [SerializeField] private bool _filter;
-        
         [SerializeField] private int _channelFilter;
-
         [SerializeField] private int _lowerPitch;
-
         [SerializeField] private int _upperPitch = 127;
         
         private readonly CompositeDisposable _subscriptions = new ();
-
         private readonly Dictionary<Key, Guid> _notes = new ();
         
-        private struct Key
+        private ChannelDriver<MIDINote> _driver;
+        
+        private readonly struct Key
         {
-            public int Channel;
-            public int Note;
+            public readonly int Channel;
+            public readonly int Note;
 
             public Key(MIDINoteOn note)
             {
@@ -65,10 +62,11 @@ namespace Sonosthesia.MIDI
         protected virtual void OnEnable()
         {
             _subscriptions.Clear();
-            if (!_input)
+            if (!_input || !_channel)
             {
                 return;
             }
+            _driver = new ChannelDriver<MIDINote>(_channel.Value);
             _subscriptions.Add(_input.NoteOnObservable.Subscribe(note =>
             {
                 if (ShouldFilterNote(note.Channel, note.Note))
@@ -119,6 +117,8 @@ namespace Sonosthesia.MIDI
         protected virtual void OnDisable()
         {
             _subscriptions.Clear();
+            _notes.Clear();
+            _driver?.Dispose();
         }
         
         protected virtual bool ShouldFilterNote(int channel, int note)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
 using Sonosthesia.Signal;
+using Sonosthesia.Utils;
 
 namespace Sonosthesia.Flow
 {
@@ -10,7 +11,7 @@ namespace Sonosthesia.Flow
     {
         [SerializeField] private InterfaceReference<ISignal<T1>> _first;
 
-        [SerializeField] private InterfaceReference<StatelessSignal<T2>> _second;
+        [SerializeField] private InterfaceReference<ISignal<T2>> _second;
 
         private IDisposable _subscription;
 

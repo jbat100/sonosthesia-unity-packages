@@ -1,26 +1,24 @@
 using System;
 using System.Collections.Generic;
 using UniRx;
-using UnityEngine;
 
 namespace Sonosthesia.Channel
 {
-    public class ChannelDriver<T> : MonoBehaviour where T : struct
+    public class ChannelDriver<T> : IDisposable where T : struct
     {
-        [SerializeField] private Channel<T> _channel;
+        public ChannelDriver(IChannel<T> channel)
+        {
+            _channel = channel;
+        }
         
+        private readonly IChannel<T> _channel;
         private readonly Dictionary<Guid, BehaviorSubject<T>> _ongoingSubjects = new ();
 
-        protected virtual void OnDisable()
+        public void Dispose()
         {
-            foreach (BehaviorSubject<T> ongoing in _ongoingSubjects.Values)
-            {
-                ongoing.OnCompleted();
-                ongoing.Dispose();
-            }
-            _ongoingSubjects.Clear();
+            EndAllStreams();
         }
-
+        
         public Guid BeginStream(T value)
         {
             Guid id = Guid.NewGuid();
@@ -30,7 +28,7 @@ namespace Sonosthesia.Channel
         
         public void BeginStream(T value, Guid id)
         {
-            BehaviorSubject<T> subject = new BehaviorSubject<T>(value);
+            BehaviorSubject<T> subject = new (value);
             _ongoingSubjects[id] = subject;
             _channel.Push(id, subject.AsObservable());
         }
@@ -46,11 +44,11 @@ namespace Sonosthesia.Channel
         
         public void EndStream(Guid id, Func<T, T> end)
         {
-            if (!_ongoingSubjects.TryGetValue(id, out BehaviorSubject<T> subject))
+            if (!_ongoingSubjects.Remove(id, out BehaviorSubject<T> subject))
             {
                 throw new Exception($"invalid id {id}");
             }
-            _ongoingSubjects.Remove(id);
+
             subject.OnNext(end(subject.Value));
             subject.OnCompleted();
             subject.Dispose();
@@ -67,11 +65,11 @@ namespace Sonosthesia.Channel
         
         public void EndStream(Guid id, T end)
         {
-            if (!_ongoingSubjects.TryGetValue(id, out BehaviorSubject<T> subject))
+            if (!_ongoingSubjects.Remove(id, out BehaviorSubject<T> subject))
             {
                 throw new Exception($"invalid id {id}");
             }
-            _ongoingSubjects.Remove(id);
+
             subject.OnNext(end);
             subject.OnCompleted();
             subject.Dispose();
@@ -79,11 +77,11 @@ namespace Sonosthesia.Channel
         
         public void EndStream(Guid id)
         {
-            if (!_ongoingSubjects.TryGetValue(id, out BehaviorSubject<T> subject))
+            if (!_ongoingSubjects.Remove(id, out BehaviorSubject<T> subject))
             {
                 throw new Exception($"invalid id {id}");
             }
-            _ongoingSubjects.Remove(id);
+
             subject.OnCompleted();
             subject.Dispose();
         }

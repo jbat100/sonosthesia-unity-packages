@@ -29,7 +29,7 @@ namespace Sonosthesia.Collide
     
     public class CollideSource : InteractionEndpoint
     {
-        [SerializeField] private Channel<CollideEvent> _channel;
+        [SerializeField] private InterfaceReference<IChannel<CollideEvent>> _channel;
 
         public enum EndStrategy
         {
@@ -147,7 +147,7 @@ namespace Sonosthesia.Collide
                 EndTime = _endStrategy == EndStrategy.Auto ? Time.time + _autoEndDelay : null
             };            
             
-            _channel.Push(Guid.NewGuid(), subject);
+            _channel.Value?.Push(Guid.NewGuid(), subject);
         }
         
         protected virtual void OnCollisionStay(Collision collision)

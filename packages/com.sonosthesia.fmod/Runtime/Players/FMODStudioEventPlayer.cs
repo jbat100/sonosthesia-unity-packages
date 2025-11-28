@@ -21,11 +21,7 @@ namespace Sonosthesia.FMOD
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            if (_source.Value == null)
-            {
-                return;
-            }
-            _subscription = _source.Value.Observable.Subscribe(value =>
+            _subscription = _source.Value?.Observable.Subscribe(value =>
             {
                 this.LogVerbose($"{this} playing sound on {value}");
                 _emitter.Play();

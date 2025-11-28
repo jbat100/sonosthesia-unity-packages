@@ -91,7 +91,7 @@ namespace Sonosthesia.Interaction
 
         protected override IObserver<TEvent> MakeController(Guid id)
         {
-            if (_configuration.Value == null)
+            if (!_configuration)
             {
                 this.LogError($"{this} missing configuration");
             }

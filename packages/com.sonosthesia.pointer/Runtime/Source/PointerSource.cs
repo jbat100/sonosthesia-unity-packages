@@ -13,8 +13,7 @@ namespace Sonosthesia.Pointer
         IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler, 
         IDragHandler, IBeginDragHandler, IEndDragHandler
     {
-        [SerializeField] private Channel.Channel<PointerEvent> _eventChannel;
-        public Channel.Channel<PointerEvent> EventChannel => _eventChannel;
+        [SerializeField] private InterfaceReference<IChannel<PointerEvent>> _eventChannel;
         
         private readonly Dictionary<int, InternalData> _internal = new();
 
@@ -38,7 +37,7 @@ namespace Sonosthesia.Pointer
 
             this.LogWarning($"{this} new stream on {nameof(OnPointerDown)} {eventData}");
             
-            _eventChannel.Push(Guid.NewGuid(), internalData.EventSubject);
+            _eventChannel.Value?.Push(Guid.NewGuid(), internalData.EventSubject);
         }
 
         public void OnPointerUp(PointerEventData eventData)

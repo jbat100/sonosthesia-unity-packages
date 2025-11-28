@@ -2,6 +2,7 @@
 using Sonosthesia.AdaptiveMIDI;
 using Sonosthesia.Interaction;
 using Sonosthesia.Trigger;
+using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Instrument
@@ -13,7 +14,6 @@ namespace Sonosthesia.Instrument
         [SerializeField] private InterfaceReference<IMIDIMessageBroadcaster> _output;
 
         private TriggerImplementation _trigger;
-        
         
         private class Controller : AffordanceController<TEvent, MIDIControlAffordance<TEvent>> 
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using Sonosthesia.Extractor;
 using Sonosthesia.Interaction;
+using Sonosthesia.Utils;
 using UnityEngine;
 using UnityEngine.VFX;
 

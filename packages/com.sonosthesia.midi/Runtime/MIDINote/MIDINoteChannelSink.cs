@@ -1,6 +1,7 @@
 using System;
 using Sonosthesia.AdaptiveMIDI;
 using Sonosthesia.Channel;
+using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 

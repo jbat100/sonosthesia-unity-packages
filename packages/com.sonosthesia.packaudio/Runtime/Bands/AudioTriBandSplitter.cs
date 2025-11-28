@@ -1,6 +1,7 @@
 using Sonosthesia.Pack;
 using UnityEngine;
 using Sonosthesia.Signal;
+using Sonosthesia.Utils;
 
 namespace Sonosthesia.PackAudio
 {

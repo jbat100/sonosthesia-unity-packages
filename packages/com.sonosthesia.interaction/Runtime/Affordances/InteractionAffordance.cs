@@ -18,23 +18,23 @@ namespace Sonosthesia.Interaction
         private List<InteractionAffordanceGate> _gates;
         
         [SerializeField] 
-        private List<Channel.Channel<TEvent>> _inputs;
+        private List<InterfaceReference<IChannel<TEvent>>> _inputs;
         
         [SerializeField] 
-        private Channel.Channel<TEvent> _relay;
+        private InterfaceReference<IChannel<TEvent>> _relay;
 
         private readonly CompositeDisposable _subscriptions = new();
 
-        public void SetInputs(IEnumerable<Channel.Channel<TEvent>> inputs)
+        public void SetInputs(IEnumerable<IChannel<TEvent>> inputs)
         {
             if (_inputs == null)
             {
-                _inputs = new List<Channel.Channel<TEvent>>(inputs);
+                _inputs = new List<InterfaceReference<IChannel<TEvent>>>(inputs.Select(i => new InterfaceReference<IChannel<TEvent>>(i)));
             }
             else
             {
                 _inputs.Clear();
-                _inputs.AddRange(inputs);
+                _inputs.AddRange(inputs.Select(i => new InterfaceReference<IChannel<TEvent>>(i)));
             }
             ReloadSubscriptions();
         }
@@ -82,10 +82,7 @@ namespace Sonosthesia.Interaction
             
             OnStartedStream(id, e);
 
-            if (_relay)
-            {
-                _relay.Push(id, stream);   
-            }
+            _relay.Value?.Push(id, stream);   
         }
 
         protected virtual void OnEnable()
@@ -98,9 +95,9 @@ namespace Sonosthesia.Interaction
         private void ReloadSubscriptions()
         {
             _subscriptions.Clear();
-            foreach (Channel.Channel<TEvent> channel in _inputs.Where(channel => channel))
+            foreach (InterfaceReference<IChannel<TEvent>> channel in _inputs.Where(channel => channel))
             {
-                _subscriptions.Add(channel.Observable.Subscribe(pair =>
+                _subscriptions.Add(channel.Value.Observable.Subscribe(pair =>
                 {
                     this.LogVerbose($"{this} received new stream {pair.Key}");
                     OnStream(pair.Key, pair.Value).Forget();

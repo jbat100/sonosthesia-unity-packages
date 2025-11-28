@@ -1,5 +1,6 @@
 ﻿using System;
 using Sonosthesia.Interaction;
+using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Instrument

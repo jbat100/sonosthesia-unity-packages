@@ -127,7 +127,7 @@ namespace Sonosthesia.DeformInteraction
 
         protected override IObserver<TEvent> MakeController(Guid id)
         {
-            if (_configuration?.Value == null)
+            if (!_configuration)
             {
                 this.LogError($"{this} has no configuration.");
             }

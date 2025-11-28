@@ -2,6 +2,7 @@ using System;
 using UniRx;
 using UnityEngine;
 using Sonosthesia.Channel;
+using Sonosthesia.Utils;
 
 namespace Sonosthesia.Interaction
 {
@@ -34,13 +35,18 @@ namespace Sonosthesia.Interaction
             }
 
             _subject = new BehaviorSubject<TValue>(_original);
-
             IObservable<TValue> values = _subject.AsObservable();
+            Affordance.Output?.Push(EventId, values);
 
-            if (Affordance.Output)
+            if (e is not IInteractionEvent ie)
             {
-                Affordance.Output.Push(EventId, values);
+                return;
             }
+            
+            PushToEndpoint(ie.Actor);
+            PushToEndpoint(ie.Source);
+
+            return;
 
             void PushToEndpoint(IInteractionEndpoint endpoint)
             {
@@ -49,17 +55,8 @@ namespace Sonosthesia.Interaction
                     return;
                 }
 
-                Channel<TValue> endpointValues = component.GetComponent<Channel<TValue>>();
-                if (endpointValues)
-                {
-                    endpointValues.Push(EventId, values);
-                }
-            }
-
-            if (e is IInteractionEvent ie)
-            {
-                PushToEndpoint(ie.Actor);
-                PushToEndpoint(ie.Source);   
+                IChannel<TValue> endpointValues = component.GetComponent<IChannel<TValue>>();
+                endpointValues?.Push(EventId, values);
             }
         }
 
@@ -88,7 +85,7 @@ namespace Sonosthesia.Interaction
         where TValue : struct
         where TEvent : struct
     {
-        [SerializeField] private Channel<TValue> _output;
-        public Channel<TValue> Output => _output;
+        [SerializeField] private InterfaceReference<IChannel<TValue>> _output;
+        public IChannel<TValue> Output => _output.Value;
     }
 }

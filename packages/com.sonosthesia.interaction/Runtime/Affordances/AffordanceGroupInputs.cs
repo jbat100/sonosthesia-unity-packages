@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Sonosthesia.Channel;
 using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
@@ -17,7 +18,7 @@ namespace Sonosthesia.Interaction
         protected void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = _subscription = _group.Value.ObjectsChangedObservable.Subscribe(_ => Apply());
+            _subscription = _subscription = _group.Value?.ObjectsChangedObservable.Subscribe(_ => Apply());
             Apply();
         }
 
@@ -29,11 +30,11 @@ namespace Sonosthesia.Interaction
 
         private void Apply()
         {
-            if (!_affordance || _group.Value == null)
+            if (!_affordance || !_group)
             {
                 return;
             }
-            _affordance.SetInputs(_group.Value.Objects.Select(o => o.GetComponent<Channel.Channel<TEvent>>()));
+            _affordance.SetInputs(_group.Value.Objects.Select(o => o.GetComponent<IChannel<TEvent>>()));
         }
     }
 }

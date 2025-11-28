@@ -4,6 +4,7 @@ using FMOD.Studio;
 using FMODUnity;
 using Sonosthesia.Audio;
 using Sonosthesia.Signal;
+using Sonosthesia.Utils;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -640,7 +641,7 @@ namespace Sonosthesia.FMOD
 
         protected override void Process()
         {
-            if (_target.Value == null)
+            if (!_target)
             {
                 return;
             }
