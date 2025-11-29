@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using Sonosthesia.Utils.Editor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using Sonosthesia.Signal;
 
@@ -27,6 +29,10 @@ namespace Sonosthesia.Timeline.Editor
             if (GUILayout.Button("Clear All"))
             {
                 Perform(proxy, "Clear All", () => ClearSignals(proxy, true));
+            }
+            if (GUILayout.Button("Auto Fill"))
+            {
+                Perform(proxy, "Auto Fill", () => Autofill(proxy));
             }
             
             GUILayoutUtils.DrawSeparator(); 
@@ -70,7 +76,7 @@ namespace Sonosthesia.Timeline.Editor
         {
             Type type = obj.GetType();
 
-            StatefulSignal<float> CreateSignal(FieldInfo field, Transform parent)
+            FloatSignal CreateSignal(FieldInfo field, Transform parent)
             {
                 string fieldName = ConvertToPascalCase(field.Name);
                 GameObject child = new GameObject(fieldName);
@@ -168,5 +174,142 @@ namespace Sonosthesia.Timeline.Editor
                 DestroyImmediate(child);
             }
         }
+
+        private static void Autofill(AnimationProxy proxy)
+        {
+            if (!proxy)
+            {
+                return;
+            }
+
+            Undo.RegisterCompleteObjectUndo(proxy, "Auto Assign Signals");
+
+            var so = new SerializedObject(proxy);
+
+            // Discover all Proxy field paths according to the type structure:
+            // - Proxy fields
+            // - IProxyContainer fields (recursively)
+            List<string> proxyPaths = new ();
+            DiscoverProxyFieldPaths(proxy.GetType(), string.Empty, proxyPaths, new HashSet<Type>());
+
+            foreach (string proxyPath in proxyPaths)
+            {
+                TryAssignSignalForProxyPath(so, proxy.transform, proxyPath);
+            }
+
+            so.ApplyModifiedProperties();
+            EditorUtility.SetDirty(proxy);
+        }
+
+        private static void DiscoverProxyFieldPaths(
+            Type type,
+            string prefix,
+            List<string> result,
+            HashSet<Type> visitedTypes)
+        {
+            if (type == null)
+            {
+                return;
+            }
+
+            if (!visitedTypes.Add(type))
+            {
+                return;
+            }
+
+            // Walk up inheritance chain (like your runtime code)
+            while (type != null && type != typeof(MonoBehaviour))
+            {
+                FieldInfo[] fieldInfos = type.GetFields(
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+                foreach (var field in fieldInfos)
+                {
+                    string fieldPath = string.IsNullOrEmpty(prefix)
+                        ? field.Name
+                        : $"{prefix}.{field.Name}";
+
+                    if (field.FieldType == typeof(AnimationProxy.Proxy))
+                    {
+                        result.Add(fieldPath);
+                    }
+                    else if (typeof(IProxyContainer).IsAssignableFrom(field.FieldType))
+                    {
+                        DiscoverProxyFieldPaths(field.FieldType, fieldPath, result, visitedTypes);
+                    }
+                }
+
+                type = type.BaseType;
+            }
+        }
+        
+        private static void TryAssignSignalForProxyPath(SerializedObject so, Transform root, string proxyPath)
+        {
+            if (so == null || !root || string.IsNullOrEmpty(proxyPath))
+            {
+                return;
+            }
+
+            // The serialized field inside Proxy is assumed to be called "signal"
+            string fullSignalPath = $"{proxyPath}.signal";
+
+            SerializedProperty signalProperty = so.FindProperty(fullSignalPath);
+            if (signalProperty == null)
+            {
+                return;
+            }
+
+            string gameObjectPath = $"{proxyPath}.Animation";
+            
+            // Map "sphere1.spin" to transform hierarchy sphere1/spin
+            string[] segments = gameObjectPath.Split('.');
+            Transform current = root;
+
+            foreach (string segment in segments)
+            {
+                Transform child = FindDirectChildByName(current, segment);
+                if (!child)
+                {
+                    // No matching hierarchy -> abandon this Proxy
+                    return;
+                }
+
+                current = child;
+            }
+
+            // Find a component implementing ISignal<float> on the final Transform
+            ISignal<float> foundSignal = current.GetComponent<ISignal<float>>();
+            if (foundSignal == null)
+            {
+                return;
+            }
+
+            // Assign into the InterfaceReference<ISignal<float>> backing field
+            SerializedProperty backingObjectProp = signalProperty.FindPropertyRelative("underlyingObject");
+            if (backingObjectProp != null)
+            {
+                backingObjectProp.objectReferenceValue = foundSignal as UnityEngine.Object;
+            }
+        }
+
+        private static Transform FindDirectChildByName(Transform parent, string name)
+        {
+            if (!parent)
+            {
+                return null;
+            }
+
+            for (int i = 0; i < parent.childCount; i++)
+            {
+                Transform child = parent.GetChild(i);
+                if (string.Compare(child.name, name, StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    return child;
+                }
+            }
+
+            return null;
+        }
+
     }
 }

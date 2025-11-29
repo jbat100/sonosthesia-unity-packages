@@ -34,10 +34,7 @@ namespace Sonosthesia.Timeline
 
             public void Update()
             {
-                if (signal.Value != null)
-                {
-                    signal.Value.Broadcast(value);
-                }
+                signal.Value?.Broadcast(value);
             }
         }
         
@@ -69,8 +66,8 @@ namespace Sonosthesia.Timeline
         
         private List<FieldInfo> GetOrCacheProxyFields()
         {
-            Type type = this.GetType();
-            if (!typeToProxyFieldsCache.TryGetValue(type, out var fields))
+            Type type = GetType();
+            if (!typeToProxyFieldsCache.TryGetValue(type, out List<FieldInfo> fields))
             {
                 fields = DiscoverProxyFields(this);
                 typeToProxyFieldsCache[type] = fields;
@@ -80,7 +77,7 @@ namespace Sonosthesia.Timeline
 
         private List<FieldInfo> DiscoverProxyFields(object obj)
         {
-            List<FieldInfo> fields = new List<FieldInfo>();
+            List<FieldInfo> fields = new();
             DiscoverProxyFieldsRecursive(obj, fields);
             return fields;
         }
