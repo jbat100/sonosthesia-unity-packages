@@ -83,7 +83,7 @@ namespace Sonosthesia.Mapping
 #if UNITY_EDITOR
         public override void AutofillSlots(bool recursive)
         {
-            transform.ComponentScan<StatefulSignal<TValue>>(recursive, 
+            transform.ComponentScan<ISignal<TValue>>(recursive, 
                 check => _slots.All(slot => slot.Name != check),
                 (childName, component) =>
                 {
