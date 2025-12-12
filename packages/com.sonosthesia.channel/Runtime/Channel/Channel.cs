@@ -107,7 +107,7 @@ namespace Sonosthesia.Channel
         public IReadOnlyReactiveDictionary<Guid, T> Values => Implementation.Values;
         public IObservable<KeyValuePair<Guid, IObservable<T>>> Observable => Implementation.Observable;
         
-        public void Push(KeyValuePair<Guid, IObservable<T>> pair) => _implementation.Push(pair);
+        public void Push(KeyValuePair<Guid, IObservable<T>> pair) => Implementation.Push(pair);
 
         protected void OnDestroy() => _implementation?.Dispose();
     }

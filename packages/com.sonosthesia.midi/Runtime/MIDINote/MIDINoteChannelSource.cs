@@ -10,7 +10,7 @@ namespace Sonosthesia.MIDI
 {
     public class MIDINoteChannelSource : MonoBehaviour
     {
-        [SerializeField] private MIDIInput _input;
+        [SerializeField] private InterfaceReference<IMIDIMessageReceiver> _receiver;
         [SerializeField] private InterfaceReference<IChannel<MIDINote>> _channel;
         [SerializeField] private bool _endOnZeroVelocity;
 
@@ -28,21 +28,21 @@ namespace Sonosthesia.MIDI
 
         protected virtual void Awake()
         {
-            if (!_input)
+            if (!_receiver)
             {
-                _input = GetComponentInParent<MIDIInput>();
+                _receiver = new InterfaceReference<IMIDIMessageReceiver>(GetComponentInParent<IMIDIMessageReceiver>());
             }
         }
         
         protected virtual void OnEnable()
         {
             _subscriptions.Clear();
-            if (!_input || !_channel)
+            if (!_receiver || !_channel)
             {
                 return;
             }
             _driver = new ChannelDriver<MIDINote>(_channel.Value);
-            _subscriptions.Add(_input.NoteOnObservable.Subscribe(note =>
+            _subscriptions.Add(_receiver.Value.NoteOnObservable.Subscribe(note =>
             {
                 if (ShouldFilterNote(note.Channel, note.Note))
                 {
@@ -67,7 +67,7 @@ namespace Sonosthesia.MIDI
                     _notes[key] = id;   
                 }
             }));
-            _subscriptions.Add(_input.NoteOffObservable.Subscribe(note =>
+            _subscriptions.Add(_receiver.Value.NoteOffObservable.Subscribe(note =>
             {
                 if (ShouldFilterNote(note.Channel, note.Note))
                 {
@@ -78,11 +78,11 @@ namespace Sonosthesia.MIDI
                     _driver.EndStream(id, new MIDINote(note));
                 }
             }));
-            _subscriptions.Add(_input.PolyphonicAftertouchObservable.Subscribe(aftertouch =>
+            _subscriptions.Add(_receiver.Value.PolyphonicAftertouchObservable.Subscribe(aftertouch =>
             {
-                if (_notes.TryGetValue(new ChannelNoteKey(aftertouch), out Guid evendId))
+                if (_notes.TryGetValue(new ChannelNoteKey(aftertouch), out Guid id))
                 {
-                    _driver.UpdateStream(evendId, midiNote => midiNote.WithPressure(aftertouch.Value));
+                    _driver.UpdateStream(id, midiNote => midiNote.WithPressure(aftertouch.Value));
                 }
             }));
         }
