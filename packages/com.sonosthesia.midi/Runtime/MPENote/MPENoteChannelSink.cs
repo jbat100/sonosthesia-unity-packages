@@ -32,12 +32,13 @@ namespace Sonosthesia.MIDI
         {
             for (int i = 1; i < 15; i++)
             {
-                if (!_occupiedChannels.Contains(i))
+                if (_occupiedChannels.Contains(i))
                 {
-                    channel = i;
-                    _occupiedChannels.Add(i);
-                    return true;
+                    continue;
                 }
+                channel = i;
+                _occupiedChannels.Add(i);
+                return true;
             }
 
             channel = -1;
@@ -54,7 +55,7 @@ namespace Sonosthesia.MIDI
             _subscription?.Dispose();
             _occupiedChannels.Clear();
             
-            _subscription = _channel.Value.Observable.Subscribe(pair =>
+            _subscription = _channel.Value?.Observable.Subscribe(pair =>
             {
                 if (!TryGetAvailableChannel(out int channel))
                 {

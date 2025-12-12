@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Sonosthesia.AdaptiveMIDI;
 using UniRx;
 using UnityEngine;
-using Sonosthesia.AdaptiveMIDI.Messages;
 using Sonosthesia.Channel;
 using Sonosthesia.Utils;
 
@@ -23,33 +22,9 @@ namespace Sonosthesia.MIDI
         [SerializeField] private int _upperPitch = 127;
         
         private readonly CompositeDisposable _subscriptions = new ();
-        private readonly Dictionary<Key, Guid> _notes = new ();
+        private readonly Dictionary<ChannelNoteKey, Guid> _notes = new ();
         
         private ChannelDriver<MIDINote> _driver;
-        
-        private readonly struct Key
-        {
-            public readonly int Channel;
-            public readonly int Note;
-
-            public Key(MIDINoteOn note)
-            {
-                Channel = note.Channel;
-                Note = note.Note;
-            }
-            
-            public Key(MIDINoteOff note)
-            {
-                Channel = note.Channel;
-                Note = note.Note;
-            }
-            
-            public Key(MIDIPolyphonicAftertouch aftertouch)
-            {
-                Channel = aftertouch.Channel;
-                Note = aftertouch.Note;
-            }
-        }
 
         protected virtual void Awake()
         {
@@ -73,7 +48,7 @@ namespace Sonosthesia.MIDI
                 {
                     return;
                 }
-                Key key = new Key(note);
+                ChannelNoteKey key = new ChannelNoteKey(note);
                 if (_notes.TryGetValue(key, out Guid id))
                 {
                     if (_endOnZeroVelocity && note.Velocity == 0)
@@ -98,16 +73,14 @@ namespace Sonosthesia.MIDI
                 {
                     return;
                 }
-                Key key = new Key(note);
-                if (_notes.TryGetValue(key, out Guid id))
+                if (_notes.Remove(new ChannelNoteKey(note), out Guid id))
                 {
-                    _notes.Remove(key);
                     _driver.EndStream(id, new MIDINote(note));
                 }
             }));
             _subscriptions.Add(_input.PolyphonicAftertouchObservable.Subscribe(aftertouch =>
             {
-                if (_notes.TryGetValue(new Key(aftertouch), out Guid evendId))
+                if (_notes.TryGetValue(new ChannelNoteKey(aftertouch), out Guid evendId))
                 {
                     _driver.UpdateStream(evendId, midiNote => midiNote.WithPressure(aftertouch.Value));
                 }

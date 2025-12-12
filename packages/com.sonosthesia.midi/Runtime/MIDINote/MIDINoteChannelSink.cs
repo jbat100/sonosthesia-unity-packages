@@ -20,7 +20,7 @@ namespace Sonosthesia.MIDI
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = _channel.Value.Observable.Subscribe(pair =>
+            _subscription = _channel.Value?.Observable.Subscribe(pair =>
             {
                 MIDINote? initial = null;
                 MIDINote? previous = null;
