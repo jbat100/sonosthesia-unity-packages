@@ -3,18 +3,18 @@
   "dependencies": {
     "com.unity.mathematics": "1.3.2",
     "com.neuecc.unirx": "7.1.0",
-    "com.sonosthesia.utils": "1.11.0",
-    "com.sonosthesia.touch": "1.11.0",
-    "com.sonosthesia.deform": "1.11.0",
-    "com.sonosthesia.ease": "1.11.0",
-    "com.sonosthesia.trigger": "1.11.0",
-    "com.sonosthesia.envelope": "1.11.0",
-    "com.sonosthesia.mesh": "1.11.0",
-    "com.sonosthesia.noise": "1.11.0",
-    "com.sonosthesia.dynamic": "1.11.0",
-    "com.sonosthesia.collide": "1.11.0",
-    "com.sonosthesia.interaction": "1.11.0",
-    "com.sonosthesia.extractor": "1.11.0"
+    "com.sonosthesia.utils": "1.12.0",
+    "com.sonosthesia.touch": "1.12.0",
+    "com.sonosthesia.deform": "1.12.0",
+    "com.sonosthesia.ease": "1.12.0",
+    "com.sonosthesia.trigger": "1.12.0",
+    "com.sonosthesia.envelope": "1.12.0",
+    "com.sonosthesia.mesh": "1.12.0",
+    "com.sonosthesia.noise": "1.12.0",
+    "com.sonosthesia.dynamic": "1.12.0",
+    "com.sonosthesia.collide": "1.12.0",
+    "com.sonosthesia.interaction": "1.12.0",
+    "com.sonosthesia.extractor": "1.12.0"
   },
   "description": "Sonosthesia unity deform interaction",
   "displayName": "Sonosthesia Deform Interaction",
@@ -25,5 +25,5 @@
   "name": "com.sonosthesia.deforminteraction",
   "repository": "github:jbat100/sonosthesia-unity-packages",
   "unity": "2022.3",
-  "version": "1.11.0"
+  "version": "1.12.0"
 }
