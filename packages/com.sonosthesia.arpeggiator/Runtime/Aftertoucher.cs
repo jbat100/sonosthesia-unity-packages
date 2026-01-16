@@ -22,7 +22,7 @@ namespace Sonosthesia.Arpeggiator
                 {
                     float startTime = Time.time;
                     // note : Rx Sample operator does not fire if first observable has not changed 
-                    Push(pair.Key, pair.Value
+                    this.Push(pair.Key, pair.Value
                         .CombineLatest(UniRx.Observable.EveryUpdate(), (value, l) => _modulator.Modulate(value, Time.time - startTime))
                         .TakeUntil(pair.Value.IgnoreElements().AsUnitObservable().Concat(UniRx.Observable.Return(Unit.Default)))
                     );

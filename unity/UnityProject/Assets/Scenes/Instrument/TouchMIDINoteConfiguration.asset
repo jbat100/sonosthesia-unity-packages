@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 983795bfa393455aa343f5c7aa4db9da, type: 3}
+  m_Name: TouchMIDINoteConfiguration
+  m_EditorClassIdentifier: 
+  _applyPressure: 1
+  _channel:
+    _extractorType: 1
+    _channel: 0
+    _extractor: {fileID: 0}
+  _pitch:
+    _extractorType: 1
+    _value: 43
+    _extractor: {fileID: 0}
+  _velocity:
+    _extractorType: 2
+    _extractor: {fileID: 0}
+    _staticValue: 1
+    _velocityType: 1
+    _distanceType: 0
+    _distanceAxes: -1
+    _normalizedDistance: 0
+    _actorModulationType: 0
+    _actorModulation:
+      _strategy: 1
+      _scale: 1
+      _offset: 0
+    _postProcessing: 6
+    _curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    _remap:
+      _fromMin: 0
+      _fromMax: 10
+      _toMin: 0
+      _toMax: 127
+    _clamp:
+      _min: 0
+      _max: 127
+  _pressure:
+    _extractorType: 1
+    _extractor: {fileID: 0}
+    _staticValue: 60
+    _velocityType: 0
+    _distanceType: 0
+    _distanceAxes: -1
+    _normalizedDistance: 0
+    _actorModulationType: 0
+    _actorModulation:
+      _strategy: 1
+      _scale: 1
+      _offset: 0
+    _postProcessing: 0
+    _curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    _remap:
+      _fromMin: 0
+      _fromMax: 1
+      _toMin: 0
+      _toMax: 1
+    _clamp:
+      _min: 0
+      _max: 0

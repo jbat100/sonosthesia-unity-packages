@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using Sonosthesia.Signal;
+using Sonosthesia.Utils;
 
 namespace Sonosthesia.Timeline
 {
@@ -29,14 +30,11 @@ namespace Sonosthesia.Timeline
         public struct Proxy
         {
             public float value;
-            public Signal<float> signal;
+            public InterfaceReference<ISignal<float>> signal;
 
             public void Update()
             {
-                if (signal)
-                {
-                    signal.Broadcast(value);
-                }
+                signal.Value?.Broadcast(value);
             }
         }
         
@@ -68,8 +66,8 @@ namespace Sonosthesia.Timeline
         
         private List<FieldInfo> GetOrCacheProxyFields()
         {
-            Type type = this.GetType();
-            if (!typeToProxyFieldsCache.TryGetValue(type, out var fields))
+            Type type = GetType();
+            if (!typeToProxyFieldsCache.TryGetValue(type, out List<FieldInfo> fields))
             {
                 fields = DiscoverProxyFields(this);
                 typeToProxyFieldsCache[type] = fields;
@@ -79,7 +77,7 @@ namespace Sonosthesia.Timeline
 
         private List<FieldInfo> DiscoverProxyFields(object obj)
         {
-            List<FieldInfo> fields = new List<FieldInfo>();
+            List<FieldInfo> fields = new();
             DiscoverProxyFieldsRecursive(obj, fields);
             return fields;
         }

@@ -13,7 +13,7 @@ namespace Sonosthesia.Application
     {
         [SerializeField] private float _jumpSize = 15f;
         
-        [SerializeField] private IntentSignalRelay _intent;
+        [SerializeField] private IntentScriptableSignal _intent;
         
         [Header("State")]
         

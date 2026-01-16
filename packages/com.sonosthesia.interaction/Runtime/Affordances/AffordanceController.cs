@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Sonosthesia.Interaction
 {
     public class AffordanceController<TEvent, TAffordance>  : IObserver<TEvent> 
-        where TEvent : struct, IInteractionEvent
+        where TEvent : struct
         where TAffordance : InteractionAffordance<TEvent>
     {
         private readonly TAffordance _affordance;

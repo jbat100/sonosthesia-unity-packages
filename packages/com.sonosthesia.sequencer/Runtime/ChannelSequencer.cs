@@ -4,6 +4,8 @@ using System.Threading;
 using UniRx;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using Sonosthesia.Channel;
+using Sonosthesia.Utils;
 
 namespace Sonosthesia.Sequencer
 {
@@ -19,7 +21,7 @@ namespace Sonosthesia.Sequencer
     
     public abstract class ChannelSequencer<T, TElement> : MonoBehaviour where T : struct where TElement : ChannelSequenceElement
     {
-        [SerializeField] private Channel.Channel<T> _target;
+        [SerializeField] private InterfaceReference<IChannel<T>> _target;
 
         [SerializeField] private bool _autoPlay;
         
@@ -29,13 +31,7 @@ namespace Sonosthesia.Sequencer
 
         [SerializeField] private List<TElement> _elements;
         
-        protected virtual void Sequence(IObservable<T> stream)
-        {
-            if (_target)
-            {
-                _target.Push(Guid.NewGuid(), stream);    
-            }
-        }
+        protected virtual void Sequence(IObservable<T> stream) => _target.Value?.Push(Guid.NewGuid(), stream);    
 
         protected abstract T ForgeStart(TElement element);
         

@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System;
+using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -11,6 +12,17 @@ namespace Sonosthesia.Utils.Editor
         {
             element.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
         }
+
+        public static void UpdateVisibility(this VisualElement root, Action action, params SerializedProperty[] properties)
+        {
+            foreach (SerializedProperty property in properties)
+            {
+                root.TrackPropertyValue(property, _ => action());
+            }
+            //root.schedule.Execute(action).ExecuteLater(0);
+            root.RegisterCallback<AttachToPanelEvent>(_ => action());
+        }
+        
         
         public static bool TryGetElementByName<T>(this VisualElement visualElement, string name, out T element) where T : VisualElement
         {
@@ -22,7 +34,6 @@ namespace Sonosthesia.Utils.Editor
             Debug.LogError($"Expected successful query for type {typeof(T).Name} with name {name}");
             return false;
         }
-
 
         public static void AddSpace(this VisualElement visualElement) => visualElement.AddSpace(10);
         
@@ -67,6 +78,13 @@ namespace Sonosthesia.Utils.Editor
             relativeProperty = serializedProperty.FindPropertyRelative(name);
             propertyField = new PropertyField(relativeProperty);
             visualElement.Add(propertyField);
+        }
+        
+        public static void AddRelativeField(this VisualElement visualElement, SerializedProperty serializedProperty, string name, 
+            out SerializedProperty relativeProperty, out PropertyField propertyField, bool show)
+        {
+            visualElement.AddRelativeField(serializedProperty, name, out relativeProperty, out propertyField);
+            propertyField.Show(show);
         }
     }
 }

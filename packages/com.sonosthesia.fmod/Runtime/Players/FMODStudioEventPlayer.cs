@@ -14,28 +14,14 @@ namespace Sonosthesia.FMOD
 
         [SerializeField] private StudioEventEmitter _emitter;
 
-        [SerializeField] private Signal<T> _source;
+        [SerializeField] private InterfaceReference<ISignal<T>> _source;
 
         private IDisposable _subscription;
-        
-        protected virtual bool SkipFirst => false;
         
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            if (!_source)
-            {
-                return;
-            }
-
-            IObservable<T> observable = _source.SignalObservable;
-
-            if (SkipFirst)
-            {
-                observable = observable.Skip(1);
-            }
-
-            _subscription = observable.Subscribe(value =>
+            _subscription = _source.Value?.Observable.Subscribe(value =>
             {
                 this.LogVerbose($"{this} playing sound on {value}");
                 _emitter.Play();

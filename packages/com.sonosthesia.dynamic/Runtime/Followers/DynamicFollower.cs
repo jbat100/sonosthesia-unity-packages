@@ -53,12 +53,12 @@ namespace Sonosthesia.Dynamic
                 {
                     Vector3 directionToTarget = Target.position - transform.position;
                     Vector3 proportionalForce = directionToTarget * _followForce;
-                    Vector3 velocityDamping = -_rb.velocity * _damping;
+                    Vector3 velocityDamping = -_rb.GetLinearVelocity() * _damping;
                     Vector3 totalForce = proportionalForce + velocityDamping;
                     _rb.AddForce(totalForce);
-                    if (_rb.velocity.magnitude > _maxSpeed)
+                    if (_rb.GetLinearVelocity().magnitude > _maxSpeed)
                     {
-                        _rb.velocity = _rb.velocity.normalized * _maxSpeed;
+                        _rb.SetLinearVelocity(_rb.GetLinearVelocity().normalized * _maxSpeed);
                     }   
                 }
                     break;

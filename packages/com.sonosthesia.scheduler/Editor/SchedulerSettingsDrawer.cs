@@ -17,23 +17,21 @@ namespace Sonosthesia.Scheduler.Editor
             root.Add(titleLabel);
             
             root.AddRelativeField(property, "_schedulerType", 
-                out SerializedProperty extractorTypeProp, out PropertyField schedulerTypeField);
+                out SerializedProperty schedulerTypeProp, out PropertyField schedulerTypeField);
             
             root.AddRelativeField(property, "_scheduler", 
                 out SerializedProperty _, out PropertyField schedulerField);
-            
-            
-            void UpdateVisibility()
-            {
-                SchedulerSettings.SchedulerType schedulerType = (SchedulerSettings.SchedulerType)extractorTypeProp.enumValueIndex;
-                schedulerField.Show(schedulerType is SchedulerSettings.SchedulerType.Custom);
-            }
 
-            UpdateVisibility();
 
-            schedulerTypeField.RegisterValueChangeCallback(_ => UpdateVisibility());
+            root.UpdateVisibility(UpdateVisibility, schedulerTypeProp);
             
             return root;
+
+            void UpdateVisibility()
+            {
+                SchedulerSettings.SchedulerType schedulerType = (SchedulerSettings.SchedulerType)schedulerTypeProp.enumValueIndex;
+                schedulerField.Show(schedulerType is SchedulerSettings.SchedulerType.Custom);
+            }
         }
     }
 }

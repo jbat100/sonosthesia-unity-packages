@@ -1,6 +1,5 @@
 using System.Runtime.CompilerServices;
 using Unity.Mathematics;
-using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
 namespace Sonosthesia.Utils
@@ -54,19 +53,5 @@ namespace Sonosthesia.Utils
 
             return result;
         }
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 ChangeLength(this Vector3 vector, float factor)
-        {
-            if (vector == Vector3.zero)
-            {
-                return Vector3.zero;
-            }
-            float currentMagnitude = vector.magnitude;
-            float newMagnitude = currentMagnitude * factor;
-            return vector * (newMagnitude / currentMagnitude);
-        }
-        
-        public static float DecibelToLinear(this float decibels) => math.pow(10f, decibels / 20f);
     }
 }

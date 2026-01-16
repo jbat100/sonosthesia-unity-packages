@@ -7,9 +7,9 @@ using Sonosthesia.Signal;
 
 namespace Sonosthesia.Flow
 {
-    public class SwitcherSignal<TValue> : Signal<TValue> where TValue : struct
+    public class SwitcherSignal<TValue> : StatelessSignal<TValue> where TValue : struct
     {
-        [SerializeField] private Signal<float> _signal;
+        [SerializeField] private InterfaceReference<ISignal<float>> _signal;
 
         [SerializeField] private SafeIndex _safeIndex;
         
@@ -22,16 +22,14 @@ namespace Sonosthesia.Flow
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = _signal.SignalObservable.Subscribe(value =>
+            _subscription = _signal.Value?.Observable.Subscribe(value =>
             {
                 int index = Mathf.RoundToInt(value);
                 if (_current == index)
                 {
                     return;
                 }
-
                 _current = index;
-
                 if (_values.TryGetIndex(index, _safeIndex, out TValue selected))
                 {
                     Broadcast(selected);

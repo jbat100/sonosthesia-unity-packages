@@ -77,8 +77,7 @@ namespace Sonosthesia.Utils
         {
             _lastIndex = _mode switch
             {
-                Mode.Sequential => _lastIndex.HasValue ? (_lastIndex.Value + 1) % DestinationCount : 0,
-                Mode.Mixed => _lastIndex.HasValue ? (_lastIndex.Value + 1) % DestinationCount : 0,
+                Mode.Sequential or Mode.Mixed => _lastIndex.HasValue ? (_lastIndex.Value + 1) % DestinationCount : 0,
                 Mode.Random => UnityEngine.Random.Range(0, DestinationCount),
                 _ => 0
             };

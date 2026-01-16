@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using Sonosthesia.Utils;
+using UniRx;
 using UnityEngine;
 
 namespace Sonosthesia.Scaffold
@@ -22,8 +26,15 @@ namespace Sonosthesia.Scaffold
     }
 #endif
     
-    public abstract class BaseGroupInstantiator : MonoBehaviour
+    public abstract class BaseGroupInstantiator : MonoBehaviour, IObjectGroup
     {
+        private readonly Subject<Unit> _objectsChangedSubject = new ();
+        public IObservable<Unit> ObjectsChangedObservable => _objectsChangedSubject.AsObservable();
+        
         public abstract void Reload();
+        
+        public abstract IEnumerable<GameObject> Objects { get; }
+        
+        protected void NotifyObjectsChanged() => _objectsChangedSubject.OnNext(Unit.Default);
     }
 }

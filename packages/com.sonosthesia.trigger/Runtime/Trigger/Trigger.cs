@@ -1,26 +1,25 @@
 ﻿using Sonosthesia.Processing;
 using Sonosthesia.Signal;
-using Sonosthesia.Utils;
 using UnityEngine;
 
 namespace Sonosthesia.Trigger
 {
-    public class Trigger : Signal<float>
+    public class Trigger : StatefulSignal<float>
     {
         [SerializeField] private AccumulationMode _accumulationMode = AccumulationMode.Max;
 
         [SerializeField] private DynamicProcessorFactory<float> _postProcessorFactory;
 
-        [SerializeField] private FloatProcessor _postProcessor;
+        [SerializeField] private FloatProcessorSettings _postProcessor;
         
         private IDynamicProcessor<float> _dynamicPostProcessor;
 
-        public TriggerController TriggerController { get; private set; }
+        public TriggerImplementation TriggerImplementation { get; private set; }
         
         private void SetupState()
         {
-            TriggerController?.Clear();
-            TriggerController = new TriggerController(_accumulationMode);
+            TriggerImplementation?.Clear();
+            TriggerImplementation = new TriggerImplementation(_accumulationMode);
             _dynamicPostProcessor = _postProcessorFactory ? _postProcessorFactory.Make() : null;
         }
 
@@ -30,23 +29,20 @@ namespace Sonosthesia.Trigger
         
         protected virtual void Update()
         {
-            float result = TriggerController.Update();
-
-            result = _postProcessor.Process(result);
-
+            float result = TriggerImplementation.Evaluate();
             if (_dynamicPostProcessor != null)
             {
                 result = _dynamicPostProcessor.Process(result, Time.time);
             }
-            
-            Broadcast(_postProcessor.Process(result));
+            result = _postProcessor.Process(result);
+            Broadcast(result);
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            TriggerController?.Clear();
-            TriggerController = null;
+            TriggerImplementation?.Clear();
+            TriggerImplementation = null;
         }
     }
 }

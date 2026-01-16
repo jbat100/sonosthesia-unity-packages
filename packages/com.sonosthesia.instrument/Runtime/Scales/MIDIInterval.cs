@@ -1,4 +1,3 @@
-using System;
 using Sonosthesia.MIDI;
 using UnityEngine;
 

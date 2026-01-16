@@ -44,4 +44,22 @@ namespace Sonosthesia.MIDI
             return $"{nameof(MIDINote)} <{nameof(Channel)} {Channel} {nameof(Note)} {Note} {nameof(Velocity)} {Velocity} {nameof(Pressure)} {Pressure}>";
         }
     }
+    
+    public static class MIDINoteExtensions
+    {
+        public static MIDINoteOn GetMIDINoteOn(this MIDINote midiNote)
+        {
+            return new MIDINoteOn(midiNote.Channel, midiNote.Note, midiNote.Velocity);
+        }
+        
+        public static MIDINoteOff GetMIDINoteOff(this MIDINote midiNote)
+        {
+            return new MIDINoteOff(midiNote.Channel, midiNote.Note, midiNote.Velocity);
+        }
+        
+        public static MIDIPolyphonicAftertouch GetPolyphonicAftertouch(this MIDINote midiNote)
+        {
+            return new MIDIPolyphonicAftertouch(midiNote.Channel, midiNote.Note, midiNote.Pressure);
+        }
+    }
 }

@@ -123,7 +123,7 @@ namespace Sonosthesia.Instrument
             {
                 int note = notes[i];
                 PitchedInstrumentElement element = instances[i];
-                element.MIDINote = note;
+                element.MIDIPitch = note;
                 Renderer elementRenderer = element.Renderer;
                 Material elementMaterial = _materialProvider ? _materialProvider.MaterialForNote(note) : null;
                 if (elementRenderer && elementMaterial)

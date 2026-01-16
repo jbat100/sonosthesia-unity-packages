@@ -2,13 +2,14 @@ using System;
 using UniRx;
 using UnityEngine;
 using Sonosthesia.Signal;
+using Sonosthesia.Utils;
 
 namespace Sonosthesia.Channel
 {
     public abstract class EvaluationStreamHandler<T> : StreamHandler<T> where T : struct
     {
         // then use target with signals 
-        [SerializeField] private Signal<float> _signal;
+        [SerializeField] private InterfaceReference<ISignal<float>> _signal;
 
         private T? firstValue;
 
@@ -19,7 +20,7 @@ namespace Sonosthesia.Channel
             return stream.Subscribe(value =>
             {
                 firstValue ??= value;
-                _signal.Broadcast(Evaluate(firstValue.Value, value));
+                _signal.Value?.Broadcast(Evaluate(firstValue.Value, value));
             });
         }
 

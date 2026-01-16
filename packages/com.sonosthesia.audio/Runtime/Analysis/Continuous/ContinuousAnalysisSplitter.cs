@@ -1,5 +1,6 @@
 using System;
 using Sonosthesia.Signal;
+using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 
@@ -7,45 +8,30 @@ namespace Sonosthesia.Audio
 {
     public class ContinuousAnalysisSplitter : MonoBehaviour
     {
-        [SerializeField] private Signal<ContinuousAnalysis> _source;
+        [SerializeField] private InterfaceReference<ISignal<ContinuousAnalysis>> _source;
 
         [Header("Outputs")]
         
-        [SerializeField] private Signal<float> _rms;
-        [SerializeField] private Signal<float> _lows;
-        [SerializeField] private Signal<float> _mids;
-        [SerializeField] private Signal<float> _highs;
-        [SerializeField] private Signal<float> _centroid;
+        [SerializeField] private InterfaceReference<ISignal<float>> _rms;
+        [SerializeField] private InterfaceReference<ISignal<float>> _lows;
+        [SerializeField] private InterfaceReference<ISignal<float>> _mids;
+        [SerializeField] private InterfaceReference<ISignal<float>> _highs;
+        [SerializeField] private InterfaceReference<ISignal<float>> _centroid;
 
         private IDisposable _subscription;
 
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            if (_source)
+            if (_source.Value != null)
             {
-                _subscription = _source.SignalObservable.Subscribe(a =>
+                _subscription = _source.Value.Observable.Subscribe(a =>
                 {
-                    if (_rms)
-                    {
-                        _rms.Broadcast(a.rms);
-                    }
-                    if (_lows)
-                    {
-                        _lows.Broadcast(a.lows);    
-                    }
-                    if (_mids)
-                    {
-                        _mids.Broadcast(a.mids);    
-                    }
-                    if (_highs)
-                    {
-                        _highs.Broadcast(a.highs);    
-                    }
-                    if (_centroid)
-                    {
-                        _centroid.Broadcast(a.centroid);    
-                    }
+                    _rms.Value?.Broadcast(a.rms);
+                    _lows.Value?.Broadcast(a.lows);
+                    _mids.Value?.Broadcast(a.mids);
+                    _highs.Value?.Broadcast(a.highs);
+                    _centroid.Value?.Broadcast(a.centroid);
                 });
             }
         }

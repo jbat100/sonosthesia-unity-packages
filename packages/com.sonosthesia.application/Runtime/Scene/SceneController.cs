@@ -7,7 +7,7 @@ namespace Sonosthesia.Application
 {
     public class SceneController : MonoBehaviour
     {
-        [SerializeField] private List<Signal<float>> _controls;
+        [SerializeField] private List<StatefulSignal<float>> _controls;
 
         [SerializeField] private List<GameObject> _instances;
         

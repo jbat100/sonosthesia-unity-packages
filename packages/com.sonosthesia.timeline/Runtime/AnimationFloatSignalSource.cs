@@ -1,5 +1,6 @@
 using UnityEngine;
 using Sonosthesia.Signal;
+using Sonosthesia.Utils;
 
 namespace Sonosthesia.Timeline
 {
@@ -7,11 +8,11 @@ namespace Sonosthesia.Timeline
     {
         [SerializeField] private float _value;
 
-        [SerializeField] private Signal<float> _target;
+        [SerializeField] private InterfaceReference<ISignal<float>> _target;
 
         protected virtual void Update()
         {
-            _target.Broadcast(_value);
+            _target.Value?.Broadcast(_value);
         }
     }    
 }

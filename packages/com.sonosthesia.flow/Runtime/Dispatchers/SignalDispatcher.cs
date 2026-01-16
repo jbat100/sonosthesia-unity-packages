@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UniRx;
 using Sonosthesia.Signal;
@@ -9,33 +10,22 @@ namespace Sonosthesia.Flow
 {
     public class SignalDispatcher<T> : Dispatcher where T : struct
     {
-        
-        
-        [SerializeField] private Signal<T> _source;
-
-        [SerializeField] private List<Signal<T>> _destinations = new ();
+        [SerializeField] private InterfaceReference<ISignal<T>> _source;
+        [SerializeField] private List<InterfaceReference<ISignal<T>>> _destinations = new ();
         
         private IDisposable _subscription;
 
         private void Setup()
         {
             _subscription?.Dispose();
-
-            if (!_source)
-            {
-                return;
-            }
-            
-            _subscription = _source.SignalObservable.Subscribe(value =>
+            _subscription = _source.Value?.Observable.Subscribe(value =>
             {
                 if (_destinations.Count == 0)
                 {
                     return;
                 }
-                
                 this.LogVerbose($"{this} dispatching {value}");
-                
-                _destinations[StepIndex()].Broadcast(value);
+                _destinations[StepIndex()].Value?.Broadcast(value);
             });
         }
 
@@ -62,7 +52,8 @@ namespace Sonosthesia.Flow
 #if UNITY_EDITOR
         public override void AutofillDestinations()
         {
-            _destinations.AddRange(GetComponentsInChildren<Signal<T>>());
+            _destinations.AddRange(GetComponentsInChildren<Signal<T>>()
+                .Select(component => new InterfaceReference<ISignal<T>>(component)));
         }
 
         public override void DeleteAllDestinations()

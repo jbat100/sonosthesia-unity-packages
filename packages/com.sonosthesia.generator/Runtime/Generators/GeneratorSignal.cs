@@ -1,29 +1,30 @@
 using System;
+using Sonosthesia.Processing;
 using UnityEngine;
 using Sonosthesia.Signal;
+using Sonosthesia.Utils;
 using UniRx;
 
 namespace Sonosthesia.Generator
 {
-    public class GeneratorSignal<T> : Signal<T> where T : struct
+    public class GeneratorSignal<TValue, TProcessor> : StatelessSignal<TValue> where TValue : struct where TProcessor : IProcessor<TValue>
     {
-        [SerializeField] private Generator<T> _generator;
+        [SerializeField] private Generator<TValue> _generator;
 
-        [SerializeField] private Signal<float> _timeSignal;
+        [SerializeField] private InterfaceReference<ISignal<float>> _timeSignal;
 
+        [SerializeField] private TProcessor _processor;
+        
         private IDisposable _subscription;
 
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            if (_timeSignal)
+            _subscription = _timeSignal.Value?.Observable.Subscribe(time =>
             {
-                _timeSignal.SignalObservable.Subscribe(time =>
-                {
-                    T raw = _generator.Evaluate(time);
-                    Broadcast(PostProcess(raw));
-                });
-            }
+                TValue raw = _generator.Evaluate(time);
+                Broadcast(_processor.Process(raw));
+            });
         }
 
         protected virtual void OnDisable()
@@ -31,7 +32,10 @@ namespace Sonosthesia.Generator
             _subscription?.Dispose();
             _subscription = null;
         }
+    }
 
-        protected virtual T PostProcess(T value) => value;
+    public class GeneratorSignal<TValue> : GeneratorSignal<TValue, PassthroughProcessor<TValue>> where TValue : struct
+    {
+        
     }
 }

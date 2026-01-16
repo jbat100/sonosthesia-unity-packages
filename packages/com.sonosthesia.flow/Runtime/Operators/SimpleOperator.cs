@@ -6,13 +6,9 @@ namespace Sonosthesia.Flow
 {
     public abstract class SimpleOperator<T> : Operator<T> where T : struct
     {
-        protected override IDisposable Setup(Signal<T> source)
+        protected override IDisposable Setup(ISignal<T> source)
         {
-            if (!source)
-            {
-                return Disposable.Empty;
-            }
-            return source.SignalObservable.Subscribe(value =>
+            return source.Observable.Subscribe(value =>
             {
                 Broadcast(Bypass ? value : Process(value));
             });

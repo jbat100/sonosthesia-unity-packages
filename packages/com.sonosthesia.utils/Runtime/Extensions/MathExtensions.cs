@@ -26,26 +26,22 @@ namespace Sonosthesia.Utils
             return new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
         }
         
-        public static float Sum(this Vector3 v)
-        {
-            return v.x + v.y + v.z;
-        }
+        public static float Sum(this Vector3 v) => v.x + v.y + v.z;
+
+        public static float Sum(this Vector2 v) => v.x + v.y;
+
+        public static float Average(this Vector3 v) => v.Sum() * 0.33333333333333f;
+
+        public static float Average(this Vector2 v) => v.Sum() * 0.5f;
+
+        public static float Max(this Vector3 v) => Mathf.Max(v.x, v.y, v.z);
         
-        public static float Average(this Vector3 v)
-        {
-            return v.Sum() * 0.33333333333333f;
-        }
+        public static float Max(this Vector2 v) => Mathf.Max(v.x, v.y);
         
-        public static float Max(this Vector3 v)
-        {
-            return Mathf.Max(v.x, v.y, v.z);
-        } 
+        public static float Min(this Vector3 v) => Mathf.Min(v.x, v.y, v.z);
         
-        public static float Min(this Vector3 v)
-        {
-            return Mathf.Min(v.x, v.y, v.z);
-        } 
-        
+        public static float Min(this Vector2 v) => Mathf.Min(v.x, v.y);
+
         public static float Remap(this float value, float from1, float to1, float from2, float to2)
         {
             float inverseLerped = Mathf.InverseLerp(from1, to1, value);
@@ -53,16 +49,10 @@ namespace Sonosthesia.Utils
             return remapped;
         }
         
-        public static float3 Horizontal(this float3 v)
-        {
-            return new float3(v.x, 0f, v.z);
-        }
-        
-        public static float3 Vertical(this float3 v)
-        {
-            return new float3(0f, v.y, 0f);
-        }
-        
+        public static float3 Horizontal(this float3 v) => new (v.x, 0f, v.z);
+
+        public static float3 Vertical(this float3 v) => new float3(0f, v.y, 0f);
+
         // https://github.com/keijiro/ProceduralMotion/blob/master/Packages/jp.keijiro.klak.motion/Runtime/Internal/Utilities.cs
         public static Random Random(uint seed)
         {
@@ -99,5 +89,20 @@ namespace Sonosthesia.Utils
             float3 v3 = default;
             noise.snoise(v3, out float3 gradient);
         }
+        
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 ChangeLength(this Vector3 vector, float factor)
+        {
+            if (vector == Vector3.zero)
+            {
+                return Vector3.zero;
+            }
+            float currentMagnitude = vector.magnitude;
+            float newMagnitude = currentMagnitude * factor;
+            return vector * (newMagnitude / currentMagnitude);
+        }
+        
+        public static float DecibelToLinear(this float decibels) => math.pow(10f, decibels / 20f);
     }
 }

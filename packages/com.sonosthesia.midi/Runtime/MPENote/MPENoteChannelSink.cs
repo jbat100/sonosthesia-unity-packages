@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Sonosthesia.AdaptiveMIDI;
 using Sonosthesia.Channel;
+using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 
@@ -9,9 +10,9 @@ namespace Sonosthesia.MIDI
 {
     public class MPENoteChannelSink : MonoBehaviour
     {
-        [SerializeField] private Channel<MPENote> _channel;
+        [SerializeField] private InterfaceReference<IChannel<MPENote>> _channel;
         
-        [SerializeField] private MIDIOutput _output;
+        [SerializeField] private InterfaceReference<IMIDIMessageBroadcaster> _output;
 
         [Header("Debug")] 
         
@@ -23,7 +24,6 @@ namespace Sonosthesia.MIDI
         
         [SerializeField] private bool _muteBend;
         
-
         private IDisposable _subscription;
 
         private readonly HashSet<int> _occupiedChannels = new();
@@ -32,12 +32,13 @@ namespace Sonosthesia.MIDI
         {
             for (int i = 1; i < 15; i++)
             {
-                if (!_occupiedChannels.Contains(i))
+                if (_occupiedChannels.Contains(i))
                 {
-                    channel = i;
-                    _occupiedChannels.Add(i);
-                    return true;
+                    continue;
                 }
+                channel = i;
+                _occupiedChannels.Add(i);
+                return true;
             }
 
             channel = -1;
@@ -54,7 +55,7 @@ namespace Sonosthesia.MIDI
             _subscription?.Dispose();
             _occupiedChannels.Clear();
             
-            _subscription = _channel.Observable.Subscribe(pair =>
+            _subscription = _channel.Value?.Observable.Subscribe(pair =>
             {
                 if (!TryGetAvailableChannel(out int channel))
                 {
@@ -74,15 +75,15 @@ namespace Sonosthesia.MIDI
                     {
                         if (!_muteSlide && note.Slide != previous.Value.Slide)
                         {
-                            _output.Broadcast(note.GetSlideControl(channel));
+                            _output.Value.Broadcast(note.GetSlideControl(channel));
                         }
                         if (!_mutePressure && note.Pressure != previous.Value.Pressure)
                         {
-                            _output.Broadcast(note.GetChannelAftertouch(channel));
+                            _output.Value.Broadcast(note.GetChannelAftertouch(channel));
                         }
                         if (!_muteBend && Math.Abs(note.Bend - previous.Value.Bend) > 1e-4)
                         {
-                            _output.Broadcast(note.GetPitchBend(channel));
+                            _output.Value.Broadcast(note.GetPitchBend(channel));
                         }
                     }
                     else
@@ -90,17 +91,17 @@ namespace Sonosthesia.MIDI
                         // send slide, pressure, bend before note
                         if (!_muteSlide)
                         {
-                            _output.Broadcast(note.GetSlideControl(channel));    
+                            _output.Value.Broadcast(note.GetSlideControl(channel));    
                         }
                         if (!_mutePressure)
                         {
-                            _output.Broadcast(note.GetChannelAftertouch(channel));    
+                            _output.Value.Broadcast(note.GetChannelAftertouch(channel));    
                         }
                         if (!_muteBend)
                         {
-                            _output.Broadcast(note.GetPitchBend(channel));
+                            _output.Value.Broadcast(note.GetPitchBend(channel));
                         }
-                        _output.Broadcast(note.GetMIDINoteOn(channel));
+                        _output.Value.Broadcast(note.GetMIDINoteOn(channel));
                     }
 
                     previous = note;
@@ -108,7 +109,7 @@ namespace Sonosthesia.MIDI
                 {
                     if (previous.HasValue)
                     {
-                        _output.Broadcast(previous.Value.GetMIDINoteOff(channel));   
+                        _output.Value.Broadcast(previous.Value.GetMIDINoteOff(channel));   
                     }
                     ReleaseChannel(channel);
                     

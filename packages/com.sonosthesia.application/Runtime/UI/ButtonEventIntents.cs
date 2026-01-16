@@ -9,7 +9,7 @@ namespace Sonosthesia.Application
     [RequireComponent(typeof(Button))]
     public class ButtonEventIntents : MonoBehaviour, IPointerEnterHandler
     {
-        [SerializeField] private IntentSignalRelay _target;
+        [SerializeField] private IntentScriptableSignal _target;
         
         [Header("Intent keys")]
         

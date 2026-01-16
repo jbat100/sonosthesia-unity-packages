@@ -1,21 +1,10 @@
-﻿using System;
-using FMODUnity;
-using Sonosthesia.Interaction;
-using Sonosthesia.Touch;
-using UnityEngine;
+﻿using Sonosthesia.Touch;
 
 namespace Sonosthesia.FMODInteraction
 {
-    public class TouchFMODPlayAffordance : InteractionAffordance<TouchEvent>
+    
+    public class TouchFMODPlayAffordance : FMODPlayAffordance<TouchEvent>
     {
-        [SerializeField] private StudioEventEmitter _emitter;
         
-        protected override void HandleStream(Guid id, IObservable<TouchEvent> stream)
-        {
-            if (_emitter)
-            {
-                _emitter.Play();
-            }
-        }
     }
 }

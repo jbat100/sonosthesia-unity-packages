@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Sonosthesia.AdaptiveMIDI;
 using Sonosthesia.Channel;
+using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 
@@ -9,9 +10,8 @@ namespace Sonosthesia.MIDI
 {
     public class MPENoteChannelSource : MonoBehaviour
     {
-        [SerializeField] private MIDIInput _input;
-
-        [SerializeField] private ChannelDriver<MPENote> _driver;
+        [SerializeField] private InterfaceReference<IMIDIMessageReceiver> _input;
+        [SerializeField] private InterfaceReference<IChannel<MPENote>> _channel;
         
         // typically these parameters will be sent on the channel by the DAW before note so need to cache it
         private class ChannelState
@@ -51,8 +51,9 @@ namespace Sonosthesia.MIDI
         }
 
         private readonly Dictionary<int, ChannelState> _states = new();
-
-        private readonly CompositeDisposable _mpeSubscriptions = new();
+        private readonly CompositeDisposable _subscriptions = new();
+        
+        private ChannelDriver<MPENote> _driver;
 
         private ChannelState GetState(int channel)
         {
@@ -67,10 +68,18 @@ namespace Sonosthesia.MIDI
         
         protected virtual void OnEnable()
         {
-            _mpeSubscriptions.Clear();
+            _subscriptions.Clear();
             _states.Clear();
             
-            _mpeSubscriptions.Add(_input.NoteOnObservable.Subscribe(note =>
+            if (!_input || !_channel)
+            {
+                return;
+            }
+            
+            _driver?.Dispose();
+            _driver = new ChannelDriver<MPENote>(_channel.Value);
+            
+            _subscriptions.Add(_input.Value.NoteOnObservable.Subscribe(note =>
             {
                 ChannelState state = GetState(note.Channel);
                 if (state.CurrentNote.HasValue)
@@ -81,7 +90,7 @@ namespace Sonosthesia.MIDI
                 state.EventId = _driver.BeginStream(state.Begin(new MIDINote(note)));
             }));
             
-            _mpeSubscriptions.Add(_input.NoteOffObservable.Subscribe(note =>
+            _subscriptions.Add(_input.Value.NoteOffObservable.Subscribe(note =>
             {
                 ChannelState state = GetState(note.Channel);
                 if (!state.CurrentNote.HasValue)
@@ -93,7 +102,7 @@ namespace Sonosthesia.MIDI
                 state.End();
             }));
             
-            _mpeSubscriptions.Add(_input.ChannelAftertouchObservable.Subscribe(aftertouch =>
+            _subscriptions.Add(_input.Value.ChannelAftertouchObservable.Subscribe(aftertouch =>
             {
                 ChannelState state = GetState(aftertouch.Channel);
                 state.Pressure = aftertouch.Value;
@@ -104,7 +113,7 @@ namespace Sonosthesia.MIDI
                 }
             }));
             
-            _mpeSubscriptions.Add(_input.ControlObservable.Subscribe(control =>
+            _subscriptions.Add(_input.Value.ControlObservable.Subscribe(control =>
             {
                 ChannelState state = GetState(control.Channel);
                 if (control.Number != 74)
@@ -120,7 +129,7 @@ namespace Sonosthesia.MIDI
                 }
             }));
             
-            _mpeSubscriptions.Add(_input.PitchBendObservable.Subscribe(bend =>
+            _subscriptions.Add(_input.Value.PitchBendObservable.Subscribe(bend =>
             {
                 ChannelState state = GetState(bend.Channel);
                 state.Bend = bend.Value;
@@ -134,8 +143,10 @@ namespace Sonosthesia.MIDI
 
         protected virtual void OnDisable()
         {
-            _mpeSubscriptions.Clear();
+            _subscriptions.Clear();
             _states.Clear();
+            _driver?.Dispose();
+            _driver = null;
         }
     }
 }

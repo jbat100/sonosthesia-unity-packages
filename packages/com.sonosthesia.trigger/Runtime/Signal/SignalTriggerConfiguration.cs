@@ -1,24 +1,39 @@
 ﻿using Sonosthesia.Envelope;
-using Sonosthesia.Utils;
+using Sonosthesia.Extractor;
 using UnityEngine;
 
 namespace Sonosthesia.Trigger
 {
-    public class SignalTriggerConfiguration<T, TExtractor> : ScriptableObject where T : struct where TExtractor : IExtractor<T>
+    public interface ISignalTriggerConfiguration<in T> where T : struct
+    {
+        IStaticExtractor<T, float> ValueExtractor { get; }
+        IStaticExtractor<T, float> AttackExtractor { get; }
+        EnvelopeSettings Envelope { get; }
+    }
+
+    public static class SignalTriggerConfigurationExtensions
+    {
+        public static void Trigger<T>(this ISignalTriggerConfiguration<T> configuration, TriggerImplementation controller, T input) where T : struct
+        {
+            if (!configuration.ValueExtractor.Extract(input, out float value) || !configuration.AttackExtractor.Extract(input, out float time))
+            {
+                return;
+            }
+            IEnvelope envelope = configuration.Envelope.Build();
+            controller.StartTrigger(envelope, value, time, true);
+        }
+    }
+    
+    public class SignalTriggerConfiguration<T, TExtractor> : ScriptableObject, ISignalTriggerConfiguration<T> 
+        where T : struct where TExtractor : IStaticExtractor<T, float>
     {
         [SerializeField] private TExtractor _value;
+        public IStaticExtractor<T, float> ValueExtractor => _value;
         
-        [SerializeField] private TExtractor _time;
+        [SerializeField] private TExtractor _attack;
+        public IStaticExtractor<T, float> AttackExtractor => _attack;
 
         [SerializeField] private EnvelopeSettings _envelope;
-
-        public void Trigger(TriggerController controller, T input)
-        {
-            float value = _value.Extract(input);
-            float time = _time.Extract(input);
-            IEnvelope envelope = _envelope.Build();
-            
-            controller.PlayTrigger(envelope, value, time);
-        }
+        public EnvelopeSettings Envelope => _envelope;
     }
 }

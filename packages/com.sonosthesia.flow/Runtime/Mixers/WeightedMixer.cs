@@ -2,7 +2,7 @@
 
 namespace Sonosthesia.Flow
 {
-    public class WeightedMixer<T> : Signal<T> where T : struct
+    public class WeightedMixer<T> : StatelessSignal<T> where T : struct
     {
         
     }

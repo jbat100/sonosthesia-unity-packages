@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
 using Sonosthesia.Signal;
+using Sonosthesia.Utils;
 
 namespace Sonosthesia.Flow
 {
-    public abstract class Merger<T1, T2, TResult> : Signal<TResult> where T1 : struct where T2 : struct where TResult : struct
+    public abstract class Merger<T1, T2, TResult> : StatelessSignal<TResult> where T1 : struct where T2 : struct where TResult : struct
     {
-        [SerializeField] private Signal<T1> _first;
+        [SerializeField] private InterfaceReference<ISignal<T1>> _first;
 
-        [SerializeField] private Signal<T2> _second;
+        [SerializeField] private InterfaceReference<ISignal<T2>> _second;
 
         private IDisposable _subscription;
 
@@ -19,10 +20,10 @@ namespace Sonosthesia.Flow
         protected void OnEnable()
         {
             _subscription?.Dispose();
-            if (_first && _second)
+            if (_first.Value != null && _second.Value != null)
             {
-                _subscription = _first.SignalObservable
-                    .CombineLatest(_second.SignalObservable, (f, s) => new KeyValuePair<T1, T2>(f, s))
+                _subscription = _first.Value.Observable
+                    .CombineLatest(_second.Value.Observable, (f, s) => new KeyValuePair<T1, T2>(f, s))
                     .Subscribe(pair => Combine(pair.Key, pair.Value));
             }
         }

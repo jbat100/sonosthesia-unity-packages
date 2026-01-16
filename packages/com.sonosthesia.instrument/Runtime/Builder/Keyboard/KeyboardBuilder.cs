@@ -30,9 +30,11 @@ namespace Sonosthesia.Instrument
             public SingleUnityLayer Layer => _layer;
         }
         
-        [SerializeField] private int _startNote;
+        [SerializeField][Range(0, 15)] private int _channel;
         
-        [SerializeField] private int _endNote;
+        [SerializeField][Range(0, 127)] private int _startNote;
+        
+        [SerializeField][Range(0, 127)] private int _endNote;
 
         [SerializeField] private TransformProperties _whiteTransform;
 
@@ -78,7 +80,7 @@ namespace Sonosthesia.Instrument
             {
                 int note = _startNote + i;
                 KeyboardElement instance = instances[i];
-                instance.MIDINote = note;
+                instance.MIDIPitch = note;
                 
                 bool isWhite = NoteIsWhite(note);
                 offset += isWhite && NoteIsWhite(note - 1) ? 1f : 0.5f;

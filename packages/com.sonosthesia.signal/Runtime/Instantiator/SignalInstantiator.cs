@@ -8,7 +8,7 @@ namespace Sonosthesia.Signal
 {
     public class SignalInstantiator<T> : MonoBehaviour where T: struct
     {
-        [SerializeField] private Signal<T> _source;
+        [SerializeField] private InterfaceReference<ISignal<T>> _source;
         
         [SerializeField] private GameObject _prefab;
 
@@ -43,11 +43,7 @@ namespace Sonosthesia.Signal
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            if (_source)
-            {
-                // the skip is there to prevent immediate instantiation due to underlying BehaviourSubject
-                _subscription = _source.SignalObservable.Skip(1).Subscribe(Instantiate);
-            }
+            _subscription = _source.Value?.Observable.Subscribe(Instantiate);
         }
 
         protected virtual void Instantiate(T value)

@@ -3,6 +3,7 @@ using UniRx;
 using UnityEngine;
 using Sonosthesia.Mapping;
 using Sonosthesia.Channel;
+using Sonosthesia.Utils;
 
 namespace Sonosthesia.Link
 {
@@ -10,9 +11,9 @@ namespace Sonosthesia.Link
     {
         [SerializeField] private bool _log;
         
-        [SerializeField] private Channel<TSource> _source;
+        [SerializeField] private InterfaceReference<IChannel<TSource>> _source;
 
-        [SerializeField] private Channel<TTarget> _target;
+        [SerializeField] private InterfaceReference<IChannel<TTarget>> _target;
 
         [Serializable]
         public class Mapping<T> where T : struct
@@ -40,9 +41,9 @@ namespace Sonosthesia.Link
         protected void OnEnable()
         {
             _subscription?.Dispose();
-            if (_source)
+            if (_source && _target)
             {
-                _subscription = _source.Observable.Subscribe(pair =>
+                _subscription = _source.Value.Observable.Subscribe(pair =>
                 {
                     float startTime = Time.time;
                     TSource? reference = null;
@@ -53,7 +54,7 @@ namespace Sonosthesia.Link
                     {
                         mapped = mapped.Do(v => Debug.Log($"{this} mapped to {v}"));
                     }
-                    _target.Push(pair.Key, mapped);
+                    _target.Value.Push(pair.Key, mapped);
                 });
             }
         }

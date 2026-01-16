@@ -8,9 +8,9 @@ namespace Sonosthesia.Flow
     {
         protected abstract TTarget Map(TSource source);
         
-        protected sealed override IDisposable Setup(Signal<TSource> source)
+        protected sealed override IDisposable Setup(ISignal<TSource> source)
         {
-            return source.SignalObservable.Subscribe(value => {
+            return source.Observable.Subscribe(value => {
                 TTarget mapped = Map(value);
                 Broadcast(mapped);
             });

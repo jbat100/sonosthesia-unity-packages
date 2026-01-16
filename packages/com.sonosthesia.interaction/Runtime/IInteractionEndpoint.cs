@@ -1,11 +1,17 @@
+using Sonosthesia.Dynamic;
+using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
 namespace Sonosthesia.Interaction
 {
-    public interface IInteractionEndpoint
+    public interface IInteractionEndpoint 
     {
         InteractionLayerMask InteractionLayers { get; }
         
         int Domain { get; }
+        
+        Transform Transform { get; }
+        
+        TransformDynamicsMonitor DynamicsMonitor { get; }
     }
 }

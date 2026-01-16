@@ -1,0 +1,18 @@
+using UnityEngine;
+
+namespace Sonosthesia.Interaction
+{
+    public class DragAffordance<TEvent> : InteractionAffordance<TEvent> where TEvent : struct
+    {
+        // TODO : use pools 
+
+        [SerializeField] private Transform _originPrefab;
+        public Transform OriginPrefab => _originPrefab;
+        
+        [SerializeField] private Transform _targetPrefab;
+        public Transform TargetPrefab => _targetPrefab;
+        
+        [SerializeField] private LineRenderer _lineRendererPrefab;
+        public LineRenderer LineRendererPrefab => _lineRendererPrefab;
+    }
+}

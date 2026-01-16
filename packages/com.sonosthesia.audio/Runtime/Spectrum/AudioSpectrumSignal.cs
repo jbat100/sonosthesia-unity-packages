@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Sonosthesia.Audio
 {
-    public class AudioSpectrumSignal : Signal<float>
+    public class AudioSpectrumSignal : StatelessSignal<float>
     {
         [SerializeField] private AudioSpectrum _spectrum;
 

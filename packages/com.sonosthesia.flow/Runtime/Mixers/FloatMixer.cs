@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Sonosthesia.Processing;
 using Sonosthesia.Utils;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ namespace Sonosthesia.Flow
     {
         [SerializeField] private FloatModulationStrategy _strategy = FloatModulationStrategy.Max;
 
-        [SerializeField] private FloatProcessor _postProcessor;
+        [SerializeField] private FloatProcessorSettings _postProcessor;
 
         protected override float Mix(IEnumerable<float> values)
         {

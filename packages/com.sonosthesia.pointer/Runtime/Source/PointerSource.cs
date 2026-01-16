@@ -1,162 +1,93 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Sonosthesia.Channel;
+using Sonosthesia.Interaction;
+using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Sonosthesia.Channel;
-using Sonosthesia.Interaction;
 
 namespace Sonosthesia.Pointer
 {
-    public abstract class PointerSource<TValue> : BasePointerSource, 
-        IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler, IPointerExitHandler,
-        IScrollHandler,
-        IDragHandler, IInitializePotentialDragHandler
-        where TValue : struct
+    public class PointerSource : InteractionEndpoint, 
+        IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler, 
+        IDragHandler, IBeginDragHandler, IEndDragHandler
     {
-        private enum TrackingMode
-        {
-            Move,
-            Drag
-        }
-
-        [SerializeField] private ChannelDriver<TValue> _driver;
-
-        [SerializeField] private PointerValueEventChannel<TValue> _valueEventChannel;
-        public PointerValueEventChannel<TValue> ValueEventChannel => _valueEventChannel;
+        [SerializeField] private InterfaceReference<IChannel<PointerEvent>> _eventChannel;
         
-        [SerializeField] private TrackingMode _trackingMode;
+        private readonly Dictionary<int, InternalData> _internal = new();
 
-        [SerializeField] private bool _endOnExit;
-        
-        private readonly Dictionary<int, Guid> _pointerStreams = new();
-        
-        private readonly Dictionary<Guid, BehaviorSubject<ValueEvent<TValue, PointerEvent>>> _valueEventSubjects = new();
-
-        private void BeginEvent(PointerEventData eventData)
+        private class InternalData
         {
-            if (!Extract(true, eventData, out TValue value))
-            {
-                return;
-            }
-            
-            Guid id = _driver.BeginStream(value);
-            _pointerStreams[eventData.pointerId] = id;
-
-            PointerEvent pointerEvent = new PointerEvent(eventData);
-            BehaviorSubject<ValueEvent<TValue, PointerEvent>> subject = new (new ValueEvent<TValue, PointerEvent>(value, pointerEvent));
-            _valueEventSubjects[id] = subject;
-
-            if (EventChannel)
-            {
-                EventChannel.Push(id, subject.Select(valueEvent => valueEvent.Event)); 
-            }
-            if (ValueEventChannel)
-            {
-                ValueEventChannel.Push(id, subject.AsObservable()); 
-            }
-        }
-
-        private void UpdateEvent(PointerEventData eventData)
-        {
-            if (!_pointerStreams.TryGetValue(eventData.pointerId, out Guid id))
-            {
-                return;
-            }
-
-            if (!Extract(false, eventData, out TValue value))
-            {
-                return;
-            }
-            
-            _driver.UpdateStream(id, value);
-            
-            if (!_valueEventSubjects.TryGetValue(id, out BehaviorSubject<ValueEvent<TValue, PointerEvent>> subject))
-            {
-                return;
-            }
-            
-            subject.OnNext(new ValueEvent<TValue, PointerEvent>(value, new PointerEvent(eventData)));
-        }
-        
-        private void EndEvent(PointerEventData eventData)
-        {
-            End(eventData);
-            
-            if (!_pointerStreams.TryGetValue(eventData.pointerId, out Guid eventId))
-            {
-                return;
-            }
-            
-            _driver.EndStream(eventId);
-            _pointerStreams.Remove(eventData.pointerId);
-
-            if (!_valueEventSubjects.TryGetValue(eventId, out BehaviorSubject<ValueEvent<TValue, PointerEvent>> subject))
-            {
-                return;
-            }
-            
-            subject.OnCompleted();
-            subject.Dispose();
-            _valueEventSubjects.Remove(eventId);
-        }
-
-        protected abstract bool Extract(bool initial, PointerEventData eventData, out TValue value);
-
-        protected virtual void End(PointerEventData eventData)
-        {
-            
+            public BehaviorSubject<PointerEvent> EventSubject;
+            public float StartTime;
         }
         
         public void OnPointerDown(PointerEventData eventData)
         {
-            EndEvent(eventData);
-            BeginEvent(eventData);
+            PointerEvent pointerEvent = new PointerEvent(eventData, this, Time.time);
+
+            InternalData internalData = new InternalData()
+            {
+                StartTime = Time.time,
+                EventSubject = new BehaviorSubject<PointerEvent>(pointerEvent)
+            };
+
+            _internal[eventData.pointerId] = internalData;
+
+            this.LogWarning($"{this} new stream on {nameof(OnPointerDown)} {eventData}");
+            
+            _eventChannel.Value?.Push(Guid.NewGuid(), internalData.EventSubject);
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
-            EndEvent(eventData);
+            if (!_internal.TryGetValue(eventData.pointerId, out InternalData internalData))
+            {
+                return;
+            }
+            
+            internalData.EventSubject.OnNext(new PointerEvent(eventData, this, internalData.StartTime));
+            internalData.EventSubject.OnCompleted();
+            internalData.EventSubject.Dispose();
+            
+            this.LogWarning($"{this} end stream on {nameof(OnPointerUp)} {eventData}");
+            
+            _internal.Remove(eventData.pointerId);
         }
 
         public void OnPointerMove(PointerEventData eventData)
         {
-            if (_trackingMode != TrackingMode.Move)
-            {
-                return;
-            }
-            
-            UpdateEvent(eventData);
-        }
-
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            if (_endOnExit)
-            {
-                EndEvent(eventData);
-            }
-        }
-        
-        public void OnScroll(PointerEventData eventData)
-        {
-            UpdateEvent(eventData);
+            this.LogVerbose($"{this} {nameof(OnPointerMove)} {eventData}");
+            // UpdatePointerData(eventData);
         }
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (_trackingMode != TrackingMode.Drag)
+            this.LogVerbose($"{this} {nameof(OnDrag)} {eventData}");
+            UpdatePointerData(eventData);
+        }
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            this.LogVerbose($"{this} {nameof(OnDrag)} {eventData}");
+        }
+
+        public void OnEndDrag(PointerEventData eventData)
+        {
+            this.LogVerbose($"{this} {nameof(OnDrag)} {eventData}");
+        }
+
+        private void UpdatePointerData(PointerEventData eventData)
+        {
+            if (!_internal.TryGetValue(eventData.pointerId, out InternalData internalData))
             {
                 return;
             }
             
-            // Debug.Log($"{this} {nameof(OnDrag)} {eventData}");
+            this.LogVerbose($"{this} update stream on {nameof(OnPointerMove)} {eventData}");
             
-            UpdateEvent(eventData);
-        }
-
-        public void OnInitializePotentialDrag(PointerEventData eventData)
-        {
-            eventData.useDragThreshold = false;
+            internalData.EventSubject.OnNext(new PointerEvent(eventData, this, internalData.StartTime));
         }
     }
 }

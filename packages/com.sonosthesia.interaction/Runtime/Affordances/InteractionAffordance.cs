@@ -3,30 +3,45 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Sonosthesia.Utils;
+using Sonosthesia.Channel;
 using UniRx;
 using UnityEngine;
 
 namespace Sonosthesia.Interaction
 {
-    public class InteractionAffordance<TEvent> : MonoBehaviour, ILogSwitch where TEvent : struct, IInteractionEvent
+    public class InteractionAffordance<TEvent> : MonoBehaviour, ILogSwitch where TEvent : struct
     {
         [SerializeField] private bool _log;
         public bool Log => _log;
 
-        [SerializeField] private List<InteractionAffordanceGate> _gates;
-        [SerializeField] private List<Channel.Channel<TEvent>> _inputs;
-        [SerializeField] private Channel.Channel<TEvent> _relay;
+        [SerializeField] 
+        private List<InteractionAffordanceGate> _gates;
+        
+        [SerializeField] 
+        private List<InterfaceReference<IChannel<TEvent>>> _inputs;
+        
+        [SerializeField] 
+        private InterfaceReference<IChannel<TEvent>> _relay;
 
         private readonly CompositeDisposable _subscriptions = new();
 
-        protected virtual IObserver<TEvent> MakeController(Guid id) => null;
-        
-        protected virtual void HandleStream(Guid id, IObservable<TEvent> stream)
+        public void SetInputs(IEnumerable<IChannel<TEvent>> inputs)
         {
-            
+            if (_inputs == null)
+            {
+                _inputs = new List<InterfaceReference<IChannel<TEvent>>>(inputs.Select(i => new InterfaceReference<IChannel<TEvent>>(i)));
+            }
+            else
+            {
+                _inputs.Clear();
+                _inputs.AddRange(inputs.Select(i => new InterfaceReference<IChannel<TEvent>>(i)));
+            }
+            ReloadSubscriptions();
         }
-
-        protected virtual bool CheckCompatibility(TEvent e) => true;
+        
+        protected virtual void OnStartedStream(Guid id, TEvent e) { }
+        
+        protected virtual IObserver<TEvent> MakeController(Guid id) => null;
 
         // a bit of a pain to have to use async, but we need to wait for the first stream element to check
         private async UniTaskVoid OnStream(Guid id, IObservable<TEvent> stream)
@@ -34,11 +49,6 @@ namespace Sonosthesia.Interaction
             stream = stream.TakeUntilDisable(this);
 
             TEvent e = await stream.ToUniTask(true);
-            
-            if (!CheckCompatibility(e))
-            {
-                return;
-            }
 
             foreach (InteractionAffordanceGate gate in _gates)
             {
@@ -51,9 +61,9 @@ namespace Sonosthesia.Interaction
                         return;
                     }
                 }
-                else if (gate is IInteractionAffordanceGate interactionGate)
+                else if (gate is IInteractionAffordanceGate interactionGate && e is IInteractionEvent ie)
                 {
-                    if (!interactionGate.Check(e))
+                    if (!interactionGate.Check(ie))
                     {
                         this.LogVerbose($"{this} bailout on gate {e}");
                         return;    
@@ -70,26 +80,29 @@ namespace Sonosthesia.Interaction
                 stream.Subscribe(controller);
             }
             
-            HandleStream(id, stream);
+            OnStartedStream(id, e);
 
-            if (_relay)
-            {
-                _relay.Push(id, stream);   
-            }
+            _relay.Value?.Push(id, stream);   
         }
 
         protected virtual void OnEnable()
         {
-            foreach (var channel in _inputs.Where(channel => channel))
+            ReloadSubscriptions();
+        }
+
+        protected virtual void OnDisable() => _subscriptions.Clear();
+
+        private void ReloadSubscriptions()
+        {
+            _subscriptions.Clear();
+            foreach (InterfaceReference<IChannel<TEvent>> channel in _inputs.Where(channel => channel))
             {
-                _subscriptions.Add(channel.Observable.Subscribe(pair =>
+                _subscriptions.Add(channel.Value.Observable.Subscribe(pair =>
                 {
                     this.LogVerbose($"{this} received new stream {pair.Key}");
                     OnStream(pair.Key, pair.Value).Forget();
                 }));
             }
         }
-
-        protected virtual void OnDisable() => _subscriptions.Clear();
     }
 }

@@ -1,292 +1,54 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Sonosthesia.Interaction;
-using Sonosthesia.Utils;
+using Sonosthesia.Channel;
 using UniRx;
 using UnityEngine;
 
 namespace Sonosthesia.Touch
 {
-    public abstract class TouchSource : TouchEndpoint
+    public class TouchSource : ATouchSource
     {
-        private const float TROJAN_THRESHOLD = 0.1f;
-        
-        private class TouchData : ITouchData
+        private readonly Dictionary<Guid, BehaviorSubject<TouchEvent>> _eventSubjects = new();
+
+        protected override bool ConfigureStream(Guid id, ITouchData touchData)
         {
-            public Guid Id;
-            public TouchStart Start { get; set; }
-            public Collider Collider { get; set; }
-            public bool Colliding { get; set; }
-            public TouchSource Source { get; set; }
-            public TouchActor Actor { get; set; }
-        }
-
-        [SerializeField] private bool _allowTrojan = false;
-        [SerializeField] private bool _allowDeferred = false;
-        [SerializeField] private bool _endOnGates = true;
-        [SerializeField] private bool _endOnExit = true;
-        [SerializeField] private bool _restartOnEnter = true;
-        [SerializeField] private bool _autoEnd;
-        [SerializeField] private float _autoEndDelay;
-
-        [SerializeField] private InteractionLayerMatch _actorMatch = InteractionLayerMatch.Any;
-        
-        // note : we don't want concurrent events from the same collider
-        
-        private readonly Dictionary<TouchActor, TouchData> _touchData = new();
-        private readonly Dictionary<TouchActor, Collider> _gatedActors = new();
-
-        // avoid alloc
-        
-        private static readonly List<TouchData> _reusableData = new();
-        private static readonly List<TouchActor> _reusableActors = new();
-
-        public void KillAllStreams()
-        {
-            foreach (TouchData data in _reusableData.Import(_touchData.Values))
+            // Debug.LogWarning($"{this} {nameof(ConfigureStream)} {id} actor {touchData.Actor.gameObject.name} source {touchData.Source.gameObject.name}");
+            TouchEvent sourceEvent = new TouchEvent(touchData, Time.time);
+            BehaviorSubject<TouchEvent> eventSubject = new BehaviorSubject<TouchEvent>(sourceEvent);
+            _eventSubjects[id] = eventSubject;
+            IObservable<TouchEvent> sourceObservable = eventSubject.AsObservable();
+            if (Node)
             {
-                EndStream(data);
+                Node.Push(id, sourceObservable);
             }
-        }
-
-        public void KillStream(Guid id)
-        {
-            foreach (TouchData data in _reusableData.Import(_touchData.Values.Where(d => d.Id == id)))
+            // push the stream to the actor
+            if (sourceEvent.touchData.Actor && sourceEvent.touchData.Actor.Node)
             {
-                EndStream(data);
+                sourceEvent.touchData.Actor.Node.Push(id, sourceObservable);
             }
-        }
-
-        protected virtual bool IsCompatibleActor(TouchActor actor) => true;
-
-        // using FixedUpdate instead of OnTriggerStay because stream can stay active after collision ends
-        
-        protected virtual void FixedUpdate()
-        {
-            foreach (TouchActor actor in _reusableActors.Import(_gatedActors.Keys).Where(actor => !actor.isActiveAndEnabled))
-            {
-                _gatedActors.Remove(actor);
-            }
-
-            foreach (TouchData data in _reusableData.Import(_touchData.Values))
-            {
-                if (!data.Actor.isActiveAndEnabled)
-                {
-                    EndStream(data);
-                    continue;
-                }
-                if (_endOnGates && !CheckGates(data.Actor))
-                {
-                    if (!CheckGates(data.Actor))
-                    {
-                        if (data.Colliding)
-                        {
-                            _gatedActors[data.Actor] = data.Collider;
-                        }
-                        EndStream(data);
-                        continue;
-                    }
-                }
-                UpdateStream(data.Id, data);
-            }
-        }
-
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-            _gatedActors.Clear();
-            KillAllStreams();
-        }
-
-        protected virtual void OnTriggerEnter(Collider other)
-        {
-            this.LogVerbose($"{this} {nameof(OnTriggerEnter)} {other}");
-
-            TouchActor actor = other.GetComponentInParent<TouchActor>();
-
-            if (!actor)
-            {
-                this.LogVerbose($"{this} {nameof(OnTriggerEnter)} bailed out (no actor)");
-                return;
-            }
-            
-            if (Mute)
-            {
-                this.LogVerbose($"{this} {nameof(OnTriggerEnter)} bailed out (source mute)");
-                return;
-            }
-
-            if (actor.Mute)
-            {
-                this.LogVerbose($"{this} {nameof(OnTriggerEnter)} bailed out (mute)");
-                return;
-            }
-
-            if (_gatedActors.ContainsKey(actor))
-            {
-                this.LogVerbose($"{this} {nameof(OnTriggerEnter)} bailed out (gated actor)");
-                return;
-            }
-            
-            if (_touchData.TryGetValue(actor, out TouchData data))
-            {
-                if (data.Collider != other)
-                {
-                    this.LogVerbose($"{this} {nameof(OnTriggerEnter)} bailed out (current actor with other collider)");
-                    return;
-                }
-                if (_restartOnEnter)
-                {
-                    this.LogWarning($"{this} {nameof(OnTriggerEnter)} ended stream on re-enter)");
-                    EndStream(data);
-                }
-                else
-                {
-                    data.Colliding = true;
-                    UpdateStream(data.Id, data);
-                    this.LogVerbose($"{this} {nameof(OnTriggerEnter)} bailed out (updated existing stream)");
-                    return;
-                }
-            }
-
-            if (!_actorMatch.Match(InteractionLayers, actor.InteractionLayers))
-            {
-                this.LogVerbose($"{this} {nameof(OnTriggerEnter)} bailed out (no actor layer mismatch)");
-                return;
-            }
-
-            if (!IsCompatibleActor(actor))
-            {
-                this.LogVerbose($"{this} {nameof(OnTriggerEnter)} bailed out (incompatible actor)");
-                return;
-            }
-            
-            if (!CheckGates(actor))
-            {
-                this.LogVerbose($"{this} {nameof(OnTriggerEnter)} gated actor");
-                _gatedActors[actor] = other;
-            }
-            else if (actor.TimeSinceEnable > TROJAN_THRESHOLD && TimeSinceEnable > TROJAN_THRESHOLD)
-            {
-                AttemptStream(actor, other, TouchStart.Enter);  
-            }
-            else if (_allowTrojan)
-            {
-                AttemptStream(actor, other, TouchStart.Trojan);   
-            }
-        }
-
-        private IEnumerable<TouchActor> GatedActors(Collider other) => 
-            _gatedActors.Where(p => p.Value == other).Select(p => p.Key);
-
-        protected virtual void OnTriggerStay(Collider other)
-        {
-            if (!_allowDeferred)
-            {
-                return;
-            }
-            
-            // check gated touch actors and attempt to start stream
-            
-            foreach (TouchActor actor in _reusableActors.Import(GatedActors(other)))
-            {
-                if (CheckGates(actor))
-                {
-                    this.LogWarning($"{this} {nameof(OnTriggerStay)} promoted gated actor");
-                    _gatedActors.Remove(actor);
-                    AttemptStream(actor, other, TouchStart.Deferred);
-                }
-            }
-        }
-
-        protected virtual void OnTriggerExit(Collider other)
-        {
-            this.LogVerbose($"{this} {nameof(OnTriggerExit)} {other}");
-
-            foreach (TouchActor actor in _reusableActors.Import(GatedActors(other)))
-            {
-                _gatedActors.Remove(actor);
-            }
-            
-            // should only be one 
-            
-            foreach (TouchData data in _reusableData.Import(_touchData.Values.Where(d => d.Collider == other)))
-            {
-                data.Colliding = false;
-                if (_endOnExit)
-                {
-                    this.LogVerbose($"{this} {nameof(OnTriggerExit)} ending stream on exit {data.Id}");
-                    EndStream(data);
-                }     
-            }
-        }
-
-        private bool CheckGates(TouchActor actor)
-        {
-            if (!Gates.All(gate => gate && gate.Check(this, actor)))
-            {
-                return false;
-            }
-            
-            if (!actor.Gates.All(gate => gate && gate.Check(this, actor)))
-            {
-                return false;
-            }
-
             return true;
         }
-        
-        private bool AttemptStream(TouchActor actor, Collider other, TouchStart start)
+
+        protected override void UpdateStream(Guid id, ITouchData touchData)
         {
-            if (!actor.RequestPermission(other))
+            if (!_eventSubjects.TryGetValue(id, out BehaviorSubject<TouchEvent> subject))
             {
-                this.LogVerbose($"{this} {nameof(AttemptStream)} bailed out (actor refused permission)");
-                return false;
+                return;
             }
-            
-            TouchData touchData = new TouchData()
-            {
-                Id = Guid.NewGuid(),
-                Start = start,
-                Collider = other,
-                Colliding = true,
-                Actor = actor,
-                Source = this
-            };
-
-            _touchData[touchData.Actor] = touchData;
-
-            if (!ConfigureStream(touchData.Id, touchData))
-            {
-                this.LogWarning($"{this} {nameof(AttemptStream)} failed to started stream {touchData.Id}");
-                EndStream(touchData);
-                return false;
-            }
-
-            if (_autoEnd)
-            {
-                Observable.Timer(TimeSpan.FromSeconds(_autoEndDelay)).Subscribe(_ => EndStream(touchData));
-            }
-
-            this.LogWarning($"{this} {nameof(AttemptStream)} started stream {touchData.Id}");
-            
-            return true;
-        }
-        
-        
-        private void EndStream(TouchData touchData)
-        {
-            if (_touchData.Remove(touchData.Actor))
-            {
-                CleanupStream(touchData.Id, touchData);   
-            }
+            subject.OnNext(subject.Value);
         }
 
-        protected abstract bool ConfigureStream(Guid id, ITouchData touchData);
+        protected override void CleanupStream(Guid id, ITouchData touchData)
+        {
+            if (!_eventSubjects.TryGetValue(id, out BehaviorSubject<TouchEvent> subject))
+            {
+                return;
+            }
+            
+            subject.OnCompleted();
+            subject.Dispose();
 
-        protected abstract void UpdateStream(Guid id, ITouchData touchData);
-
-        protected abstract void CleanupStream(Guid id, ITouchData touchData);
+            _eventSubjects.Remove(id);
+        }
     }
 }

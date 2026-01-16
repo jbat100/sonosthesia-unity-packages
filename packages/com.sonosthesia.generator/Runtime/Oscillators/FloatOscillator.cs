@@ -1,4 +1,4 @@
-using Sonosthesia.Utils;
+using Sonosthesia.Processing;
 using UnityEngine;
 
 namespace Sonosthesia.Generator
@@ -13,7 +13,7 @@ namespace Sonosthesia.Generator
 
         [SerializeField] private float _offset = 0f;
 
-        [SerializeField] private FloatProcessor _postProcessor;
+        [SerializeField] private FloatProcessorSettings _postProcessor;
 
         public sealed override float Evaluate(float time)
         {

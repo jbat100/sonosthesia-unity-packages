@@ -5,7 +5,7 @@ using Sonosthesia.Signal;
 
 namespace Sonosthesia.Channel
 {
-    public class ChannelCountSignal : Signal<float>
+    public class ChannelCountSignal : StatelessSignal<float>
     {
         [SerializeField] private AbstractChannel _collector; 
     

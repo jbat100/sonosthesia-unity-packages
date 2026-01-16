@@ -53,10 +53,11 @@ namespace Sonosthesia.Mesh
             base.OnEnable();
         }
 
-        protected virtual void OnDisable()
+        protected override void OnDisable()
         {
             _rebuildSubscriptions.Clear();
             _pathPoints.Dispose();
+            base.OnDisable();
         }
 
         protected sealed override void PopulateMeshData(UnityEngine.Mesh.MeshData data)

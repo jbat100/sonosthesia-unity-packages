@@ -19,7 +19,7 @@ namespace Sonosthesia.Mapping
                 
             }
 
-            public Slot(string name, Signal<TValue> signal)
+            public Slot(string name, InterfaceReference<ISignal<TValue>> signal)
             {
                 _name = name;
                 _signal = signal;
@@ -28,7 +28,7 @@ namespace Sonosthesia.Mapping
             [SerializeField] private string _name;
             public string Name => _name;
 
-            [SerializeField] private Signal<TValue> _signal;
+            [SerializeField] private InterfaceReference<ISignal<TValue>> _signal;
             
             [SerializeField] private DynamicProcessorFactory<TValue> _processorFactory;
 
@@ -50,19 +50,19 @@ namespace Sonosthesia.Mapping
 
                 if (processors.Count == 0)
                 {
-                    return source._signal.SignalObservable
+                    return source._signal.Value.Observable
                         .Subscribe(value =>
                         {
-                            _signal.Broadcast(value);
+                            _signal.Value.Broadcast(value);
                         });
                 }
 
                 float startTime = Time.time;
                 DynamicProcessorChain<TValue> chain = new DynamicProcessorChain<TValue>(processors.ToArray());
-                return source._signal.SignalObservable
+                return source._signal.Value.Observable
                     .Subscribe(value =>
                     {
-                        _signal.Broadcast(chain.Process(value, Time.time - startTime));
+                        _signal.Value.Broadcast(chain.Process(value, Time.time - startTime));
                     });
             }
         }
@@ -83,9 +83,12 @@ namespace Sonosthesia.Mapping
 #if UNITY_EDITOR
         public override void AutofillSlots(bool recursive)
         {
-            transform.ComponentScan<Signal<TValue>>(recursive, 
+            transform.ComponentScan<ISignal<TValue>>(recursive, 
                 check => _slots.All(slot => slot.Name != check),
-                (childName, component) => _slots.Add(new Slot(childName, component)));
+                (childName, component) =>
+                {
+                    _slots.Add(new Slot(childName, new InterfaceReference<ISignal<TValue>>(component)));
+                });
         }
 
         public override void DeleteAllSlots()

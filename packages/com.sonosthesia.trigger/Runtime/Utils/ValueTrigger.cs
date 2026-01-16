@@ -20,7 +20,7 @@ namespace Sonosthesia.Trigger
         {
             float valueScale = _valueSelector ? _valueSelector.Select(value) : 1f;
             float timeScale = _timeSelector ? _timeSelector.Select(value) : 1f;
-            _trigger.TriggerController.PlayTrigger(_envelope ? _envelope.Build() : null, valueScale, timeScale);
+            _trigger.TriggerImplementation.StartTrigger(_envelope ? _envelope.Build() : null, valueScale, timeScale, true);
         }
     }
 }

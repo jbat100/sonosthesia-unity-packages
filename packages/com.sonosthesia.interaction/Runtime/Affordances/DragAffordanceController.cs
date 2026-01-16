@@ -1,13 +1,12 @@
 using System;
-using Sonosthesia.Interaction;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Sonosthesia.Pointer
+namespace Sonosthesia.Interaction
 {
     public abstract class DragAffordanceController<TEvent, TAffordance> : AffordanceController<TEvent, TAffordance> 
-            where TEvent : struct, IInteractionEvent 
-            where TAffordance : DragAgnosticAffordance<TEvent>
+            where TEvent : struct 
+            where TAffordance : DragAffordance<TEvent>
     {
         private GameObject _root;
         private Transform _origin;

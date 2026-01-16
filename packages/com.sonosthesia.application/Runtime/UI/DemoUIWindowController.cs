@@ -18,7 +18,7 @@ namespace Sonosthesia.Application
     
     public class DemoUIWindowController : MonoBehaviour
     {
-        [SerializeField] private IntentSignalRelay _intent;
+        [SerializeField] private IntentScriptableSignal _intent;
         
         // Using this rather than MonoBehaviour on the object because it requires the controller game objects 
         // to be de activated so would require an intermediate game object to handle things (Awake setup etc)

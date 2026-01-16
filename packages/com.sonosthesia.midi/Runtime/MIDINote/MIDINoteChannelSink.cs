@@ -1,7 +1,7 @@
 using System;
 using Sonosthesia.AdaptiveMIDI;
-using Sonosthesia.AdaptiveMIDI.Extensions;
 using Sonosthesia.Channel;
+using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 
@@ -9,9 +9,9 @@ namespace Sonosthesia.MIDI
 {
     public class MIDINoteChannelSink : MonoBehaviour
     {
-        [SerializeField] private Channel<MIDINote> _channel;
+        [SerializeField] private InterfaceReference<IChannel<MIDINote>> _channel;
 
-        [SerializeField] private MIDIOutput _output;
+        [SerializeField] private InterfaceReference<IMIDIMessageBroadcaster> _output;
 
         [SerializeField] private bool _aftertouch;
 
@@ -20,7 +20,7 @@ namespace Sonosthesia.MIDI
         protected virtual void OnEnable()
         {
             _subscription?.Dispose();
-            _subscription = _channel.Observable.Subscribe(pair =>
+            _subscription = _channel.Value?.Observable.Subscribe(pair =>
             {
                 MIDINote? initial = null;
                 MIDINote? previous = null;
@@ -45,16 +45,16 @@ namespace Sonosthesia.MIDI
                         }
                         if (_aftertouch && initial.Value.Pressure != note.Pressure)
                         {
-                            _output.BroadcastPolyphonicAftertouch(note.Channel, note.Note, note.Pressure);   
+                            _output.Value.Broadcast(note.GetPolyphonicAftertouch());   
                         }
                     }
                     else
                     {
                         initial = note;
-                        _output.BroadcastNoteOn(note.Channel, note.Note, note.Velocity);
+                        _output.Value.Broadcast(note.GetMIDINoteOn());
                         if (_aftertouch)
                         {
-                            _output.BroadcastPolyphonicAftertouch(note.Channel, note.Note, note.Pressure);   
+                            _output.Value.Broadcast(note.GetPolyphonicAftertouch());   
                         }
                     }
                     previous = note;
@@ -62,7 +62,7 @@ namespace Sonosthesia.MIDI
                 {
                     if (previous.HasValue)
                     {
-                        _output.BroadcastNoteOff(previous.Value.Channel, previous.Value.Note, previous.Value.Velocity);   
+                        _output.Value.Broadcast(previous.Value.GetMIDINoteOff());   
                     }
                 });
             });

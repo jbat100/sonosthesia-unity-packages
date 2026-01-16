@@ -10,10 +10,15 @@ namespace Sonosthesia.Mapping.Editor
         public static void SetupFloatSettings(VisualElement root, SerializedObject serializedObject, 
             string title, string path)
         {
-            var settingsLabel = new Label(title);
-            settingsLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-            settingsLabel.style.marginTop = 5;
-            settingsLabel.style.marginBottom = 5;
+            var settingsLabel = new Label(title)
+            {
+                style =
+                {
+                    unityFontStyleAndWeight = FontStyle.Bold,
+                    marginTop = 5,
+                    marginBottom = 5
+                }
+            };
             root.Add(settingsLabel);
             
             var settingsProperty = serializedObject.FindProperty(path);

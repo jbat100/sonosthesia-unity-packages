@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Sonosthesia.Processing;
 using UnityEngine;
 using Sonosthesia.Signal;
 using Sonosthesia.Utils;
@@ -17,12 +18,12 @@ namespace Sonosthesia.Generator
         [Serializable]
         public class ScannerTarget
         {
-            [SerializeField] private Signal<TValue> _signal;
+            [SerializeField] private InterfaceReference<ISignal<TValue>> _signal;
             [SerializeField] private TProcessor _processor;
 
             public void Broadcast(TValue value)
             {
-                _signal.Broadcast(_processor.Process(value));
+                _signal.Value?.Broadcast(_processor.Process(value));
             }
         }
         

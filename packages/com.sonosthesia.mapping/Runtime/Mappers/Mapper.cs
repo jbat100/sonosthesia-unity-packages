@@ -7,7 +7,7 @@ namespace Sonosthesia.Mapping
 {
     public static class MapperUtils
     {
-        public static IDisposable AutoMap<TValue>(MapperConnection<TValue> source, MapperConnection<TValue> target)
+        public static IDisposable  AutoMap<TValue>(MapperConnection<TValue> source, MapperConnection<TValue> target)
             where TValue: struct
         {
             CompositeDisposable subscriptions = new CompositeDisposable();

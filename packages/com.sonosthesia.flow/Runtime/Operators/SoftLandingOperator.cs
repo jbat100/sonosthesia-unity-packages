@@ -12,9 +12,9 @@ namespace Sonosthesia.Flow
 
         private SoftLanding _softLanding;
         
-        protected override IDisposable Setup(Signal<float> source)
+        protected override IDisposable Setup(ISignal<float> source)
         {
-            return source.SignalObservable.Subscribe(value =>
+            return source.Observable.Subscribe(value =>
             {
                 _softLanding.Target = value;
             });

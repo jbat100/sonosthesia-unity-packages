@@ -1,7 +1,7 @@
 using System.Text;
 using UnityEngine;
 
-namespace Sonosthesia.Touch
+namespace Sonosthesia.Collide
 {
     public static class CollisionExtensions
     {

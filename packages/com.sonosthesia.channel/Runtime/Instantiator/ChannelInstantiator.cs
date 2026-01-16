@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -9,7 +10,7 @@ namespace Sonosthesia.Channel
 {
     public class ChannelInstantiator<T> : MonoBehaviour where T : struct
     {
-        [SerializeField] private Channel<T> _source;
+        [SerializeField] private InterfaceReference<IChannel<T>> _source;
         
         [SerializeField] private GameObject _prefab;
 
@@ -42,10 +43,7 @@ namespace Sonosthesia.Channel
         protected void OnEnable()
         {
             _subscription?.Dispose();
-            if (_source)
-            {
-                _subscription = _source.Observable.Subscribe(pair => Instantiate(pair.Value));
-            }
+            _subscription = _source.Value?.Observable.Subscribe(pair => Instantiate(pair.Value));
         }
 
         protected void OnDisable()

@@ -9,14 +9,10 @@ namespace Sonosthesia.PeakDetector
     public class TriPeakDetector : MonoBehaviour
     {
         [SerializeField] private TriPeakDetectorConfiguration _configuration;
-
-        [SerializeField] private Signal<TriBand<float>> _source;
-
-        [SerializeField] private Signal<Peak> _lows;
-        
-        [SerializeField] private Signal<Peak> _mids;
-        
-        [SerializeField] private Signal<Peak> _highs;
+        [SerializeField] private InterfaceReference<ISignal<TriBand<float>>> _source;
+        [SerializeField] private InterfaceReference<ISignal<Peak>> _lows;
+        [SerializeField] private InterfaceReference<ISignal<Peak>> _mids;
+        [SerializeField] private InterfaceReference<ISignal<Peak>> _highs;
 
         private PeakDetectorImplementation _lowsImplementation;
         private PeakDetectorImplementation _midsImplementation;
@@ -32,16 +28,16 @@ namespace Sonosthesia.PeakDetector
             _midsImplementation = null;
             _highsImplementation = null;
 
-            if (!_source || !_configuration)
+            if (_source == null || _configuration == null)
             {
                 return;
             }
             
-            _lowsImplementation = _configuration.Lows.MakeImplementation(_lows.Broadcast);
-            _midsImplementation = _configuration.Mids.MakeImplementation(_mids.Broadcast);
-            _highsImplementation = _configuration.Highs.MakeImplementation(_highs.Broadcast);
+            _lowsImplementation = _configuration.Lows.MakeImplementation(_lows.Value.Broadcast);
+            _midsImplementation = _configuration.Mids.MakeImplementation(_mids.Value.Broadcast);
+            _highsImplementation = _configuration.Highs.MakeImplementation(_highs.Value.Broadcast);
             
-            _subscription = _source.SignalObservable.Subscribe(tri =>
+            _subscription = _source.Value.Observable.Subscribe(tri =>
             {
                 _lowsImplementation.Process(tri.Low);
                 _midsImplementation.Process(tri.Mid);

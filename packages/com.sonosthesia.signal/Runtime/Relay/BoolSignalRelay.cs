@@ -3,7 +3,7 @@
 namespace Sonosthesia.Signal
 {
     [CreateAssetMenu(fileName = "BoolSignalRelay", menuName = "Sonosthesia/Relays/BoolSignalRelay")]
-    public class BoolSignalRelay : StatefulSignalRelay<bool>
+    public class BoolSignalRelay : StatefulScriptableSignal<bool>
     {
 
     }

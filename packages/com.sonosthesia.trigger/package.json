@@ -2,13 +2,14 @@
   "author": "Jonathan Thorpe",
   "dependencies": {
     "com.neuecc.unirx": "7.1.0",
-    "com.sonosthesia.channel": "1.11.0",
-    "com.sonosthesia.signal": "1.11.0",
-    "com.sonosthesia.generator": "1.11.0",
-    "com.sonosthesia.flow": "1.11.0",
-    "com.sonosthesia.utils": "1.11.0",
-    "com.sonosthesia.processing": "1.11.0",
-    "com.sonosthesia.envelope": "1.11.0"
+    "com.sonosthesia.channel": "1.12.0",
+    "com.sonosthesia.signal": "1.12.0",
+    "com.sonosthesia.generator": "1.12.0",
+    "com.sonosthesia.flow": "1.12.0",
+    "com.sonosthesia.utils": "1.12.0",
+    "com.sonosthesia.processing": "1.12.0",
+    "com.sonosthesia.envelope": "1.12.0",
+    "com.sonosthesia.extractor": "1.12.0"
   },
   "description": "Sonosthesia unity trigger",
   "displayName": "Sonosthesia Trigger",
@@ -19,5 +20,5 @@
   "name": "com.sonosthesia.trigger",
   "repository": "github:jbat100/sonosthesia-unity-packages",
   "unity": "2022.3",
-  "version": "1.11.0"
+  "version": "1.12.0"
 }

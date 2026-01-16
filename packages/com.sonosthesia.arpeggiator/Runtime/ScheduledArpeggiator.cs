@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Sonosthesia.Channel;
 using UnityEngine;
 using UniRx;
 using Sonosthesia.Scheduler;
@@ -83,7 +84,7 @@ namespace Sonosthesia.Arpeggiator
         protected override void HandleStream(KeyValuePair<Guid, IObservable<T>> pair)
         {
             StreamArpegiator arpegiator = new StreamArpegiator(pair.Value, _scheduler, _modulator, _follower, _terminator);
-            arpegiator.Arpeggiations.Subscribe(arpeggiated => Push(Guid.NewGuid(), arpeggiated));
+            arpegiator.Arpeggiations.Subscribe(arpeggiated => this.Push(Guid.NewGuid(), arpeggiated));
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Sonosthesia.Generator
     /// - drive Generators
     /// - controlling time in VFX/Shader graph
     /// </summary>
-    public class TimeSignal : Signal<float>
+    public class TimeSignal : StatelessSignal<float>
     {
         [SerializeField] private float _timeFactor = 1f;
         

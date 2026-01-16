@@ -1,27 +1,38 @@
 using System;
+using Sonosthesia.Utils;
 using UniRx;
 using UnityEngine;
 
 namespace Sonosthesia.Channel
 {
-    // allows observers who do not need specific types but are just interested in stream counts / ids
+#if UNITY_EDITOR
+    using UnityEditor;
 
-    public class AbstractChannel : MonoBehaviour
+    [CustomEditor(typeof(AbstractChannel), true)]
+    public class AbstractChannelEditor : Editor
     {
-        private readonly ReactiveCollection<Guid> _streamIds = new();
-        public IReadOnlyReactiveCollection<Guid> Ids => _streamIds;
-
-        protected void Register(Guid identifier)
+        public override void OnInspectorGUI()
         {
-            if (!_streamIds.Contains(identifier))
+            DrawDefaultInspector();
+
+            AbstractChannel channel = (AbstractChannel)target;
+            if(GUILayout.Button("Debug State"))
             {
-                _streamIds.Add(identifier);   
+                Debug.Log($"{channel.GetType().Name} has {channel.Ids.Count} ongoing streams");
             }
         }
+    }
+#endif
 
-        protected void Unregister(Guid identifier)
-        {
-            _streamIds.Remove(identifier);
-        }
+    public interface IChannel : IGuidReactiveCollection
+    {
+        
+    }
+    
+    // allows observers who do not need specific types but are just interested in stream counts / ids
+
+    public abstract class AbstractChannel : MonoBehaviour, IChannel
+    {
+        public abstract IReadOnlyReactiveCollection<Guid> Ids { get; }
     }
 }

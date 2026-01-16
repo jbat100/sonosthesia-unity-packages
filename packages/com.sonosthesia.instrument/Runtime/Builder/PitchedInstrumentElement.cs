@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace Sonosthesia.Instrument
 {
-    public class PitchedInstrumentElement : GroupTransformerElement, IMIDIPitchedElement
+    public class PitchedInstrumentElement : GroupTransformerElement, IMIDIPitchProvider
     {
-        public int MIDINote { get; set; }
+        public int MIDIPitch { get; set; }
         
         private Renderer _renderer;
         public Renderer Renderer

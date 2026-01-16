@@ -17,9 +17,9 @@ namespace Sonosthesia.Flow
 
         protected abstract TTarget Map(float value);
 
-        protected override IDisposable Setup(Signal<float> source)
+        protected override IDisposable Setup(ISignal<float> source)
         {
-            return source.SignalObservable.Subscribe(value =>
+            return source.Observable.Subscribe(value =>
             {
                 float eased = Mathf.Lerp(0f, 1f, value);
                 _speed = eased * _scale + _offset;

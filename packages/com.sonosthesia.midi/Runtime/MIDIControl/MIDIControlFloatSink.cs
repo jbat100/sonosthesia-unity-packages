@@ -2,6 +2,7 @@ using UnityEngine;
 using Sonosthesia.AdaptiveMIDI;
 using Sonosthesia.AdaptiveMIDI.Messages;
 using Sonosthesia.Signal;
+using Sonosthesia.Utils;
 
 namespace Sonosthesia.MIDI
 {
@@ -15,7 +16,9 @@ namespace Sonosthesia.MIDI
 
         protected override void Apply(float value)
         {
-            _output.Broadcast(new MIDIControl(_channel, _number, (int) value));
+            MIDIControl control = new MIDIControl(_channel, _number, (int)value);
+            this.LogVerbose($"{this} Broadcast {control}");
+            _output.Broadcast(control);
         }
     }
 }

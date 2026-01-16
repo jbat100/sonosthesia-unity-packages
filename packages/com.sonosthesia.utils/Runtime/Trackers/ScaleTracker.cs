@@ -11,7 +11,7 @@ namespace Sonosthesia.Utils
 
         [SerializeField] private Vector3 _offset;
         
-        protected virtual void Update()
+        protected virtual void LateUpdate()
         {
             if (_target)
             {

@@ -1,0 +1,39 @@
+﻿using Sonosthesia.Dynamic;
+using UnityEngine;
+
+namespace Sonosthesia.Interaction
+{
+    public class DirectionInteractionGate : InteractionGate
+    {
+        [SerializeField] private Vector3 _direction;
+
+        [SerializeField] private float _velocityThreshold;
+        
+        [SerializeField] private float _dotThreshold;
+
+        [SerializeField] private bool _local;
+        
+        protected override bool PerformCheck(IInteractionEndpoint source, IInteractionEndpoint actor)
+        {
+            TransformDynamicsMonitor monitor = actor.DynamicsMonitor;
+            if (!monitor)
+            {
+                return false;
+            }
+            
+            Vector3 velocity = monitor.Velocity.Position;
+            if (velocity.magnitude < _velocityThreshold)
+            {
+                return false;
+            }
+
+            Vector3 localDirection = _local ? transform.TransformDirection(_direction) : _direction;
+            if (Vector3.Dot(localDirection.normalized, velocity.normalized) < _dotThreshold)
+            {
+                return false;
+            }
+            
+            return true;
+        }
+    }
+}
