@@ -44,7 +44,7 @@ namespace Sonosthesia.Scaffold
             }
         }
 
-        public override void Apply<T>(IEnumerable<T> targets)
+        public override void Apply<T>(IReadOnlyList<T> targets)
         {
             Spline spline = _splineContainer[_splineIndex];
             

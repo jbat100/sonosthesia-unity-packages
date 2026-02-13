@@ -35,7 +35,7 @@ namespace Sonosthesia.Scaffold
 
         private const float TWO_PI = 2f * Mathf.PI;
         
-        public override void Apply<T>(IEnumerable<T> targets)
+        public override void Apply<T>(IReadOnlyList<T> targets)
         {
             float startAngle = _start * TWO_PI;
             float endAngle = _end * TWO_PI;

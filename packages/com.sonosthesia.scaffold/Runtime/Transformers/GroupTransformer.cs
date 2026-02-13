@@ -7,6 +7,6 @@ namespace Sonosthesia.Scaffold
     [ExecuteAlways]
     public abstract class GroupTransformer : ObservableBehaviour
     {
-        public abstract void Apply<T>(IEnumerable<T> targets) where T : MonoBehaviour, IGroupTransformerElement;
+        public abstract void Apply<T>(IReadOnlyList<T> targets) where T : MonoBehaviour, IGroupTransformerElement;
     }
 }

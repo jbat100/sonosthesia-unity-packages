@@ -47,7 +47,7 @@ namespace Sonosthesia.Scaffold
             _configurationSubscription?.Dispose();
         }
 
-        public override void Apply<T>(IEnumerable<T> targets)
+        public override void Apply<T>(IReadOnlyList<T> targets)
         {
             if (!_configuration)
             {

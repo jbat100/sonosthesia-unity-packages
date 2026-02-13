@@ -13,7 +13,7 @@ namespace Sonosthesia.Scaffold
 
         [SerializeField] private Axes _scaleAxes = Axes.Y;
         
-        public override void Apply<T>(IEnumerable<T> targets)
+        public override void Apply<T>(IReadOnlyList<T> targets)
         {
             foreach (T element in targets)
             {

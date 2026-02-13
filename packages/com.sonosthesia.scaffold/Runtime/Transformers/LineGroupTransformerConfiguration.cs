@@ -9,7 +9,7 @@ namespace Sonosthesia.Scaffold
 
         [SerializeField] private Vector3 _end;
 
-        public override void Apply<T>(IEnumerable<T> targets)
+        public override void Apply<T>(IReadOnlyList<T> targets)
         {
             Vector3 difference = _end - _start;
             foreach (T element in targets)

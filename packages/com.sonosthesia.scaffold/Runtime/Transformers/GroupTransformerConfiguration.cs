@@ -5,6 +5,6 @@ namespace Sonosthesia.Scaffold
 {
     public abstract class GroupTransformerConfiguration : ObservableScriptableObject
     {
-        public abstract void Apply<T>(IEnumerable<T> targets) where T : IGroupTransformerElement;
+        public abstract void Apply<T>(IReadOnlyList<T> targets) where T : IGroupTransformerElement;
     }
 }

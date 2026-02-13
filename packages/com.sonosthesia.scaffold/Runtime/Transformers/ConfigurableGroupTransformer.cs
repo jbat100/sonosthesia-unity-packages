@@ -24,7 +24,7 @@ namespace Sonosthesia.Scaffold
             _changeSubscription = null;
         }
         
-        public override void Apply<T>(IEnumerable<T> targets)
+        public override void Apply<T>(IReadOnlyList<T> targets)
         {
             if (!_configuration)
             {
